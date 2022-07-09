@@ -2537,4 +2537,47 @@ public class PostfinancePDFExtractorTest
             assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2015 - 30.04.2015"));
         }
     }
+
+    @Test
+    public void testKontoauszug04()
+    {
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-01T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(111.00))));
+            assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+            assertThat(transaction.getNote(), is("Überweisung"));
+        }
+
+        if (iter.hasNext())
+        {
+            Item item = iter.next();
+
+            // assert transaction
+            AccountTransaction transaction = (AccountTransaction) item.getSubject();
+            assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-05T00:00")));
+            assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
+            assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+            assertThat(transaction.getNote(), is("Überweisung"));
+        }
+    }
 }
