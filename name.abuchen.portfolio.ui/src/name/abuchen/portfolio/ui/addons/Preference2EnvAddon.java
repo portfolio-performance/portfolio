@@ -9,6 +9,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
+import name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
@@ -66,6 +67,7 @@ public class Preference2EnvAddon
     {
         ((EODHistoricalDataQuoteFeed) Factory.getQuoteFeedProvider(EODHistoricalDataQuoteFeed.ID))
                         .setApiKey(eodhistoricialdataApiKey);
+        Factory.getSearchProvider(EODHistoricalDataSearchProvider.class).setApiKey(eodhistoricialdataApiKey);
     }
 
     @Inject
