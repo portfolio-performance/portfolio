@@ -11,6 +11,7 @@ import java.util.stream.LongStream;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
@@ -255,6 +256,28 @@ public enum WidgetFactory
     LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
+
+    LATEST_SECURITY_PRICE(Messages.LabelLatestSecurityPrice, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Quote) //
+                                    .with((ds, period) -> {
+                                        long latestPrice = 0;
+
+                                        if (ds.getInstance() instanceof Security)
+                                        {
+                                            Security security = (Security) ds.getInstance();
+                                            if (security.getLatest() != null)
+                                            {
+                                                latestPrice = security.getLatest().getValue();
+                                            }
+                                        }
+
+                                        return latestPrice;
+
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withColoredValues(false) //
+                                    .build()),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);

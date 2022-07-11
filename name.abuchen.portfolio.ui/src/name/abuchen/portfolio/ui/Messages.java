@@ -622,6 +622,7 @@ public class Messages extends NLS
     public static String LabelIRR;
     public static String LabelLanguage;
     public static String LabelLanguageAutomatic;
+    public static String LabelLatestSecurityPrice;
     public static String LabelLayout;
     public static String LabelLayoutFull;
     public static String LabelLayoutReduced;
