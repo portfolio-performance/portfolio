@@ -2727,7 +2727,7 @@ public class OnvistaPDFExtractorTest
                         .filter(NonImportableItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
         assertNull(Cancelations.getSecurity());
         assertNull(Cancelations.getDate());
         assertThat(Cancelations.getNote(), is("Vorabpauschale02.txt"));
