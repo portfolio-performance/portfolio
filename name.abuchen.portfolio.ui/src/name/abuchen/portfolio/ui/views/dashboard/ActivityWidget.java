@@ -208,8 +208,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip.setDefaultValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
-            List<?> years = (List<?>) chart.getData();
-            return years.get(index).toString();
+            List<?> yearsOrYearMonths = (List<?>) chart.getData();
+            return yearsOrYearMonths.get(index).toString();
 
         });
 
@@ -357,9 +357,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                 continue;
 
             int indexOf = this.isAggregateByYear() ? years.indexOf(Year.from(tx.get().getTransaction().getDateTime()))
-                            : 
-                            yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
-
+                            : yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
             if (indexOf >= 0)
             {
                 switch (chartType)
