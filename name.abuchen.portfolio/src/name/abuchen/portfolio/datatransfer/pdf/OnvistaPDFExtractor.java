@@ -625,7 +625,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
-                    return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    return new NonImportableItem(Messages.MsgErrorTransactionTypeNotSupported);
                 });
         
         block.set(pdfTransaction);
