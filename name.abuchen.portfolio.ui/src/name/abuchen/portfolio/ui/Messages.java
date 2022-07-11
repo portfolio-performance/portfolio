@@ -588,6 +588,7 @@ public class Messages extends NLS
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
+    public static String LabelDescription;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;

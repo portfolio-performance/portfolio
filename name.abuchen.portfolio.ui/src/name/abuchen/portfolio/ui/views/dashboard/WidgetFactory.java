@@ -26,6 +26,8 @@ public enum WidgetFactory
 {
     HEADING(Messages.LabelHeading, Messages.LabelCommon, HeadingWidget::new),
 
+    DESCRIPTION(Messages.LabelDescription, Messages.LabelCommon, DescriptionWidget::new),
+
     TOTAL_SUM(Messages.LabelTotalSum, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
