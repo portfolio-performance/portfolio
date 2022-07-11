@@ -21,11 +21,17 @@ public class UrlConfig implements WidgetConfig
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(delegate.getWidget().getLabel()));
+        String urlValue = delegate.getWidget().getConfiguration().get(Dashboard.Config.URL.name());
 
-        manager.add(new SimpleAction("URL ändern...", a -> {
+        if (urlValue != null)
+        {
+            String label = urlValue.substring(0, Math.min(40, urlValue.length())) + "..."; //$NON-NLS-1$
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(label));
+        }
+
+        manager.add(new SimpleAction(Messages.UrlChange, a -> {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameLabel,
-                            "URL", delegate.getWidget().getLabel(), null);
+                            Messages.Url, urlValue, null);
 
             if (dialog.open() != InputDialog.OK)
                 return;
@@ -40,7 +46,6 @@ public class UrlConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        // @todo translations
-        return "URL" + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+        return Messages.Url + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
     }
 }

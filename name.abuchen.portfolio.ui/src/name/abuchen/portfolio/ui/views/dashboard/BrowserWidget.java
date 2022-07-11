@@ -24,8 +24,8 @@ public class BrowserWidget extends WidgetDelegate<Object>
     {
         super(widget, data);
 
-        addConfig(new ChartHeightConfig(this));
         addConfig(new UrlConfig(this));
+        addConfig(new ChartHeightConfig(this));
     }
 
     @Override
@@ -40,11 +40,6 @@ public class BrowserWidget extends WidgetDelegate<Object>
 
         description = new Browser(composite, SWT.NONE);
         description.setJavascriptEnabled(false);
-        String url = getWidget().getConfiguration().get(Dashboard.Config.URL.name());
-        if (url != null)
-        {
-            description.setUrl(url);
-        }
         description.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         return composite;
@@ -65,6 +60,8 @@ public class BrowserWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object object)
     {
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
+
         String url = getWidget().getConfiguration().get(Dashboard.Config.URL.name());
         if (url != null)
         {
