@@ -716,6 +716,7 @@ public class Messages extends NLS
     public static String LabelSaving;
     public static String LabelSearch;
     public static String LabelSecurities;
+    public static String LabelSecurityLatestPrice;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
     public static String LabelSecurityCalendar;
@@ -1186,6 +1187,7 @@ public class Messages extends NLS
     public static String TooltipPortfolioTaxRate;
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
+    public static String TooltipSecurityLatestPrice;
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
