@@ -257,7 +257,7 @@ public enum WidgetFactory
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
 
-    LATEST_SECURITY_PRICE(Messages.LabelLatestSecurityPrice, Messages.ClientEditorLabelPerformance, //
+    LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Quote) //
                                     .with((ds, period) -> {
