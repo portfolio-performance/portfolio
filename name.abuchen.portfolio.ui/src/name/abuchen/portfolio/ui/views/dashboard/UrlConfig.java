@@ -22,15 +22,13 @@ public class UrlConfig implements WidgetConfig
     public void menuAboutToShow(IMenuManager manager)
     {
         String urlValue = delegate.getWidget().getConfiguration().get(Dashboard.Config.URL.name());
-
         if (urlValue != null)
         {
-            String label = urlValue.substring(0, Math.min(40, urlValue.length())) + "..."; //$NON-NLS-1$
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(label));
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(this.getTruncatedUrl()));
         }
 
-        manager.add(new SimpleAction(Messages.UrlChange, a -> {
-            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameLabel,
+        manager.add(new SimpleAction(Messages.MenuChangeUrl, a -> {
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuChangeUrl,
                             Messages.Url, urlValue, null);
 
             if (dialog.open() != InputDialog.OK)
@@ -46,6 +44,15 @@ public class UrlConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return Messages.Url + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+        return Messages.Url + ": " + this.getTruncatedUrl(); //$NON-NLS-1$
+    }
+
+    private String getTruncatedUrl()
+    {
+        String urlValue = delegate.getWidget().getConfiguration().get(Dashboard.Config.URL.name());
+        if (urlValue == null)
+        { return ""; } //$NON-NLS-1$
+
+        return urlValue.substring(0, Math.min(40, urlValue.length())) + "..."; //$NON-NLS-1$
     }
 }
