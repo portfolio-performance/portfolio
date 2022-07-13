@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.common.collect.Streams;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -202,6 +204,7 @@ public final class SecuritiesTable implements ModificationListener
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
+        addQuoteDistanceAthColumn();
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
@@ -576,6 +579,55 @@ public final class SecuritiesTable implements ModificationListener
 
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
+        column.setDescription(Messages.ColumnQuoteChange_Description);
+        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
+
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
+        }));
+        support.addColumn(column);
+    }
+
+    private void addQuoteDistanceAthColumn() // NOSONAR
+    {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
+
+        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+
+            Interval interval = option.toInterval(LocalDate.now());
+
+            Security security = Adaptor.adapt(Security.class, element);
+            if (security == null)
+                return null;
+            
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+
+            Optional<SecurityPrice> max = security.getPricesIncludingLatest().stream() //
+                            .filter(p -> interval.contains(p.getDate())) //
+                            .max(Comparator.comparing(SecurityPrice::getValue));
+
+            if (!max.isPresent())
+                return null;
+
+            return Double.valueOf((latest.getValue() - max.get().getValue()) / (double) max.get().getValue());
+        };
+
+        Column column = new Column("distance-from-ath", "Distance from ATH", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteDistanceAthPercent_Option, options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
