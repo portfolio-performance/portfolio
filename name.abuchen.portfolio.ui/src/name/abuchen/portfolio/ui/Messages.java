@@ -279,6 +279,9 @@ public class Messages extends NLS
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
+    public static String ColumnQuoteDistanceFromAthPercent;
+    public static String ColumnQuoteDistanceFromAthPercent_Description;
+    public static String ColumnQuoteDistanceFromAthPercent_Option;
     public static String ColumnQuoteFeedHistoric;
     public static String ColumnQuoteFeedLatest;
     public static String ColumnRealizedCapitalGains;
@@ -1083,6 +1086,7 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterDateReached;
+    public static String SecurityListFilterDistanceFromAth;
     public static String SecurityListFilterHideInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;

@@ -93,6 +93,7 @@ import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -203,6 +204,8 @@ public final class SecuritiesTable implements ModificationListener
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
+        support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
+                        new ArrayList<>(view.getPart().getReportingPeriods())));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {

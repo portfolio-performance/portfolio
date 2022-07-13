@@ -9,6 +9,7 @@ import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.stream.LongStream;
 
+import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
@@ -286,6 +287,26 @@ public enum WidgetFactory
                                     .build()),
 
     WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
+
+    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return (double) 0;
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        Double distance = new AllTimeHigh(security, period).getDistance();
+                                        if (distance == null)
+                                            return (double) 0;
+
+                                        return distance;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .with(ds -> ds.getInstance() instanceof Security) //
+                                    .withColoredValues(false) //
+                                    .build()),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);

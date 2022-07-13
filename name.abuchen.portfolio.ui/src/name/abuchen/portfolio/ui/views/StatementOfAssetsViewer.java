@@ -103,6 +103,7 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -578,6 +579,10 @@ public class StatementOfAssetsViewer
         addCurrencyColumns();
 
         column = new DistanceFromMovingAverageColumn(() -> model.getDate());
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new DistanceFromAllTimeHighColumn(() -> model.getDate(), options);
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
