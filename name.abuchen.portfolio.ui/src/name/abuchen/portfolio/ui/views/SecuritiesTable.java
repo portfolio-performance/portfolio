@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.collect.Streams;
 
+import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
@@ -600,35 +600,25 @@ public final class SecuritiesTable implements ModificationListener
         support.addColumn(column);
     }
 
-    private void addQuoteDistanceAthColumn() // NOSONAR
+    private void addQuoteDistanceAthColumn()
     {
         // create a modifiable copy as all menus share the same list of
         // reporting periods
         List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
 
         BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
-
             Interval interval = option.toInterval(LocalDate.now());
 
             Security security = Adaptor.adapt(Security.class, element);
             if (security == null)
                 return null;
             
-            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
-
-            Optional<SecurityPrice> max = security.getPricesIncludingLatest().stream() //
-                            .filter(p -> interval.contains(p.getDate())) //
-                            .max(Comparator.comparing(SecurityPrice::getValue));
-
-            if (!max.isPresent())
-                return null;
-
-            return Double.valueOf((latest.getValue() - max.get().getValue()) / (double) max.get().getValue());
+            return new AllTimeHigh(security, interval).getDistance();
         };
 
-        Column column = new Column("distance-from-ath", "Distance from ATH", SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteDistanceAthPercent_Option, options));
-        column.setDescription(Messages.ColumnQuoteChange_Description);
+        Column column = new Column("distance-from-ath", Messages.ColumnQuoteDistanceFromAthPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteDistanceFromAthPercent_Option, options));
+        column.setDescription(Messages.ColumnQuoteDistanceFromAthPercent_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {

@@ -8,9 +8,11 @@ import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.stream.LongStream;
 
+import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
@@ -255,6 +257,25 @@ public enum WidgetFactory
     LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
+
+    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return (double) 0;
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        Double distance = new AllTimeHigh(security, period).getDistance();
+                                        if (distance == null)
+                                            return (double) 0;
+
+                                        return distance;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withColoredValues(true) //
+                                    .build()),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
