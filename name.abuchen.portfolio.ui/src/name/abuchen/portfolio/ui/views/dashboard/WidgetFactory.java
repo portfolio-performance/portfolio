@@ -261,19 +261,14 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Quote) //
                                     .with((ds, period) -> {
-                                        long latestPrice = 0;
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return (long) 0;
 
-                                        if (ds.getInstance() instanceof Security)
-                                        {
-                                            Security security = (Security) ds.getInstance();
-                                            if (security.getLatest() != null)
-                                            {
-                                                latestPrice = security.getLatest().getValue();
-                                            }
-                                        }
+                                        Security security = (Security) ds.getInstance();
+                                        if (security.getLatest() == null)
+                                            return (long) 0;
 
-                                        return latestPrice;
-
+                                        return security.getLatest().getValue();
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .withColoredValues(false) //
