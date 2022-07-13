@@ -6,15 +6,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class DescriptionWidget extends WidgetDelegate<Object>
 {
-    private Label description;
+    private StyledLabel description;
 
     public DescriptionWidget(Widget widget, DashboardData data)
     {
@@ -31,7 +31,7 @@ public class DescriptionWidget extends WidgetDelegate<Object>
         layout.marginHeight = 10;
         container.setLayout(layout);
 
-        description = new Label(container, SWT.WRAP);
+        description = new StyledLabel(container, SWT.WRAP);
         description.setForeground(Colors.HEADINGS);
         description.setBackground(container.getBackground());
         description.setText(TextUtil.tooltip(getWidget().getLabel()));
