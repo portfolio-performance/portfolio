@@ -96,8 +96,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             if (chart.getData() instanceof List && !((List<?>) chart.getData()).isEmpty()
                             && (((List<?>) chart.getData()).get(0) instanceof Year))
             {
-                // in case that the chart is grouped by year we do not have to
-                // draw the markers per year
+                // in case that the chart is grouped by year we do not draw the
+                // markers per year
                 return;
             }
 
@@ -209,8 +209,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
             List<?> yearsOrYearMonths = (List<?>) chart.getData();
-            return yearsOrYearMonths.get(index).toString();
 
+            return yearsOrYearMonths.get(index).toString();
         });
 
         int yHint = get(ChartHeightConfig.class).getPixel();
