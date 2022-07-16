@@ -1475,6 +1475,51 @@ public class DegiroPDFExtractorTest
         assertNull(transaction.getCrossEntry());
     }
 
+    /**
+     * Test reading Dividend and Dividend Tax in EUR from DeGiro
+     * AccountStatement in Dutch. Dividendbelasting is Dutch for Dividend Tax.
+     */
+    @Test
+    public void testRekeningoverzicht04()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeningoverzicht04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividend transaction including tax
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // 11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividend EUR 1,50 EUR 23,21
+        // 11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividendbelasting EUR -0,38 EUR 21,71
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-11T07:45")));
+        assertThat(transaction.getShares(), is(0L));
+
+        // 1.50 - 0.38 = 1.12
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.38))));
+        assertThat(transaction.getSecurity().getName(), is("LYXOR ETF CAC 40"));
+        assertThat(transaction.getSecurity().getIsin(), is("FR0007052782"));
+        assertNull(transaction.getCrossEntry());
+
+        // check security
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("FR0007052782"));
+        assertThat(security.getName(), is("LYXOR ETF CAC 40"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+    }
+
     @Test
     public void testAccountStatement01()
     {
