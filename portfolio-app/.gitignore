@@ -1,8 +1,2 @@
 ide-target-platform
 workspace
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
