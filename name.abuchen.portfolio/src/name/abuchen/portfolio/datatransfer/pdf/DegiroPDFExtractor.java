@@ -505,12 +505,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
                         // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend Tax CAD -4.55 CAD -4.55
+                        // 11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividendbelasting EUR -0,38 EUR 1,71
                         .section("isin", "currencyTax", "tax").optional()
                         .match("^([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(.*) "
                                         + "(?<isin>[\\w]{12}) .*"
-                                        + "(Dividendensteuer|Dividend Tax) "
+                                        + "(Dividendensteuer|Dividend Tax|Dividendbelasting) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
