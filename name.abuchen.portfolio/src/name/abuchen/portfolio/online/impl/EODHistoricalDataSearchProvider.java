@@ -97,7 +97,7 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
 
             var currency = json.get("Currency"); //$NON-NLS-1$
 
-            var isin = json.get("ISIN"); //$NON-NLS-1$
+            String isin = (String) json.get("ISIN"); //$NON-NLS-1$
 
             // Example: 8.264
             var previousClose = json.get("previousClose"); //$NON-NLS-1$
@@ -121,8 +121,8 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             }
 
             return Optional.of(new Result(symbol, String.valueOf(name), String.valueOf(type), String.valueOf(exchange),
-                            String.valueOf(country), String.valueOf(currency), String.valueOf(isin),
-                            String.valueOf(previousClose), String.valueOf(previousCloseDate), latestSecurityPrice));
+                            String.valueOf(country), String.valueOf(currency), isin, String.valueOf(previousClose),
+                            String.valueOf(previousCloseDate), latestSecurityPrice));
         }
 
         private Result(String symbol, String name, String type, String exchange, String country, String currency,
@@ -212,10 +212,12 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
         {
             var security = new Security();
             security.setName(name);
+            security.setIsin(isin);
             security.setTickerSymbol(symbol);
             security.setCurrencyCode(currency);
             if (latestSecurityPrice != null)
                 security.setLatest(latestSecurityPrice);
+            security.setFeed(EODHistoricalDataQuoteFeed.ID);
             return security;
         }
 
