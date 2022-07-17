@@ -19,6 +19,8 @@ public class DescriptionWidget extends WidgetDelegate<Object>
     public DescriptionWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
+        
+        get(LabelConfig.class).setMultiLine(true);
     }
 
     @Override
