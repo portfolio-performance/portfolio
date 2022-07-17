@@ -30,7 +30,6 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         private String symbol;
         private String description;
         private String type;
-        private String displaySymbol;
 
         public static Optional<Result> from(JSONObject json)
         {
@@ -42,18 +41,14 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
 
             Object type = json.get("type"); //$NON-NLS-1$
 
-            Object displaySymbol = json.get("displaySymbol"); //$NON-NLS-1$
-
-            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(description), String.valueOf(type),
-                            String.valueOf(displaySymbol)));
+            return Optional.of(new Result(String.valueOf(symbol), String.valueOf(description), String.valueOf(type)));
         }
 
-        private Result(String symbol, String description, String type, String displaySymbol)
+        private Result(String symbol, String description, String type)
         {
             this.symbol = symbol;
             this.description = description;
             this.type = type;
-            this.displaySymbol = displaySymbol;
         }
 
         /* package */ Result(String description)
