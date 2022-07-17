@@ -91,6 +91,12 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         {
             return null;
         }
+        
+        @Override
+        public String getSource()
+        {
+            return NAME;
+        }
 
         @Override
         public Security create(ClientSettings settings)
@@ -103,12 +109,13 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         }
     }
 
+    private static final String NAME = "Finnhub"; //$NON-NLS-1$
     private String apiKey;
 
     @Override
     public String getName()
     {
-        return "Finnhub"; //$NON-NLS-1$
+        return NAME;
     }
 
     public void setApiKey(String apiKey)

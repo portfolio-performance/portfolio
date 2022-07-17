@@ -220,6 +220,12 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             security.setFeed(EODHistoricalDataQuoteFeed.ID);
             return security;
         }
+        
+        @Override
+        public String getSource()
+        {
+            return NAME;
+        }
 
         @SuppressWarnings("nls")
         @Override
@@ -241,12 +247,13 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
         }
     }
 
+    private static final String NAME = "EODHistoricalData.com"; //$NON-NLS-1$
     private String apiKey;
 
     @Override
     public String getName()
     {
-        return "EODHistoricalData.com"; //$NON-NLS-1$
+        return NAME;
     }
 
     public void setApiKey(String apiKey)

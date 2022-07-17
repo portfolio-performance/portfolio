@@ -355,6 +355,12 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
             }
             return exchangeSuffix;
         }
+        
+        @Override
+        public String getSource()
+        {
+            return NAME;
+        }
 
         @SuppressWarnings("nls")
         @Override
@@ -372,12 +378,13 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
         }
     }
 
+    private static final String NAME = "DivvyDiary"; //$NON-NLS-1$
     private String apiKey;
 
     @Override
     public String getName()
     {
-        return "DivvyDiary"; //$NON-NLS-1$
+        return NAME;
     }
 
     public void setApiKey(String apiKey)

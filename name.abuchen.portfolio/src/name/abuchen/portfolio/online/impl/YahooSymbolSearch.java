@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
@@ -103,6 +104,12 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         public String getWkn()
         {
             return null;
+        }
+
+        @Override
+        public String getSource()
+        {
+            return Messages.LabelYahooFinance;
         }
 
         @Override
