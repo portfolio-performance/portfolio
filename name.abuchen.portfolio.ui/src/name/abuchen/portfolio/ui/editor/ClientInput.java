@@ -176,9 +176,20 @@ public class ClientInput
         return exchangeRateProviderFacory;
     }
 
+    /**
+     * Returns the preferences store per data file.
+     */
     public PreferenceStore getPreferenceStore()
     {
         return preferenceStore;
+    }
+
+    /**
+     * Returns the eclipse preferences which exist per installation.
+     */
+    public IEclipsePreferences getEclipsePreferences()
+    {
+        return preferences;
     }
 
     public void savePreferences()
