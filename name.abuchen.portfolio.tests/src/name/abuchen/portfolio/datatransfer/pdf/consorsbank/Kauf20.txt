@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer 1234567890
+1504753979/00
+Vorname Nachname
+Straße Hausnummer
+PLZ ORT Vermerk der Bank 200002
+ORDERABRECHNUNG
+KAUF AM 06.09.2019  UM 13:43:10 HAMBURG NR. 148553598.001
+Bezeichnung WKN ISIN
+CLERE AG O.N. A2AA40 DE000A2AA402
+Einheit Umsatz
+ST 300,00000
+Kurs 11,300000 EUR P.ST.  
+Kurswert EUR 3.390,00
+Börsenplatzgebühr EUR 2,50
+Courtage EUR 2,71
+Provision EUR 8,48
+Grundgebühr EUR 4,95
+Wert 10.09.2019 EUR 3.408,64
+zulasten Konto-Nr. 9876543210
+Bestand zugunsten Girosammelverwahrung 
+CBF 2126
+Limitkurs  11,300000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
