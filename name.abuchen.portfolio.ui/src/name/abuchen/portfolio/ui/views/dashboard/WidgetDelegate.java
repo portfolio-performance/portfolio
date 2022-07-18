@@ -91,4 +91,15 @@ public abstract class WidgetDelegate<D>
      * attached.
      */
     public abstract Control getTitleControl();
+
+    /**
+     * Generates the container CSS class names by using the label text of the
+     * widget. Therefore all non-alphanumeric characters are stripped and the
+     * result is capped to 30 characters.
+     */
+    protected String getContainerCssClassNames()
+    {
+        String cssClassName = widget.getLabel().replaceAll("[^a-zA-Z0-9]", "").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
+        return "dashboard-widget " + cssClassName.substring(0, Math.min(cssClassName.length(), 30)); //$NON-NLS-1$
+    }
 }

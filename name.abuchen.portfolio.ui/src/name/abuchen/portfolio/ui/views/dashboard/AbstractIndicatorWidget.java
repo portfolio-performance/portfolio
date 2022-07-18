@@ -35,11 +35,13 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     {
         Composite container = new Composite(parent, SWT.NONE);
         container.setBackground(parent.getBackground());
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(Colors.theme().defaultBackground());
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         indicator = new ColoredLabel(container, SWT.NONE);

@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.util.TextUtil;
@@ -28,6 +29,8 @@ public class DescriptionWidget extends WidgetDelegate<Object>
     {
         Composite container = new Composite(parent, SWT.NONE);
         container.setBackground(parent.getBackground());
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
+
         FillLayout layout = new FillLayout();
         layout.marginWidth = 5;
         layout.marginHeight = 10;
@@ -37,6 +40,7 @@ public class DescriptionWidget extends WidgetDelegate<Object>
         description.setForeground(Colors.HEADINGS);
         description.setBackground(container.getBackground());
         description.setText(TextUtil.tooltip(getWidget().getLabel()));
+        description.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
 
         return container;
     }
