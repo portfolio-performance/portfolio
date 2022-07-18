@@ -17,7 +17,7 @@ import name.abuchen.portfolio.util.TextUtil;
 public class BrowserWidget extends WidgetDelegate<Object>
 {
     private Label title;
-    private Browser description;
+    private Browser browser;
     private Composite composite;
 
     public BrowserWidget(Widget widget, DashboardData data)
@@ -38,9 +38,9 @@ public class BrowserWidget extends WidgetDelegate<Object>
         title.setBackground(composite.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
-        description = new Browser(composite, SWT.NONE);
-        description.setJavascriptEnabled(false);
-        description.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        browser = new Browser(composite, SWT.NONE);
+        browser.setJavascriptEnabled(false);
+        browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         return composite;
     }
@@ -48,7 +48,7 @@ public class BrowserWidget extends WidgetDelegate<Object>
     @Override
     public Control getTitleControl()
     {
-        return description;
+        return title;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class BrowserWidget extends WidgetDelegate<Object>
         String url = getWidget().getConfiguration().get(Dashboard.Config.URL.name());
         if (url != null)
         {
-            description.setUrl(url);
+            browser.setUrl(url);
         }
 
         GridData data = (GridData) composite.getLayoutData();
@@ -76,8 +76,8 @@ public class BrowserWidget extends WidgetDelegate<Object>
         if (oldHeight != newHeight)
         {
             data.heightHint = newHeight;
-            description.getParent().layout(true);
-            description.getParent().getParent().layout(true);
+            browser.getParent().layout(true);
+            browser.getParent().getParent().layout(true);
         }
     }
 }

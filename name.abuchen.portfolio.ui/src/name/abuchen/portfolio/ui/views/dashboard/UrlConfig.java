@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class UrlConfig implements WidgetConfig
 {
@@ -51,8 +52,8 @@ public class UrlConfig implements WidgetConfig
     {
         String urlValue = delegate.getWidget().getConfiguration().get(Dashboard.Config.URL.name());
         if (urlValue == null)
-        { return ""; } //$NON-NLS-1$
+            return ""; //$NON-NLS-1$
 
-        return urlValue.substring(0, Math.min(40, urlValue.length())) + "..."; //$NON-NLS-1$
+        return TextUtil.limit(urlValue, 40);
     }
 }
