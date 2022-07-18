@@ -186,11 +186,13 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
         title.setBackground(container.getBackground());
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
