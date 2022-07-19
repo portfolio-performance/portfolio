@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -262,16 +263,25 @@ public enum WidgetFactory
                                     .with(Values.Quote) //
                                     .with((ds, period) -> {
                                         if (!(ds.getInstance() instanceof Security))
-                                            return (long) 0;
+                                            return 0L;
 
                                         Security security = (Security) ds.getInstance();
-                                        if (security.getLatest() == null)
-                                            return (long) 0;
 
-                                        return security.getLatest().getValue();
+                                        return security.getSecurityPrice(LocalDate.now()).getValue();
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return ""; //$NON-NLS-1$
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        return MessageFormat.format(Messages.TooltipSecurityLastPrice,
+                                                        security.getName(),
+                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now()).getDate())
+                                                        );
+                                    }) //
                                     .build()),
 
     // typo is API now!!
