@@ -826,6 +826,7 @@ public class Messages extends NLS
     public static String MenuApplyToAllWidgets;
     public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
+    public static String MenuChartShowYAxis;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
     public static String MenuChartXScrollDown;
