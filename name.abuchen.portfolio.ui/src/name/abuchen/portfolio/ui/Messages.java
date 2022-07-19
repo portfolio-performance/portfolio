@@ -1187,7 +1187,7 @@ public class Messages extends NLS
     public static String TooltipPortfolioTaxRate;
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
-    public static String TooltipSecurityLastPrice;
+    public static String TooltipSecurityLatestPrice;
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;

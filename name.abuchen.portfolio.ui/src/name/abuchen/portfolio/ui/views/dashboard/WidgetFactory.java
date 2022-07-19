@@ -277,7 +277,7 @@ public enum WidgetFactory
 
                                         Security security = (Security) ds.getInstance();
 
-                                        return MessageFormat.format(Messages.TooltipSecurityLastPrice,
+                                        return MessageFormat.format(Messages.TooltipSecurityLatestPrice,
                                                         security.getName(),
                                                         Values.Date.format(security.getSecurityPrice(LocalDate.now()).getDate())
                                                         );
