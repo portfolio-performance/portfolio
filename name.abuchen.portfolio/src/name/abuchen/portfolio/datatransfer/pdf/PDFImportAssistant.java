@@ -50,6 +50,7 @@ public class PDFImportAssistant
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankGruppePDFExtractor(client));
+        extractors.add(new EasyBankAGPDFExtractor(client));
         extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
