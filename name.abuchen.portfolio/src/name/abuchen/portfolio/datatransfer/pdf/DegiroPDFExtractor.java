@@ -745,11 +745,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         //  
         // 02-09-2021 21:29 31-08-2021 DEGIRO Aansluitingskosten 2021 (Borsa Italiana S.p.A. - EUR -2,50 EUR 12,91
         // MIL)
+        //
+        // 01-06-2022 19:55 31-05-2022 Giro Exchange Connection Fee 2022 EUR -1,01 EUR -6,39
         //  
         // 02-10-2021 10:46 30-09-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -1,24 EUR 206,99
         // @formatter:on
         Block blockTrademodalities = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
-                        + "(Einrichtung von|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione) "
+                        + "(Einrichtung von|DEGIRO Aansluitingskosten|Giro Exchange Connection Fee|DEGIRO Costi di connessione) "
                         + ".*$");
         type.addBlock(blockTrademodalities);
         blockTrademodalities.set(new Transaction<AccountTransaction>()
@@ -789,7 +791,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .attributes("date", "time", "note", "currency", "type", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                                + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten|DEGIRO Costi di connessione)( [\\d]{4})?) .* "
+                                                + "(?<note>(Einrichtung von Handelsmodalit.ten|DEGIRO Aansluitingskosten|Giro Exchange Connection Fee|DEGIRO Costi di connessione)( [\\d]{4})?) .* "
                                                 + "(?<currency>[\\w]{3})"
                                                 + "(?<type>\\s(\\-)?)"
                                                 + "(?<amount>[\\.,'\\d]+) "

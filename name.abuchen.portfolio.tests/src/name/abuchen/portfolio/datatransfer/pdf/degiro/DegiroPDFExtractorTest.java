@@ -1504,6 +1504,43 @@ public class DegiroPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
     }
 
+    /**
+     * Test reading Exchange Connection Fee in EUR from DeGiro AccountStatement
+     * in Dutch. These are fees that DeGiro charges for trading on foreign stock
+     * exchanges.
+     */
+    @Test
+    public void testRekeningoverzicht05()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeningoverzicht05.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividend transaction including tax
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // 01-06-2022 19:55 31-05-2022 Giro Exchange Connection Fee 2022 EUR -1,01 EUR -6,39
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getNote(), is("Giro Exchange Connection Fee"));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-01T19:55")));
+        assertThat(transaction.getShares(), is(0L));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.01))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.01))));
+        assertNull(transaction.getSecurity());
+        assertNull(transaction.getCrossEntry());
+    }
+
     @Test
     public void testAccountStatement01()
     {
