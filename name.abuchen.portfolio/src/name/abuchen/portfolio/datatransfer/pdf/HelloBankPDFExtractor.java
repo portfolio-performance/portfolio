@@ -146,13 +146,14 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name1>.*)$")
                 .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Kurs"))
+                    if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
                 // 200 Stk
+                // Abgang: 140 Stk
                 .section("shares")
                 .match("^(Abgang: )?(?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
