@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
@@ -37,7 +38,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rse (Kauf|Verkauf) Komptant");
+        DocumentType type = new DocumentType("(B.rse (Kauf|Verkauf) Komptant|Ihr (Kauf|Verkauf))");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -47,7 +48,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Bewertet in: .*$");
+        Block firstRelevantLine = new Block("^(Bewertet in: .*|Ihr (Kauf|Verkauf))$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -60,53 +61,166 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^Ihr (?<type>(Kauf|Verkauf))$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
                 // USD 2'180 UBS (Lux) Fund Solutions - MSCI 21966836
                 // Emerging Markets UCITS ETF LU0950674175
-                .section("currency", "name", "wkn", "nameContinued", "isin")
+                .section("currency", "name", "wkn", "nameContinued", "isin").optional()
                 .match("^(?<currency>[\\w]{3}) [\\.'\\d]+ (?<name>.*) (?<wkn>[0-9]{6,9})$")
                 .match("^(?<nameContinued>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
-                .section("shares")
-                .match("^.* Komptant (\\-)?(?<shares>[\\.',\\d]+) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
-                .section("date", "time")
-                .match("^Abschluss (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
-
-                // Abrechnungsbetrag USD -4'919.95
-                // Abrechnungsbetrag USD 11'050.04
-                .section("currency", "amount")
-                .match("^Abrechnungsbetrag (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+)$")
+                // @formatter:off
+                // Stückzahl Valor 1253020 ISIN CH0012530207 Kurs
+                // 15 N-Akt -B- Bachem Holding AG CHF 146
+                //
+                // Stückzahl Valor 1203204 ISIN CH0012032048 Kurs
+                // 10 Genussscheine CHF 376.3
+                // Roche Holding AG (ROG)
+                // @formatter:on
+                .section("wkn", "isin", "name", "currency", "name1").optional()
+                .match("^St.ckzahl Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                .match("^[\\.',\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d]+$")
+                .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
+                    if (!v.get("name1").startsWith("Kurswert"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Buchung 10.03.2022 XXXXXXXXXXXXXXXX 0.9267
-                // 15:02:13 450 USD 10.87
-                // Abrechnungsdetails Bewertet in  CHF
-                // Transaktionswert USD 4'890.60 4'532
-                .section("exchangeRate", "baseCurrency", "termCurrency", "currency", "gross").optional()
-                .match("^Buchung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<exchangeRate>[\\.'\\d]+)$")
-                .match("^Abrechnungsdetails Bewertet in .*(?<termCurrency>[\\w]{3})$")
-                .match("^Transaktionswert (?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+) [\\.'\\d]+$")
-                .match("^Abrechnungsbetrag (?<baseCurrency>[\\w]{3}) (\\-)?[\\.'\\d]+$")
+                .oneOf(
+                                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^.* Komptant (\\-)?(?<shares>[\\.',\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // 15 N-Akt -B- Bachem Holding AG CHF 146
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.',\\d]+) .* [\\w]{3} [\\.'\\d]+$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
+
+                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+                .section("time").optional()
+                .match("^(Abschluss|Abschlussdatum:) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+                // Abschlussdatum: 27.12.2017 Abschlussort SIX
+                .section("date")
+                .match("^(Abschluss|Abschlussdatum:) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
-
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
-
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    if (type.getCurrentContext().get("time") != null)
+                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
                 })
 
-                .wrap(BuySellEntryItem::new);
+                .oneOf(
+                                // Abrechnungsbetrag USD -4'919.95
+                                // Abrechnungsbetrag USD 11'050.04
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Abrechnungsbetrag (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // Zulasten Konto 0292 00123456.M1Z CHF Valuta 29.12.2017 CHF 2 213.15
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(Zulasten|Zugunsten) Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
+                .optionalOneOf(
+                                // @formatter:off
+                                // Buchung 10.03.2022 XXXXXXXXXXXXXXXX 0.9267
+                                // 15:02:13 450 USD 10.87
+                                // Abrechnungsdetails Bewertet in  CHF
+                                // Transaktionswert USD 4'890.60 4'532
+                                // @formatter:on
+                                section -> section
+                                        .attributes("exchangeRate", "baseCurrency", "termCurrency", "currency", "gross")
+                                        .match("^Buchung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<exchangeRate>[\\.'\\d]+)$")
+                                        .match("^Abrechnungsdetails Bewertet in .*(?<termCurrency>[\\w]{3})$")
+                                        .match("^Transaktionswert (?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+) [\\.'\\d]+$")
+                                        .match("^Abrechnungsbetrag (?<baseCurrency>[\\w]{3}) (\\-)?[\\.'\\d]+$")
+                                        .assign((t, v) -> {
+                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // @formatter:off
+                                // Kurswert in Handelswährung USD 3 851.00
+                                // USD / CHF zu 0.9987
+                                // USD 3 851.00
+                                // CHF 3 846.00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d\\s]+)$")
+                                        .match("^(?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+)$")
+                                        .match("^[\\w]{3} [\\.'\\d\\s]+$")
+                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d\\s]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // @formatter:off
+                                // Kurswert in Handelswährung USD 3 851.00
+                                // USD / CHF zu 0.90231 USD 2 156.69
+                                // CHF 1 946.00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d\\s]+)$")
+                                        .match("^(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+) [\\w]{3} [\\.'\\d\\s]+$")
+                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d\\s]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                        )
+
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // fee, then the "noProvision" flag must be removed.
+                    type.getCurrentContext().remove("noProvision");
+
+                    return new BuySellEntryItem(t);
+                });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -181,26 +295,65 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // STEUERABZUG 30.00% USD -1.83
                 .section("currency", "tax").optional()
                 .match("^STEUERABZUG [\\.'\\d]+% (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Eidgenössische Stempelabgabe CHF 1.65
+                .section("currency", "tax").optional()
+                .match("^Eidgen.ssische Stempelabgabe (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
+                // Courtage CHF 36.55
+                // Rabatt e-banking CHF -6.55
+                //
+                // Courtage CHF -45.15
+                // Rabatt e-banking CHF 5.15
+                // @formatter:on
+                .section("currency", "fee", "discountCurrency", "discount").optional()
+                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
+                .match("^Rabatt e\\-banking (?<discountCurrency>[\\w]{3}) (\\-)?(?<discount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                    Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                    if (fee.subtract(discount).isPositive())
+                    {
+                        fee = fee.subtract(discount);
+                        checkAndSetFee(fee, t, type);
+                    }
+
+                    type.getCurrentContext().put("noProvision", "X");
+                })
+
+                // Courtage USD -22.01
+                // Courtage CHF 20.00
+                .section("currency", "fee").optional()
+                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                        processFeeEntries(t, v, type);
+                })
+
                 // Diverse USD -7.34
                 .section("currency", "fee").optional()
                 .match("^Diverse (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Courtage USD -22.01
+                // Externe Gebühren CHF 1.50
+                // Externe Gebühren USD -0.01
                 .section("currency", "fee").optional()
-                .match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$")
+                .match("^Externe Geb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
     protected long asAmount(String value)
     {
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
@@ -208,12 +361,14 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
+        value = value.trim().replaceAll("\\s", "");
         return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }
