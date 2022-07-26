@@ -65,7 +65,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 // Inhaber-Anlageaktien               
                 // Kurs: 66,88 EUR 
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -141,7 +141,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 // AKTIEN O.N.
                 // Dividende: 1,9 EUR 
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
