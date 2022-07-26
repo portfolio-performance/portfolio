@@ -123,7 +123,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                             + "|Fondsumschichtung \\((Abgang|Zugang)\\)"
                             + "|Wiederanlage Fondsertrag [\\.,\\d]+ [\\w]+) .*")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 444444.09 iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile (ISIN DE000A0F5UH1)
@@ -359,7 +359,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "currency")
                 .find("Fondsertrag .*")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 02.01.2020
@@ -529,7 +529,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("note", "name", "isin", "currency")
                 .match("^(?<note>Vorabpauschale zum Stichtag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setShares(0L);
                     t.setSecurity(getOrCreateSecurity(v));
@@ -575,7 +575,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "currency").optional()
                 .find("(Entgelt|Entgeltbelastung) Verkauf .*")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) \\-[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\-[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 .oneOf(
@@ -676,7 +676,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "currency")
                 .match("^Eingang externer .bertrag .*$")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}) [\\.,\\d]+$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+$")
                 .match("^Gegenwert der Anteile: [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
