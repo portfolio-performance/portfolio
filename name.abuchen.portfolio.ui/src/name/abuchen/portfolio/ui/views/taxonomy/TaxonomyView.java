@@ -89,15 +89,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             String prefix = TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(); //$NON-NLS-1$
 
             // client filter
-            String key = prefix + ClientFilterMenu.PREF_KEY_POSTFIX;
-
-            String selection = preferenceStore.getString(key);
-            if (selection != null)
-                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                                .ifPresent(clientFilterMenu::select);
-
-            clientFilterMenu.addListener(
-                            filter -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
+            clientFilterMenu.trackSelectedFilterConfigurationKey(prefix);
 
             // predicates
             if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO))

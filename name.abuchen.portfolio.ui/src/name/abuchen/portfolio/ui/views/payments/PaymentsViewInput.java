@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 
@@ -15,20 +17,22 @@ public class PaymentsViewInput
     private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
     private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
                     + "-use-consolidate-retired"; //$NON-NLS-1$
+    // for legacy reasons, the key is stored with the name PaymentsViewModel
+    private static final String KEY_USED_FILTER = PaymentsViewModel.class.getSimpleName();
 
     private int tab;
     private int year;
-    private String clientFilter;
+    private Optional<String> clientFilterId;
     private PaymentsViewModel.Mode mode;
     private boolean useGrossValue;
     private boolean useConsolidateRetired;
 
-    public PaymentsViewInput(int tab, int year, String clientFilter, Mode mode, boolean useGrossValue,
+    public PaymentsViewInput(int tab, int year, Optional<String> filterIdent, Mode mode, boolean useGrossValue,
                     boolean useConsolidateRetired)
     {
         this.tab = tab;
         this.year = year;
-        this.clientFilter = clientFilter;
+        this.clientFilterId = filterIdent;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
@@ -54,14 +58,14 @@ public class PaymentsViewInput
         this.year = year;
     }
 
-    public String getClientFilter()
+    public Optional<String> getClientFilterId()
     {
-        return clientFilter;
+        return clientFilterId;
     }
 
-    public void setClientFilter(String clientFilter)
+    public void setClientFilterId(String clientFilterId)
     {
-        this.clientFilter = clientFilter;
+        this.clientFilterId = Optional.ofNullable(clientFilterId);
     }
 
     public PaymentsViewModel.Mode getMode()
@@ -94,7 +98,7 @@ public class PaymentsViewInput
         this.useConsolidateRetired = useConsolidateRetired;
     }
 
-    public static PaymentsViewInput fromPreferences(IPreferenceStore preferences)
+    public static PaymentsViewInput fromPreferences(IPreferenceStore preferences, Client client)
     {
         int tab = preferences.getInt(KEY_TAB);
 
@@ -103,9 +107,7 @@ public class PaymentsViewInput
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
 
-        // for legacy reasons, the key is stored with the name PaymentsViewModel
-        String selection = preferences
-                        .getString(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+        Optional<String> clientFilterId = ClientFilterMenu.getSelectedFilterId(client, KEY_USED_FILTER);
 
         PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
@@ -125,16 +127,17 @@ public class PaymentsViewInput
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
         boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
 
-        return new PaymentsViewInput(tab, year, selection, mode, useGrossValue, useConsolidateRetired);
+        return new PaymentsViewInput(tab, year, clientFilterId, mode, useGrossValue, useConsolidateRetired);
     }
 
-    public void writeToPreferences(IPreferenceStore preferences)
+    public void writeToPreferences(IPreferenceStore preferences, Client client)
     {
         preferences.setValue(KEY_TAB, tab);
         preferences.setValue(KEY_YEAR, year);
-        preferences.setValue(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX, clientFilter);
         preferences.setValue(KEY_MODE, mode.name());
         preferences.setValue(KEY_USE_GROSS_VALUE, useGrossValue);
         preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, useConsolidateRetired);
+
+        ClientFilterMenu.saveSelectedFilter(client, KEY_USED_FILTER, clientFilterId.orElse("")); //$NON-NLS-1$
     }
 }

@@ -8,7 +8,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -47,7 +46,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
-import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -221,36 +219,13 @@ public class AllTransactionsView extends AbstractFinanceView
             clientFilterMenu.addListener(listener);
             clientFilterMenu.addListener(f -> updateIcon());
 
-            loadPreselectedFilter(preferenceStore);
+            // as we register the listener above, the selected filter will be
+            // injected into the view immediately
+            clientFilterMenu.trackSelectedFilterConfigurationKey(AllTransactionsView.class.getSimpleName());
 
             updateIcon();
 
             addDisposeListener(e -> preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name()));
-        }
-
-        private void loadPreselectedFilter(IPreferenceStore preferenceStore)
-        {
-            String prefix = AllTransactionsView.class.getSimpleName();
-
-            // client filter
-            String key = prefix + ClientFilterMenu.PREF_KEY_POSTFIX;
-
-            String selection = preferenceStore.getString(key);
-            if (selection != null)
-            {
-                Optional<Item> optionalItem = clientFilterMenu.getAllItems()
-                                .filter(item -> item.getUUIDs().equals(selection)).findAny();
-                if (optionalItem.isPresent())
-                {
-                    clientFilterMenu.select(optionalItem.get());
-                    ClientFilter f = optionalItem.get().getFilter();
-                    if (f instanceof PortfolioClientFilter pcf)
-                        AllTransactionsView.this.clientFilter = pcf;
-                }
-            }
-
-            clientFilterMenu.addListener(
-                            f -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
         }
 
         private void updateIcon()

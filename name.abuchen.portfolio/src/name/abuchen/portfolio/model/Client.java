@@ -29,8 +29,9 @@ public class Client
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 56;
+    public static final int CURRENT_VERSION = 57;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
+    public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
 
@@ -126,6 +127,11 @@ public class Client
     void setFileVersionAfterRead(int fileVersionAfterRead)
     {
         this.fileVersionAfterRead = fileVersionAfterRead;
+    }
+
+    public boolean shouldDoFilterMigration()
+    {
+        return getFileVersionAfterRead() < Client.VERSION_WITH_UNIQUE_FILTER_KEY;
     }
 
     public String getBaseCurrency()
