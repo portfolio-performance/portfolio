@@ -32,7 +32,12 @@ public class ConfigurationSet
 
         public Configuration(String name, String data)
         {
-            this.uuid = UUID.randomUUID().toString();
+            this(UUID.randomUUID().toString(), name, data);
+        }
+
+        public Configuration(String uuid, String name, String data)
+        {
+            this.uuid = uuid;
             this.name = name;
             this.data = data;
         }
@@ -111,5 +116,13 @@ public class ConfigurationSet
     public void remove(Configuration configuration)
     {
         configurations.remove(configuration);
+    }
+
+    /**
+     * Removes all configurations from the set.
+     */
+    public void clear()
+    {
+        configurations.clear();
     }
 }

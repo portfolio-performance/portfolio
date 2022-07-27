@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,11 +25,10 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConfigurationSet;
+import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
@@ -41,15 +40,29 @@ public final class ClientFilterMenu implements IMenuListener
 {
     public static class Item
     {
+        String ident;
         String label;
         String uuids;
         transient ClientFilter filter; // NOSONAR Gson serialization
 
-        public Item(String label, String uuids, ClientFilter filter)
+        // only used for automatic UUID generation for de-serialization
+        @SuppressWarnings("unused")
+        private Item()
         {
+            this.ident = UUID.randomUUID().toString();
+        }
+
+        public Item(String ident, String label, String uuids, ClientFilter filter)
+        {
+            this.ident = ident;
             this.label = label;
             this.uuids = Objects.requireNonNull(uuids);
             this.filter = filter;
+        }
+
+        public String getIdent()
+        {
+            return ident;
         }
 
         public String getLabel()
@@ -57,16 +70,11 @@ public final class ClientFilterMenu implements IMenuListener
             return label;
         }
 
-        public void setLabel(String label)
-        {
-            this.label = label;
-        }
-
         public String getUUIDs()
         {
             return uuids;
         }
-        
+
         public void setUUIDs(String uuids)
         {
             this.uuids = uuids;
@@ -84,8 +92,9 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
+
     public static final String PREF_KEY_POSTFIX = "-client-filter"; //$NON-NLS-1$
-    private static final String PREF_KEY = ClientFilterDropDown.class.getSimpleName() + "@json"; //$NON-NLS-1$
+    /** Key for configuration set where all client filters are stored **/
 
     private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
 
@@ -96,18 +105,23 @@ public final class ClientFilterMenu implements IMenuListener
     private List<Item> defaultItems = new ArrayList<>();
     private LinkedList<Item> customItems = new LinkedList<>();
     private Item selectedItem;
+    private ConfigurationSet filterConfig;
 
     public ClientFilterMenu(Client client, IPreferenceStore preferences)
     {
         this.client = client;
         this.preferences = preferences;
+        this.filterConfig = ClientFilterStorageHelper.getFilterConfigurationSet(client);
 
-        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", ClientFilter.NO_FILTER); //$NON-NLS-1$
+        selectedItem = new Item("", Messages.PerformanceChartLabelEntirePortfolio, "", //$NON-NLS-1$ //$NON-NLS-2$
+                        ClientFilter.NO_FILTER);
         defaultItems.add(selectedItem);
 
         client.getActivePortfolios().forEach(portfolio -> {
-            defaultItems.add(new Item(portfolio.getName(), portfolio.getUUID(), new PortfolioClientFilter(portfolio)));
-            defaultItems.add(new Item(portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
+            defaultItems.add(new Item(portfolio.getUUID(), portfolio.getName(), portfolio.getUUID(),
+                            new PortfolioClientFilter(portfolio)));
+            defaultItems.add(new Item(portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
+                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
                             portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
                             new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
         });
@@ -123,47 +137,9 @@ public final class ClientFilterMenu implements IMenuListener
 
     private void loadCustomItems()
     {
-        String json = preferences.getString(PREF_KEY); // $NON-NLS-1$
-        if (json != null && !json.isEmpty())
-        {
-            loadCustomItemsFromJSON(json);
-        }
-        else
-        {
-            String code = preferences.getString(ClientFilterDropDown.class.getSimpleName());
-            if (code != null && !code.isEmpty())
-                loadCustomItemsLegacy(code);
-        }
-    }
-
-    private void loadCustomItemsFromJSON(String json)
-    {
-        Type listType = new TypeToken<ArrayList<Item>>()
-        {
-        }.getType();
-        List<Item> fromJson = new Gson().fromJson(json, listType);
-
-        if (fromJson.isEmpty())
-            return;
-
-        for (Item item : fromJson)
-        {
-            buildItem(item.uuids).ifPresent(i -> {
-                i.label = item.label;
-                customItems.add(i);
-            });
-        }
-    }
-
-    private void loadCustomItemsLegacy(String code)
-    {
-        Map<String, Object> uuid2object = new HashMap<>();
-        client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
-        client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
-
-        String[] items = code.split(";"); //$NON-NLS-1$
-        for (String item : items)
-            buildItem(item).ifPresent(i -> customItems.add(i));
+        filterConfig.getConfigurations().forEach(conf -> {
+            buildItem(conf.getUUID(), conf.getName(), conf.getData(), client).ifPresent(i -> customItems.add(i));
+        });
     }
 
     @Override
@@ -196,10 +172,11 @@ public final class ClientFilterMenu implements IMenuListener
         manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
         manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
 
-        manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {           
-            if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.LabelClientClearCustomItems, Messages.LabelClientClearCustomItems + "?")) //$NON-NLS-1$
+        manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {
+            if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.LabelClientClearCustomItems,
+                            Messages.LabelClientClearCustomItems + "?")) //$NON-NLS-1$
                 return;
-            
+
             if (customItems.contains(selectedItem))
             {
                 selectedItem = defaultItems.get(0);
@@ -207,8 +184,8 @@ public final class ClientFilterMenu implements IMenuListener
             }
 
             customItems.clear();
-            preferences.setToDefault(PREF_KEY);
-            preferences.setToDefault(ClientFilterDropDown.class.getSimpleName());
+            filterConfig.clear();
+            client.touch();
         }));
     }
 
@@ -228,16 +205,23 @@ public final class ClientFilterMenu implements IMenuListener
         dialog.setItems(customItems);
         dialog.open();
 
-        preferences.putValue(PREF_KEY, new Gson().toJson(customItems));
+        // store changed filters. keep in mind: filters could be deleted or
+        // filter data changed. So first delete all stored filters and store
+        // current ones
+        filterConfig.clear();
+        customItems.forEach(cf -> filterConfig.add(new Configuration(cf.getIdent(), cf.getLabel(), cf.getUUIDs())));
+        client.touch();
 
         if (isCustomItemSelected)
         {
-            // previously selected custom filter was deleted in dialog --> select default filter item
+            // previously selected custom filter was deleted in dialog -->
+            // select default filter item
             if (!customItems.contains(selectedItem))
                 selectedItem = defaultItems.get(0);
 
-            // always update listeners (when custom filter selected) because filter may have been changed in edit filter dialog
-            // or default filter was set because selected filter was deleted 
+            // always update listeners (when custom filter selected) because
+            // filter may have been changed in edit filter dialog
+            // or default filter was set because selected filter was deleted
             listeners.forEach(l -> l.accept(selectedItem.filter));
         }
     }
@@ -268,7 +252,7 @@ public final class ClientFilterMenu implements IMenuListener
             Object[] selected = dialog.getResult();
             if (selected.length > 0)
             {
-                Item newItem = buildItem(selected);
+                Item newItem = buildItem(UUID.randomUUID().toString(), dialog.getProperty(), selected);
 
                 String label = dialog.getProperty();
                 if (!label.isEmpty())
@@ -280,14 +264,15 @@ public final class ClientFilterMenu implements IMenuListener
                 if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
                     customItems.removeLast();
 
-                preferences.putValue(PREF_KEY, new Gson().toJson(customItems));
+                filterConfig.add(new Configuration(newItem.getIdent(), newItem.getLabel(), newItem.getUUIDs()));
+                client.touch();
 
                 listeners.forEach(l -> l.accept(newItem.filter));
             }
         }
     }
 
-    private Optional<Item> buildItem(String uuids)
+    public static Optional<Item> buildItem(String ident, String name, String uuids, Client client)
     {
         if (uuids == null || uuids.isEmpty())
             return Optional.empty();
@@ -300,21 +285,23 @@ public final class ClientFilterMenu implements IMenuListener
         client.getPortfolios().forEach(p -> uuid2object.put(p.getUUID(), p));
         client.getAccounts().forEach(a -> uuid2object.put(a.getUUID(), a));
 
-        return Optional.of(buildItem(Arrays.stream(ids).map(uuid2object::get).filter(Objects::nonNull).toArray()));
+        return Optional.of(buildItem(ident, name,
+                        Arrays.stream(ids).map(uuid2object::get).filter(Objects::nonNull).toArray()));
     }
 
-    private Item buildItem(Object[] selected)
+    private static Item buildItem(String ident, String label, Object[] selected)
     {
         List<Portfolio> portfolios = Arrays.stream(selected).filter(o -> o instanceof Portfolio).map(o -> (Portfolio) o)
                         .collect(Collectors.toList());
         List<Account> accounts = Arrays.stream(selected).filter(o -> o instanceof Account).map(o -> (Account) o)
                         .collect(Collectors.toList());
 
-        String label = Arrays.stream(selected).map(String::valueOf).collect(Collectors.joining(", ")); //$NON-NLS-1$
+        if (label.isEmpty())
+            label = Arrays.stream(selected).map(String::valueOf).collect(Collectors.joining(", ")); //$NON-NLS-1$
 
         String uuids = buildUUIDs(selected);
 
-        return new Item(label, uuids, new PortfolioClientFilter(portfolios, accounts));
+        return new Item(ident, label, uuids, new PortfolioClientFilter(portfolios, accounts));
     }
 
     public static String buildUUIDs(Object[] selected)
@@ -357,6 +344,86 @@ public final class ClientFilterMenu implements IMenuListener
     public void select(Item item)
     {
         selectedItem = item;
+    }
+
+    public Optional<Item> loadPreselectedClientFilterAndAddSaveSelectedFilterListener(String key)
+    {
+        Optional<Item> item = loadPreselectedClientFilter(key);
+        addSaveSelectedFilterListener(key);
+        return item;
+    }
+
+    public Optional<Item> loadPreselectedClientFilter(String key)
+    {
+        Optional<Configuration> config = ClientFilterStorageHelper.getFilterUsagesConfigurationSetAndLookupKey(client,
+                        key);
+
+        if (!config.isPresent())
+            return Optional.empty();
+
+        return selectItemFromFilterIdent(config.get().getData());
+    }
+
+    public Optional<Item> selectItemFromFilterIdent(String filterIdent)
+    {
+        Optional<Item> optionalItem = this.getAllItems().filter(item -> item.getIdent().equals(filterIdent))
+                        .findAny();
+        optionalItem.ifPresent(this::select);
+        return optionalItem;
+    }
+
+    public void addSaveSelectedFilterListener(String key)
+    {
+        // store/save selected filter
+        this.addListener(filter -> saveSelectedFilter(key));
+    }
+
+    public void saveSelectedFilter(String key)
+    {
+        ClientFilterStorageHelper.saveSelectedFilter(client, key, this.getSelectedItem().getIdent());
+    }
+
+    public static class ClientFilterStorageHelper
+    {
+        public static final String PREF_KEY_FILTER_DEFINITIONS = ClientFilterDropDown.class.getSimpleName();
+        /**
+         * Key for configuration set where all usages/references of client
+         * filters are stored
+         **/
+        private static final String PREF_KEY_FILTER_USAGES = "client-filter-usages"; //$NON-NLS-1$
+
+        private static ConfigurationSet getFilterUsagesConfigurationSet(Client client)
+        {
+            return client.getSettings().getConfigurationSet(PREF_KEY_FILTER_USAGES);
+        }
+
+        private static ConfigurationSet getFilterConfigurationSet(Client client)
+        {
+            return client.getSettings().getConfigurationSet(PREF_KEY_FILTER_DEFINITIONS);
+        }
+
+        private static Optional<Configuration> getFilterUsagesConfigurationSetAndLookupKey(Client client, String key)
+        {
+            return getFilterUsagesConfigurationSet(client).lookup(key);
+        }
+
+        public static void saveSelectedFilter(Client client, String key, String filterIdent)
+        {
+            ConfigurationSet set = getFilterUsagesConfigurationSet(client);
+            set.lookup(key).ifPresentOrElse(store -> store.setData(filterIdent),
+                            () -> set.add(new Configuration(key, "", filterIdent))); //$NON-NLS-1$
+        }
+
+        // returns the stored filter ident for a given filter user config key
+        public static Optional<String> getSelectedFilter(Client client, String key)
+        {
+            Optional<Configuration> config = getFilterUsagesConfigurationSetAndLookupKey(client, key);
+
+            if (config.isEmpty())
+                return Optional.empty();
+
+            return Optional.of(config.get().getData());
+        }
     }
 
 }

@@ -197,6 +197,12 @@ public class ClientInput
         storePreferences(false);
     }
 
+    private void clientFilterMigrationSetOldSettingsToDefault()
+    {
+        if (client.shouldDoFilterMigration())
+            ClientFilterMigration.setOldSettingsToDefault(preferenceStore);
+    }
+
     public void save(Shell shell)
     {
         if (clientFile == null)
@@ -212,6 +218,9 @@ public class ClientInput
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
                 ClientFactory.save(client, clientFile);
+
+                clientFilterMigrationSetOldSettingsToDefault();
+
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -251,6 +260,9 @@ public class ClientInput
             try
             {
                 ClientFactory.saveAs(client, clientFile, pwd, flags);
+
+                clientFilterMigrationSetOldSettingsToDefault();
+
                 storePreferences(true);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -497,9 +509,7 @@ public class ClientInput
 
     private File getPreferenceStoreFile(File file) throws IOException
     {
-        boolean storeNextToFile = preferences.getBoolean(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
-
-        if (storeNextToFile)
+        if (preferences.getBoolean(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false))
         {
             String filename = file.getName();
             int last = filename.lastIndexOf('.');
@@ -691,6 +701,10 @@ public class ClientInput
         });
 
         loadPreferences();
+        if (client.shouldDoFilterMigration())
+        {
+            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
+        }
 
         scheduleOnlineUpdateJobs();
 
@@ -711,4 +725,5 @@ public class ClientInput
     {
         this.listeners.forEach(consumer::accept);
     }
+
 }

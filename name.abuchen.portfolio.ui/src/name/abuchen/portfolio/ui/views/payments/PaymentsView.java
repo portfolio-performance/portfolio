@@ -67,7 +67,7 @@ public class PaymentsView extends AbstractFinanceView
     public void setupModel()
     {
         if (viewInput == null)
-            viewInput = PaymentsViewInput.fromPreferences(preferences);
+            viewInput = PaymentsViewInput.fromPreferences(preferences, client);
 
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         model = new PaymentsViewModel(converter, client);
@@ -80,23 +80,17 @@ public class PaymentsView extends AbstractFinanceView
             model.recalculate();
         });
 
-        String selection = viewInput.getClientFilter();
-        if (selection != null)
-        {
-            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                            .ifPresent(item -> {
-                                clientFilterMenu.select(item);
-                                Client filteredClient = item.getFilter().filter(client);
-                                model.setFilteredClient(filteredClient);
-                                setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+        viewInput.getFilterIdent().ifPresent(
+                        filterIdent -> clientFilterMenu.selectItemFromFilterIdent(filterIdent).ifPresent(item -> {
+            Client filteredClient = item.getFilter().filter(client);
+            model.setFilteredClient(filteredClient);
+            setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-                                // no recalculation needed as it is done as part
-                                // of the model#configure call
-                            });
-        }
+            // no recalculation needed as it is done as part
+            // of the model#configure call
+                        }));
 
-        clientFilterMenu.addListener(
-                        filter -> viewInput.setClientFilter(clientFilterMenu.getSelectedItem().getUUIDs()));
+        clientFilterMenu.addListener(filter -> viewInput.setFilterIdent(clientFilterMenu.getSelectedItem().getIdent()));
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
                         viewInput.isUseConsolidateRetired());
@@ -217,7 +211,7 @@ public class PaymentsView extends AbstractFinanceView
         folder.setSelection(tab);
         folder.addDisposeListener(e -> viewInput.setTab(folder.getSelectionIndex()));
 
-        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences));
+        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences, client));
 
         return folder;
     }
