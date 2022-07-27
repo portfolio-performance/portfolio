@@ -819,8 +819,12 @@ public class ClientFactory
                 fixSourceAttributeOfTransactions(client);
             case 54: // NOSONAR
                 addKeyToTaxonomyClassifications(client);
-            case 55:
+            case 55: // NOSONAR
                 fixGrossValueUnits(client);
+            case 56:
+                // migrate client filters into model (done when setting the
+                // client input as we do not have access to the preferences
+                // here)
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

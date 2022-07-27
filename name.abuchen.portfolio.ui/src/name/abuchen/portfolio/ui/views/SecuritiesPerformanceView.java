@@ -115,7 +115,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 notifyModelUpdated();
             });
 
-            loadPreselectedClientFilter(preferenceStore);
+            clientFilterMenu.trackSelectedFilterConfigurationKey(SecuritiesPerformanceView.class.getSimpleName());
 
             clientFilter = clientFilterMenu.getSelectedFilter();
 
@@ -130,19 +130,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
-        }
-
-        private void loadPreselectedClientFilter(IPreferenceStore preferenceStore)
-        {
-            String selection = preferenceStore.getString(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
-            if (selection != null)
-                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                                .ifPresent(clientFilterMenu::select);
-
-            clientFilterMenu.addListener(filter -> preferenceStore.putValue(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
-                            clientFilterMenu.getSelectedItem().getUUIDs()));
         }
 
         @Override
