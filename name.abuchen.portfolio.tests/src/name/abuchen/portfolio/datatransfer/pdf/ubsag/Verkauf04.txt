@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+Personnel Financial Affairs
+PFA Services
+Tel. 044-238 27 80
+UBS Wertschriftendepot CHF
+Depot-Nr. 292-123456.S1
+Herr Rubrik DEPOTNAME
+Max Mustermann
+Musterstrasse 3 Kunden-Nr. 123-456789
+1234 Musterhausen
+Auftrags-Nr. 6820800
+Eingang unter Vorbehalt
+Dest 1100
+Anzeige / Abrechnung Erstellt am 12. Mai 2021
+Gutschrift
+RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN
+VERFALL 10.05.2021 EX-TAG 06.05.2021
+STUECKZAHL VALOR 1057076 ISIN CH0010570767 ANSATZ
+1 PARTIZIPATIONSSCHEINE BRUTTO
+CHOCOLADEFABRIKEN LINDT &
+SPRUENGLI AG (LISP) CHF 36.90
+BRUTTO CHF 36.90
+GUTSCHRIFT KONTO 292-123456.40R VALUTA 10.05.2021 CHF 36.90
+Freundliche Grüsse
+UBS Switzerland AG
+Formular ohne Unterschrift Seite 1 / 1
+KE642L04 / 021630 / JS9B4SAKPQD59WZA00001 11.05.2021

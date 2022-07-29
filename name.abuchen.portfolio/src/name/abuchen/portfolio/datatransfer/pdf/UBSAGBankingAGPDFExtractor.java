@@ -28,6 +28,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDepotAccountFeeTransaction();
     }
 
     @Override
@@ -38,7 +39,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(B.rse (Kauf|Verkauf) Komptant|Ihr (Kauf|Verkauf))");
+        DocumentType type = new DocumentType("(B.rse (Kauf|Verkauf) Komptant"
+                        + "|Ihr (Kauf|Verkauf)"
+                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -48,7 +51,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Bewertet in: .*|Ihr (Kauf|Verkauf))$");
+        Block firstRelevantLine = new Block("^(Bewertet in: .*"
+                        + "|Ihr (Kauf|Verkauf)"
+                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -69,10 +74,18 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^(?<type>R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN"))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
                 // USD 2'180 UBS (Lux) Fund Solutions - MSCI 21966836
                 // Emerging Markets UCITS ETF LU0950674175
                 .section("currency", "name", "wkn", "nameContinued", "isin").optional()
-                .match("^(?<currency>[\\w]{3}) [\\.'\\d]+ (?<name>.*) (?<wkn>[0-9]{6,9})$")
+                .match("^(?<currency>[\\w]{3}) [\\.,'\\d\\s]+ (?<name>.*) (?<wkn>[0-9]{6,9})$")
                 .match("^(?<nameContinued>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -86,8 +99,24 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("wkn", "isin", "name", "currency", "name1").optional()
                 .match("^St.ckzahl Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
-                .match("^[\\.',\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d]+$")
+                .match("^[\\.,'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
                 .match("^(?<name1>.*)$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Kurswert"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // STUECKZAHL VALOR 1057076 ISIN CH0010570767 ANSATZ
+                // 1 PARTIZIPATIONSSCHEINE BRUTTO
+                // CHOCOLADEFABRIKEN LINDT &
+                // SPRUENGLI AG (LISP) CHF 36.90
+                .section("wkn", "isin", "name", "currency", "name1", "tickerSymbol").optional()
+                .match("^STUECKZAHL VALOR (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                .match("^[\\.,'\\d\\s]+ PARTIZIPATIONSSCHEINE BRUTTO$")
+                .match("^(?<name>.*)$")
+                .match("^(?<name1>.*) \\((?<tickerSymbol>.*)\\) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurswert"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -99,13 +128,19 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
                                 section -> section
                                         .attributes("shares")
-                                        .match("^.* Komptant (\\-)?(?<shares>[\\.',\\d]+) .*$")
+                                        .match("^.* Komptant (\\-)?(?<shares>[\\.,'\\d\\s]+) .*$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                                 ,
                                 // 15 N-Akt -B- Bachem Holding AG CHF 146
                                 section -> section
                                         .attributes("shares")
-                                        .match("^(?<shares>[\\.',\\d]+) .* [\\w]{3} [\\.'\\d]+$")
+                                        .match("^(?<shares>[\\.,'\\d\\s]+) .* [\\w]{3} [\\.,'\\d\\s]+$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // 1 PARTIZIPATIONSSCHEINE BRUTTO
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,'\\d\\s]+) PARTIZIPATIONSSCHEINE BRUTTO$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
@@ -114,23 +149,32 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 .match("^(Abschluss|Abschlussdatum:) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                 .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
-                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
-                // Abschlussdatum: 27.12.2017 Abschlussort SIX
-                .section("date")
-                .match("^(Abschluss|Abschlussdatum:) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> {
-                    if (type.getCurrentContext().get("time") != null)
-                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
+                .oneOf(
+                                // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+                                // Abschlussdatum: 27.12.2017 Abschlussort SIX
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(Abschluss|Abschlussdatum:) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> {
+                                            if (type.getCurrentContext().get("time") != null)
+                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                            else
+                                                t.setDate(asDate(v.get("date")));
+                                        })
+                                ,
+                                // VERFALL 10.05.2021 EX-TAG 06.05.2021
+                                section -> section
+                                        .attributes("date")
+                                        .match("^VERFALL (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
 
                 .oneOf(
                                 // Abrechnungsbetrag USD -4'919.95
                                 // Abrechnungsbetrag USD 11'050.04
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^Abrechnungsbetrag (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+)$")
+                                        .match("^Abrechnungsbetrag (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d\\s]+)$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -139,7 +183,16 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 // Zulasten Konto 0292 00123456.M1Z CHF Valuta 29.12.2017 CHF 2 213.15
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^(Zulasten|Zugunsten) Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d\\s]+)$")
+                                        .match("^(Zulasten|Zugunsten) Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // GUTSCHRIFT KONTO 292-123456.40R VALUTA 10.05.2021 CHF 36.90
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -157,8 +210,8 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         .attributes("exchangeRate", "baseCurrency", "termCurrency", "currency", "gross")
                                         .match("^Buchung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<exchangeRate>[\\.'\\d]+)$")
                                         .match("^Abrechnungsdetails Bewertet in .*(?<termCurrency>[\\w]{3})$")
-                                        .match("^Transaktionswert (?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+) [\\.'\\d]+$")
-                                        .match("^Abrechnungsbetrag (?<baseCurrency>[\\w]{3}) (\\-)?[\\.'\\d]+$")
+                                        .match("^Transaktionswert (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+$")
+                                        .match("^Abrechnungsbetrag (?<baseCurrency>[\\w]{3}) (\\-)?[\\.,'\\d\\s]+$")
                                         .assign((t, v) -> {
                                             PDFExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(asExchangeRate(v));
@@ -177,10 +230,10 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
-                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d\\s]+)$")
-                                        .match("^(?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+)$")
-                                        .match("^[\\w]{3} [\\.'\\d\\s]+$")
-                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d\\s]+)$")
+                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+)$")
+                                        .match("^(?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.,'\\d\\s]+)$")
+                                        .match("^[\\w]{3} [\\.,'\\d\\s]+$")
+                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.,'\\d\\s]+)$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().putType(asExchangeRate(v));
 
@@ -197,9 +250,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
-                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d\\s]+)$")
-                                        .match("^(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+) [\\w]{3} [\\.'\\d\\s]+$")
-                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d\\s]+)$")
+                                        .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+)$")
+                                        .match("^(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+) [\\w]{3} [\\.,'\\d\\s]+$")
+                                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.,'\\d\\s]+)$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().putType(asExchangeRate(v));
 
@@ -226,7 +279,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Gutschrift");
+        DocumentType type = new DocumentType("DIVIDENDENZAHLUNG");
         this.addDocumentTyp(type);
 
         Block block = new Block("DIVIDENDENZAHLUNG$");
@@ -243,23 +296,23 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // BRUTTO USD 6.10
                 .section("wkn", "isin", "name", "tickerSymbol", "currency")
                 .match("^STUECKZAHL VALOR (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
-                .match("^[\\.',\\d]+ (?<name>.*) \\((?<tickerSymbol>.*)\\) BRUTTO$")
-                .match("^BRUTTO (?<currency>[\\w]{3}) [\\.'\\d]+$")
+                .match("^[\\.,'\\d\\s]+ (?<name>.*) \\((?<tickerSymbol>.*)\\) BRUTTO$")
+                .match("^BRUTTO (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 20 AKT -B- NIKE INC. (NKE) BRUTTO
                 .section("shares")
-                .match("^(?<shares>[\\.',\\d]+) .* \\(.*\\) .*$")
+                .match("^(?<shares>[\\.,'\\d\\s]+) .* \\(.*\\) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // GUTSCHRIFT KONTO 292-614724.40R VALUTA 28.12.2021 CHF 3.85
                 .section("date")
-                .match("^GUTSCHRIFT KONTO .* VALUTA (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.'\\d]+$")
+                .match("^GUTSCHRIFT KONTO .* VALUTA (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,'\\d\\s]+$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // GUTSCHRIFT KONTO 292-614724.40R VALUTA 28.12.2021 CHF 3.85
                 .section("currency", "amount")
-                .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -268,9 +321,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // BRUTTO USD 6.10
                 // UMRECHNUNGSKURS USD/CHF 0.901639
                 .section("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency").optional()
-                .match("^BRUTTO (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d]+)$")
-                .match("^UMRECHNUNGSKURS (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$")
-                .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) [\\.'\\d]+$")
+                .match("^BRUTTO (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+)$")
+                .match("^UMRECHNUNGSKURS (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+)$")
+                .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
                 .assign((t, v) -> {
                     PDFExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(asExchangeRate(v));
@@ -289,17 +342,56 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
+    private void addDepotAccountFeeTransaction()
+    {
+        DocumentType type = new DocumentType("Depotf.hrungspreis");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Abrechnung vom .*$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.FEES);
+            return entry;
+        });
+
+        pdfTransaction
+                // Position Basis Preis p.a. Betrag (CHF)
+                // Depotführungspreis inkl. Steuern 101.82
+                .section("currency", "amount")
+                .match("^Position Basis Preis p\\.a\\. Betrag \\((?<currency>[\\w]{3})\\)$")
+                .match("^Depotf.hrungspreis inkl\\. Steuern (?<amount>[\\.,'\\d\\s]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Zu Lasten Konto 292-123456.40R, Valuta 30. Juni 2021
+                .section("date")
+                .match("^Zu Lasten Konto .* Valuta (?<date>[\\d]{1,2}.\\ .* [\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Abrechnung vom 01.04.2021 - 30.06.2021
+                .section("note1", "note2").optional()
+                .match("^(?<note1>Abrechnung) vom (?<note2>.*)$")
+                .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
+
+                .wrap(TransactionItem::new);
+
+        block.set(pdfTransaction);
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
                 // STEUERABZUG 30.00% USD -1.83
                 .section("currency", "tax").optional()
-                .match("^STEUERABZUG [\\.'\\d]+% (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$")
+                .match("^STEUERABZUG [\\.'\\d]+% (?<currency>[\\w]{3}) \\-(?<tax>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // Eidgenössische Stempelabgabe CHF 1.65
                 .section("currency", "tax").optional()
-                .match("^Eidgen.ssische Stempelabgabe (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$")
+                .match("^Eidgen.ssische Stempelabgabe (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -314,8 +406,8 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // Rabatt e-banking CHF 5.15
                 // @formatter:on
                 .section("currency", "fee", "discountCurrency", "discount").optional()
-                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
-                .match("^Rabatt e\\-banking (?<discountCurrency>[\\w]{3}) (\\-)?(?<discount>[\\.,\\d]+)$")
+                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+)$")
+                .match("^Rabatt e\\-banking (?<discountCurrency>[\\w]{3}) (\\-)?(?<discount>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> {
                     Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                     Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
@@ -332,7 +424,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // Courtage USD -22.01
                 // Courtage CHF 20.00
                 .section("currency", "fee").optional()
-                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
+                .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("noProvision")))
                         processFeeEntries(t, v, type);
@@ -340,13 +432,13 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
                 // Diverse USD -7.34
                 .section("currency", "fee").optional()
-                .match("^Diverse (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$")
+                .match("^Diverse (?<currency>[\\w]{3}) \\-(?<fee>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Externe Gebühren CHF 1.50
                 // Externe Gebühren USD -0.01
                 .section("currency", "fee").optional()
-                .match("^Externe Geb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$")
+                .match("^Externe Geb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

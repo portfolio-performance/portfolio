@@ -7,10 +7,12 @@ import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -509,6 +511,50 @@ public class UBSAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0010570767"));
+        assertThat(security.getWkn(), is("1057076"));
+        assertThat(security.getTickerSymbol(), is("LISP"));
+        assertThat(security.getName(), is("CHOCOLADEFABRIKEN LINDT & SPRUENGLI AG"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+        assertThat(entry.getSource(), is("Verkauf04.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(36.90))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(36.90))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
@@ -600,5 +646,33 @@ public class UBSAGPDFExtractorTest
         account.setCurrencyCode("CHF");
         Status s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testaddDepotAccountFee01()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehren01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check transaction
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(101.82))));
+        assertThat(transaction.getSource(), is("Depotgebuehren01.txt"));
+        assertThat(transaction.getNote(), is("Abrechnung 01.04.2021 - 30.06.2021"));
     }
 }
