@@ -386,7 +386,8 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0012032048"));
         assertThat(security.getWkn(), is("1203204"));
-        assertThat(security.getName(), is("Genussscheine Roche Holding AG (ROG)"));
+        assertThat(security.getTickerSymbol(), is("ROG"));
+        assertThat(security.getName(), is("Genussscheine Roche Holding AG"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
@@ -429,7 +430,8 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92343V1044"));
         assertThat(security.getWkn(), is("1095642"));
-        assertThat(security.getName(), is("N-Akt Verizon Communications Inc. (VZ)"));
+        assertThat(security.getTickerSymbol(), is("VZ"));
+        assertThat(security.getName(), is("N-Akt Verizon Communications Inc."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check buy sell transaction
@@ -461,9 +463,10 @@ public class UBSAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03WithSecurityInUSD()
     {
-        Security security = new Security("N-Akt Verizon Communications Inc. (VZ)", CurrencyUnit.USD);
+        Security security = new Security("N-Akt Verizon Communications Inc.", CurrencyUnit.USD);
         security.setIsin("US92343V1044");
         security.setWkn("1095642");
+        security.setTickerSymbol("VZ");
 
         Client client = new Client();
         client.addSecurity(security);
@@ -529,7 +532,7 @@ public class UBSAGPDFExtractorTest
         assertThat(security.getIsin(), is("CH0010570767"));
         assertThat(security.getWkn(), is("1057076"));
         assertThat(security.getTickerSymbol(), is("LISP"));
-        assertThat(security.getName(), is("CHOCOLADEFABRIKEN LINDT & SPRUENGLI AG"));
+        assertThat(security.getName(), is("CHOCOLADEFABRIKEN LINDT & SPRUENGLI AG PARTIZIPATIONSSCHEINE"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
@@ -552,6 +555,146 @@ public class UBSAGPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0267291224"));
+        assertThat(security.getWkn(), is("26729122"));
+        assertThat(security.getName(), is("N-AKT SUNRISE COMMUNICATIONS GROUP AG"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(73)));
+        assertThat(entry.getSource(), is("Verkauf05.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(8030.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(8030.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf06()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US92556V1061"));
+        assertThat(security.getWkn(), is("58198423"));
+        assertThat(security.getTickerSymbol(), is("VTRSV"));
+        assertThat(security.getName(), is("N-AKT VIATRIS INC"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
+        assertThat(entry.getSource(), is("Verkauf06.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(2.63))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(2.63))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.04))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf06WithSecurityInCHF()
+    {
+        Security security = new Security("N-AKT VIATRIS INC", "CHF");
+        security.setIsin("US92556V1061");
+        security.setWkn("58198423");
+        security.setTickerSymbol("VTRSV");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
+        assertThat(entry.getSource(), is("Verkauf06.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(2.63))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(2.63))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode("CHF");
+        Status s = c.process(entry, account, entry.getPortfolio());
+        assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test

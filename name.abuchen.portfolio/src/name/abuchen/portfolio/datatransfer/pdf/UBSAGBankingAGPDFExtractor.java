@@ -41,7 +41,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(B.rse (Kauf|Verkauf) Komptant"
                         + "|Ihr (Kauf|Verkauf)"
-                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)");
+                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN"
+                        + "|FUSION"
+                        + "|FRAKTIONS\\-ABRECHNUNG)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -53,7 +55,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Bewertet in: .*"
                         + "|Ihr (Kauf|Verkauf)"
-                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)$");
+                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN"
+                        + "|FUSION"
+                        + "|FRAKTIONS\\-ABRECHNUNG)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -76,9 +80,13 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)$")
+                .match("^(?<type>(R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN"
+                                + "|FUSION"
+                                + "|FRAKTIONS\\-ABRECHNUNG))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN"))
+                    if (v.get("type").equals("RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN")
+                                    || v.get("type").equals("FUSION")
+                                    || v.get("type").equals("FRAKTIONS-ABRECHNUNG"))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -89,18 +97,28 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<nameContinued>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // @formatter:off
-                // Stückzahl Valor 1253020 ISIN CH0012530207 Kurs
-                // 15 N-Akt -B- Bachem Holding AG CHF 146
-                //
                 // Stückzahl Valor 1203204 ISIN CH0012032048 Kurs
                 // 10 Genussscheine CHF 376.3
                 // Roche Holding AG (ROG)
-                // @formatter:on
+                // Kurswert in Handelswährung CHF 3 763.00
+                .section("wkn", "isin", "name1", "currency", "name", "tickerSymbol").optional()
+                .match("^St.ckzahl Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                .match("^[\\.,'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
+                .match("^(?<name1>.*) \\((?<tickerSymbol>.*)\\)$")
+                .match("^Kurswert .*$")
+                .assign((t, v) -> {
+                    v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Stückzahl Valor 1253020 ISIN CH0012530207 Kurs
+                // 15 N-Akt -B- Bachem Holding AG CHF 146
+                // Kurswert in Handelswährung CHF 2 190.00
                 .section("wkn", "isin", "name", "currency", "name1").optional()
                 .match("^St.ckzahl Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
                 .match("^[\\.,'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
-                .match("^(?<name1>.*)$")
+                .match("^(?<name1>.*) [\\w]{3} [\\.,'\\d\\s]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurswert"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -112,13 +130,38 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 // 1 PARTIZIPATIONSSCHEINE BRUTTO
                 // CHOCOLADEFABRIKEN LINDT &
                 // SPRUENGLI AG (LISP) CHF 36.90
-                .section("wkn", "isin", "name", "currency", "name1", "tickerSymbol").optional()
+                .section("wkn", "isin", "name3", "name", "name1", "tickerSymbol", "currency").optional()
                 .match("^STUECKZAHL VALOR (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
-                .match("^[\\.,'\\d\\s]+ PARTIZIPATIONSSCHEINE BRUTTO$")
+                .match("^[\\.,'\\d\\s]+ (?<name3>.*) BRUTTO$")
                 .match("^(?<name>.*)$")
                 .match("^(?<name1>.*) \\((?<tickerSymbol>.*)\\) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurswert"))
+                        v.put("name", v.get("name") + " " + v.get("name1") + " " + v.get("name3"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Stück Valor 58198423 ISIN US92556V1061 Preis
+                // 0.167 N-AKT VIATRIS INC USD 18.21874
+                // (VTRSV)
+                // Zum Preis von USD 3.04
+                .section("wkn", "isin", "name", "currency", "tickerSymbol").optional()
+                .match("^St.ck Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                .match("^[\\.,'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
+                .match("^\\((?<tickerSymbol>.*)\\)$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Stück Valor 26729122 ISIN CH0267291224 Preis
+                // 73 N-AKT SUNRISE COMMUNICATIONS CHF 110.00
+                // GROUP AG
+                // Zum Preis von CHF 8 030.00
+                .section("wkn", "isin", "name", "currency", "name1").optional()
+                .match("^St.ck Valor (?<wkn>[0-9]{6,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
+                .match("^[\\.,'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+$")
+                .match("^(?<name1>.*)$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Zum Preis"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -166,6 +209,12 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date")
                                         .match("^VERFALL (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                                ,
+                                // Zugunsten Konto 292-123456.40R CHF Valuta 12.04.2021 CHF 8 030.00
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Zugunsten Konto .* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,'\\d\\s]+$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
@@ -253,6 +302,23 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+)$")
                                         .match("^(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) zu (?<exchangeRate>[\\.'\\d]+) [\\w]{3} [\\.,'\\d\\s]+$")
                                         .match("^(?<currency>[\\w]{3}) (?<gross>[\\.,'\\d\\s]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // @formatter:off
+                                // Zum Preis von USD 3.04
+                                // USD/CHF 0.86661 CHF 2.63
+                                // @formatter:on
+                                section -> section
+                                        .attributes("fxCurrency", "fxGross", "baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^Zum Preis von (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+)$")
+                                        .match("^(?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d\\s]+)$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().putType(asExchangeRate(v));
 
