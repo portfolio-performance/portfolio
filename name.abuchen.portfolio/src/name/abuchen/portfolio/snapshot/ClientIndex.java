@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -57,6 +58,7 @@ import name.abuchen.portfolio.util.Interval;
         interestCharge = new long[size];
         buys = new long[size];
         sells = new long[size];
+        fees = new long[size];
 
         collectTransferalsAndTaxes(interval);
 
@@ -144,6 +146,8 @@ import name.abuchen.portfolio.util.Interval;
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
                                                         interval, d);
                                         addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
+                                                        interval, d);
                                         break;
                                     case INTEREST:
                                         addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, d);
@@ -151,6 +155,12 @@ import name.abuchen.portfolio.util.Interval;
                                     case INTEREST_CHARGE:
                                         addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         addValue(interestCharge, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case FEES:
+                                        addValue(fees, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case FEES_REFUND:
+                                        addValue(fees, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         break;
                                     default:
                                         // do nothing
@@ -183,9 +193,13 @@ import name.abuchen.portfolio.util.Interval;
                                         break;
                                     case BUY:
                                         addValue(buys, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        Money feeBuy = t.getUnitSum(Type.FEE);
+                                        addValue(fees, feeBuy.getCurrencyCode(), feeBuy.getAmount(), interval, d);
                                         break;
                                     case SELL:
                                         addValue(sells, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        Money feeSell = t.getUnitSum(Type.FEE);
+                                        addValue(fees, feeSell.getCurrencyCode(), feeSell.getAmount(), interval, d);
                                         break;
                                     default:
                                         break;
