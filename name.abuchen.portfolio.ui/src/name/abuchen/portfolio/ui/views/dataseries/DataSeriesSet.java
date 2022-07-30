@@ -141,12 +141,12 @@ public class DataSeriesSet
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
-                        Colors.DARK_GREEN.getRGB());
+                        Colors.GRAY.getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
-                        Messages.LabelFeesAccumulated, Colors.DARK_GREEN.getRGB());
+                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
         availableSeries.add(series);
     }
 
