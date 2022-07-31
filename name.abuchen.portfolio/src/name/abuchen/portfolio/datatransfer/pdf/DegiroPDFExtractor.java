@@ -297,10 +297,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 26-11-2021 09:01 25-11-2021 Einzahlung CHF 569.00 CHF 1'754.08
         // 28-10-2021 08:50 28-10-2021 Deposito flatex EUR 200,00 EUR 215,77
         // 01-09-2021 02:44 31-08-2021 Deposito EUR 0,01 EUR 0,01
+        // 25-07-2022 10:50 25-07-2022 flatex Storting EUR 123,45 EUR 123,47
         // @formatter:on
         Block blockDeposit = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) "
                         + "(SOFORT |iDEAL |flatex )?"
-                        + "(Einzahlung|Deposit|Deposito)"
+                        + "(Einzahlung|Deposit|Deposito|Storting)"
                         + "( flatex)? "
                         + ".*$");
         type.addBlock(blockDeposit);
@@ -315,7 +316,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito))( flatex)? "
+                                        + "(?<note>(SOFORT |iDEAL |flatex )?(Einzahlung|Deposit|Deposito|Storting))( flatex)? "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "

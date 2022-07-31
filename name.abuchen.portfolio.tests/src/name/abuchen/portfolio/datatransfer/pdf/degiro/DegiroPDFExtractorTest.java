@@ -1541,6 +1541,42 @@ public class DegiroPDFExtractorTest
         assertNull(transaction.getCrossEntry());
     }
 
+    /**
+     * Test reading bank deposit in EUR from DeGiro AccountStatement in Dutch.
+     * This is shown on the account statement as "flatex Storting".
+     */
+    @Test
+    public void testRekeningoverzicht06()
+    {
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeningoverzicht06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividend transaction including tax
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // 25-07-2022 10:50 25-07-2022 flatex Storting EUR 123,45 EUR 123,47
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-25T10:50")));
+        assertThat(transaction.getSource(), is("Rekeningoverzicht06.txt"));
+        assertThat(transaction.getNote(), is("flatex Storting"));
+        assertThat(transaction.getShares(), is(0L));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
+        assertNull(transaction.getSecurity());
+        assertNull(transaction.getCrossEntry());
+    }
+
     @Test
     public void testAccountStatement01()
     {
