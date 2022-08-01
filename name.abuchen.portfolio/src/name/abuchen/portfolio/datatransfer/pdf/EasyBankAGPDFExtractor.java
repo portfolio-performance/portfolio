@@ -280,6 +280,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Fremde Spesen: -2,86 EUR 
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
@@ -290,6 +291,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Grundgebühr: -3,-- EUR 
+                // Grundgebühr: -7,95 EUR 
                 .section("fee", "currency").optional()
                 .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
