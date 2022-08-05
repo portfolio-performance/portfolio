@@ -2,10 +2,11 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.function.Supplier;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -18,7 +19,7 @@ public class BrowserWidget extends WidgetDelegate<Object>
 {
     private Label title;
     private Browser browser;
-    private Composite composite;
+    private Composite container;
 
     public BrowserWidget(Widget widget, DashboardData data)
     {
@@ -31,18 +32,19 @@ public class BrowserWidget extends WidgetDelegate<Object>
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
-        composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout(1, false));
+        container = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).spacing(3, 8).applyTo(container);
 
-        title = new Label(composite, SWT.NONE);
-        title.setBackground(composite.getBackground());
+        title = new Label(container, SWT.NONE);
+        title.setBackground(container.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
-        browser = new Browser(composite, SWT.NONE);
+        browser = new Browser(container, SWT.NONE);
         browser.setJavascriptEnabled(false);
-        browser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(browser);
 
-        return composite;
+        return container;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class BrowserWidget extends WidgetDelegate<Object>
             browser.setUrl(url);
         }
 
-        GridData data = (GridData) composite.getLayoutData();
+        GridData data = (GridData) container.getLayoutData();
 
         int oldHeight = data.heightHint;
         int newHeight = get(ChartHeightConfig.class).getPixel();
