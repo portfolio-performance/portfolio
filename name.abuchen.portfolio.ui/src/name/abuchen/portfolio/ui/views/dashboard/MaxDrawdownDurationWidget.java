@@ -25,7 +25,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
 
     public MaxDrawdownDurationWidget(Widget widget, DashboardData dashboardData)
     {
-        super(widget, dashboardData, true);
+        super(widget, dashboardData, true, null);
     }
 
     public String getToolTip()

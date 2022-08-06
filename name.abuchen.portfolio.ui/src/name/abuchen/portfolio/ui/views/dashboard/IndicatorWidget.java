@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.widgets.Composite;
@@ -24,6 +25,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         private BiFunction<DataSeries, Interval, N> provider;
         private BiFunction<DataSeries, Interval, String> tooltip;
         private boolean supportsBenchmarks = true;
+        private Predicate<DataSeries> predicate;
         private boolean isValueColored = true;
 
         public Builder(Widget widget, DashboardData dashboardData)
@@ -35,6 +37,12 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         Builder<N> with(Values<N> formatter)
         {
             this.formatter = formatter;
+            return this;
+        }
+
+        Builder<N> with(Predicate<DataSeries> predicate)
+        {
+            this.predicate = predicate;
             return this;
         }
 
@@ -67,7 +75,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
             Objects.requireNonNull(formatter);
             Objects.requireNonNull(provider);
 
-            IndicatorWidget<N> indicatorWidget = new IndicatorWidget<>(widget, dashboardData, supportsBenchmarks);
+            IndicatorWidget<N> indicatorWidget = new IndicatorWidget<>(widget, dashboardData, supportsBenchmarks,
+                            predicate);
             indicatorWidget.setFormatter(formatter);
             indicatorWidget.setProvider(provider);
             indicatorWidget.setTooltip(tooltip);
@@ -81,9 +90,10 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     private BiFunction<DataSeries, Interval, String> tooltip;
     private boolean isValueColored = true;
 
-    public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
+    public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks,
+                    Predicate<DataSeries> predicate)
     {
-        super(widget, dashboardData, supportsBenchmarks);
+        super(widget, dashboardData, supportsBenchmarks, predicate);
     }
 
     public static <N extends Number> Builder<N> create(Widget widget, DashboardData dashboardData)

@@ -24,7 +24,7 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
     public PortfolioTaxOrFeeRateWidget(Widget widget, DashboardData dashboardData,
                     Function<ClientPerformanceSnapshot, Object> valueProvider, String defaultToolTip)
     {
-        super(widget, dashboardData, false);
+        super(widget, dashboardData, false, null);
 
         this.valueProvider = valueProvider;
         this.defaultToolTip = defaultToolTip;

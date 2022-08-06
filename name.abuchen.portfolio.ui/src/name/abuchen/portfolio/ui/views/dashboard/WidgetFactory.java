@@ -258,7 +258,7 @@ public enum WidgetFactory
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
 
-    LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.ClientEditorLabelPerformance, //
+    LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Quote) //
                                     .with((ds, period) -> {
@@ -270,6 +270,7 @@ public enum WidgetFactory
                                         return security.getSecurityPrice(LocalDate.now()).getValue();
                                     }) //
                                     .withBenchmarkDataSeries(false) //
+                                    .with(ds -> ds.getInstance() instanceof Security)
                                     .withColoredValues(false) //
                                     .withTooltip((ds, period) -> {
                                         if (!(ds.getInstance() instanceof Security))
