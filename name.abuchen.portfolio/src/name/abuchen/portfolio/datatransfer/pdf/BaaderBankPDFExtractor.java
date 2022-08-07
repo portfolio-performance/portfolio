@@ -160,9 +160,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // Amount debited to account 1960017000 Value: 2022-03-02 EUR 199.93
+                                // Amount credited to account 1209625007 Value: 2022-07-13 EUR 329.36
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^Amount debited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .match("^Amount (debited|credited) to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
