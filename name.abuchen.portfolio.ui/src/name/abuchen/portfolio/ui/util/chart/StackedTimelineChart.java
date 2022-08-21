@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -21,6 +23,7 @@ import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Triple;
 
 public class StackedTimelineChart extends Chart // NOSONAR
 {
@@ -107,19 +110,26 @@ public class StackedTimelineChart extends Chart // NOSONAR
         final LocalDate start = dates.get(0);
         final LocalDate end = dates.get(dates.size() - 1);
 
+        int days = Dates.daysBetween(start, end) + 1;
         int totalDays = Dates.daysBetween(start, end) + 1;
 
-        e.gc.setForeground(getAxisSet().getAxes()[0].getGrid().getForeground());
+        Triple<Period, DateTimeFormatter, LocalDate> data = TimelineChart.getPeriodFormatAndCursor(days, start,
+                        e.width);
+        Period period = data.getFirst();
+        DateTimeFormatter format = data.getSecond();
+        LocalDate cursor = data.getThird();
 
-        LocalDate current = start.plusYears(1).withDayOfYear(1);
-        while (current.isBefore(end))
+        e.gc.setForeground(getTitle().getForeground());
+
+        while (cursor.isBefore(end))
         {
-            int days = Dates.daysBetween(start, current);
-            int y = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(String.valueOf(current.getYear()), y + 5, 5);
+            days = Dates.daysBetween(start, cursor);
+            int x = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
+            e.gc.drawLine(x, 0, x, e.height);
+            String labelText = format.format(cursor);
+            e.gc.drawText(labelText, x + 5, 5);
 
-            current = current.plusYears(1);
+            cursor = cursor.plus(period);
         }
     }
 
