@@ -2,8 +2,6 @@ package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -23,7 +21,6 @@ import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.Dates;
-import name.abuchen.portfolio.util.Triple;
 
 public class StackedTimelineChart extends Chart // NOSONAR
 {
@@ -107,30 +104,14 @@ public class StackedTimelineChart extends Chart // NOSONAR
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
 
-        final LocalDate start = dates.get(0);
-        final LocalDate end = dates.get(dates.size() - 1);
-
+        LocalDate start = dates.get(0);
+        LocalDate end = dates.get(dates.size() - 1);
         int days = Dates.daysBetween(start, end) + 1;
-        int totalDays = Dates.daysBetween(start, end) + 1;
 
-        Triple<Period, DateTimeFormatter, LocalDate> data = TimelineChart.getPeriodFormatAndCursor(days, start,
-                        e.width);
-        Period period = data.getFirst();
-        DateTimeFormatter format = data.getSecond();
-        LocalDate cursor = data.getThird();
-
-        e.gc.setForeground(getTitle().getForeground());
-
-        while (cursor.isBefore(end))
-        {
-            days = Dates.daysBetween(start, cursor);
-            int x = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
-            e.gc.drawLine(x, 0, x, e.height);
-            String labelText = format.format(cursor);
-            e.gc.drawText(labelText, x + 5, 5);
-
-            cursor = cursor.plus(period);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> {
+            int d = Dates.daysBetween(start, cursor);
+            return xAxis.getPixelCoordinate(d * range.upper / days);
+        });
     }
 
     @Override
