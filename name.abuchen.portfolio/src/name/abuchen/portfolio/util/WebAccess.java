@@ -83,7 +83,7 @@ import org.apache.hc.core5.util.Timeout;
  *  String html = new WebAccess("example.com", "/path/page.html")
  *                       .withScheme("http")
  *                       .addParameter("parameter", "value")
- *                       .addHeader("Content-Type", "application/json;chartset=UTF-8")
+ *                       .addHeader("Content-Type", "application/json;charset=UTF-8")
  *                       .addHeader("X-Response", "daily")
  *                       .addUserAgent("Mozilla/1.0N (Windows)")
  *                       .ignoreContentType(true)
