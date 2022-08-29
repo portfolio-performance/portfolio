@@ -1,36 +1,58 @@
-﻿PDF Autor: 'User'
-PDFBox Version: 1.8.16
+﻿PDFBox Version: 1.8.16
 -----------------------------------------
-VR-Bank Erding eG · Zollnerstraße 4 · 85435 Erding    
-Depotnummer 12345678
- 
- Kundennummer 123456789
-Vorname und Vorname Name
- Abrechnungsnr. 67305449999
-Vorname und Vorname Name Datum 22.06.2021
-Gustav-Pauli-Platz 6 Ihr Berater Herr Vorname Name
-04711 Bremen Telefon 0999 299-9999      
-Telefax 08122 200-50             
- 
-Ertragsgutschrift nach § 27 KStG
+VR-Bank Musterort eG · Musterstr. 23 · 12345 Musterort    Seite 1
+Depotnummer
+ 99999999
+ Kundennummer 99999999
+Max und Maria Mustermann Max und
+ Maria Mustermann
+Max und Maria Mustermann Abrechnungsnr. 99999999999
+Musterweg 42 Datum 20.06.2022
+12345 Musterort Ihr Berater Max Mustermann
+Telefon 01234/567890        
+Ausschüttung Investmentfonds
 Nominale Wertpapierbezeichnung ISIN (WKN)
-Stück 250 FREENET AG DE000A0Z2ZZ5 (A0Z2ZZ)
-NAMENS-AKTIEN O.N.
-Zahlbarkeitstag 23.06.2021 Ertrag  pro Stück 1,65 EUR
-Bestandsstichtag 18.06.2021
-Ex-Tag 21.06.2021
-Geschäftsjahr 01.01.2020 - 31.12.2020
-Dividendengutschrift nach § 27 KStG 412,50+ EUR
-Ausmachender Betrag 412,50+ EUR
-Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
-Den Betrag buchen wir mit Wertstellung 23.06.2021 zu Gunsten des Kontos 1234567 (IBAN DE37 1234 9605 0007 1234
-30), BLZ 701 696 05 (BIC GENODEF1XYZ). 
-Keine Steuerbescheinigung. 
-Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
-1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
-einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
-möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist. 
-Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Stück 102 XTR.(IE) - MSCI WORLD IE00BK1PV551 (A1XEY2)
+REGISTERED SHARES 1D O.N.
+Zahlbarkeitstag 17.06.2022 Ausschüttung pro St. 0,317000000 USD
+Bestandsstichtag 07.06.2022 mit Teilfreistellung (Aktien-
+Ex-Tag 08.06.2022 fonds) 0,221900000 USD
+Geschäftsjahr 01.01.2022 - 31.12.2022 Herkunftsland Irland
+Devisenkurs EUR / USD  1,0585
+Devisenkursdatum 20.06.2022
+Ausschüttung 32,33 USD 30,54+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 9,70 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 22,63 USD
+Umrechnung in EUR 21,38 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 21,38 EUR
+Anteilige Berechnungsgrundlage für Maria Mustermann (50,00 %) entspricht 10,69 EUR
+Kapitalertragsteuer 24,51 % auf 10,69 EUR 2,62- EUR
+Solidaritätszuschlag 5,5 % auf 2,62 EUR 0,14- EUR
+Kirchensteuer 8 % auf 2,62 EUR 0,21- EUR
+Anteilige Berechnungsgrundlage für Max Mustermann (50,00 %) entspricht 10,69 EUR
+Kapitalertragsteuer 24,51 % auf 10,69 EUR 2,62- EUR
+Solidaritätszuschlag 5,5 % auf 2,62 EUR 0,14- EUR
+Kirchensteuer 8 % auf 2,62 EUR 0,21- EUR
+Ausmachender Betrag 24,60+ EUR
+Lagerstelle CBFI (999999 / 99999)
+Den Betrag buchen wir mit Wertstellung 21.06.2022 zu Gunsten des Kontos 999999 (IBAN DE99 9999 9999 9999 9999
+99), BLZ 999 999 99 (BIC XYXYZYX9XYZ). 
 Bitte ggf. Rückseite beachten.
-6352.06230101.0000020ER01
+9999.99999999.99999999X99
 
+Seite 2
+Depotnummer 99999999
+Kundennummer 99999999
+Abrechnungsnr. 99999999999
+Datum 20.06.2022
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 99,99
+Ertrag 0,00 0,00 0,00 0,00 21,38
+Nachher 0,00 0,00 0,00 0,00 121,37
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+9999.99999999.99999999X99
