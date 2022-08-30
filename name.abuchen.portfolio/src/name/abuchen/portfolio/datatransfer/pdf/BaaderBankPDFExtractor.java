@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -232,6 +233,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
+                // Dividendenabrechnung STORNO
+                .section("type").optional()
+                .match("^Dividendenabrechnung (?<type>STORNO)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("STORNO"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
                 // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
                 // Zahlungszeitraum: 17.06.2021 - 30.06.2021 
@@ -311,6 +320,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     // the "noTax" flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
                     return new TransactionItem(t);
                 });
 
