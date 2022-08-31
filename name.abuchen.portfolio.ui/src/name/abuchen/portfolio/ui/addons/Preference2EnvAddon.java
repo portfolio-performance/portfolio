@@ -97,6 +97,13 @@ public class Preference2EnvAddon
     }
 
     @Inject
+    public void setDisplayBaseCurrencyCode(
+                    @Preference(value = UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE) boolean alwaysDisplayCurrencyCode)
+    {
+        FormatHelper.setAlwaysDisplayCurrencyCode(alwaysDisplayCurrencyCode);
+    }
+
+    @Inject
     public void setTimePreset(@Preference(value = UIConstants.Preferences.PRESET_VALUE_TIME) String timePresetValue)
     {
         PresetValues.setTimePreset(timePresetValue);
