@@ -123,6 +123,11 @@ public interface UIConstants
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
 
         /**
+         * Preference key to display the currency code also for the base currency.
+         */
+        String DISPLAY_BASE_CURRENCY_CODE = "DISPLAY_BASE_CURRENCY_CODE"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */

@@ -34,9 +34,9 @@ public abstract class Values<E>
                 return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
         }
 
-        public String format(Money amount, String skipCurrencyCode)
+        public String format(Money amount, String baseCurrencyCode)
         {
-            if (skipCurrencyCode.equals(amount.getCurrencyCode()))
+            if (!FormatHelper.isDisplayBaseCurrencyCode() && baseCurrencyCode.equals(amount.getCurrencyCode()))
                 return DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
                                 : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
             else
@@ -56,9 +56,9 @@ public abstract class Values<E>
             return isNotZero ? format(amount) : null;
         }
 
-        public String formatNonZero(Money amount, String skipCurrencyCode)
+        public String formatNonZero(Money amount, String baseCurrencyCode)
         {
-            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+            return amount == null || amount.isZero() ? null : format(amount, baseCurrencyCode);
         }
     }
 
@@ -86,9 +86,9 @@ public abstract class Values<E>
             return QUOTE_FORMAT.get().format(quote / divider());
         }
 
-        public String format(String currencyCode, long quote, String skipCurrency)
+        public String format(String currencyCode, long quote, String baseCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.isDisplayBaseCurrencyCode() && baseCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -104,14 +104,14 @@ public abstract class Values<E>
             return format(quote.getCurrencyCode(), quote.getAmount());
         }
 
-        public String format(Quote quote, String skipCurrency)
+        public String format(Quote quote, String baseCurrency)
         {
-            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+            return format(quote.getCurrencyCode(), quote.getAmount(), baseCurrency);
         }
 
-        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        public String formatNonZero(Quote amount, String baseCurrencyCode)
         {
-            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+            return amount == null || amount.isZero() ? null : format(amount, baseCurrencyCode);
         }
 
         /**
@@ -175,9 +175,9 @@ public abstract class Values<E>
             return format.format(quote / divider());
         }
 
-        public String format(String currencyCode, long quote, String skipCurrency)
+        public String format(String currencyCode, long quote, String baseCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.isDisplayBaseCurrencyCode() && baseCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -193,14 +193,14 @@ public abstract class Values<E>
             return format(quote.getCurrencyCode(), quote.getAmount());
         }
 
-        public String format(Quote quote, String skipCurrency)
+        public String format(Quote quote, String baseCurrency)
         {
-            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+            return format(quote.getCurrencyCode(), quote.getAmount(), baseCurrency);
         }
 
-        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        public String formatNonZero(Quote amount, String baseCurrencyCode)
         {
-            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+            return amount == null || amount.isZero() ? null : format(amount, baseCurrencyCode);
         }
     }
 
