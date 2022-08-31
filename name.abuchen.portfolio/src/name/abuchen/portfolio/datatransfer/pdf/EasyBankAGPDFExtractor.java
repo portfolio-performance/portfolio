@@ -48,7 +48,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$");
+        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$", "^Diese Mitteilung wird nicht unterschrieben.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -128,7 +128,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Abrechnung Ereignis");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Gesch.ftsart: Ertrag$");
+        Block block = new Block("^Gesch.ftsart: Ertrag$", "^Diese Mitteilung wird nicht unterschrieben.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
