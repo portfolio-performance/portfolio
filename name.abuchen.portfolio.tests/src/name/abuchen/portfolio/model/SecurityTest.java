@@ -3,8 +3,8 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -201,13 +201,16 @@ public class SecurityTest
         security.setName("Apple ORD");
         assertEquals(security.getExternalIdentifier(), "Apple ORD");
 
+        security.setSedol("1234567");
+        assertEquals(security.getExternalIdentifier(), "1234567");
+
         security.setWkn("865985");
         assertEquals(security.getExternalIdentifier(), "865985");
 
         security.setTickerSymbol("AAPL");
         assertEquals(security.getExternalIdentifier(), "AAPL");
 
-        // In some countries there is no ISIN or WKN, only the ticker symbol.
+        // In some countries there is no ISIN, WKN or Sedol, only the ticker symbol.
         // If historical prices are retrieved from the stock exchange,
         // the ticker symbol is expanded. (UMAX --> UMAX.AX)
         security.setTickerSymbol("AAPL.BA");

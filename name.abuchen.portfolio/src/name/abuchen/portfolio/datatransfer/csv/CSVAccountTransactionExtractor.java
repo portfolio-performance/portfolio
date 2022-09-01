@@ -40,6 +40,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("sedol", Messages.CSVColumn_SEDOL).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
         fields.add(new Field("currency", Messages.CSVColumn_TransactionCurrency).setOptional(true)); //$NON-NLS-1$
         fields.add(new EnumField<AccountTransaction.Type>("type", Messages.CSVColumn_Type, Type.class) //$NON-NLS-1$
@@ -111,7 +112,7 @@ import name.abuchen.portfolio.money.Money;
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                                     new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$
                                                     .add(Messages.CSVColumn_TickerSymbol).add(Messages.CSVColumn_WKN)
-                                                    .toString()),
+                                                    .add(Messages.CSVColumn_SEDOL).toString()),
                                     0);
                 if (shares == null)
                     throw new ParseException(
@@ -153,7 +154,7 @@ import name.abuchen.portfolio.money.Money;
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                                     new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$
                                                     .add(Messages.CSVColumn_TickerSymbol).add(Messages.CSVColumn_WKN)
-                                                    .toString()),
+                                                    .add(Messages.CSVColumn_SEDOL).toString()),
                                     0);
             case DEPOSIT:
             case TAXES:

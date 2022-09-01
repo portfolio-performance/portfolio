@@ -91,6 +91,12 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         {
             return null;
         }
+
+        @Override
+        public String getSedol()
+        {
+            return null;
+        }
         
         @Override
         public String getSource()

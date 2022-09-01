@@ -792,6 +792,8 @@ public class ClientFactory
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
+            case 56:
+                // do nothing --> added Sedol attribute to security
             case Client.CURRENT_VERSION:
                 break;
             default:

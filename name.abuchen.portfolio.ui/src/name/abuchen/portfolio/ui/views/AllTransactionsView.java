@@ -141,6 +141,7 @@ public class AllTransactionsView extends AbstractFinanceView
         searchLabels.add(tx -> tx.getTransaction().getSecurity());
         searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getIsin).orElse(null));
         searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getWkn).orElse(null));
+        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getSedol).orElse(null));
         searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getTickerSymbol).orElse(null));
         searchLabels.add(TransactionPair::getOwner);
         searchLabels.add(tx -> tx.getTransaction().getCrossEntry() != null

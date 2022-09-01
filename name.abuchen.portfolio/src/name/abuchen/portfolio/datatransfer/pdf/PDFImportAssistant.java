@@ -33,6 +33,7 @@ public class PDFImportAssistant
         this.client = client;
         this.files = files;
 
+        extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
         extractors.add(new BondoraCapitalPDFExtractor(client));

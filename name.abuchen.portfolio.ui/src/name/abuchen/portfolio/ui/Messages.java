@@ -291,6 +291,7 @@ public class Messages extends NLS
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnReturn;
+    public static String ColumnSEDOL;
     public static String ColumnSecurity;
     public static String ColumnSecurityExchange;
     public static String ColumnSecurityType;

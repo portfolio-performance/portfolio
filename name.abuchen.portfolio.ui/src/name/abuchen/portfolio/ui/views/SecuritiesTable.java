@@ -97,6 +97,7 @@ import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SedolColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -269,7 +270,11 @@ public final class SecuritiesTable implements ModificationListener
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
-        column = new WknColumn("7"); //$NON-NLS-1$
+        column = new WknColumn("3"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
+        support.addColumn(column);
+
+        column = new SedolColumn("4"); //$NON-NLS-1$
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 

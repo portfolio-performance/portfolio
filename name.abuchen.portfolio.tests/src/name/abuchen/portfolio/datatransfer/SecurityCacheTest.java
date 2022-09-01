@@ -25,6 +25,7 @@ public class SecurityCacheTest
         security.setIsin("DE0007164600");
         security.setTickerSymbol("SAP.DE");
         security.setWkn("716460");
+        security.setSedol("1234567");
         client.addSecurity(security);
     }
 
@@ -32,7 +33,7 @@ public class SecurityCacheTest
     public void testThatSecurityIsMatchedByNameOnlyIfISINMatches()
     {
         SecurityCache cache = new SecurityCache(client);
-        Security lookup = cache.lookup("DE000BASF111", null, null, "Security Name", () -> new Security());
+        Security lookup = cache.lookup("DE000BASF111", null, null, null, "Security Name", () -> new Security());
         assertThat(client.getSecurities().get(0), not(is(lookup)));
     }
 
@@ -40,7 +41,15 @@ public class SecurityCacheTest
     public void testThatSecurityIsMatchedByNameOnlyIfWKNMatches()
     {
         SecurityCache cache = new SecurityCache(client);
-        Security lookup = cache.lookup(null, null, "BASF11", "Security Name", () -> new Security());
+        Security lookup = cache.lookup(null, null, null, "BASF11", "Security Name", () -> new Security());
+        assertThat(client.getSecurities().get(0), not(is(lookup)));
+    }
+
+    @Test
+    public void testThatSecurityIsMatchedByNameOnlyIfSEDOLMatches()
+    {
+        SecurityCache cache = new SecurityCache(client);
+        Security lookup = cache.lookup(null, null, "1234567", null, "Security Name", () -> new Security());
         assertThat(client.getSecurities().get(0), not(is(lookup)));
     }
 
@@ -48,7 +57,7 @@ public class SecurityCacheTest
     public void testThatSecurityIsMatchedByName()
     {
         SecurityCache cache = new SecurityCache(client);
-        Security lookup = cache.lookup(null, null, null, "Security Name", () -> new Security());
+        Security lookup = cache.lookup(null, null, null, null, "Security Name", () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
     }
 
@@ -56,7 +65,7 @@ public class SecurityCacheTest
     public void testThatSecurityIsMatchedByTickerSymbol()
     {
         SecurityCache cache = new SecurityCache(client);
-        Security lookup = cache.lookup(null, "SAP", null, null, () -> new Security());
+        Security lookup = cache.lookup(null, "SAP", null, null, null, () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
     }
 }

@@ -520,6 +520,7 @@ public class SecurityListView extends AbstractFinanceView
                                 security.getIsin(), //
                                 security.getTickerSymbol(), //
                                 security.getWkn(), //
+                                security.getSedol(), //
                                 security.getNote() //
                 };
 

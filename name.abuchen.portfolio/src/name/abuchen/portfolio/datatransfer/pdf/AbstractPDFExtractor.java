@@ -178,6 +178,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (wkn != null)
             wkn = wkn.trim();
 
+        String sedol = values.get("sedol"); //$NON-NLS-1$
+        if (sedol != null)
+            sedol = sedol.trim();
+
         String name = values.get("name"); //$NON-NLS-1$
         if (name != null)
             name = name.trim();
@@ -186,7 +190,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, sedol, name, () -> {
             Security s = new Security();
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
             return s;

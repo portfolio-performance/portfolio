@@ -649,6 +649,7 @@ public class IBFlexStatementExtractor implements Extractor
             // yahoo uses '-' instead of ' '
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
+            String wkn = element.getAttribute("wkn");
             String cusip = element.getAttribute("cusip");
             Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
 
@@ -670,7 +671,7 @@ public class IBFlexStatementExtractor implements Extractor
             if (ASSETKEY_STOCK.equals(assetCategory))
             {
                 computedTickerSymbol = tickerSymbol;
-                if (!"USD".equals(currency))
+                if (!CurrencyUnit.USD.equals(currency))
                 {
                     // some symbols in IB included the exchange as lower key
                     // without "." at the end, e.g. BMWd for BMW trading at d
@@ -681,7 +682,7 @@ public class IBFlexStatementExtractor implements Extractor
                     // appended, e.g. Deutsche Bank is DBKEUR, BMW is BMWEUR.
                     // Also notices this during cash transactions (dividend
                     // payments)
-                    if ("EUR".equals(currency))
+                    if (CurrencyUnit.EUR.equals(currency))
                         computedTickerSymbol = computedTickerSymbol.map(t -> t.replaceAll("EUR$", ""));
 
                     // at last, lets add the exchange to the ticker symbol.
@@ -718,9 +719,12 @@ public class IBFlexStatementExtractor implements Extractor
             if (!doCreate)
                 return null;
 
-            Security security = new Security(description, isin, computedTickerSymbol.orElse(null), quoteFeed);
+            Security security = new Security(description, isin, computedTickerSymbol.orElse(null), wkn, null, quoteFeed);
             // We use the Wkn to store the IB conID as a unique identifier
+            security.setIsin(isin);
+            security.setTickerSymbol(computedTickerSymbol.orElse(null));
             security.setWkn(conID);
+            security.setSedol(null);
             security.setCurrencyCode(currency);
             security.setNote(description);
 

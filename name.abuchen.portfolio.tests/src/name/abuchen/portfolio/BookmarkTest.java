@@ -1,7 +1,7 @@
 package name.abuchen.portfolio;
 
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.util.UUID;
 
@@ -20,8 +20,8 @@ public class BookmarkTest
     @Test
     public void testURLCreation()
     {
-        Bookmark page = new Bookmark("", "http://{tickerSymbol,isin,wkn,name}");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Bookmark page = new Bookmark("", "http://{tickerSymbol,isin,wkn,sedol,name}");
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security), equalTo("http://DE0007100000"));
@@ -29,7 +29,7 @@ public class BookmarkTest
         security.setTickerSymbol("DAI.DE");
         assertThat(page.constructURL(new Client(), security), equalTo("http://DAI.DE"));
         
-        page = new Bookmark("", "http://{isin,tickerSymbol,wkn,name}");
+        page = new Bookmark("", "http://{isin,tickerSymbol,wkn,sedol,name}");
         assertThat(page.constructURL(new Client(), security), equalTo("http://DE0007100000"));
     }
 
@@ -37,7 +37,7 @@ public class BookmarkTest
     public void testDuplicateKeyReplacement()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/?q={isin}&isin={isin}");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security),
@@ -48,7 +48,7 @@ public class BookmarkTest
     public void testMultipleKeyReplacement()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/?q={wkn}&isin={isin}");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security),
@@ -59,7 +59,7 @@ public class BookmarkTest
     public void testSuffixIsAppended()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/?q={wkn}&isin={isin}XXX");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security),
@@ -70,7 +70,7 @@ public class BookmarkTest
     public void testIfNoReplacmentsAreFound()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/XXX");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security), equalTo("https://www.flatex.de/suche/XXX"));
@@ -80,7 +80,7 @@ public class BookmarkTest
     public void testIfUnknownKeysAreFound()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/{something}");
-        Security security = new Security("Daimler", "DE0007100000", "", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "", "", "", YahooFinanceQuoteFeed.ID);
         security.setWkn("12345");
 
         assertThat(page.constructURL(new Client(), security), equalTo("https://www.flatex.de/suche/"));
@@ -90,7 +90,7 @@ public class BookmarkTest
     public void testTickerSymbolPrefix()
     {
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/{tickerSymbolPrefix}");
-        Security security = new Security("Daimler", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "DAI.DE", "", "", YahooFinanceQuoteFeed.ID);
 
         assertThat(page.constructURL(new Client(), security), equalTo("https://www.flatex.de/suche/DAI"));
     }
@@ -109,7 +109,7 @@ public class BookmarkTest
         client.getSettings().addAttributeType(attribute);
 
         Bookmark page = new Bookmark("", "https://www.flatex.de/suche/{CUSIP}");
-        Security security = new Security("Daimler", "DE0007100000", "DAI.DE", YahooFinanceQuoteFeed.ID);
+        Security security = new Security("Daimler", "DE0007100000", "DAI.DE", "", "", YahooFinanceQuoteFeed.ID);
         security.getAttributes().put(attribute, "D1668R123");
 
         assertThat(page.constructURL(client, security), equalTo("https://www.flatex.de/suche/D1668R123"));

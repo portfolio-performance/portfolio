@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.SedolColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.TextUtil;
@@ -317,6 +318,11 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new WknColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new SedolColumn();
         column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
         column.setVisible(false);
         support.addColumn(column);

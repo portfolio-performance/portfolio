@@ -141,6 +141,12 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
             return wkn;
         }
 
+        @Override
+        public String getSedol()
+        {
+            return null;
+        }
+
         public String getCurrency()
         {
             return currency;

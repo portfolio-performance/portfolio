@@ -175,8 +175,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
             security.setName(trim(v.get("name"))); //$NON-NLS-1$
 
         security.setIsin(v.get("isin")); //$NON-NLS-1$
-        security.setTicker(v.get("ticker")); //$NON-NLS-1$
+        security.setTickerSymbol(v.get("tickerSymbol")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$
+        security.setSedol(v.get("sedol")); //$NON-NLS-1$
         security.setCurrency(asCurrencyCode(v.get("currency"))); //$NON-NLS-1$
         t.setSecurity(security);
     }
@@ -312,8 +313,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
             values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
         
         values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
-        values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
+        values.put("tickerSymbol", t.getSecurity().getTickerSymbol()); //$NON-NLS-1$
         values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
+        values.put("sedol", t.getSecurity().getSedol()); //$NON-NLS-1$
         values.put("currency", t.getSecurity().getCurrency()); //$NON-NLS-1$
         return getOrCreateSecurity(values);
     }

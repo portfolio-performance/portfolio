@@ -21,7 +21,7 @@ public class ISINFieldTest
     public void testValidAndExistingISIN() throws ParseException
     {
         Client client = new Client();
-        client.addSecurity(new Security("BASF", "DE000BASF111", "BAS.DE", QuoteFeed.MANUAL));
+        client.addSecurity(new Security("BASF", "DE000BASF111", "BAS.DE", "BASF11", "1234567", QuoteFeed.MANUAL));
 
         ISINField field = new ISINField("isin", Messages.CSVColumn_ISIN);
 
@@ -54,7 +54,7 @@ public class ISINFieldTest
     public void testPartialMatch() throws ParseException
     {
         Client client = new Client();
-        client.addSecurity(new Security("SAP", "DE0007164600", "SAP.DE", QuoteFeed.MANUAL));
+        client.addSecurity(new Security("SAP", "DE0007164600", "SAP.DE", "716460", "1234567", QuoteFeed.MANUAL));
 
         ISINField field = new ISINField("isin", Messages.CSVColumn_ISIN);
 

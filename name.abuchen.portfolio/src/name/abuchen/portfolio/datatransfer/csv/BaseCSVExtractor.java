@@ -111,12 +111,13 @@ import name.abuchen.portfolio.money.Money;
         String isin = getISIN(Messages.CSVColumn_ISIN, rawValues, field2column);
         String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
         String wkn = getText(Messages.CSVColumn_WKN, rawValues, field2column);
+        String sedol = getText(Messages.CSVColumn_SEDOL, rawValues, field2column);
         String name = getText(Messages.CSVColumn_SecurityName, rawValues, field2column);
 
-        if (isin != null || tickerSymbol != null || wkn != null || name != null)
+        if (isin != null || tickerSymbol != null || wkn != null || sedol != null || name != null)
         {
-            name = constructName(isin, tickerSymbol, wkn, name);
-            security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
+            name = constructName(isin, tickerSymbol, wkn, sedol, name);
+            security = securityCache.lookup(isin, tickerSymbol, wkn, sedol, name, () -> {
                 Security s = new Security();
                 s.setCurrencyCode(client.getBaseCurrency());
 
@@ -129,7 +130,7 @@ import name.abuchen.portfolio.money.Money;
         return security;
     }
 
-    private String constructName(String isin, String tickerSymbol, String wkn, String name)
+    private String constructName(String isin, String tickerSymbol, String wkn, String sedol, String name)
     {
         if (name != null && !name.isEmpty())
         {
@@ -137,7 +138,7 @@ import name.abuchen.portfolio.money.Money;
         }
         else
         {
-            String key = isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn;
+            String key = isin != null ? isin : tickerSymbol != null ? tickerSymbol : wkn != null ? wkn : sedol;
             return MessageFormat.format(Messages.CSVImportedSecurityLabel, key);
         }
     }

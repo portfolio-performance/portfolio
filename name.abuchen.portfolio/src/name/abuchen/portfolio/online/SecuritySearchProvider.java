@@ -19,6 +19,8 @@ public interface SecuritySearchProvider
 
         String getWkn();
 
+        String getSedol();
+
         String getType();
 
         String getExchange();

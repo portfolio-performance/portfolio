@@ -47,6 +47,7 @@ public class CSVExporter
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_SEDOL, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
@@ -93,6 +94,7 @@ public class CSVExporter
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_SEDOL, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
@@ -140,11 +142,13 @@ public class CSVExporter
         {
             printer.print(escapeNull(security.getIsin()));
             printer.print(escapeNull(security.getWkn()));
+            printer.print(escapeNull(security.getSedol()));
             printer.print(escapeNull(security.getTickerSymbol()));
             printer.print(escapeNull(security.getName()));
         }
         else
         {
+            printer.print(""); //$NON-NLS-1$
             printer.print(""); //$NON-NLS-1$
             printer.print(""); //$NON-NLS-1$
             printer.print(""); //$NON-NLS-1$
@@ -165,6 +169,7 @@ public class CSVExporter
         {
             printer.printRecord(Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
+                            Messages.CSVColumn_SEDOL, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Currency, //
@@ -174,6 +179,7 @@ public class CSVExporter
             {
                 printer.print(escapeNull(s.getIsin()));
                 printer.print(escapeNull(s.getWkn()));
+                printer.print(escapeNull(s.getSedol()));
                 printer.print(escapeNull(s.getTickerSymbol()));
                 printer.print(escapeNull(s.getName()));
                 printer.print(escapeNull(s.getCurrencyCode()));

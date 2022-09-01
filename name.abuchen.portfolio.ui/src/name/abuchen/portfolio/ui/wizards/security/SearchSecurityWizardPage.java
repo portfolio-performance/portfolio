@@ -97,6 +97,10 @@ public class SearchSecurityWizardPage extends WizardPage
         column.setWidth(60);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
+        column.setText(Messages.ColumnSEDOL);
+        column.setWidth(60);
+
+        column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityType);
         column.setWidth(60);
 
@@ -226,10 +230,12 @@ public class SearchSecurityWizardPage extends WizardPage
                 case 3:
                     return item.getWkn();
                 case 4:
-                    return item.getType();
+                    return item.getSedol();
                 case 5:
-                    return item.getExchange();
+                    return item.getType();
                 case 6:
+                    return item.getExchange();
+                case 7:
                     return item.getSource();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));

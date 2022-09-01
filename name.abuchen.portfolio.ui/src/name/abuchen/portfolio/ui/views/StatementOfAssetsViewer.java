@@ -109,6 +109,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SedolColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -431,6 +432,12 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new WknColumn("12"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(new TouchClientListener(client));
+        column.getSorter().wrap(ElementComparator::new);
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new SedolColumn("13"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);

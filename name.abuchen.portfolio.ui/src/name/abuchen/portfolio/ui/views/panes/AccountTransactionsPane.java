@@ -73,6 +73,7 @@ import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAc
 import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SedolColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
@@ -252,6 +253,11 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         transactionsColumns.addColumn(column);
 
         column = new WknColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new SedolColumn();
         column.setVisible(false);
         column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);

@@ -181,6 +181,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String sedol;
     private String calendar;
     private String feed;
     private String feedURL;
@@ -214,6 +215,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.isin = security.getIsin();
         this.tickerSymbol = security.getTickerSymbol();
         this.wkn = security.getWkn();
+        this.sedol = security.getSedol();
         this.calendar = security.getCalendar();
         this.feed = security.getFeed();
         this.feedURL = security.getFeedURL();
@@ -316,6 +318,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setWkn(String wkn)
     {
         firePropertyChange("wkn", this.wkn, this.wkn = wkn); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public String getSedol()
+    {
+        return sedol;
+    }
+
+    public void setSedol(String sedol)
+    {
+        firePropertyChange("sedol", this.sedol, this.sedol = sedol); //$NON-NLS-1$ //NOSONAR
     }
 
     public String getCalendar()
@@ -451,6 +463,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setIsin(isin);
         security.setTickerSymbol(tickerSymbol);
         security.setWkn(wkn);
+        security.setSedol(sedol);
         security.setCalendar(calendar);
         security.setFeed(feed);
         security.setFeedURL(feedURL);

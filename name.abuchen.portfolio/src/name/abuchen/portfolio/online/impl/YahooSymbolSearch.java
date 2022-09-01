@@ -107,6 +107,12 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         }
 
         @Override
+        public String getSedol()
+        {
+            return null;
+        }
+
+        @Override
         public String getSource()
         {
             return Messages.LabelYahooFinance;

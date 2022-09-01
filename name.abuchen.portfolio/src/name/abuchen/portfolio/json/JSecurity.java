@@ -9,7 +9,8 @@ public class JSecurity
     private String name;
     private String isin;
     private String wkn;
-    private String ticker;
+    private String sedol;
+    private String tickerSymbol;
     private String currency;
 
     public String getName()
@@ -42,14 +43,24 @@ public class JSecurity
         this.wkn = wkn;
     }
 
-    public String getTicker()
+    public String getSedol()
     {
-        return ticker;
+        return sedol;
     }
 
-    public void setTicker(String ticker)
+    public void setSedol(String sedol)
     {
-        this.ticker = ticker;
+        this.sedol = sedol;
+    }
+
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    public void setTickerSymbol(String tickerSymbol)
+    {
+        this.tickerSymbol = tickerSymbol;
     }
     
     public String getCurrency()
@@ -68,7 +79,8 @@ public class JSecurity
         s.name = security.getName();
         s.isin = Strings.emptyToNull(security.getIsin());
         s.wkn = Strings.emptyToNull(security.getWkn());
-        s.ticker = Strings.emptyToNull(security.getTickerSymbol());
+        s.sedol = Strings.emptyToNull(security.getSedol());
+        s.tickerSymbol = Strings.emptyToNull(security.getTickerSymbol());
         s.currency = Strings.emptyToNull(security.getCurrencyCode());
         return s;
     }

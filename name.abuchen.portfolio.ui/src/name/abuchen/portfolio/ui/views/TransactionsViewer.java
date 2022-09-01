@@ -57,6 +57,7 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.SedolColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.TextUtil;
@@ -315,6 +316,12 @@ public final class TransactionsViewer implements ModificationListener
         support.addColumn(column);
 
         column = new WknColumn();
+        column.setVisible(false);
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
+        column.getEditingSupport().addListener(this);
+        support.addColumn(column);
+
+        column = new SedolColumn();
         column.setVisible(false);
         column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);

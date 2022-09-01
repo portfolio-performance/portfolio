@@ -22,7 +22,8 @@ public class SecurityCache
     private static final Security DUPLICATE_SECURITY_MARKER = new Security();
 
     private static final List<String> MESSAGES = Arrays.asList(Messages.MsgErrorDuplicateISIN,
-                    Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);
+                    Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateSedol,
+                    Messages.MsgErrorDuplicateName);
 
     private final Client client;
 
@@ -41,20 +42,22 @@ public class SecurityCache
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
                         .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
+        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getSedol() != null && !s.getSedol().isEmpty())
+                        .collect(Collectors.toMap(Security::getSedol, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
                         .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
-
     }
 
-    public Security lookup(String isin, String tickerSymbol, String wkn, String name,
+    public Security lookup(String isin, String tickerSymbol, String wkn, String sedol, String name,
                     Supplier<Security> creationFunction)
     {
-        List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
+        List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, sedol, name);
 
         int idOfAttributeWithDuplicateSecurities = -1;
 
-        // first: check the identifying attributes (ISIN, Ticker, WKN)
-        for (int ii = 0; ii < 3; ii++)
+        // first: check the identifying attributes (ISIN, TickerSymbol, WKN, SEDOL, Name)
+        for (int ii = 0; ii < 4; ii++)
         {
             String attribute = attributes.get(ii);
 
@@ -77,14 +80,15 @@ public class SecurityCache
         // check that the identifying attributes do not differ. Why? Investment
         // instruments could have the same name but different ISINs.
 
-        Security security = lookupSecurityByName(isin, tickerSymbol, wkn, name);
+        Security security = lookupSecurityByName(isin, tickerSymbol, wkn, sedol, name);
         if (security != null)
             return security;
 
         security = creationFunction.get();
         security.setIsin(isin);
-        security.setWkn(wkn);
         security.setTickerSymbol(tickerSymbol);
+        security.setWkn(wkn);
+        security.setSedol(sedol);
         security.setName(name);
 
         for (int ii = 0; ii < localMaps.size(); ii++)
@@ -97,9 +101,9 @@ public class SecurityCache
         return security;
     }
 
-    private Security lookupSecurityByName(String isin, String tickerSymbol, String wkn, String name)
+    private Security lookupSecurityByName(String isin, String tickerSymbol, String wkn, String sedol, String name)
     {
-        Security security = localMaps.get(3).get(name);
+        Security security = localMaps.get(4).get(name);
 
         // allow imports by duplicate name
         if (security == null || security == DUPLICATE_SECURITY_MARKER)
@@ -110,7 +114,7 @@ public class SecurityCache
 
         if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
         {
-            // In some countries there is no ISIN or WKN, only the ticker symbol. 
+            // In some countries there is no ISIN, WKN or Sedol, only the ticker symbol. 
             // However, as soon as the historical prices are pulled from the stock exchange, 
             // the ticker symbol is expanded.
             // PDF importers that use this are for example the SelfWeath and the CommSec
@@ -123,6 +127,9 @@ public class SecurityCache
         }
 
         if (doNotMatchIfGiven(wkn, security.getWkn()))
+            return null;
+
+        if (doNotMatchIfGiven(sedol, security.getSedol()))
             return null;
 
         return security;

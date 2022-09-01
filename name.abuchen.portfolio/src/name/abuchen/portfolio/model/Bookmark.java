@@ -89,6 +89,7 @@ public class Bookmark implements Comparable<Bookmark>
         types.put("tickerSymbolPrefix", getTickerPrefix(security.getTickerSymbol())); //$NON-NLS-1$
         types.put("isin", security.getIsin()); //$NON-NLS-1$
         types.put("wkn", security.getWkn()); //$NON-NLS-1$
+        types.put("sedol", security.getSedol()); //$NON-NLS-1$
         types.put("name", security.getName()); //$NON-NLS-1$
 
         client.getSettings().getAttributeTypes() //

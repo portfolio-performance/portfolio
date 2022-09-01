@@ -26,6 +26,7 @@ public class VariableURLTests
         security = new Security();
         security.setIsin("LU0635178014");
         security.setWkn("ETF127");
+        security.setSedol("1234567");
         security.setTickerSymbol("E127");
     }
 
@@ -63,7 +64,7 @@ public class VariableURLTests
     public void testDATEwithOthers()
     {
         VariableURL url = Factory.fromString(
-                        "https://www.server.de/historische_kurse?month={DATE:yyyy-MM-32}&isin={ISIN}&ticker={TICKER}&wkn={WKN}&currency={CURRENCY}");
+                        "https://www.server.de/historische_kurse?month={DATE:yyyy-MM-32}&isin={ISIN}&ticker={TICKER}&wkn={WKN}&sedol={SEDOL}&currency={CURRENCY}");
 
         url.setSecurity(security);
 
@@ -73,6 +74,6 @@ public class VariableURLTests
         assertThat(iter.next(),
                         is("https://www.server.de/historische_kurse?month="
                                         + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-32"))
-                                        + "&isin=LU0635178014&ticker=E127&wkn=ETF127&currency=EUR"));
+                                        + "&isin=LU0635178014&ticker=E127&wkn=ETF127&sedol=1234567&currency=EUR"));
     }
 }

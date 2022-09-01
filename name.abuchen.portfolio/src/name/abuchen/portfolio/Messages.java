@@ -33,6 +33,7 @@ public class Messages extends NLS
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
     public static String CSVColumn_SecurityName;
+    public static String CSVColumn_SEDOL;
     public static String CSVColumn_Shares;
     public static String CSVColumn_Taxes;
     public static String CSVColumn_TickerSymbol;
@@ -236,6 +237,7 @@ public class Messages extends NLS
     public static String MsgErrorDownloadECBStatisticalDataWarehouse;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
+    public static String MsgErrorDuplicateSedol;
     public static String MsgErrorDuplicateTicker;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;

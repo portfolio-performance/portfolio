@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -137,6 +138,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getWkn(), is("272800"));
+        assertThat(security.getSedol(), is(nullValue()));
         assertThat(security.getName(), is("ORACLE CORP"));
         assertThat(security.getTickerSymbol(), is("ORCL"));
         assertThat(security.getCurrencyCode(), is("USD"));

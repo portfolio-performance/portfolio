@@ -187,6 +187,12 @@ public class PortfolioReportNet
         }
 
         @Override
+        public String getSedol()
+        {
+            return null;
+        }
+
+        @Override
         public String getSymbol()
         {
             return symbols.stream().map(SymbolInfo::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$

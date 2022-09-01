@@ -182,6 +182,13 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             return null;
         }
 
+
+        @Override
+        public String getSedol()
+        {
+            return null;
+        }
+
         public String getCountry()
         {
             return country;

@@ -43,7 +43,7 @@ import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
 public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationListener
 {
-    private static final String DEFAULT_URL = "http://example.net/{tickerSymbol}?isin={isin}&wkn={wkn}&name={name}"; //$NON-NLS-1$
+    private static final String DEFAULT_URL = "http://example.net/{tickerSymbol}?isin={isin}&wkn={wkn}&sedol={sedol}&name={name}"; //$NON-NLS-1$
 
     private TableViewer bookmarks;
 
@@ -254,7 +254,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
         manager.add(submenu);
 
         @SuppressWarnings("nls")
-        List<String> defaultReplacements = Arrays.asList("isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix");
+        List<String> defaultReplacements = Arrays.asList("isin", "name", "wkn", "sedol", "tickerSymbol", "tickerSymbolPrefix");
 
         submenu.add(new LabelOnly(Messages.BookmarksListView_LabelDefaultReplacements));
         defaultReplacements.forEach(r -> addReplacementMenu(submenu, r));
@@ -267,7 +267,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
         submenu.add(new Separator());
         submenu.add(new LabelOnly(Messages.BookmarksListView_LabelReplaceFirstAvailable));
-        addReplacementMenu(submenu, "isin,wkn"); //$NON-NLS-1$
+        addReplacementMenu(submenu, "isin,wkn,sedol"); //$NON-NLS-1$
     }
 
     private void addReplacementMenu(MenuManager manager, String replacement)

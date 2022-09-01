@@ -30,6 +30,7 @@ public class SecurityMasterDataPage extends AbstractPage
 
     private Text isin;
     private Text wkn;
+    private Text sedol;
 
     protected SecurityMasterDataPage(EditSecurityModel model, BindingHelper bindings)
     {
@@ -74,6 +75,8 @@ public class SecurityMasterDataPage extends AbstractPage
                 isin.setBackground(null);
                 wkn.setEditable(true);
                 wkn.setBackground(null);
+                sedol.setEditable(true);
+                sedol.setBackground(null);
                 link.setEnabled(false);
                 unlink.setEnabled(false);
             }));
@@ -125,6 +128,13 @@ public class SecurityMasterDataPage extends AbstractPage
             {
                 wkn.setEditable(false);
                 wkn.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
+            }
+
+            sedol = bindings.bindStringInput(container, Messages.ColumnSEDOL, "sedol", SWT.NONE, 12); //$NON-NLS-1$
+            if (isSyncedOnline)
+            {
+                sedol.setEditable(false);
+                sedol.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
             }
 
             ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityCalendar, "calendar"); //$NON-NLS-1$

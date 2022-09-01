@@ -43,6 +43,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("sedol", Messages.CSVColumn_SEDOL).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
         fields.add(new Field("currency", Messages.CSVColumn_TransactionCurrency).setOptional(true)); //$NON-NLS-1$
@@ -89,7 +90,7 @@ import name.abuchen.portfolio.money.Money;
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                             new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$
                                             .add(Messages.CSVColumn_TickerSymbol).add(Messages.CSVColumn_WKN)
-                                            .toString()),
+                                            .add(Messages.CSVColumn_SEDOL).toString()),
                             0);
 
         // check for the transaction amount
@@ -192,7 +193,6 @@ import name.abuchen.portfolio.money.Money;
             exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
             transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
-
         }
     }
 

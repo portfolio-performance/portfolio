@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,6 +146,7 @@ public class IBFlexStatementExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("CA38501D2041"));
         assertThat(security.getWkn(), is("80845553"));
+        assertThat(security.getSedol(), is(nullValue()));
         assertThat(security.getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(security.getTickerSymbol(), is("GCM.TO"));
         assertThat(security.getCurrencyCode(), is("CAD"));
@@ -156,6 +158,7 @@ public class IBFlexStatementExtractorTest
         Security security = ((SecurityItem) item).getSecurity();
         assertThat(security.getIsin(), is("CA38501D5010"));
         assertThat(security.getWkn(), is("129258970"));
+        assertThat(security.getSedol(), is(nullValue()));
         assertThat(security.getName(),
                         is("GCM(CA38501D2041) SPLIT 1 FOR 25 (GCM, GRAN COLOMBIA GOLD CORP, CA38501D5010)"));
         assertThat(security.getCurrencyCode(), is("CAD"));

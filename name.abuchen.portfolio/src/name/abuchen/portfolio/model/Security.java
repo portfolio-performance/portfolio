@@ -54,6 +54,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String sedol;
     private String calendar;
 
     // feed and feedURL are used to update historical prices
@@ -94,12 +95,14 @@ public final class Security implements Attributable, InvestmentVehicle
         this.currencyCode = currencyCode;
     }
 
-    public Security(String name, String isin, String tickerSymbol, String feed)
+    public Security(String name, String isin, String tickerSymbol, String wkn, String sedol, String feed)
     {
         this();
         this.name = name;
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;
+        this.wkn = wkn;
+        this.sedol = sedol;
         this.feed = feed;
     }
 
@@ -230,7 +233,7 @@ public final class Security implements Attributable, InvestmentVehicle
      * Returns the ticker symbol (if available) without the stock market
      * extension.
      * </p>
-     * In some countries there is no ISIN or WKN, only the ticker symbol. If
+     * In some countries there is no ISIN, WKN or Sedol, only the ticker symbol. If
      * historical prices are retrieved from the stock exchange, the ticker
      * symbol is expanded. (UMAX --> UMAX.AX)
      */
@@ -250,6 +253,17 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setWkn(String wkn)
     {
         this.wkn = wkn;
+        this.updatedAt = Instant.now();
+    }
+
+    public String getSedol()
+    {
+        return sedol;
+    }
+
+    public void setSedol(String sedol)
+    {
+        this.sedol = sedol;
         this.updatedAt = Instant.now();
     }
 
@@ -275,7 +289,7 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     /**
-     * Returns ISIN, Ticker or WKN - whatever is available.
+     * Returns ISIN, Ticker, WKN or SEDOL - whatever is available.
      */
     public String getExternalIdentifier()
     {
@@ -285,6 +299,8 @@ public final class Security implements Attributable, InvestmentVehicle
             return getTickerSymbolWithoutStockMarket();
         else if (wkn != null && wkn.length() > 0)
             return wkn;
+        else if (sedol != null && sedol.length() > 0)
+            return sedol;
         else
             return name;
     }
@@ -838,6 +854,7 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
+        answer.sedol = sedol;
         answer.calendar = calendar;
 
         answer.feed = feed;
@@ -875,6 +892,8 @@ public final class Security implements Attributable, InvestmentVehicle
             b.append('\n').append(isin);
         if (notEmpty(wkn))
             b.append('\n').append(wkn);
+        if (notEmpty(sedol))
+            b.append('\n').append(sedol);
         if (notEmpty(tickerSymbol))
             b.append('\n').append(tickerSymbol);
 

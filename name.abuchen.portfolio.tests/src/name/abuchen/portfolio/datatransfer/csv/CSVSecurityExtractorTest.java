@@ -2,8 +2,8 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -30,9 +30,8 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(
-                                        new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "DE0007164600", "716460", "1234567", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -43,6 +42,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is("SAP SE"));
         assertThat(security.getIsin(), is("DE0007164600"));
         assertThat(security.getWkn(), is("716460"));
+        assertThat(security.getSedol(), is("1234567"));
         assertThat(security.getTickerSymbol(), is("SAP.DE"));
         assertThat(security.getCurrencyCode(), is("EUR"));
         assertThat(security.getNote(), is("Notiz"));
@@ -59,9 +59,8 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(
-                                        new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "DE0007164600", "716460", "1234567", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -76,9 +75,9 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "DE0007164600", "716460", "", "SAP SE", "EUR", "Notiz" },
-                                        new String[] { "DE0007164600", "716460", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "DE0007164600", "716460", "", "SAP SE", "EUR", "Notiz" },
+                        new String[] { "DE0007164600", "716460", "", "SAP.DE", "SAP SE", "EUR", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -93,9 +92,8 @@ public class CSVSecurityExtractorTest
         CSVExtractor extractor = new CSVSecurityExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "", "", "", "", "EUR", "Notiz" }),
-                        buildField2Column(extractor), errors);
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "", "", "", "", "", "EUR", "Notiz" }), buildField2Column(extractor), errors);
 
         assertThat(errors.size(), is(1));
         assertThat(results, empty());
