@@ -57,7 +57,8 @@ public class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.UK) }; //$NON-NLS-1$
 
     private PDFExtractorUtils()
     {
