@@ -3931,9 +3931,74 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testFlatExSammelabrechnung02WithSecurityInUSD()
+    public void testFlatExSammelabrechnung02()
     {
-        Security security = new Security("INTEL CORP.       DL-,001", CurrencyUnit.USD);
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US4581401001"));
+        assertThat(security.getWkn(), is("855681"));
+        assertThat(security.getName(), is("INTEL CORP.       DL-,001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check 1st buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4780.50))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.03 + 0.11))));
+
+        // check 2nd buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-30T18:09")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+        assertThat(entry.getSource(), is("FlatExSammelabrechnung02.txt"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(957.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
+    }
+
+    @Test
+    public void testFlatExSammelabrechnung02WithSecurityInEUR()
+    {
+        Security security = new Security("INTEL CORP.       DL-,001", CurrencyUnit.EUR);
         security.setIsin("US4581401001");
         security.setWkn("855681");
 
@@ -3991,6 +4056,78 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
+    }
+
+    @Test
+    public void testFlatExSammelabrechnung03()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("DE000A0S9GB0"));
+        assertThat(security1.getWkn(), is("A0S9GB"));
+        assertThat(security1.getName(), is("DT.BOERSE COM. XETRA-GOLD"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getIsin(), is("KYG9830T1067"));
+        assertThat(security2.getWkn(), is("A2JNY1"));
+        assertThat(security2.getName(), is("XIAOMI CORP. CL.B"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check 1st buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-25T09:04")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(38)));
+        assertThat(entry.getSource(), is("FlatExSammelabrechnung03.txt"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1558.05))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1564.23))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.80 + 2.38))));
+
+        // check 2nd buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-25T09:09")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1470)));
+        assertThat(entry.getSource(), is("FlatExSammelabrechnung03.txt"));
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1581.52))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1572.17))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.80 + 5.55))));
     }
 
     @Test
