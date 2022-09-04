@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.quirion;
+package name.abuchen.portfolio.datatransfer.pdf.quirinbankag;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,7 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.QuirionPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.QuirinBankAGPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -34,12 +34,140 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class QuirionPDFExtractorTest
+public class QuirinPrivatbankAGPDFExtractorTest
 {
+    @Test
+    public void testWertpapierKauf01()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("LU0690964092"));
+        assertThat(security.getWkn(), is("DBX0MF"));
+        assertThat(security.getName(), is("db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-30T12:46:28")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
+        assertThat(entry.getSource(), is("Kauf01.txt"));
+        assertThat(entry.getNote(), is("Referenz-Nr 28522373"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30090.76))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30085.86))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.90))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00B0M63177"));
+        assertThat(security.getWkn(), is("A0HGWC"));
+        assertThat(security.getName(), is("iShs MSCI EM U.ETF USD (D) Registered Shares o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-06T16:52:15")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertThat(entry.getNote(), is("Referenz-Nr 123452676"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12766.68))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13569.40))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(752.05 + 41.36))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.81 + 8.50))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE000A0D8Q07"));
+        assertThat(security.getWkn(), is("A0D8Q0"));
+        assertThat(security.getName(), is("iShare.EURO STOXX UCITS ETF DE Inhaber-Anteile"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-16T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(700)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
+        assertThat(transaction.getNote(), is("Referenz-Nr 12345858"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(343.46))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(421.22))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(73.71 + 4.05))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
     @Test
     public void testDepotauszug01()
     {
-        QuirionPDFExtractor extractor = new QuirionPDFExtractor(new Client());
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -402,7 +530,7 @@ public class QuirionPDFExtractorTest
     @Test
     public void testDepotauszug02()
     {
-        QuirionPDFExtractor extractor = new QuirionPDFExtractor(new Client());
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
