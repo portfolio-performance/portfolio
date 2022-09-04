@@ -146,6 +146,7 @@ public class PaymentsViewModel
 
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
+    private boolean excludenonCashEffective = true;
     private boolean useConsolidateRetired = true;
 
     public PaymentsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
@@ -168,12 +169,14 @@ public class PaymentsViewModel
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 
-    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired)
+    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired,
+                    boolean excludenonCashEffective)
     {
         this.startYear = startYear;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
+        this.excludenonCashEffective = excludenonCashEffective;
 
         recalculate();
     }
@@ -232,6 +235,17 @@ public class PaymentsViewModel
     public void setUseGrossValue(boolean useGrossValue)
     {
         this.useGrossValue = useGrossValue;
+        recalculate();
+    }
+
+    public boolean excludesnonCashEffective()
+    {
+        return excludenonCashEffective;
+    }
+
+    public void setexcludenonCashEffective(boolean excludenonCashEffective)
+    {
+        this.excludenonCashEffective = excludenonCashEffective;
         recalculate();
     }
 
@@ -397,6 +411,9 @@ public class PaymentsViewModel
                     continue;
 
                 if (!checkIsInInterval.test(transaction))
+                    continue;
+
+                if (excludenonCashEffective && transaction.getnonCashEffective())
                     continue;
 
                 long value = 0;

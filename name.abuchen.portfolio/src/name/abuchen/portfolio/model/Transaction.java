@@ -207,6 +207,7 @@ public abstract class Transaction implements Annotated, Adaptable
     private long shares;
     private String note;
     private String source;
+    private boolean nonCashEffective;
 
     private List<Unit> units;
 
@@ -238,6 +239,19 @@ public abstract class Transaction implements Annotated, Adaptable
         this.security = security;
         this.shares = shares;
         this.note = note;
+    }
+
+    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
+                    String note, Boolean nonCashEffective)
+    {
+        this();
+        this.date = date;
+        this.currencyCode = currencyCode;
+        this.amount = amount;
+        this.security = security;
+        this.shares = shares;
+        this.note = note;
+        this.nonCashEffective = nonCashEffective;
     }
 
     public String getUUID()
@@ -354,6 +368,17 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setSource(String source)
     {
         this.source = source;
+        this.updatedAt = Instant.now();
+    }
+
+    public boolean getnonCashEffective()
+    {
+        return nonCashEffective;
+    }
+
+    public void setnonCashEffective(Boolean nonCashEffective)
+    {
+        this.nonCashEffective = nonCashEffective;
         this.updatedAt = Instant.now();
     }
 

@@ -27,13 +27,13 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsView extends AbstractFinanceView
@@ -44,6 +44,8 @@ public class PaymentsView extends AbstractFinanceView
     private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
     private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
                     + "-use-consolidate-retired"; //$NON-NLS-1$
+    private static final String KEY_EXCLUDE_NON_CASH_EFFECTIVE = PaymentsView.class.getSimpleName()
+                    + "-exclude-non-cash-effective"; //$NON-NLS-1$
 
     @Inject
     private Client client;
@@ -86,14 +88,16 @@ public class PaymentsView extends AbstractFinanceView
 
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
         boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
+        boolean excludenonCashEffective = preferences.getBoolean(KEY_EXCLUDE_NON_CASH_EFFECTIVE);
 
-        model.configure(year, mode, useGrossValue, useConsolidateRetired);
+        model.configure(year, mode, useGrossValue, useConsolidateRetired, excludenonCashEffective);
 
         model.addUpdateListener(() -> {
             preferences.setValue(KEY_YEAR, model.getStartYear());
             preferences.setValue(KEY_MODE, model.getMode().name());
             preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
             preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, model.usesConsolidateRetired());
+            preferences.setValue(KEY_EXCLUDE_NON_CASH_EFFECTIVE, model.excludesnonCashEffective());
         });
     }
 
@@ -174,6 +178,12 @@ public class PaymentsView extends AbstractFinanceView
             Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
                             a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
             action.setChecked(model.usesConsolidateRetired());
+            manager.add(action);
+
+            // cash effectiveness
+            action = new SimpleAction(Messages.LabelnonCashEffective,
+                            a -> model.setexcludenonCashEffective(!model.excludesnonCashEffective()));
+            action.setChecked(model.excludesnonCashEffective());
             manager.add(action);
 
             PaymentsTab tab = (PaymentsTab) folder.getSelection().getData();
