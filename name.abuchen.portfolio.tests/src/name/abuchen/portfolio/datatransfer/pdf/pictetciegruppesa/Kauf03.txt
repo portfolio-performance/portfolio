@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2.qualifier
+-----------------------------------------
+Client: MR X Y
+Account no.: O-000000.001
+Transaction no.: 761800107 | Publication date: 02.03.2022
+STOCK EXCHANGE
+PURCHASE
+Purchase 1'497 LYXOR-BL.EQ.WEI.COM EX-AG I ETF at GBP 131.1975
+IN portfolio O-000000.001 ADDITIONAL INFORMATION
+LYXOR-BL.EQ.WEI.COM EX-AG I ETF 1'497 GeneralTrade date 02.03.2022
+ISIN: LU0419741177    Telekurs ID: 10239604          Value date 04.03.2022Booking date 02.03.2022
+Instruction
+Order date 02.03.2022 at 02:39:22 pm
+CASH EFFECT Order type At Marketin portfolio O-000000.001 Execution
+Gross amount GBP -196'402.66 Operation type PurchaseMarket place London Stock Exchange (LSE)
+Swiss stamp duty GBP -294.60 (XLON)Execution date 02.03.2022 at 02:40:24 pm
+Brokerage GBP -157.12 Executed quantity 1'497Execution price GBP 131.1975
+Transaction taxes GBP -1.00 Gross amount GBP -196'402.66
+Net amount OtherGBP -196'855.38 Custodian BNP PARIBAS SECURITIES
+SERVICES
+Current account O-000000.001.00.GBP/Ordinary IBAN AA0000000000000000000
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet

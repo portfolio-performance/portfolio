@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2.qualifier
+-----------------------------------------
+Client: MR X Y
+Account no.: O-000000.001
+Transaction no.: 766962817 | Publication date: 25.03.2022
+STOCK EXCHANGE
+SUBSCRIPTION
+Purchase GBP 180'000 6.516% MS (SX5E/SPX) 22/23 at 100.00%
+IN portfolio O-000000.001 ADDITIONAL INFORMATION
+6.516% MS (SX5E/SPX) 22/23 GBP 180'000 GeneralTrade date 23.03.2022
+ISIN: XS2425022303    Telekurs ID: 110605684          Value date 28.03.2022Booking date 25.03.2022
+Instruction
+Order date 22.03.2022 at 05:45:26 pm
+CASH EFFECT Order type At Marketin portfolio O-000000.001 Execution
+Gross amount GBP -180'000.00 Operation type PurchaseMarket place Over the counter
+Interest GBP 0.00 Execution date 23.03.2022 at 08:26:01 amExecuted nominal GBP 180'000
+Brokerage GBP -180.00 Execution price 100.00%Gross amount GBP -180'000.00
+Net amount GBP -180'180.00 OtherCustodian EUROCLEAR BANK S.A / N.V.
+Current account O-000000.001.00.GBP/Ordinary IBAN AA0000000000000000000
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet
