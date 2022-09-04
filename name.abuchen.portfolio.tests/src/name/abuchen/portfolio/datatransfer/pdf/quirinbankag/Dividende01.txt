@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Erträgnisabrechnung
+Referenz-Nr 12345858
+Datum 17.09.2019
+Depot 1234567800
+Muster, Dipl. Ing.
+Herrn Hans
+Dipl. Ing. Hans Muster
+Straße 2 Betreuer XXXXXXX XXXXXXX
+12345 Berlin Telefon +49 (0) 69 247 504 918
+E-Mail XXXXXXX.XXXXXXX@quirinprivatbank.de
+Seite 1 von 2
+Für aus Ihrem Depot fällig gewordene Erträgnisse erteilen wir nachstehende Abrechnung:
+Wertpapierbezeichnung iShare.EURO STOXX UCITS ETF DE Inhaber-Anteile
+ISIN DE000A0D8Q07
+WKN A0D8Q0
+Lagerland Deutschland
+Nominal/Stück 700 ST
+Währung EUR
+Zahlungszeitraum 01.05.2019 - 30.04.2020
+Ausschüttung EUR 0,60174 pro Anteil
+Ex-Tag 16.09.2019
+Zahlungstag 16.09.2019
+Betrag EUR 421,22
+Kapitalertragsteuer EUR -73,71
+Solidaritätszuschlag EUR -4,05
+Kirchensteuer EUR 0,00
+Ausmachender Betrag EUR 343,46
+Der Abrechnungsbetrag wird mit Valuta 16.09.2019 über Ihr Konto 1234567800 EUR gebucht.
+Keine Steuerbescheinigung!
+Für weitere Fragen wenden Sie sich bitte an Ihren Kundenberater.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: SECTRX2 / OrderType: div cash / Timestamp: 20190917 11:11:21
+Erträgnisabrechnung
+Referenz-Nr 12345858
+Seite 2 von 2
+Steuerliche Informationen
+Ausschüttungsbetrag: EUR 421,22
+Steuerpflichtiger Betrag nach Teilfreistellung im Privatvermögen: EUR 294,85
+Kapitalertragsteuerpflichtiger Betrag: EUR 294,85
+Stand allg. Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung allg. Verlustverrechnungstopf: EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand Quellensteuerguthaben vor Veränderung: EUR 0,00
+Veränderung Quellensteuerguthaben: EUR 0,00
+Stand Quellensteuerguthaben nach Veränderung: EUR 0,00
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 294,85
+Kapitalertragsteuer: EUR -73,71
+Solidaritätszuschlag: EUR -4,05
+Kirchensteuer: EUR 0,00
+Steuerliche Information für Veranlagungszwecke
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (EStG): EUR 168,49
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (KStG): EUR 84,24
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: SECTRX2 / OrderType: div cash / Timestamp: 20190917 11:11:21

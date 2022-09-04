@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.text.MessageFormat;
 
@@ -15,14 +16,17 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class QuirionPDFExtractor extends AbstractPDFExtractor
+public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 {
-    public QuirionPDFExtractor(Client client)
+    public QuirinBankAGPDFExtractor(Client client)
     {
         super(client);
 
+        addBankIdentifier("quirin bank AG"); //$NON-NLS-1$
         addBankIdentifier("Quirin Privatbank AG"); //$NON-NLS-1$
 
+        addBuySellTransaction();
+        addDividendeTransaction();
         addDepotStatementTransaction();
     }
 
@@ -32,12 +36,141 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
         return "Quirin Privatbank AG"; //$NON-NLS-1$
     }
 
+    private void addBuySellTransaction()
+    {
+        DocumentType type = new DocumentType("Wertpapierabrechnung");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^(?<type>(Kauf|Verkauf))$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
+                // Wertpapierbezeichnung db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N.
+                // ISIN LU0690964092
+                // WKN DBX0MF
+                // Kurs EUR 214,899
+                .section("name", "isin", "wkn", "currency").optional()
+                .match("^Wertpapierbezeichnung (?<name>.*)$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^WKN (?<wkn>[A-Z0-9]{6})$")
+                .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Nominal / Stück 140,0000 ST
+                .section("shares").optional()
+                .match("^Nominal \\/ St.ck (?<shares>[\\.,\\d]+) ST$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Handelstag / Zeit 30.12.2016 12:46:28
+                .section("date", "time").optional()
+                .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                // Ausmachender Betrag EUR - 30.090,76
+                .section("currency", "amount").optional()
+                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (\\- )?(?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Referenz-Nr 28522373
+                .section("note").optional()
+                .match("^(?<note>Referenz-Nr .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(t -> {
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                        return new BuySellEntryItem(t);
+                    return null;
+                });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Ertr.gnisabrechnung");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Ertr.gnisabrechnung$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+
+        pdfTransaction
+                // Wertpapierbezeichnung iShare.EURO STOXX UCITS ETF DE Inhaber-Anteile
+                // ISIN DE000A0D8Q07
+                // WKN A0D8Q0
+                // Ausschüttung EUR 0,60174 pro Anteil
+                .section("name", "isin", "wkn", "currency").optional()
+                .match("^Wertpapierbezeichnung (?<name>.*)$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^WKN (?<wkn>[A-Z0-9]{6})$")
+                .match("^Aussch.ttung (?<currency>[\\w]{3}) [\\.,\\d]+ .*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // Nominal/Stück 700 ST
+                .section("shares").optional()
+                .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) ST$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // Zahlungstag 16.09.2019
+                .section("date").optional()
+                .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Ausmachender Betrag EUR 343,46
+                .section("currency", "amount").optional()
+                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Referenz-Nr 28522373
+                .section("note").optional()
+                .match("^(?<note>Referenz-Nr .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+
+        block.set(pdfTransaction);
+    }
+
     private void addDepotStatementTransaction()
     {
         DocumentType type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
-        Block buySellBlock = new Block("^Wertpapier (Kauf|Verkauf), Ref.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
+        Block buySellBlock = new Block("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(buySellBlock);
         buySellBlock.setMaxSize(4);
         buySellBlock.set(new Transaction<BuySellEntry>()
@@ -53,9 +186,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                 .match("^Wertpapier (?<type>(Kauf|Verkauf)), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
@@ -66,7 +197,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                 .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12}), ST (\\-)?[\\.,\\d]+$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST (\\-)?[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Wertpapier Kauf, Ref.: 174680182 10.12.2020 14.12.2020 -428,06 EUR
@@ -75,13 +206,13 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "currency").optional()
                 .match("^Wertpapier (Kauf|Verkauf), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}), ST (\\-)?[\\.,\\d]+$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST (\\-)?[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // IE00BCBJG560, ST 3,648
                 // IE00B42THM37, ST -10,763
                 .section("shares")
-                .match("^[\\w]{12}, ST (\\-)?(?<shares>[\\.,\\d]+)$")
+                .match("^[A-Z]{2}[A-Z0-9]{9}[0-9], ST (\\-)?(?<shares>[\\.,\\d]+)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Wertpapier Kauf, Ref.: 133305911 03.06.2020 05.06.2020 -408,26 EUR
@@ -99,7 +230,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(BuySellEntryItem::new));
 
-        Block dividendeBlock = new Block("^(Ertr.gnisabrechnung|Thesaurierung), Ref.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
+        Block dividendeBlock = new Block("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(dividendeBlock);
         dividendeBlock.setMaxSize(5);
         dividendeBlock.set(new Transaction<AccountTransaction>()
@@ -120,9 +251,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<type>(Ertr.gnisabrechnung|Thesaurierung)), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Thesaurierung"))
-                    {
                         t.setType(AccountTransaction.Type.TAXES);
-                    }
                 })
 
                 // Thesaurierung, Ref.: 111727648 25.02.2020 03.01.2020 -0,49 EUR
@@ -133,21 +262,21 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                 .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12}), ST [\\.,\\d]+$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST [\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
                 // iShsIII-EO Corp Bd 1-5yr U.ETF Registered Shares o.N.
                 // IE00B4L60045, ST 21,296
-                .section("name", "isin", "currency")
+                .section("name", "isin", "currency").optional()
                 .match("^(Ertr.gnisabrechnung|Thesaurierung), Ref\\.: [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .match("^(?<name>.*)$")
-                .match("^(?<isin>[\\w]{12}), ST [\\.,\\d]+$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), ST [\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // IE00B4L60045, ST 21,296
                 .section("shares")
-                .match("^[\\w]{12}, ST (?<shares>[\\.,\\d]+)$")
+                .match("^[A-Z]{2}[A-Z0-9]{9}[0-9], ST (?<shares>[\\.,\\d]+)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Erträgnisabrechnung, Ref.: 108905624 30.01.2020 29.01.2020 5,35 EUR
@@ -259,7 +388,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                 })
 
                 .wrap(t -> new TransactionItem(t)));
@@ -286,7 +415,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                 })
 
                 .wrap(t -> new TransactionItem(t)));
@@ -313,7 +442,7 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                 })
 
                 .wrap(t -> new TransactionItem(t)));
@@ -341,9 +470,55 @@ public class QuirionPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
+                    t.setNote(v.get("note1") + " " + trim(v.get("note2")));
                 })
 
                 .wrap(t -> new TransactionItem(t)));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Kapitalertragsteuer EUR - 752,05
+                // Kapitalertragsteuer EUR -73,71
+                .section("tax", "currency").optional()
+                .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Solidaritätszuschlag EUR - 41,36
+                // Solidaritätszuschlag EUR -4,05
+                .section("tax", "currency").optional()
+                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kirchensteuer EUR - 1,00
+                // Kirchensteuer EUR -1,00
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Abwicklungsgebühren * EUR - 4,90
+                .section("fee", "currency").optional()
+                .match("^Abwicklungsgebühren \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Courtage * EUR 0,00
+                .section("fee", "currency").optional()
+                .match("^Courtage \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Spesen * EUR 0,00
+                .section("fee", "currency").optional()
+                .match("^Spesen \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Bank-Provision EUR 0,00
+                .section("fee", "currency").optional()
+                .match("^Bank\\-Provision (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
