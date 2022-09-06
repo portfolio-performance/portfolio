@@ -691,6 +691,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     if (v.get("note").equals("Verfügung Geldautomat"))
                         v.put("note", "Geldautomat");
 
+                    if (v.get("note").equals("Verfüg. Geldautom. FW"))
+                        v.put("note", "Geldautomat (Fremdwährung)");
+
+                    if (v.get("note").equals("Kartenzahlung onl"))
+                        v.put("note", "Kartenzahlung online");
+
                     t.setNote(v.get("note"));
                 })
 
@@ -740,6 +746,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if (v.get("note").equals("Eingang Echtzeitüberw"))
                         v.put("note", "Eingang Echtzeitüberweisung");
+
+                    if (v.get("note").equals("Bareinzahlung am GA"))
+                        v.put("note", "Bareinzahlung am Geldautomat");
 
                     t.setNote(v.get("note"));
                 })
