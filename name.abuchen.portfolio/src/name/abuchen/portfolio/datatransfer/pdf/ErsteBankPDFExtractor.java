@@ -29,6 +29,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("ERSTE BANK"); //$NON-NLS-1$
         addBankIdentifier("FB-Nr."); //$NON-NLS-1$
         addBankIdentifier("Sparkasse Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("www.sparkasse.at"); //$NON-NLS-1$
 
         addBuySellTransaction_DocFormat01();
         addBuySellTransaction_DocFormat02();
@@ -262,7 +263,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^([\\s]+)?(Kauf|Verkauf) .*$");
+        Block firstRelevantLine = new Block("^(WERTPAPIER|"
+                        + "([\\s]+)?W E R T P A P I E R([\\s]+))$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -284,30 +286,74 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^STK ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+ .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // STK                        0,400     EUR       1,996972         NETTO Inland                     0,80  EUR 
-                .section("shares")
-                .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+ .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                // Ausführungsdatum: 23.09.2015 Ausführungszeit: 09:02:20
-                // Ausführungsdatum: 05. Oktober 2009 Ausführungszeit: 12:39:27
-                .section("time", "date")
-                .match("^.* Ausf.hrungszeit (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) ([\\s]+)?Schlusstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\s]+$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
-
-                //  Zu   G u n st e n  1 2  3- 1  2 3-  1 2 3/  12                                        1  2 . 06  .2 0  1 7                        0,  8 0  E U R 
-                //  Z u  L a s t e n  1 2  3- 1  2 3-  1 2 3/  12                                            2 7 . 0 3 . 2 0 2 0                     8 6 6 , 0 5   E U R  
-                .section("amount", "currency")
-                .match("^([\\s]+)?Z([\\s]+)?u"
-                                + "(([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n|"
-                                + "([\\s]+)?L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n)"
-                                + "([\\s]+)?([\\/\\-\\d\\s]+) [\\s]{3,}([\\.\\d\\s]+) [\\s]{3,}(?<amount>[\\.,\\d\\s]+) ([\\s]+)?(?<currency>[\\w\\s]+) [\\s]{3,}$")
+                // DE0008404005 ALLIANZ SE Kupon: 29
+                // VINK.NAMENS-AKTIEN O.N.
+                // 10,00 STK 166,86 EUR 1.668,60 EUR
+                .section("isin", "name", "name1", "currency").optional()
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Kupon: .*$")
+                .match("^(?<name1>.*)$")
+                .match("^[\\.,\\d]+ STK (?<currency>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(stripBlanks(v.get("amount"))));
-                    t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
+                    if (!v.get("name1").startsWith("Limit:"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                .oneOf(
+                                // STK                        0,400     EUR       1,996972         NETTO Inland                     0,80  EUR 
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^STK ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+ .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // 10,00 STK 166,86 EUR 1.668,60 EUR
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) STK [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
+
+                .oneOf(
+                                // Börse:  WIEN                                Ausführungszeit 19:30:00                Schlusstag: 08.06.2017 
+                                section -> section
+                                        .attributes("time", "date")
+                                        .match("^.* Ausf.hrungszeit (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) ([\\s]+)?Schlusstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Marktplatz: XETRA FFT Ausführungszeit: 14:10:34 Schlusstag: 08.09.2022
+                                section -> section
+                                        .attributes("time", "date")
+                                        .match("^.* Ausf.hrungszeit: (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Schlusstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        )
+
+                .oneOf(
+                                //  Zu   G u n st e n  1 2  3- 1  2 3-  1 2 3/  12                                        1  2 . 06  .2 0  1 7                        0,  8 0  E U R 
+                                //  Z u  L a s t e n  1 2  3- 1  2 3-  1 2 3/  12                                            2 7 . 0 3 . 2 0 2 0                     8 6 6 , 0 5   E U R  
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^([\\s]+)?Z([\\s]+)?u"
+                                                        + "(([\\s]+)?G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n|"
+                                                        + "([\\s]+)?L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n)"
+                                                        + "([\\s]+)?([\\/\\-\\d\\s]+) [\\s]{3,}([\\.\\d\\s]+) [\\s]{3,}(?<amount>[\\.,\\d\\s]+) ([\\s]+)?(?<currency>[\\w\\s]+) [\\s]{3,}$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                                            t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
+                                        })
+                                ,
+                                // Zu Lasten 00001-152198 12.09.2022 1.717,38 EUR
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Zu (Lasten|Gunsten) [\\d]+\\-[\\d]+ [\\d]{2}.[\\d]{2}.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                                            t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
+                                        })
+                        )
+
                 //  Limit:                                       Bestens                               Beratungsfreies Geschäft 
+                // Limit: Bestens beratungsfreies Geschäft
                 .section("note1", "note2").optional()
                 .match("^(?<note1>Limit:) ([\\s]+)?(?<note2>Bestens).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
@@ -851,7 +897,12 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("currency", CurrencyUnit.EUR);
                     processFeeEntries(t, v, type);
-                });
+                })
+
+                // Summe der Dienstleistungskosten EUR 48,78 2,92 %
+                .section("currency", "fee").optional()
+                .match("^Summe der Dienstleistungskosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) .*$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
