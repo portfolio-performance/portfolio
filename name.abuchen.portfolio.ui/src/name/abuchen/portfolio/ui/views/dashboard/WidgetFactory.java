@@ -58,12 +58,7 @@ public enum WidgetFactory
                                         return index.getFinalAccumulatedAnnualizedPercentage();
                                     }).build()),
 
-    IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
-                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
-                                    .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
-                                    .withBenchmarkDataSeries(false) //
-                                    .build()),
+    IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, IRRWidget::new),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //

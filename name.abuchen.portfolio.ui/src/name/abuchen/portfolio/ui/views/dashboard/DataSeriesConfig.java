@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSelectionDialog;
 public class DataSeriesConfig implements WidgetConfig
 {
     private final WidgetDelegate<?> delegate;
+    private final boolean supportsDataSeries;
     private final boolean supportsBenchmarks;
     private final String label;
     private final Dashboard.Config configurationKey;
@@ -29,18 +30,22 @@ public class DataSeriesConfig implements WidgetConfig
 
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
-        this(delegate, supportsBenchmarks, false, null, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+        this(delegate, true, supportsBenchmarks, false, null, Messages.LabelDataSeries,
+                        Dashboard.Config.DATA_SERIES);
     }
 
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, Predicate<DataSeries> predicate)
     {
-        this(delegate, supportsBenchmarks, false, predicate, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+        this(delegate, true, supportsBenchmarks, false, predicate, Messages.LabelDataSeries,
+                        Dashboard.Config.DATA_SERIES);
     }
 
-    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
-                    Predicate<DataSeries> predicate, String label, Dashboard.Config configurationKey)
+    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsDataSeries, boolean supportsBenchmarks,
+                    boolean supportsEmptyDataSeries, Predicate<DataSeries> predicate, String label,
+                    Dashboard.Config configurationKey)
     {
         this.delegate = delegate;
+        this.supportsDataSeries = supportsDataSeries;
         this.supportsBenchmarks = supportsBenchmarks;
         this.label = label;
         this.configurationKey = configurationKey;
@@ -60,6 +65,16 @@ public class DataSeriesConfig implements WidgetConfig
         return dataSeries;
     }
 
+    protected void setDataSeries(DataSeries dataSeries)
+    {
+        this.dataSeries = dataSeries;
+    }
+
+    protected WidgetDelegate<?> getDelegate()
+    {
+        return delegate;
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
@@ -70,7 +85,9 @@ public class DataSeriesConfig implements WidgetConfig
         MenuManager subMenu = new MenuManager(label, configurationKey.name());
         subMenu.add(new LabelOnly(dataSeries != null ? dataSeries.getLabel() : "-")); //$NON-NLS-1$
         subMenu.add(new Separator());
-        subMenu.add(new SimpleAction(Messages.MenuSelectDataSeries, a -> doAddSeries(false)));
+
+        if (supportsDataSeries)
+            subMenu.add(new SimpleAction(Messages.MenuSelectDataSeries, a -> doAddSeries(false)));
 
         if (supportsBenchmarks)
             subMenu.add(new SimpleAction(Messages.MenuSelectBenchmarkDataSeries, a -> doAddSeries(true)));
