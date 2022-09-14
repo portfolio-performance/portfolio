@@ -118,7 +118,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                 // Schlusstag/-Zeit 04.02.2020 08:00:04
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Schlusstag\\/-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})( .*)?$")
+                                        .match("^Schlusstag\\/-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Den Gegenwert buchen wir mit Valuta 14.01.2020 zu Gunsten des Kontos 012345678
@@ -142,7 +142,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section( "fxCurrency", "baseCurrency", "termCurrency", "exchangeRate", "gross", "currency").optional()
                 .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
                 .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
-                .match("^Kurswert (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     PDFExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
@@ -157,6 +157,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 
@@ -232,6 +234,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .conclude(PDFExtractorUtils.fixGrossValueA())
 
                 .wrap(TransactionItem::new);
 
@@ -371,6 +375,11 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 // Übertragungs-/Liefergebühr 0,65- EUR
                 .section("fee", "currency").optional()
                 .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Fremde Auslagen 16,86- EUR
+                .section("fee", "currency").optional()
+                .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
