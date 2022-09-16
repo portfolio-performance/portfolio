@@ -11,8 +11,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -887,7 +889,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -908,7 +910,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
-        assertThat(transaction.getSource(), is("Dividend01.txt"));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -930,7 +932,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -951,7 +953,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
-        assertThat(transaction.getSource(), is("Dividend02.txt"));
+        assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -980,7 +982,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -993,7 +995,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
-        assertThat(transaction.getSource(), is("Dividend02.txt"));
+        assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1021,93 +1023,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
-
-        // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0017844686"));
-        assertThat(security.getName(), is("CSIF Emerging Markets"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
-
-        // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
-        assertThat(transaction.getSource(), is("Dividend03.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-    }
-
-    @Test
-    public void testDividende04()
-    {
-        Client client = new Client();
-
-        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
-
-        // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
-
-        // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
-        assertThat(transaction.getSource(), is("Dividend04.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(1.36))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(1.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-    }
-
-    @Test
-    public void testDividende05()
-    {
-        Client client = new Client();
-
-        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1128,8 +1044,8 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
-        assertThat(transaction.getSource(), is("Dividend05_English.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getSource(), is("Dividende03_English.txt"));
+        assertThat(transaction.getNote(), is("Ordinary dividend"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.52))));
@@ -1145,7 +1061,7 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
-    public void testDividende05WithSecurityInCHF()
+    public void testDividende03WithSecurityInCHF()
     {
         Security security = new Security("iShares US Property Yield", "CHF");
         security.setIsin("IE00B1FZSF77");
@@ -1157,7 +1073,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1170,8 +1086,8 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
-        assertThat(transaction.getSource(), is("Dividend05_English.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getSource(), is("Dividende03_English.txt"));
+        assertThat(transaction.getNote(), is("Ordinary dividend"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.52))));
@@ -1190,7 +1106,7 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
-    public void testDividende06()
+    public void testDividende04()
     {
         Client client = new Client();
 
@@ -1198,50 +1114,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06_English.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
-
-        // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
-        assertThat(security.getCurrencyCode(), is("CHF"));
-
-        // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
-        assertThat(transaction.getSource(), is("Dividend06_English.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(17.28))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(17.28))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-    }
-
-    @Test
-    public void testDividende07()
-    {
-        Client client = new Client();
-
-        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -1262,7 +1135,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
-        assertThat(transaction.getSource(), is("Dividend07.txt"));
+        assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1279,7 +1152,7 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
-    public void testDividende07WithSecurityInCHF()
+    public void testDividende04WithSecurityInCHF()
     {
         Security security = new Security("UBS ETF MSCI USA SRI", "CHF");
         security.setIsin("LU0629460089");
@@ -1291,7 +1164,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -1304,7 +1177,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
-        assertThat(transaction.getSource(), is("Dividend07.txt"));
+        assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1588,7 +1461,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.966)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(11.59))));
@@ -1598,5 +1471,202 @@ public class WirBankPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung02()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0017844686"));
+        assertThat(security.getName(), is("CSIF Emerging Markets"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check tax refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
+        assertThat(transaction.getSource(), is("Steuerrueckerstattung02.txt"));
+        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung03()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0037606552"));
+        assertThat(security.getName(), is("CSIF Europe ex CH"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check tax refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
+        assertThat(transaction.getSource(), is("Steuerrueckerstattung03.txt"));
+        assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(1.36))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(1.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung04()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung04_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0037606552"));
+        assertThat(security.getName(), is("CSIF Europe ex CH"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check tax refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
+        assertThat(transaction.getSource(), is("Steuerrueckerstattung04_English.txt"));
+        assertThat(transaction.getNote(), is("Refund withholding tax"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(17.28))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(17.28))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung05()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung05_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0017844686"));
+        assertThat(security.getName(), is("CSIF Emerging Markets"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check tax refund transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.104)));
+        assertThat(transaction.getSource(), is("Steuerrueckerstattung05_English.txt"));
+        assertThat(transaction.getNote(), is("Refund withholding tax"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(1.65))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(1.65))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividendeStorno01()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check cancellation (Storno) transaction
+        NonImportableItem Cancelations = (NonImportableItem) results.stream()
+                        .filter(NonImportableItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertNull(Cancelations.getSecurity());
+        assertNull(Cancelations.getDate());
+        assertThat(Cancelations.getNote(), is("DividendeStorno01.txt"));
     }
 }
