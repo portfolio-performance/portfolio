@@ -281,6 +281,9 @@ public class ClientPerformanceSnapshot
     /**
      * Returns taxes / (capital gains + realized capital gains + earnings -
      * fees)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either taxes or denominator are negative
      */
     public double getPortfolioTaxRate()
     {
@@ -289,6 +292,8 @@ public class ClientPerformanceSnapshot
                         CategoryType.EARNINGS).subtract(getValue(CategoryType.FEES));
 
         if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
             return Double.NaN;
 
         return numerator.getAmount() / (double) denominator.getAmount();
@@ -296,6 +301,9 @@ public class ClientPerformanceSnapshot
 
     /**
      * Returns fees / (capital gains + realized capital gains + earnings)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either fees or denominator are negative
      */
     public double getPortfolioFeeRate()
     {
@@ -304,6 +312,8 @@ public class ClientPerformanceSnapshot
                         CategoryType.EARNINGS);
 
         if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
             return Double.NaN;
 
         return numerator.getAmount() / (double) denominator.getAmount();

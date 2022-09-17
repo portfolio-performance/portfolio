@@ -16,8 +16,6 @@ import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class SimpleMovingAverage
 {
-    public static final int MIN_AVERAGE_PRICES_PER_WEEK = 2;
-
     private int rangeSMA;
     private Security security;
     private ChartInterval interval;
@@ -31,7 +29,7 @@ public class SimpleMovingAverage
 
         this.result = new ChartLineSeriesAxes();
 
-        calculateSMA();
+        calculateSMAInternal();
     }
 
     /**
@@ -50,7 +48,7 @@ public class SimpleMovingAverage
      * given startDate on The method returns an object containing the X and Y
      * Axes of the generated SMA
      */
-    private void calculateSMA()
+    private void calculateSMAInternal()
     {
         if (security == null)
             return;
@@ -63,10 +61,12 @@ public class SimpleMovingAverage
                         new SecurityPrice.ByDate());
 
         if (index < 0)
-            index = -index - 1;
+            index = -index - 1; // if price for start date not found, start with
+                                // next date after the start date
 
         if (index >= prices.size())
-            return;
+            return; // if all price dates smaller than start date, don't
+                    // calculate anything
 
         List<LocalDate> datesSMA = new ArrayList<>();
         List<Double> valuesSMA = new ArrayList<>();
@@ -75,19 +75,26 @@ public class SimpleMovingAverage
         {
             if (index < rangeSMA - 1)
                 continue;
-            
+
             LocalDate date = prices.get(index).getDate();
             if (date.isAfter(interval.getEnd()))
                 break;
 
             List<SecurityPrice> filteredPrices = prices.subList(index - rangeSMA + 1, index + 1);
-            long sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
+            Double sma = calculateSma(filteredPrices);
 
-            valuesSMA.add(sum / Values.Quote.divider() / filteredPrices.size());
+            valuesSMA.add(sma);
             datesSMA.add(date);
         }
-        
+
         result.setDates(TimelineChart.toJavaUtilDate(datesSMA.toArray(new LocalDate[0])));
         result.setValues(Doubles.toArray(valuesSMA));
     }
+
+    public static Double calculateSma(List<SecurityPrice> prices)
+    {
+        long sum = prices.stream().mapToLong(SecurityPrice::getValue).sum();
+        return sum / Values.Quote.divider() / prices.size();
+    }
+
 }

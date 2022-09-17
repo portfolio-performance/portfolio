@@ -5,24 +5,25 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.54.4-SNAPSHOT</version>
+	<version>0.59.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>1.5.1</tycho-version>
+		<tycho-version>2.6.0</tycho-version> <!-- 2.7.1 does not work, fixed with 2.7.2 ? -->
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
+		<installer.skip>true</installer.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
-		<sonar.exclusions>**/Messages.java</sonar.exclusions>
+		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/proto/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<modules>
@@ -40,7 +41,7 @@
 		<repository>
 			<id>portfolio-jre11</id>
 			<layout>p2</layout>
-			<url>http://buchen.github.io/bundled-jre/11.0.4</url>
+			<url>https://www.portfolio-performance.info/bundled-jre/11.0.15</url>
 		</repository>
 	</repositories>
 
@@ -82,6 +83,7 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
+					<executionEnvironment>JavaSE-11</executionEnvironment>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -110,6 +112,11 @@
 							<arch>x86_64</arch>
 						</environment>
 						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>aarch64</arch>
+						</environment>
+						<environment>
 							<os>win32</os>
 							<ws>win32</ws>
 							<arch>x86_64</arch>
@@ -123,42 +130,57 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_de</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_it</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_es</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_de</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_nl</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_nl</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_pt</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_pt</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_fr</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_cs</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.pde.ds.lib.nl_it</id>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_fr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_es</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_ru</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_sk</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_de</id>
-							<removeAll />
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.e4.ui.swt.gtk.nl_es</id>
 							<removeAll />
 						</filter>
 						<filter>
@@ -173,12 +195,27 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_cs</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_fr</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_es</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_ru</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_sk</id>
 							<removeAll />
 						</filter>
 					</filters>
@@ -218,7 +255,6 @@
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
 					<configuration>
-						<argLine>-Duser.country=US -Duser.language=en</argLine>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
 				</plugin>
@@ -311,6 +347,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<linkXRef>false</linkXRef>
+								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
 							</configuration>
 							<goals>
 								<goal>check</goal>
@@ -326,7 +363,7 @@
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.6</version>
+					<version>1.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -336,8 +373,13 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.5</version>
+					<version>0.8.7</version>
 				</plugin>
+	            <plugin>
+	                <groupId>com.github.os72</groupId>
+	                <artifactId>protoc-jar-maven-plugin</artifactId>
+	                <version>3.11.4</version>
+	            </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

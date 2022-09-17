@@ -58,7 +58,8 @@ public class AssertImportActions
     }
 
     private static final ImportAction[] actions = new ImportAction[] { //
-                    new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction() };
+                    new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction(),
+                    new CheckForexGrossValueAction() };
 
     private void check(List<Extractor.Item> items, ImportAction.Context context)
     {
@@ -67,7 +68,8 @@ public class AssertImportActions
             for (ImportAction action : actions)
             {
                 ImportAction.Status status = item.apply(action, context);
-                assertThat(status.getMessage(), status.getCode(), is(ImportAction.Status.Code.OK));
+                assertThat(status.getMessage() + "\n" + item, //$NON-NLS-1$
+                                status.getCode(), is(ImportAction.Status.Code.OK));
             }
         }
     }

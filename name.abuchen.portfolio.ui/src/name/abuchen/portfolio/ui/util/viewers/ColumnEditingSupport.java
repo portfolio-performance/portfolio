@@ -42,6 +42,22 @@ public abstract class ColumnEditingSupport
         }
     }
 
+    public static class MarkDirtyClientListener implements ModificationListener
+    {
+        private final Client client;
+
+        public MarkDirtyClientListener(Client client)
+        {
+            this.client = client;
+        }
+
+        @Override
+        public void onModified(Object element, Object newValue, Object oldValue)
+        {
+            client.markDirty();
+        }
+    }
+
     private List<ModificationListener> listeners;
 
     public CellEditor createEditor(Composite composite)

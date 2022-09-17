@@ -1,0 +1,60 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 123456789
+ Kundennummer 1234567899
+Dr. Max Mustermann
+ Abrechnungsnr. 64628421310
+Herrn Datum 14.04.2016
+Dr. Max Mustermann
+Musterstraße 1
+12345 Musterstadt
+                                                        
+                                                        
+                                                        
+Gutschrift von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 ISH.ST.EU.600 HEALT.C.U.ETF DE DE000A0Q4R36 (A0Q4R3)
+INHABER-ANLAGEAKTIEN
+Zahlbarkeitstag 15.04.2016 Ertrag pro St. 0,962472000 EUR
+Bestandsstichtag 14.04.2016 Inländischer Dividenden-
+Ex-Tag 15.04.2016 anteil pro St. 0,007344000 EUR
+Geschäftsjahr 01.03.2015 - 29.02.2016 Zinsanteil pro St. 0,016649700 EUR
+Ausländischer Dividenden- und Veräußerungs-
+gewinnanteil pro St. 0,972318100 EUR
+Ausschüttung 19,25+ EUR
+Anrechenbare Quellensteuer pro Stück 0,0144878 EUR 0,29 EUR
+Kapitalertragsteuerpflichtiger inländischer
+Dividendenanteil gesamt 0,15 EUR
+Verrechneter Sparer-Pauschbetrag 0,15 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Kapitalertragsteuerpflichtiger Zinsanteil gesamt 0,33 EUR
+Verrechneter Sparer-Pauschbetrag 0,33 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Kapitalertragsteuerpflichtiger ausländischer Dividenden- 
+und Veräußerungsgewinnanteil gesamt 19,45 EUR
+Verrechneter Sparer-Pauschbetrag 19,45 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 19,25+ EUR
+Bitte ggf. Rückseite beachten.
+0860.04150100.0002925ER03
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 1234567899
+Abrechnungsnr. 64628421310
+Datum 14.04.2016
++ anrechenbare Quellensteuer pro Stück 0,014487800 EUR
+= anrechenbare Quellensteuer pro Stück gesamt 0,014487800 EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 15.04.2016 zu Gunsten des Kontos 12345678, BLZ 370 110 00. 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2016 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 473,88 0,98 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.04150100.0002926ER03

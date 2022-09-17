@@ -7,6 +7,8 @@ import org.eclipse.swt.widgets.Menu;
 
 public class ContextMenu
 {
+    public static final String DEFAULT_MENU = "$defaultMenu$"; //$NON-NLS-1$
+
     private final Control owner;
     private final Menu menu;
 
@@ -25,6 +27,7 @@ public class ContextMenu
 
     public ContextMenu hook()
     {
+        owner.setData(DEFAULT_MENU, menu);
         owner.setMenu(menu);
         return this;
     }

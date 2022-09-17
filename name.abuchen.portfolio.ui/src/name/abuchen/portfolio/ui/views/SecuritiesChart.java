@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,10 +43,11 @@ import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
 import com.google.common.primitives.Doubles;
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
@@ -180,7 +182,7 @@ public class SecuritiesChart
                     if (tx.isEmpty())
                         return new ChartInterval(now, now);
 
-                    Collections.sort(tx, new TransactionPair.ByDate());
+                    Collections.sort(tx, TransactionPair.BY_DATE);
                     boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
                                     .getPositionsByVehicle().containsKey(security);
 
@@ -209,7 +211,7 @@ public class SecuritiesChart
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
-        EVENTS(Messages.LabelChartDetailMarkerSplits), //
+        EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
         FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
         FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
@@ -232,7 +234,8 @@ public class SecuritiesChart
         EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
-        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
+        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits);
 
         private final String label;
 
@@ -253,10 +256,15 @@ public class SecuritiesChart
         public final int start;
         public final int size;
 
-        public ChartRange(int start, int end)
+        public final LocalDate startDate;
+        public final LocalDate endDate;
+
+        public ChartRange(int start, int end, LocalDate startDate, LocalDate endDate)
         {
             this.start = start;
             this.size = end - start;
+            this.startDate = startDate;
+            this.endDate = endDate;
         }
 
         /**
@@ -286,7 +294,8 @@ public class SecuritiesChart
             if (end <= start)
                 return null;
 
-            return new ChartRange(start, end);
+            return new ChartRange(start, end, prices.get(start).getDate(),
+                            prices.get(Math.min(end, prices.size() - 1)).getDate());
         }
     }
 
@@ -361,6 +370,7 @@ public class SecuritiesChart
         container.setLayout(new FillLayout());
 
         chart = new TimelineChart(container);
+        chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
@@ -591,6 +601,7 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.EXTREMES));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
+        subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
@@ -701,9 +712,12 @@ public class SecuritiesChart
 
             if (security == null || security.getPrices().isEmpty())
             {
+                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
             }
+
+            chart.getTitle().setText(security.getName());
 
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
                             || chartConfig.contains(ChartDetails.PURCHASEPRICE);
@@ -753,7 +767,7 @@ public class SecuritiesChart
                     showAreaRelativeToFirstQuote = false;
             }
 
-            addChartMarkerBackground(chartInterval);
+            addChartMarkerBackground(chartInterval, range);
 
             for (int ii = 0; ii < range.size; ii++)
             {
@@ -842,7 +856,7 @@ public class SecuritiesChart
         }
     }
 
-    private void addChartMarkerBackground(ChartInterval chartInterval)
+    private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
@@ -910,6 +924,9 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EMA_200DAYS))
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
+
+        if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
+            addLimitLines(chartInterval, range);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -931,6 +948,47 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EXTREMES))
             addExtremesMarkerLines(chartInterval);
+    }
+
+    private void addLimitLines(ChartInterval chartInterval, ChartRange range)
+    {
+        this.security.getAttributes().getMap().forEach((key, val) -> {
+            // null OR not Limit Price --> ignore
+            if (val == null || val.getClass() != LimitPrice.class)
+                return;
+
+            LimitPrice limitAttribute = (LimitPrice) val;
+
+            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap because ReadOnlyClient only contains/provides default attributes
+                            .getSettings().getAttributeTypes()
+                            .filter(attr -> attr.getId().equals(key)).findFirst();
+            // could not find name of limit attribute --> don't draw
+            if (attributeName.isEmpty())
+                return;
+
+            String lineID = attributeName.get().getName() + " (" + limitAttribute.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            // horizontal line: only two points required
+            LocalDate[] dates = new LocalDate[2];
+            dates[0] = range.startDate;
+            dates[1] = range.endDate;
+
+            // both points with same y-value
+            double[] values = new double[2];
+            values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
+
+            ILineSeries lineSeriesLimit = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
+            lineSeriesLimit.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            lineSeriesLimit.setLineWidth(2);
+            lineSeriesLimit.setLineStyle(LineStyle.DASH);
+            lineSeriesLimit.enableArea(false);
+            lineSeriesLimit.setSymbolType(PlotSymbolType.NONE);
+            lineSeriesLimit.setYSeries(values);
+            lineSeriesLimit.setAntialias(swtAntialias);
+            lineSeriesLimit.setLineColor(Colors.ICON_ORANGE);
+            lineSeriesLimit.setYAxisId(0);
+            lineSeriesLimit.setVisibleInLegend(true);
+        });
     }
 
     private void addSMAMarkerLines(ChartInterval chartInterval, String smaSeries, String smaDaysWording, int smaDays,
@@ -984,21 +1042,21 @@ public class SecuritiesChart
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase);
+        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase, PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale);
+        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale, PlotSymbolType.INVERTED_TRIANGLE);
     }
 
-    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color)
+    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color, PlotSymbolType symbol)
     {
         if (transactions.isEmpty())
             return;
@@ -1028,7 +1086,7 @@ public class SecuritiesChart
             ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel + "2"); //$NON-NLS-1$
             border.setYAxisId(0);
             border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            border.setSymbolType(PlotSymbolType.DIAMOND);
+            border.setSymbolType(symbol);
             border.setSymbolSize(7);
 
             configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
@@ -1036,14 +1094,14 @@ public class SecuritiesChart
             ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             seriesLabel + "1"); //$NON-NLS-1$
             background.setYAxisId(0);
-            background.setSymbolType(PlotSymbolType.DIAMOND);
+            background.setSymbolType(symbol);
             background.setSymbolSize(6);
             background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
             configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
 
             ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
             inner.setYAxisId(0);
-            inner.setSymbolType(PlotSymbolType.DIAMOND);
+            inner.setSymbolType(symbol);
             inner.setSymbolSize(4);
             inner.setSymbolColor(color);
             configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
@@ -1064,7 +1122,7 @@ public class SecuritiesChart
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y + 10, true);
+                        event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
                     }
                 });
             }
@@ -1076,7 +1134,7 @@ public class SecuritiesChart
         List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
-                        .filter(t -> chartInterval.contains(t.getDateTime())).sorted(new Transaction.ByDate())
+                        .filter(t -> chartInterval.contains(t.getDateTime())).sorted(Transaction.BY_DATE)
                         .collect(Collectors.toList());
 
         if (dividends.isEmpty())
@@ -1096,7 +1154,7 @@ public class SecuritiesChart
                             .collect(Collectors.toList()).toArray(new Date[0]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-            double yAxis1stAxisPrice = yAxis1st.getRange().lower;
+            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * (1 - 2 * 0.08), 0.00001);
 
             double[] values = new double[dates.length];
             Arrays.fill(values, yAxis1stAxisPrice);
@@ -1131,8 +1189,17 @@ public class SecuritiesChart
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
+                    int yPosLabel = 0;
+                    int lastWriteLabelLevel1 = 0;
+                    int lastWriteLabelLevel2 = 0;
+                    int lastWriteLabelLevel3 = 0;
+
                     for (int index = 0; index < dates.length; index++)
                     {
+                        boolean freeSpaceForLabelLevel1 = true;
+                        boolean freeSpaceForLabelLevel2 = true;
+                        boolean freeSpaceForLabelLevel3 = true;
+
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
@@ -1140,7 +1207,35 @@ public class SecuritiesChart
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y - 22, true);
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel1) <= 0)
+                            freeSpaceForLabelLevel1 = false;
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel2) <= 0)
+                            freeSpaceForLabelLevel2 = false;
+
+                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel3) <= 0)
+                            freeSpaceForLabelLevel3 = false;
+
+                        if (freeSpaceForLabelLevel1 || freeSpaceForLabelLevel2 || freeSpaceForLabelLevel3)
+                        {
+                            if (freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = y - textExtent.y - border.getSymbolSize();
+                                lastWriteLabelLevel1 = (x + (textExtent.x / 2));
+                            }
+                            if (freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = yPosLabel - textExtent.y;
+                                lastWriteLabelLevel2 = (x + (textExtent.x / 2));
+                            }
+                            if (freeSpaceForLabelLevel3 && !freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
+                            {
+                                yPosLabel = yPosLabel - textExtent.y;
+                                lastWriteLabelLevel3 = (x + (textExtent.x / 2));
+                            }
+                            event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
+                        }
                     }
                 });
             }
@@ -1183,14 +1278,13 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.TRIANGLE, 10, //
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, // 
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.INVERTED_TRIANGLE, -25,
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, // 
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
-    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, int labelOffset,
-                    String seriesLabel, Color color)
+    private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color)
     {
         LocalDate eventDate = price.getDate();
         String valueFormat = Values.Quote.format(price.getValue());
@@ -1223,7 +1317,13 @@ public class SecuritiesChart
                     Point textExtent = event.gc.textExtent(valueFormat);
 
                     event.gc.setForeground(Colors.theme().defaultForeground());
-                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y + labelOffset, true);
+
+                    if (inner.getSymbolColor() == colorHigh)
+                        y = y - textExtent.y - inner.getSymbolSize();
+                    else
+                        y = y + inner.getSymbolSize();
+
+                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
                 });
             }
         }

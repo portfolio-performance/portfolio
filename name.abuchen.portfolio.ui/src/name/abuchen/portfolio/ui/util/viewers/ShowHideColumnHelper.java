@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
@@ -17,9 +14,11 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,7 +29,10 @@ import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
@@ -41,9 +43,11 @@ import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
@@ -62,31 +66,34 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
          * configuration.
          */
         private org.eclipse.swt.widgets.Listener changeListener;
+        private boolean redraw = true;
 
         abstract ColumnViewer getViewer();
 
         abstract int getColumnCount();
 
-        abstract Widget[] getColumns();
+        abstract int getHeaderHeight();
 
-        abstract Widget getColumn(int index);
+        abstract Item[] getColumns();
 
-        abstract Widget getSortColumn();
+        abstract Item getColumn(int index);
 
-        abstract Widget getColumnWidget(ViewerColumn column);
+        abstract Item getSortColumn();
+
+        abstract Item getColumnWidget(ViewerColumn column);
 
         abstract int[] getColumnOrder();
 
         abstract int getSortDirection();
 
-        abstract int getWidth(Widget col);
+        abstract int getWidth(Item col);
 
-        abstract void create(Column column, Object option, Integer direction, int width);
+        abstract int getColumnIndex(Point pt);
+
+        abstract Item create(Column column, Object option, Integer direction, int width);
 
         void setCommonParameters(Column column, ViewerColumn viewerColumn, Integer direction)
         {
-            viewerColumn.setLabelProvider(column.getLabelProvider());
-
             if (column.getSorter() != null)
             {
                 if (direction != null)
@@ -116,7 +123,13 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         void setRedraw(boolean redraw)
         {
+            this.redraw = redraw;
             getViewer().getControl().setRedraw(redraw);
+        }
+
+        boolean isRedraw()
+        {
+            return redraw;
         }
 
         public void setChangeListener(org.eclipse.swt.widgets.Listener changeListener)
@@ -167,25 +180,31 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public Widget[] getColumns()
+        int getHeaderHeight()
+        {
+            return table.getTable().getHeaderHeight();
+        }
+
+        @Override
+        public Item[] getColumns()
         {
             return table.getTable().getColumns();
         }
 
         @Override
-        public Widget getColumn(int index)
+        public Item getColumn(int index)
         {
             return table.getTable().getColumn(index);
         }
 
         @Override
-        public Widget getSortColumn()
+        public Item getSortColumn()
         {
             return table.getTable().getSortColumn();
         }
 
         @Override
-        Widget getColumnWidget(ViewerColumn column)
+        Item getColumnWidget(ViewerColumn column)
         {
             return ((TableViewerColumn) column).getColumn();
         }
@@ -203,13 +222,43 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public int getWidth(Widget col)
+        public int getWidth(Item col)
         {
             return ((TableColumn) col).getWidth();
         }
 
         @Override
-        public void create(Column column, Object option, Integer direction, int width)
+        int getColumnIndex(Point pt)
+        {
+            // https://stackoverflow.com/a/22197297/1158146
+
+            int rowCount = table.getTable().getItemCount();
+
+            TableItem item = rowCount == 0 ? new TableItem(table.getTable(), 0) : table.getTable().getItem(0);
+
+            try
+            {
+                int columnCount = table.getTable().getColumnCount();
+                int[] order = table.getTable().getColumnOrder();
+
+                for (int index = 0; index < columnCount; index++)
+                {
+                    Rectangle rect = item.getBounds(order[index]);
+                    if (pt.x >= rect.x && pt.x <= rect.x + rect.width)
+                        return order[index];
+                }
+            }
+            finally
+            {
+                if (rowCount == 0)
+                    item.dispose();
+            }
+
+            return NO_COLUMN_SELECTED;
+        }
+
+        @Override
+        public Item create(Column column, Object option, Integer direction, int width)
         {
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
 
@@ -239,17 +288,22 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
+            CellLabelProvider labelProvider = column.getLabelProvider().get();
+            col.setLabelProvider(labelProvider);
+
             setCommonParameters(column, col, direction);
 
-            if (column.getLabelProvider() instanceof CellItemImageClickedListener)
-                setupImageClickedListener(column, tableColumn);
+            if (labelProvider instanceof CellItemImageClickedListener)
+                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
+
+            return tableColumn;
         }
 
-        private void setupImageClickedListener(Column column, TableColumn tableColumn)
+        private void setupImageClickedListener(TableViewerColumn viewerColumn, CellItemImageClickedListener cellImage)
         {
             org.eclipse.swt.widgets.Listener listener = event -> {
 
-                int columnIndex = table.getTable().indexOf(tableColumn);
+                int columnIndex = table.getTable().indexOf(viewerColumn.getColumn());
                 if (columnIndex == -1)
                     return;
 
@@ -261,11 +315,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 Rectangle rect = tableItem.getImageBounds(columnIndex);
                 if (rect.contains(pt))
-                    ((CellItemImageClickedListener) column.getLabelProvider()).onImageClicked(tableItem.getData());
+                    cellImage.onImageClicked(tableItem.getData());
             };
 
             table.getTable().addListener(SWT.MouseUp, listener);
-            tableColumn.addDisposeListener(e -> table.getTable().removeListener(SWT.MouseUp, listener));
+            viewerColumn.getColumn().addDisposeListener(e -> table.getTable().removeListener(SWT.MouseUp, listener));
         }
     }
 
@@ -293,25 +347,31 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public Widget[] getColumns()
+        int getHeaderHeight()
+        {
+            return tree.getTree().getHeaderHeight();
+        }
+
+        @Override
+        public Item[] getColumns()
         {
             return tree.getTree().getColumns();
         }
 
         @Override
-        public Widget getColumn(int index)
+        public Item getColumn(int index)
         {
             return tree.getTree().getColumn(index);
         }
 
         @Override
-        public Widget getSortColumn()
+        public Item getSortColumn()
         {
             return tree.getTree().getSortColumn();
         }
 
         @Override
-        Widget getColumnWidget(ViewerColumn column)
+        Item getColumnWidget(ViewerColumn column)
         {
             return ((TreeViewerColumn) column).getColumn();
         }
@@ -329,13 +389,41 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
-        public int getWidth(Widget col)
+        public int getWidth(Item col)
         {
             return ((TreeColumn) col).getWidth();
         }
 
         @Override
-        public void create(Column column, Object option, Integer direction, int width)
+        int getColumnIndex(Point pt)
+        {
+            int rowCount = tree.getTree().getItemCount();
+
+            TreeItem item = rowCount == 0 ? new TreeItem(tree.getTree(), 0) : tree.getTree().getItem(0);
+
+            try
+            {
+                int columnCount = tree.getTree().getColumnCount();
+                int[] order = tree.getTree().getColumnOrder();
+
+                for (int index = 0; index < columnCount; index++)
+                {
+                    Rectangle rect = item.getBounds(order[index]);
+                    if (pt.x >= rect.x && pt.x <= rect.x + rect.width)
+                        return order[index];
+                }
+            }
+            finally
+            {
+                if (rowCount == 0)
+                    item.dispose();
+            }
+
+            return NO_COLUMN_SELECTED;
+        }
+
+        @Override
+        public Item create(Column column, Object option, Integer direction, int width)
         {
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
 
@@ -364,17 +452,22 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
+            CellLabelProvider labelProvider = column.getLabelProvider().get();
+            col.setLabelProvider(labelProvider);
+
             setCommonParameters(column, col, direction);
 
-            if (column.getLabelProvider() instanceof CellItemImageClickedListener)
-                setupImageClickedListener(column, treeColumn);
+            if (labelProvider instanceof CellItemImageClickedListener)
+                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
+
+            return treeColumn;
         }
 
-        private void setupImageClickedListener(Column column, TreeColumn treeColumn)
+        private void setupImageClickedListener(TreeViewerColumn viewerColumn, CellItemImageClickedListener cellImage)
         {
             org.eclipse.swt.widgets.Listener listener = event -> {
 
-                int columnIndex = tree.getTree().indexOf(treeColumn);
+                int columnIndex = tree.getTree().indexOf(viewerColumn.getColumn());
                 if (columnIndex == -1)
                     return;
 
@@ -385,17 +478,18 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 Rectangle rect = treeItem.getImageBounds(columnIndex);
                 if (rect.contains(pt))
-                    ((CellItemImageClickedListener) column.getLabelProvider()).onImageClicked(treeItem.getData());
+                    cellImage.onImageClicked(treeItem.getData());
             };
 
             tree.getTree().addListener(SWT.MouseUp, listener);
-            treeColumn.addDisposeListener(e -> tree.getTree().removeListener(SWT.MouseUp, listener));
+            viewerColumn.getColumn().addDisposeListener(e -> tree.getTree().removeListener(SWT.MouseUp, listener));
         }
 
     }
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
-    private static final Pattern CONFIG_PATTERN = Pattern.compile("^([^=]*)=(?:([^\\|]*)\\|)?(?:(\\d*)\\$)?(\\d*)$"); //$NON-NLS-1$
+    private static final String ORIGINAL_LABEL_KEY = "$original_label$"; //$NON-NLS-1$
+    private static final int NO_COLUMN_SELECTED = -1;
 
     private final String identifier;
 
@@ -408,6 +502,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private ViewerPolicy policy;
     private Menu contextMenu;
+    private int selectedColumnIndex = NO_COLUMN_SELECTED;
 
     public ShowHideColumnHelper(String identifier, IPreferenceStore preferences, TreeViewer viewer,
                     TreeColumnLayout layout)
@@ -436,7 +531,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (client != null)
         {
             this.store = new ConfigurationStore(identifier, client, preferences, this);
-            this.policy.setChangeListener(e -> store.updateActive(serialize()));
+            this.policy.setChangeListener(e -> {
+                if (this.policy.isRedraw())
+                    store.updateActive(serialize());
+            });
         }
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
@@ -486,7 +584,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     @Override
-    public void menuAboutToShow(final IMenuManager manager)
+    public void menuAboutToShow(final IMenuManager manager) // NOSONAR
     {
         final Map<Column, List<Object>> visible = new HashMap<>();
         for (Widget col : policy.getColumns())
@@ -607,28 +705,33 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void destroyColumnWithOption(Column column, Object option)
     {
-        for (Widget widget : policy.getColumns())
+        for (Item widget : policy.getColumns())
         {
             if (column.equals(widget.getData(Column.class.getName())) //
                             && (option == null || option.equals(widget.getData(OPTIONS_KEY))))
             {
-                try
-                {
-                    policy.setRedraw(false);
-
-                    Widget sortColumn = policy.getSortColumn();
-                    if (widget.equals(sortColumn))
-                        policy.getViewer().setComparator(null);
-
-                    widget.dispose();
-                }
-                finally
-                {
-                    policy.getViewer().refresh();
-                    policy.setRedraw(true);
-                }
+                destroyColumn(widget);
                 break;
             }
+        }
+    }
+
+    private void destroyColumn(Item viewerColumn)
+    {
+        try
+        {
+            policy.setRedraw(false);
+
+            Widget sortColumn = policy.getSortColumn();
+            if (viewerColumn.equals(sortColumn))
+                policy.getViewer().setComparator(null);
+
+            viewerColumn.dispose();
+        }
+        finally
+        {
+            policy.getViewer().refresh();
+            policy.setRedraw(true);
         }
     }
 
@@ -663,7 +766,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             policy.setRedraw(false);
 
-            for (Column column : columns)
+            for (Column column : columns) // NOSONAR
             {
                 if (!group.equals(column.getGroupLabel()))
                     continue;
@@ -720,42 +823,50 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     public void createColumns()
     {
-        createFromColumnConfig();
+        createColumns(false);
+    }
+
+    public void createColumns(boolean isEditable) // NOSONAR
+    {
+        createFromColumnConfig(store != null ? store.getActive() : preferences.getString(identifier));
 
         if (policy.getColumnCount() == 0)
         {
-            columns.stream().filter(c -> c.isVisible())
+            columns.stream().filter(Column::isVisible)
                             .forEach(c -> policy.create(c, null, c.getDefaultSortDirection(), c.getDefaultWidth()));
         }
-    }
 
-    private void createFromColumnConfig()
-    {
-        // if a configuration store is used, then migrate the preferences into
-        // the store. This is done once. Unfortunately, if the user then does
-        // not save the file subsequently, the configuration is lost (e.g. the
-        // order and size of the displayed columns). Therefore the key is saved
-        // for manual recovery.
-
-        // if no configuration store is used (i.e. column configuration cannot
-        // be saved), we continue to use the preferences to store configuration
-
-        String configInPreferences = preferences.getString(identifier);
-
-        if (store != null && !configInPreferences.isEmpty())
+        if (isEditable)
         {
-            preferences.setToDefault(identifier);
-            preferences.setValue("__backup__" + identifier, configInPreferences); //$NON-NLS-1$
-            store.insertMigratedConfiguration(configInPreferences);
-        }
+            ContextMenu headerMenu = new ContextMenu(policy.getViewer().getControl(), this::headerMenuAboutToShow);
 
-        String config = store != null ? store.getActive() : configInPreferences;
-        createFromColumnConfig(config);
+            policy.getViewer().getControl().addListener(SWT.MenuDetect, event -> {
+                Control control = policy.getViewer().getControl();
+                Menu tableMenu = (Menu) control.getData(ContextMenu.DEFAULT_MENU);
+                Point pt = event.display.map(null, control, new Point(event.x, event.y));
+                Rectangle clientArea = ((Composite) control).getClientArea();
+                boolean isHeader = clientArea.y <= pt.y && pt.y < (clientArea.y + policy.getHeaderHeight());
+
+                if (isHeader)
+                {
+                    // remember the current column in selectedColumnIndex for
+                    // later use in the context menu
+
+                    selectedColumnIndex = policy.getColumnIndex(pt);
+                    control.setMenu(headerMenu.getMenu());
+                }
+                else
+                {
+                    control.setMenu(tableMenu);
+                }
+            });
+        }
     }
 
     private void createFromColumnConfig(String config)
     {
-        if (config == null || config.trim().length() == 0)
+        ColumnConfiguration configuration = ColumnConfiguration.read(config);
+        if (configuration == null)
             return;
 
         try
@@ -765,49 +876,34 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // turn of sorting in case new columns define no viewer comparator
             policy.getViewer().setComparator(null);
 
-            int count = policy.getColumnCount();
+            int oldCount = policy.getColumnCount();
 
-            StringTokenizer tokens = new StringTokenizer(config, ";"); //$NON-NLS-1$
-            while (tokens.hasMoreTokens())
-            {
-                try
+            configuration.getItems().forEach(item -> {
+                // index
+                Column col = id2column.get(item.getId());
+                if (col == null)
+                    return;
+
+                // option
+                Object option = null;
+
+                if (col.hasOptions())
                 {
-                    Matcher matcher = CONFIG_PATTERN.matcher(tokens.nextToken());
-                    if (!matcher.matches())
-                        continue;
-
-                    // index
-                    Column col = id2column.get(matcher.group(1));
-                    if (col == null)
-                        continue;
-
-                    // option
-                    Object option = null;
-
-                    if (col.hasOptions())
-                    {
-                        String o = matcher.group(2);
-                        option = col.getOptions().valueOf(o);
-                        if (option == null)
-                            continue;
-                    }
-
-                    // direction
-                    String d = matcher.group(3);
-                    Integer direction = d != null ? Integer.parseInt(d) : null;
-
-                    // width
-                    int width = Integer.parseInt(matcher.group(4));
-
-                    policy.create(col, option, direction, width);
+                    option = col.getOptions().valueOf(item.getOption());
+                    if (option == null)
+                        return;
                 }
-                catch (RuntimeException e)
+
+                Item viewerColumn = policy.create(col, option, item.getSortDirection(), item.getWidth());
+
+                if (item.getLabel() != null)
                 {
-                    PortfolioPlugin.log(e);
+                    viewerColumn.setData(ORIGINAL_LABEL_KEY, viewerColumn.getText());
+                    viewerColumn.setText(item.getLabel());
                 }
-            }
+            });
 
-            for (int ii = 0; ii < count; ii++)
+            for (int ii = 0; ii < oldCount; ii++)
                 policy.getColumn(0).dispose();
         }
         finally
@@ -851,24 +947,32 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private String serialize()
     {
-        StringBuilder buf = new StringBuilder();
+        ColumnConfiguration configuration = new ColumnConfiguration();
 
         Widget sortedColumn = policy.getSortColumn();
 
         for (int index : policy.getColumnOrder())
         {
-            Widget col = policy.getColumn(index);
+            Item col = policy.getColumn(index);
             Column column = (Column) col.getData(Column.class.getName());
-            buf.append(column.getId()).append('=');
+
+            ColumnConfiguration.Item item = new ColumnConfiguration.Item(column.getId());
 
             if (column.hasOptions())
-                buf.append(column.getOptions().toString(col.getData(OPTIONS_KEY))).append('|');
+                item.setOption(column.getOptions().toString(col.getData(OPTIONS_KEY)));
             if (col.equals(sortedColumn))
-                buf.append(policy.getSortDirection()).append('$');
+                item.setSortDirection(policy.getSortDirection());
 
-            buf.append(policy.getWidth(col)).append(';');
+            item.setWidth(policy.getWidth(col));
+
+            String originalLabel = (String) col.getData(ORIGINAL_LABEL_KEY);
+            if (originalLabel != null)
+                item.setLabel(col.getText());
+
+            configuration.addItem(item);
         }
-        return buf.toString();
+
+        return configuration.serialize();
     }
 
     @Override
@@ -885,8 +989,57 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         else
             createFromColumnConfig(data);
 
-        listeners.stream().forEach(l -> l.onConfigurationPicked());
+        listeners.stream().forEach(Listener::onConfigurationPicked);
 
         policy.getViewer().refresh();
+    }
+
+    private void headerMenuAboutToShow(IMenuManager manager)
+    {
+        if (selectedColumnIndex == NO_COLUMN_SELECTED)
+            return;
+
+        Item widget = policy.getColumn(selectedColumnIndex);
+        if (widget == null)
+            return;
+
+        Column column = (Column) widget.getData(Column.class.getName());
+        if (column == null)
+            return;
+
+        String originalLabel = (String) widget.getData(ORIGINAL_LABEL_KEY);
+
+        manager.add(new LabelOnly(originalLabel != null ? originalLabel : widget.getText()));
+
+        manager.add(new SimpleAction(Messages.MenuRenameColumn, a -> {
+
+            String oldLabel = widget.getText();
+
+            InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ColumnName,
+                            Messages.ColumnName, oldLabel,
+                            text -> text != null && text.length() > 0 ? null : Messages.LabelError);
+            if (dlg.open() != InputDialog.OK) // NOSONAR
+                return;
+
+            String newLabel = dlg.getValue();
+            widget.setText(newLabel);
+
+            if (originalLabel == null)
+                widget.setData(ORIGINAL_LABEL_KEY, oldLabel);
+        }));
+
+        if (originalLabel != null)
+        {
+            manager.add(new SimpleAction(Messages.MenuResetColumnName, a -> {
+                widget.setData(ORIGINAL_LABEL_KEY, null);
+                widget.setText(originalLabel);
+            }));
+        }
+
+        if (column.isRemovable())
+        {
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.MenuHideColumn, a -> destroyColumn(widget)));
+        }
     }
 }

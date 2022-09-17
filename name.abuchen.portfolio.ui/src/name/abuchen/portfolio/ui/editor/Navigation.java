@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -32,7 +34,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
-import name.abuchen.portfolio.ui.views.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.PerformanceView;
@@ -44,6 +45,7 @@ import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.currency.CurrencyView;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
+import name.abuchen.portfolio.ui.views.holdings.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
@@ -183,6 +185,7 @@ public final class Navigation
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
+    @Inject
     /* protected */ Navigation(Client client)
     {
         createGeneralDataSection(client);
@@ -597,7 +600,7 @@ public final class Navigation
         roots.add(section);
 
         section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
-        section.add(new Item(Messages.LabelSettings, SettingsView.class, true));
+        section.add(new Item(Messages.LabelSettings, SettingsView.class));
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

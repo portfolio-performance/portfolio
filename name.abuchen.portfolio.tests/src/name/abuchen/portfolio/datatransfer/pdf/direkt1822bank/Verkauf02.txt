@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1 von 2
+Depotnummer 1234567890
+Kundennummer 1234567
+Max Mustermann
+Auftragsnummer 123456/78.00
+Herrn Datum 30.03.2022
+Max Mustermann Ihr Berater 1822direkt
+Muster Str. 9 Telefon 069 94170-0
+12345 Musterstadt , Musterbunde Rechnungsnummer W01234-5678901234/56
+Umsatzsteuer-ID DE123456785
+Wertpapier Abrechnung Rücknahme Investmentfonds
+Auftrag vom 28.03.2022 09:21:58 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,0702 LYXOR MSCI EMERG.MKTS U.ETF LU0635178014 (ETF127)
+INH.-AN. I O.N.
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 29.03.2022 Auftraggeber Mustermann, Max
+Ausführungskurs 45,322 EUR Auftragserteilung/ -ort sonstige
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 3,18 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust (nach Teilfreistellung) 0,12- EUR
+Eingebuchte sonstige negative Kapitalerträge 0,12 EUR
+Ausmachender Betrag 3,18 EUR
+Den Gegenwert buchen wir mit Valuta 31.03.2022 zu Gunsten des Kontos 1234567891
+(IBAN DE12 5005 0201 1234 5678 91), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+1234.56789012.3456789OR12
+Seite 2 von 2
+Depotnummer 1234567890
+Kundennummer 1234567
+Auftragsnummer 123456/78.00
+Datum 30.03.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 1,00 0,00 0,00
+Verkauf 0,00 0,12 0,00 0,00 0,00
+Nachher 0,00 0,12 1,00 0,00 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 1234567890 05.01.2022 Stück 0,0702 3,35- 3,18 0,05 0,12- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 0,12-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.56789012.3456789OR12

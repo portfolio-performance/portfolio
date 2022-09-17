@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -69,7 +70,9 @@ public abstract class AbstractFinanceView
     private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getDefaultTitle();
-
+    
+    SashLayout sashLayout;
+    
     protected String getTitle()
     {
         return titleText;
@@ -152,11 +155,12 @@ public abstract class AbstractFinanceView
         Composite sash = new Composite(top, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(sash);
 
-        SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
-        sashLayout.setTag(UIConstants.Tag.INFORMATIONPANE);
-        sash.setLayout(sashLayout);
+        SashLayout sl = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        sl.setTag(UIConstants.Tag.INFORMATIONPANE);
+        sash.setLayout(sl);
 
         createBody(sash);
+        sashLayout = sl;
 
         pane = make(InformationPane.class);
         pane.createViewControl(sash);
@@ -179,6 +183,21 @@ public abstract class AbstractFinanceView
         actionToolBar.update(false);
 
         notifyViewCreationCompleted();
+    }
+    
+    public void flipPane()
+    {
+        if (sashLayout != null)
+            sashLayout.flip();
+    }
+    
+    public boolean isPaneHidden()
+    {
+        if (sashLayout == null)
+            return false;
+            
+        return sashLayout.isHidden();
+        
     }
 
     protected abstract Control createBody(Composite parent);
@@ -271,7 +290,10 @@ public abstract class AbstractFinanceView
 
         Menu contextMenu = menuMgr.createContextMenu(control);
         if (hook)
+        {
+            control.setData(ContextMenu.DEFAULT_MENU, contextMenu);
             control.setMenu(contextMenu);
+        }
 
         contextMenus.add(contextMenu);
 

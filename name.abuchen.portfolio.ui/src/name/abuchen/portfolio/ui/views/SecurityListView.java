@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -36,8 +37,10 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -198,14 +201,18 @@ public class SecurityListView extends AbstractFinanceView
         private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
         private final Predicate<Security> sharesNotZero = record -> getSharesHeld(getClient(), record) != 0;
         private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
+        private final Predicate<Security> limitPriceExceeded = record -> isLimitPriceExceeded(record);
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
             super(Messages.SecurityListFilter, Images.FILTER_OFF, SWT.NONE);
             setMenuListener(this);
 
-            int savedFilters;
-            if (watchlist != null)
+            int savedFilters = 0;
+
+            if (adhocFilter != null)
+                filter.add(adhocFilter);
+            else if (watchlist != null)
                 savedFilters = preferenceStore.getInt(
                                 this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName()); //$NON-NLS-1$ //$NON-NLS-2$
             else
@@ -221,11 +228,17 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(sharesNotZero);
             if ((savedFilters & (1 << 5)) != 0)
                 filter.add(sharesEqualZero);
+            if ((savedFilters & (1 << 6)) != 0)
+                filter.add(limitPriceExceeded);
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
 
             addDisposeListener(e -> {
+
+                // save filter configuration only if it is not an ad hoc filter
+                if (adhocFilter != null)
+                    return;
 
                 int savedFilter = 0;
                 if (filter.contains(securityIsNotInactive))
@@ -238,6 +251,8 @@ public class SecurityListView extends AbstractFinanceView
                     savedFilter += (1 << 4);
                 if (filter.contains(sharesEqualZero))
                     savedFilter += (1 << 5);
+                if (filter.contains(limitPriceExceeded))
+                    savedFilter += (1 << 6);
                 if (watchlist != null)
                     preferenceStore.setValue(
                                     this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), //$NON-NLS-1$ //$NON-NLS-2$
@@ -277,14 +292,38 @@ public class SecurityListView extends AbstractFinanceView
                             }).sum(), 0);
         }
 
+        private boolean isLimitPriceExceeded(Security security)
+        {
+            for (Object attribute : security.getAttributes().getMap().values())
+            {
+                if (!(attribute instanceof LimitPrice))
+                    continue;
+
+                LimitPrice limit = (LimitPrice) attribute;
+
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest != null && limit.isExceeded(latest))
+                    return true;
+            }
+
+            return false;
+        }
+
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
+            if (adhocFilter != null)
+            {
+                manager.add(createAction(Messages.LabelAdhocFilter, adhocFilter));
+                manager.add(new Separator());
+            }
+
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
             manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
             manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+            manager.add(createAction(Messages.SecurityListFilterLimitPriceExceeded, limitPriceExceeded));
         }
 
         private Action createAction(String label, Predicate<Security> predicate)
@@ -334,6 +373,8 @@ public class SecurityListView extends AbstractFinanceView
 
     private Pattern filterPattern;
 
+    private Predicate<Security> adhocFilter;
+
     @Override
     protected String getDefaultTitle()
     {
@@ -364,6 +405,13 @@ public class SecurityListView extends AbstractFinanceView
     public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Watchlist parameter)
     {
         this.watchlist = parameter;
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Predicate<Security> adhocFilter)
+    {
+        this.adhocFilter = adhocFilter;
     }
 
     @Override

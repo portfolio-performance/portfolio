@@ -24,7 +24,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
-@SuppressWarnings("restriction")
 public class CSVConfigurationsMenuContribution
 {
     @Inject

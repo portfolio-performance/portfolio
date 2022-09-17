@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 10.03.2020
+Alter Saldo per 09.03.2020 1.498,24-
+Summe der Gutschriften 1.975,04
+Online Summe der Lastschriften 1.937,12-
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Lasten
+Max Muster EUR 1.460,32-
+Musterstraße 5
+1234 Dorf
+Konto-Nr.: 00012345678 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+10.03 Verkauf                          Depot    0123456789/20200309-45296224 11.03 1.975,04
+ISIN DE000A0S9GB0 0% DT.BOERSE COM. XETRA-GOL            43,00000 STK
+Kurs                     47,200000  KURSWERT             2.029,60 EUR
+KEST                    -38,34 EUR  Handelsspesen           -7,72 EUR
+DADAT Handelsspesen      -8,50 EUR
+10.03 Kauf                             Depot    0123456789/20200309-45631060 11.03 514,19-
+ISIN IE00B4L5YC18 ISHSIII-MSCI EM USD(ACC)               19,00000 STK
+Kurs                     26,561000  KURSWERT              -504,66 EUR
+Handelsspesen            -3,70 EUR  DADAT Handelsspesen     -5,83 EUR
+10.03 Kauf                             Depot    0123456789/20200310-45663225 12.03 1.422,93-
+ISIN IE00B4L5Y983 ISHSIII-CORE MSCI WLD DLA              30,00000 STK
+Kurs                     47,230000  KURSWERT            -1.416,90 EUR
+DADAT Handelsspesen      -6,03 EUR
+Neuer Saldo zu Ihren Lasten 1.460,32-
+AT41 1234 1234 1234 1234 BSSWATWW 01 1234 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 06295 Doknr.: EK20-045-0123456789

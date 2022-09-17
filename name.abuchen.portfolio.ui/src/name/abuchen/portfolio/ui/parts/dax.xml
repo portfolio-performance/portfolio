@@ -19738,10 +19738,8 @@
     <taxonomy>
       <id>assetclasses</id>
       <name>Anlagekategorien</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Anlagekategorie</string>
-        </a>
+      <dimensions>
+        <string>Anlagekategorie</string>
       </dimensions>
       <root>
         <id>assetclasses</id>
@@ -19969,13 +19967,11 @@
     <taxonomy>
       <id>industry-gics</id>
       <name>Branchen (GICS)</name>
-      <dimensions class="java.util.Arrays$ArrayList">
-        <a class="string-array">
-          <string>Sektor</string>
-          <string>Industriegruppe</string>
-          <string>Industriezweig</string>
-          <string>Branche</string>
-        </a>
+      <dimensions>
+        <string>Sektor</string>
+        <string>Industriegruppe</string>
+        <string>Industriezweig</string>
+        <string>Branche</string>
       </dimensions>
       <root>
         <id>industry-gics</id>

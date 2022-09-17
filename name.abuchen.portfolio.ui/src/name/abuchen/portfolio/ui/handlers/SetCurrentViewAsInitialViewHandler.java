@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import java.text.MessageFormat;
 import java.util.Optional;
 
 import javax.inject.Named;
@@ -9,8 +10,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;

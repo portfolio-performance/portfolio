@@ -1,0 +1,311 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: xxxxxxxxxxx
+Depotinhaber:
+Herrn Max Mustermann
+Max Mustermann
+Straße. 1 Bankverbindung generell:IBAN:
+12345 Musterstadt DExx xxxx xxxx xxxx xxxx xx
+Bank
+Kontoinhaber:
+Mustermann, Max
+4. April 2022
+Ertragsabrechnungen Auszug: 17 / Seite 1 von 7
+Käufe von Wertpapieren
+Käufe aus Tausch von Wertpapieren
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Lyxor MSCI USA UCITS ETF D-EUR
+ISIN: FR0010296061 Unterdepot: 00 Auftragsnummer: 9703 5128
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,272
+Abrechnungsbetrag EUR 6,98 EUR 6,98 EUR 393,770000 Anteilumsatz: 0,018
+Bestand neu: 0,290
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 2 von 7
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Schroder ISF Global Climate Change Equity C
+ISIN: LU0302447452 Unterdepot: 00 Auftragsnummer: 9705 6371
+Verwahrart: WR-Gutschrift Lagerland: LUXEM Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 1,192
+Abrechnungsbetrag EUR 2,35 EUR 2,35 EUR 32,987600 Anteilumsatz: 0,071
+Bestand neu: 1,263
+
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 17.03.2022
+Anteilbestand am Ertragstermin: 0,655
+Ausschüttung (pro Anteil EUR 1,5313000): EUR 1,00
+Bezeichnung: iShares EUR High Yield Corp Bond UCITS ETF
+ISIN: IE00B66F4759 Unterdepot: 00 Auftragsnummer: 9301 6001
+Verwahrart: GiroSammel Abrechnungstag: 31.03.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Ausschüttung EUR 1,00 Kurs Bestand alt: 0,742
+=Übertrag EUR 1,00 EUR 1,00 EUR 96,514000 Anteilumsatz: 0,000
+Bestand neu: 0,742
+
+KAUF AUS ERTRAG 
+Bezeichnung: iShares EUR High Yield Corp Bond UCITS ETF
+ISIN: IE00B66F4759 Unterdepot: 00 Auftragsnummer: 9711 1533
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,742
+Abrechnungsbetrag EUR 1,00 EUR 1,00 EUR 96,576000 Anteilumsatz: 0,010
+Bestand neu: 0,752
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 3 von 7
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: iShares EUR High Yield Corp Bond UCITS ETF
+ISIN: IE00B66F4759 Unterdepot: 00 Auftragsnummer: 9709 6969
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,752
+Abrechnungsbetrag EUR 4,98 EUR 4,98 EUR 96,576000 Anteilumsatz: 0,052
+Bestand neu: 0,804
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: iShares US Aggregate Bond UCITS ETF
+ISIN: IE00B44CGS96 Unterdepot: 00 Auftragsnummer: 9712 7274
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,960
+Abrechnungsbetrag EUR 6,22 USD 6,88 USD 102,155229 Anteilumsatz: 0,067
+Devisenkurs Bestand neu: 1,027
+USD 1,106630
+
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 17.03.2022
+Anteilbestand am Ertragstermin: 0,619
+Ausschüttung (pro Anteil EUR 0,2292000): EUR 0,14
+Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
+ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9302 2538
+Verwahrart: GiroSammel Abrechnungstag: 31.03.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Ausschüttung EUR 0,14 Kurs Bestand alt: 0,739
+=Übertrag EUR 0,14 EUR 0,14 EUR 78,516000 Anteilumsatz: 0,000
+Bestand neu: 0,739
+
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 4 von 7
+
+KAUF AUS ERTRAG 
+Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
+ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9715 5001
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,739
+Abrechnungsbetrag EUR 0,14 EUR 0,14 EUR 78,378000 Anteilumsatz: 0,002
+Bestand neu: 0,741
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)
+ISIN: IE00B9M6RS56 Unterdepot: 00 Auftragsnummer: 9714 2092
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,741
+Abrechnungsbetrag EUR 3,66 EUR 3,66 EUR 78,378000 Anteilumsatz: 0,047
+Bestand neu: 0,788
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Amundi Index MSCI Japan UCITS ETF
+ISIN: LU1602144732 Unterdepot: 00 Auftragsnummer: 9718 1490
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,168
+Abrechnungsbetrag EUR 2,70 EUR 2,70 EUR 226,510000 Anteilumsatz: 0,012
+Bestand neu: 0,180
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 5 von 7
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka-Nachhaltigkeit Aktien CF (A)
+ISIN: LU0703710904 Unterdepot: 00 Auftragsnummer: 9733 9061
+Verwahrart: GiroSammel Abrechnungstag: 04.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,155
+Abrechnungsbetrag EUR 2,56 EUR 2,56 EUR 259,100000 Anteilumsatz: 0,010
+Bestand neu: 0,165
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka-Industrie 4.0 CF
+ISIN: LU1508359509 Unterdepot: 00 Auftragsnummer: 9734 0025
+Verwahrart: GiroSammel Abrechnungstag: 04.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,200
+Abrechnungsbetrag EUR 2,42 EUR 2,42 EUR 184,300000 Anteilumsatz: 0,013
+Bestand neu: 0,213
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka iBoxx EUR Liquid Sovereign Diversified 5-7 UCITS ETF
+ISIN: DE000ETFL144 Unterdepot: 00 Auftragsnummer: 9721 1901
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,478
+Abrechnungsbetrag EUR 3,73 EUR 3,73 EUR 110,285000 Anteilumsatz: 0,034
+Bestand neu: 0,512
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 6 von 7
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka MSCI Europe UCITS ETF
+ISIN: DE000ETFL284 Unterdepot: 00 Auftragsnummer: 9723 4163
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 4,285
+Abrechnungsbetrag EUR 4,35 EUR 4,35 EUR 15,448000 Anteilumsatz: 0,282
+Bestand neu: 4,567
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka iBoxx EUR Liquid Corporates Diversified UCITS ETF
+ISIN: DE000ETFL375 Unterdepot: 00 Auftragsnummer: 9724 3146
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,334
+Abrechnungsbetrag EUR 2,56 EUR 2,56 EUR 107,035000 Anteilumsatz: 0,024
+Bestand neu: 0,358
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: ComStage CBK Commodity ex-Agri. Monthly EUR Hdg UCITS ETF
+ISIN: LU1275255799 Unterdepot: 00 Auftragsnummer: 9727 4488
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 0,527
+Abrechnungsbetrag EUR 3,80 EUR 3,80 EUR 104,680000 Anteilumsatz: 0,036
+Bestand neu: 0,563
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0235710233
+Auszug: 17 / Seite 7 von 7
+
+TAUSCH/KAUF 
+zu Lasten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Lyxor MSCI Emerging Markets UCITS ETF
+ISIN: FR0010429068 Unterdepot: 00 Auftragsnummer: 9728 1854
+Verwahrart: GiroSammel Abrechnungstag: 01.04.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs/Kaufpreis Bestand alt: 4,404
+Abrechnungsbetrag EUR 3,46 EUR 3,46 EUR 12,060000 Anteilumsatz: 0,287
+Bestand neu: 4,691
+
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste EUR 2,92
+(sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Eine evtl. Meldepflicht nach § 63ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+Bitte prüfen Sie die vorliegenden Informationen.
+Der Kauf, Verkauf und Tausch von Wertpapieren erfolgt im Auftrag Ihres Vermögensverwalters, der Deka
+Vermögensmanagement GmbH, im Rahmen der Vermögensverwaltung. Weitergehende Informationen können
+Sie Ihrer Postbox und Ihrem Orderbuch entnehmen.
+Über Chancen, Risiken und Kosten der Anlage informieren Sie die "Wesentlichen Anlegerinformationen" bzw.
+das Produktinformationsblatt. Wünschen Sie weitere aktuelle Informationen zu Ihrer Anlage, können Sie diese
+jederzeit im Internet über www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

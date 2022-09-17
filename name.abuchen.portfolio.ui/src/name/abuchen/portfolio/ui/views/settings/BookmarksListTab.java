@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -35,6 +36,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
@@ -50,6 +52,9 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
     @Inject
     private IPreferenceStore preferences;
+
+    @Inject
+    private AbstractFinanceView view;
 
     @Override
     public String getTitle()
@@ -99,6 +104,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
         bookmarks = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(bookmarks);
+        CopyPasteSupport.enableFor(bookmarks);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(BookmarksListTab.class.getSimpleName() + "@bottom", //$NON-NLS-1$
                         preferences, bookmarks, layout);
@@ -147,6 +153,9 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();
+
+        bookmarks.addSelectionChangedListener(
+                        e -> view.setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         new ContextMenu(bookmarks.getTable(), this::fillContextMenu).hook();
 

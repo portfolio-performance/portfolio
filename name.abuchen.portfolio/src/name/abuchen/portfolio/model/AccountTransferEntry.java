@@ -11,18 +11,25 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     public AccountTransferEntry()
     {
-        this.transactionFrom = new AccountTransaction();
-        this.transactionFrom.setType(AccountTransaction.Type.TRANSFER_OUT);
-        this.transactionFrom.setCrossEntry(this);
-
-        this.transactionTo = new AccountTransaction();
-        this.transactionTo.setType(AccountTransaction.Type.TRANSFER_IN);
-        this.transactionTo.setCrossEntry(this);
+        this(null, new AccountTransaction(), null, new AccountTransaction());
     }
 
     public AccountTransferEntry(Account accountFrom, Account accountTo)
     {
-        this();
+        this(accountFrom, new AccountTransaction(), accountTo, new AccountTransaction());
+    }
+
+    /* protobuf only */ AccountTransferEntry(Account accountFrom, AccountTransaction txFrom, Account accountTo,
+                    AccountTransaction txTo)
+    {
+        this.transactionFrom = txFrom;
+        this.transactionFrom.setType(AccountTransaction.Type.TRANSFER_OUT);
+        this.transactionFrom.setCrossEntry(this);
+
+        this.transactionTo = txTo;
+        this.transactionTo.setType(AccountTransaction.Type.TRANSFER_IN);
+        this.transactionTo.setCrossEntry(this);
+
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
     }
@@ -96,6 +103,19 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     {
         this.transactionFrom.setNote(note);
         this.transactionTo.setNote(note);
+    }
+
+    @Override
+    public String getSource()
+    {
+        return this.transactionFrom.getSource();
+    }
+
+    @Override
+    public void setSource(String source)
+    {
+        this.transactionFrom.setSource(source);
+        this.transactionTo.setSource(source);
     }
 
     @Override

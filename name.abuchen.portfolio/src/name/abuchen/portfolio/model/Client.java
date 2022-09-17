@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +23,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
-    /* package */static final int MAJOR_VERSION = 1;
-
-    public static final int CURRENT_VERSION = 52;
+    public static final int CURRENT_VERSION = 56;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -66,6 +65,7 @@ public class Client
     private Category rootCategory;
 
     private transient SecretKey secret; // NOSONAR
+    private transient Set<SaveFlag> saveFlags = EnumSet.noneOf(SaveFlag.class); // NOSONAR
 
     public Client()
     {
@@ -412,6 +412,11 @@ public class Client
         }
     }
 
+    /* package */Map<String, String> getProperties()
+    {
+        return properties;
+    }
+
     /* package */void clearProperties()
     {
         properties.clear();
@@ -442,16 +447,21 @@ public class Client
         return transactions;
     }
 
-    /* package */
-    SecretKey getSecret()
+    /* package */ SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */
-    void setSecret(SecretKey secret)
+    /* package */ void setSecret(SecretKey secret)
     {
         this.secret = secret;
+    }
+
+    /* package */ Set<SaveFlag> getSaveFlags()
+    {
+        if (this.saveFlags == null)
+            this.saveFlags = EnumSet.noneOf(SaveFlag.class);
+        return this.saveFlags;
     }
 
     /**
@@ -612,14 +622,14 @@ public class Client
         for (Portfolio portfolio : portfolios)
         {
             answer.append(portfolio.getName()).append('\n');
-            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+            portfolio.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 
         for (Account account : accounts)
         {
             answer.append(account.getName()).append('\n');
-            account.getTransactions().stream().sorted(new Transaction.ByDate())
+            account.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 

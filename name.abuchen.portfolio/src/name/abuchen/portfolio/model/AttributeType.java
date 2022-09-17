@@ -15,14 +15,24 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.protobuf.NullValue;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
+import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.money.Values;
 
-public class AttributeType
+public class AttributeType implements Named
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
     private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
+
+    /* protobuf only */ interface ProtoConverter
+    {
+        PAnyValue toProto(Object object);
+
+        Object fromProto(PAnyValue entry);
+    }
 
     public interface Converter
     {
@@ -31,7 +41,7 @@ public class AttributeType
         Object fromString(String value);
     }
 
-    public static class StringConverter implements Converter
+    public static class StringConverter implements Converter, ProtoConverter
     {
 
         @Override
@@ -46,9 +56,23 @@ public class AttributeType
             return value.trim().length() > 0 ? value.trim() : null;
         }
 
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setString(String.valueOf(object)).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasString() ? value.getString() : null;
+        }
     }
 
-    public static class LimitPriceConverter implements Converter
+    public static class LimitPriceConverter implements Converter, ProtoConverter
     {
         private final DecimalFormat full;
 
@@ -92,9 +116,46 @@ public class AttributeType
                 throw new IllegalArgumentException(e);
             }
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+
+            LimitPrice limitPrice = (LimitPrice) object;
+
+            return PAnyValue.newBuilder().setString(limitPrice.getRelationalOperator().getOperatorString()
+                            + Long.toString(limitPrice.getValue())).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            if (value.hasString())
+            {
+                Matcher m = LIMIT_PRICE_PATTERN.matcher(value.getString());
+                if (!m.matches())
+                    return null;
+
+                Optional<RelationalOperator> operator = RelationalOperator.findByOperator(m.group(1));
+
+                // should not happen b/c regex pattern check
+                if (!operator.isPresent())
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
+                long price = Long.parseLong(m.group(2));
+
+                return new LimitPrice(operator.get(), price);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
-    private static class LongConverter implements Converter
+    private static class LongConverter implements Converter, ProtoConverter
     {
         private final DecimalFormat full;
 
@@ -135,6 +196,21 @@ public class AttributeType
                 throw new IllegalArgumentException(e);
             }
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setInt64((Long) object).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasInt64() ? value.getInt64() : null;
+        }
     }
 
     public static class AmountConverter extends LongConverter
@@ -169,7 +245,7 @@ public class AttributeType
         }
     }
 
-    private static class DoubleConverter implements Converter
+    private static class DoubleConverter implements Converter, ProtoConverter
     {
         private final NumberFormat full = new DecimalFormat("#,###.##"); //$NON-NLS-1$
 
@@ -205,6 +281,21 @@ public class AttributeType
                 throw new IllegalArgumentException(e);
             }
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setDouble((Double) object).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasDouble() ? value.getDouble() : null;
+        }
     }
 
     public static class PercentConverter extends DoubleConverter
@@ -230,7 +321,7 @@ public class AttributeType
         }
     }
 
-    public static class DateConverter implements Converter
+    public static class DateConverter implements Converter, ProtoConverter
     {
         private static final DateTimeFormatter[] formatters = new DateTimeFormatter[] {
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM),
@@ -268,9 +359,24 @@ public class AttributeType
             }
             throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setInt64(((LocalDate) object).toEpochDay()).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasInt64() ? LocalDate.ofEpochDay(value.getInt64()) : null;
+        }
     }
 
-    public static class BooleanConverter implements Converter
+    public static class BooleanConverter implements Converter, ProtoConverter
     {
 
         @Override
@@ -287,9 +393,24 @@ public class AttributeType
 
             return Boolean.valueOf(value);
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setBool((Boolean) object).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasBool() ? value.getBool() : null;
+        }
     }
 
-    public static class BookmarkConverter implements Converter
+    public static class BookmarkConverter implements Converter, ProtoConverter
     {
         public static final Pattern PLAIN = Pattern.compile("^(?<link>https?\\:\\/\\/[^ \\t\\r\\n]+)$", //$NON-NLS-1$
                         Pattern.CASE_INSENSITIVE);
@@ -333,9 +454,24 @@ public class AttributeType
 
             throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorInvalidURL, trimmed));
         }
+
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setString(toString(object)).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasString() ? fromString(value.getString()) : null;
+        }
     }
 
-    public static class ImageConverter implements Converter
+    public static class ImageConverter implements Converter, ProtoConverter
     {
         public static final int MAXIMUM_SIZE_EMBEDDED_IMAGE = 64;
 
@@ -351,6 +487,20 @@ public class AttributeType
             return value;
         }
 
+        @Override
+        public PAnyValue toProto(Object object)
+        {
+            if (object == null)
+                return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
+            else
+                return PAnyValue.newBuilder().setString(String.valueOf(object)).build();
+        }
+
+        @Override
+        public Object fromProto(PAnyValue value)
+        {
+            return value.hasString() ? value.getString() : null;
+        }
     }
 
     private final String id;
@@ -367,6 +517,8 @@ public class AttributeType
     private transient Converter converter; // NOSONAR
     private String converterClass;
 
+    private TypedMap properties;
+
     public AttributeType(String id)
     {
         this.id = id;
@@ -377,11 +529,13 @@ public class AttributeType
         return id;
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -478,5 +632,24 @@ public class AttributeType
             else
                 return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
         };
+    }
+
+    public TypedMap getProperties()
+    {
+        if (properties == null)
+            properties = new TypedMap();
+        return properties;
+    }
+
+    @Override
+    public String getNote()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        throw new UnsupportedOperationException();
     }
 }

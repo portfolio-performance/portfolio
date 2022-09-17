@@ -10,9 +10,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -37,8 +39,15 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
                 name = json.get("longname"); //$NON-NLS-1$
             if (name == null)
                 name = json.get("shortname"); //$NON-NLS-1$
+            if (name == null)
+                name = json.get("shortName"); //$NON-NLS-1$
 
             Object type = json.get("typeDisp"); //$NON-NLS-1$
+            if (type == null)
+                type = json.get("quoteType"); //$NON-NLS-1$
+
+            if ("equity".equalsIgnoreCase(String.valueOf(type))) //$NON-NLS-1$
+                type = SecuritySearchProvider.Type.SHARE.toString();
 
             Object exchange = json.get("exchDisp"); //$NON-NLS-1$
             if (exchange == null)
@@ -98,6 +107,12 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         }
 
         @Override
+        public String getSource()
+        {
+            return Messages.LabelYahooFinance;
+        }
+
+        @Override
         public Security create(ClientSettings settings)
         {
             Security security = new Security();
@@ -129,8 +144,6 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
                             .addParameter("enableNavLinks", "false") //
                             .addParameter("enableEnhancedTrivialQuery", "false") //
                             .get();
-
-            System.out.println(html);
 
             JSONObject responseData = (JSONObject) JSONValue.parse(html);
             if (responseData != null)

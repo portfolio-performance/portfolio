@@ -53,6 +53,7 @@ public class InsertActionTest
         entry.setDate(transactionDate);
         entry.setSecurity(security);
         entry.setNote("note");
+        entry.setSource("source");
         entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_99)));
     }
 
@@ -96,6 +97,7 @@ public class InsertActionTest
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
         assertThat(t.getNote(), is("note"));
+        assertThat(t.getSource(), is("source"));
         assertThat(t.getDateTime(), is(transactionDate));
         assertThat(t.getShares(), is(99L));
 
@@ -123,8 +125,9 @@ public class InsertActionTest
         assertThat(properties, hasItem("dateTime"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
+        assertThat(properties, hasItem("source"));
         assertThat(properties, hasItem("updatedAt"));
 
-        assertThat(properties.size(), is(9));
+        assertThat(properties.size(), is(10));
     }
 }

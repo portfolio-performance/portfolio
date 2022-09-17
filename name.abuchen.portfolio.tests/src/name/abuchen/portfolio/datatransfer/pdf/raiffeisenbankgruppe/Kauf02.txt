@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+RB Augsburger Land West eG · Augsburger Str. 12 · 86441 Zusmarshausen
+Depotnummer
+ 1234567
+ Kundennummer 1234567
+Muster 
+ Auftragsnummer 338500/63.00
+Muster Datum 09.11.2021
+Tannholzstr. 2 Ihr Berater Herr Muster 
+86424 Dinkelscherben Rechnungsnummer W06626-1234567
+Steuernummer 1234567  
+VR-NETWORLD-KUNDE
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 QUALCOMM INC.                      US7475251036 (883121)
+REGISTERED SHARES DL -,0001        
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 09.11.2021 09:58:45 Auftraggeber Muster 
+Ausführungskurs 143,68 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 14.368,00- EUR
+Provision 0,2000 % vom Kurswert 28,74- EUR
+Eigene Spesen 2,50- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 14.399,34- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 11.11.2021 zu Lasten des Kontos 1234567 (IBAN DE98 7206 9274 1234567),
+BLZ 72069274 (BIC GENODEF1ZUS).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6626.11091729.0000026OR07

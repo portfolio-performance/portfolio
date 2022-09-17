@@ -32,7 +32,7 @@ public final class TaxonomyTemplate
     {
         this.id = id;
 
-        ResourceBundle bundle = ResourceBundle.getBundle("/META-INF/taxonomy/" + id); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model.taxonomy_templates." + id); //$NON-NLS-1$
         this.name = getString(bundle, "name"); //$NON-NLS-1$
     }
 
@@ -99,13 +99,14 @@ public final class TaxonomyTemplate
      */
     /* package */Taxonomy buildFromTemplate()
     {
-        ResourceBundle bundle = ResourceBundle.getBundle("/META-INF/taxonomy/" + id); //$NON-NLS-1$
+        ResourceBundle bundle = ResourceBundle.getBundle("name.abuchen.portfolio.model.taxonomy_templates." + id); //$NON-NLS-1$
 
         Taxonomy taxonomy = new Taxonomy(id, name);
 
         taxonomy.setSource(getString(bundle, "source")); //$NON-NLS-1$
 
         Classification root = new Classification(id, name);
+        root.setKey(id);
         taxonomy.setRootNode(root);
         String labels = getString(bundle, "labels"); //$NON-NLS-1$
         if (labels == null)
@@ -141,6 +142,7 @@ public final class TaxonomyTemplate
             String color = getString(bundle, childId + ".color"); //$NON-NLS-1$
 
             Classification child = new Classification(parent, childId, label, color);
+            child.setKey(childId);
 
             int weight = getInt(bundle, childId + ".weight"); //$NON-NLS-1$
             if (weight >= 0)

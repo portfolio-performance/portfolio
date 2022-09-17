@@ -1,0 +1,51 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstrasse 8e
+80538 Munich 
+service@scalable.capital
+Page 1/1
+Mr. Munich
+2022-04-29
+John Doe
+Neue Straße 1 John Doe
+12345 Neue Stadt Client ID: 2409423    Portfolio: 1
+Sec. Account No.: 1209625007
+Transaction No.: 204751222
+Reference No.: 339366528
+Transaction Statement: Purchase
+Order Date: 2022-04-29 Execution Venue: GETTEX - MM Munich
+Order Time: 09:32:39:19
+Quantity ISIN: IE00BFYN8Y92 WKN: A2JR0G Price 
+Units 11 HANetf-EMQQ Em.Mkts Int.+Ecom. EUR 8.55
+Reg.Shs EUR Acc. o.N.
+Order placed by: Account Owner
+Method of Order Entry: DROP COPY from electr. interface
+Market Value EUR 94.05
+Amount debited to account 1209625007 Value: 2022-05-03 EUR 94.05
+Securities will be posted into your sec. account.
+Details:
+Quantity Price Execution Venue Trade Date Trade Time
+Units   11 EUR 8.55 GETTEX - MM Munich 2022-04-29 09:32:39:47
+Safekeeping: Domestic Time Zone of Trade Time: CET/CEST
+Depository: 1419 MIC of Execution Venue: MUNC
+Place of Custody: Luxembourg
+This order will be executed in accordance with the practices of the respective venue of execution.
+This confirmation/statement was created by Baader Bank AG. Please check that this confirmation/statement is correct and complete. You must 
+notify Baader Bank AG of any objections to this confirmation/statement as soon as you receive it.
+This instruction was given without any recommendation from the bank. The bank did not provide any investment advice or individual explanation.
+If no VAT is shown, it is a VAT exempted financial service.
+There is no need for the fund prospectus/offering memorandum and the current accountability report within the framework of the cooperation of
+the bank with your financial service provider or will take it over. If you would like a fund prospectus, please contact your financial service provider 
+directly.
+Please note that the income from capital assets are fully subject to income tax in Germany.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 • 
+www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Commercial Register HRB 121537 • 
+Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+WPABRECHNUNG-058.112
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

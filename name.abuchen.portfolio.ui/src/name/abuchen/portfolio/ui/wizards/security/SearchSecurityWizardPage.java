@@ -38,6 +38,7 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class SearchSecurityWizardPage extends WizardPage
 {
@@ -76,6 +77,7 @@ public class SearchSecurityWizardPage extends WizardPage
         searchButton.setText(Messages.LabelSearch);
 
         final TableViewer resultTable = new TableViewer(container, SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(resultTable);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(resultTable.getControl());
 
         TableColumn column = new TableColumn(resultTable.getTable(), SWT.NONE);
@@ -100,6 +102,10 @@ public class SearchSecurityWizardPage extends WizardPage
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityExchange);
+        column.setWidth(80);
+
+        column = new TableColumn(resultTable.getTable(), SWT.NONE);
+        column.setText(Messages.ColumnSource);
         column.setWidth(80);
 
         resultTable.getTable().setHeaderVisible(true);
@@ -223,6 +229,8 @@ public class SearchSecurityWizardPage extends WizardPage
                     return item.getType();
                 case 5:
                     return item.getExchange();
+                case 6:
+                    return item.getSource();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));
             }

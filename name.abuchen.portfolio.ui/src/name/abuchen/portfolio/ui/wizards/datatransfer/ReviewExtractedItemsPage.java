@@ -50,6 +50,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
@@ -74,6 +75,7 @@ import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -256,6 +258,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -267,6 +270,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(errorTableViewer);
         errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         table = errorTableViewer.getTable();
@@ -578,7 +582,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
                                 Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                Images.WARNING : Images.ERROR;
+                                                Images.WARNING : Images.ERROR;
                                 manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
                             });
         }
@@ -751,6 +755,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckSecurityRelatedValuesAction());
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
+        actions.add(new CheckForexGrossValueAction());
         actions.add(new MarkNonImportableAction());
 
         List<Exception> allErrors = new ArrayList<>(extractionErrors);

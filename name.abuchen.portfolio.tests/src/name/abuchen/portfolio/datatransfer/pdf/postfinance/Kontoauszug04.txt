@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Hans Muster und Team Post  CH  AG 
+Telefon +41 848 888 700 
+Fax +     P.  P.  CH- 4808  Zofingen A- PRIORITY 
+www.postfinance.ch 
+Herr Peter Muster und 
+Muster Peter und Frau Petra Muster 
+Muster Petra Strasse 21 
+Ort ZH 1234 Ort ZH 
+Privatkonto Seite: 1 / 7 
+Kontoauszug 01.12.2021 - 31.12.2021 Datum: 01.01.2022 
+IBAN CH77 0900 0000 1234 5678 9 CHF 
+Kontonummer 12-345678-9 
+BIC POFICHBEXXX 
+Datum Text Gutschrift Lastschrift Valuta Saldo 
+30.11.21 Kontostand 1 111.11 
+ÜBERWEISUNG AUF KONTO 111.00 01.12.21 22 222.22 
+CH9609000000907654321 
+notitz 
+ÜBERWEISUNG AUF KONTO 11.00 05.12.21 22 222.22 
+CH9609000000907654321 
+notitz

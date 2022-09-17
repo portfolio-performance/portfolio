@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -201,11 +202,17 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected Control createBody(Composite parent)
     {
         assetViewer = make(StatementOfAssetsViewer.class);
-        Control control = assetViewer.createControl(parent);
+        Control control = assetViewer.createControl(parent, true);
         assetViewer.setToolBarManager(getViewToolBarManager());
 
         updateTitle(getDefaultTitle());
-        assetViewer.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
+        assetViewer.getColumnHelper().addListener(() -> {
+            updateTitle(getDefaultTitle());
+
+            // on Linux, switching between views results in blank columns
+            if (Platform.OS_LINUX.equals(Platform.getOS()))
+                notifyModelUpdated();
+        });
 
         hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));

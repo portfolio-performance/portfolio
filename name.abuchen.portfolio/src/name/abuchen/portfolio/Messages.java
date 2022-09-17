@@ -110,6 +110,7 @@ public class Messages extends NLS
     public static String InvestmentPlanItemImportToolTip;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
+    public static String IssueExchangeRateIsNegative;
     public static String IssueInconsistentSharesHeld;
     public static String IssueInterestWithSecurity;
     public static String IssueMissingAccountTransfer;
@@ -147,6 +148,8 @@ public class Messages extends NLS
     public static String LabelReportingPeriodMonths;
     public static String LabelReportingPeriodPreviousMonth;
     public static String LabelReportingPeriodPreviousQuarter;
+    public static String LabelReportingPeriodPreviousDay;
+    public static String LabelReportingPeriodPreviousTradingDay;
     public static String LabelReportingPeriodPreviousWeek;
     public static String LabelReportingPeriodPreviousYear;
     public static String LabelReportingPeriodSince;
@@ -207,6 +210,7 @@ public class Messages extends NLS
     public static String LabelXwithCurrencyY;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;
+    public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
@@ -223,6 +227,9 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
+    public static String MsgErrorCannotConvertToRequestedCurrency;
+    public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;
@@ -235,6 +242,7 @@ public class Messages extends NLS
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorInvalidURL;
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
+    public static String MsgErrorMissingAPIKey;
     public static String MsgErrorMissingDate;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
@@ -269,6 +277,7 @@ public class Messages extends NLS
     public static String MsgMoreResultsAvailable;
     public static String MsgNegativeHoldingsDuringFIFOCostCalculation;
     public static String MsgNoExchangeRateAvailableForConversion;
+    public static String MsgNoExchangeRateAvailableForConversionTaxFee;
     public static String MsgNoExchangeRatesAvailableForCustomSeries;
     public static String MsgNoExchangeRateTimeSeriesFound;
     public static String MsgNoQuotesFoundInHTML;

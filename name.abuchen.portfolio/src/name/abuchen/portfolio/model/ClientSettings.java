@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -20,7 +21,7 @@ public class ClientSettings
     private List<AttributeType> attributeTypes;
     private Map<String, ConfigurationSet> configurationSets;
 
-    public ClientSettings()
+    /* package */ ClientSettings()
     {
         doPostLoadInitialization();
     }
@@ -69,6 +70,8 @@ public class ClientSettings
                         "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("DivvyDiary", //$NON-NLS-1$
                         "https://divvydiary.com/symbols/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("Tracking Differences", //$NON-NLS-1$
+                        "https://www.trackingdifferences.com/ETF/ISIN/{isin}")); //$NON-NLS-1$
 
         return answer;
     }
@@ -164,6 +167,11 @@ public class ClientSettings
             bookmarks.add(bookmarks.indexOf(after) + 1, bookmark);
     }
 
+    public void clearBookmarks()
+    {
+        bookmarks.clear();
+    }
+
     public Stream<AttributeType> getAttributeTypes()
     {
         return attributeTypes.stream();
@@ -189,9 +197,29 @@ public class ClientSettings
         return attributeTypes.indexOf(type);
     }
 
+    public void clearAttributeTypes()
+    {
+        attributeTypes.clear();
+    }
+
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    public Set<Map.Entry<String, ConfigurationSet>> getConfigurationSets()
+    {
+        return configurationSets.entrySet();
+    }
+
+    public void clearConfigurationSets()
+    {
+        configurationSets.clear();
+    }
+
+    public void putAllConfigurationSets(Map<String, ConfigurationSet> newSets)
+    {
+        configurationSets.putAll(newSets);
     }
 
     @SuppressWarnings("unchecked")

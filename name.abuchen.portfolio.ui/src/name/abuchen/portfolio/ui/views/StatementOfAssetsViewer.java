@@ -90,16 +90,21 @@ import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
@@ -108,11 +113,17 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
     public static final class Model
     {
+        private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
+        private static final String BOTTOM = Model.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
+
+        private final IPreferenceStore preferences;
+
         private final ClientFilter clientFilter;
         private final Client filteredClient;
         private CurrencyConverter converter;
@@ -124,8 +135,14 @@ public class StatementOfAssetsViewer
         private final Interval globalInterval;
         private Set<CacheKey> calculated = new HashSet<>();
 
-        public Model(Client client, ClientFilter filter, CurrencyConverter converter, LocalDate date, Taxonomy taxonomy)
+        private boolean hideTotalsAtTheTop;
+        private boolean hideTotalsAtTheBottom;
+
+        public Model(IPreferenceStore preferences, Client client, ClientFilter filter, CurrencyConverter converter,
+                        LocalDate date, Taxonomy taxonomy)
         {
+            this.preferences = preferences;
+
             this.clientFilter = filter;
             this.filteredClient = filter.filter(client);
             this.converter = converter;
@@ -136,12 +153,17 @@ public class StatementOfAssetsViewer
 
             this.groupByTaxonomy = clientSnapshot.groupByTaxonomy(taxonomy);
 
+            this.hideTotalsAtTheTop = preferences.getBoolean(TOP);
+            this.hideTotalsAtTheBottom = preferences.getBoolean(BOTTOM);
+
             this.elements.addAll(flatten(groupByTaxonomy));
         }
 
         public List<Element> getElements()
         {
-            return elements;
+            return elements.stream().filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
+                            .filter(e -> e.getSortOrder() != Integer.MAX_VALUE || !hideTotalsAtTheBottom)
+                            .collect(Collectors.toList());
         }
 
         public LocalDate getDate()
@@ -159,21 +181,47 @@ public class StatementOfAssetsViewer
             return globalInterval;
         }
 
+        public boolean isHideTotalsAtTheTop()
+        {
+            return hideTotalsAtTheTop;
+        }
+
+        public void setHideTotalsAtTheTop(boolean hideTotalsAtTheTop)
+        {
+            this.hideTotalsAtTheTop = hideTotalsAtTheTop;
+            preferences.setValue(TOP, hideTotalsAtTheTop);
+        }
+
+        public boolean isHideTotalsAtTheBottom()
+        {
+            return hideTotalsAtTheBottom;
+        }
+
+        public void setHideTotalsAtTheBottom(boolean hideTotalsAtTheBottom)
+        {
+            this.hideTotalsAtTheBottom = hideTotalsAtTheBottom;
+            preferences.setValue(BOTTOM, hideTotalsAtTheBottom);
+        }
+
         private final List<Element> flatten(GroupByTaxonomy groupByTaxonomy)
         {
             // when flattening, assign sortOrder to keep the tree structure for
             // sorting (only positions within a category are sorted)
-            int sortOrder = 0;
-
+            int sortOrder = 1;
             List<Element> answer = new ArrayList<>();
 
-            Element root = new Element(groupByTaxonomy, Integer.MAX_VALUE);
+            // totals elements
+            Element totalTop = new Element(groupByTaxonomy, 0);
+            Element totalBottom = new Element(groupByTaxonomy, Integer.MAX_VALUE);
+
+            answer.add(totalTop);
 
             for (AssetCategory cat : groupByTaxonomy.asList())
             {
                 Element category = new Element(groupByTaxonomy, cat, sortOrder);
                 answer.add(category);
-                root.addChild(category);
+                totalTop.addChild(category);
+                totalBottom.addChild(category);
                 sortOrder++;
 
                 for (AssetPosition p : cat.getPositions())
@@ -185,7 +233,8 @@ public class StatementOfAssetsViewer
                 sortOrder++;
             }
 
-            answer.add(root);
+            answer.add(totalBottom);
+
             return answer;
         }
 
@@ -263,9 +312,9 @@ public class StatementOfAssetsViewer
             assets.refresh();
     }
 
-    public Control createControl(Composite parent)
+    public Control createControl(Composite parent, boolean isConfigurable)
     {
-        Control control = createColumns(parent);
+        Control control = createColumns(parent, isConfigurable);
 
         this.assets.getTable().addDisposeListener(e -> StatementOfAssetsViewer.this.widgetDisposed());
 
@@ -293,7 +342,7 @@ public class StatementOfAssetsViewer
             this.taxonomy = client.getTaxonomies().get(0);
     }
 
-    private Control createColumns(Composite parent) // NOSONAR
+    private Control createColumns(Composite parent, boolean isConfigurable) // NOSONAR
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -302,6 +351,7 @@ public class StatementOfAssetsViewer
         assets = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
+        CopyPasteSupport.enableFor(assets);
 
         ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
@@ -412,16 +462,10 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? Values.Date.format(element.getSecurityPosition().getPrice().getDate())
-                                : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(e -> {
+            Element element = (Element) e;
+            return element.isSecurity() ? element.getSecurityPosition().getPrice().getDate() : null;
+        }));
         column.setComparator(new ElementComparator(new AttributeComparator(
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getPrice().getDate()
                                         : null)));
@@ -534,7 +578,15 @@ public class StatementOfAssetsViewer
         addAttributeColumns();
         addCurrencyColumns();
 
-        support.createColumns();
+        column = new DistanceFromMovingAverageColumn(() -> model.getDate());
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new DistanceFromAllTimeHighColumn(() -> model.getDate(), options);
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        support.createColumns(isConfigurable);
 
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);
@@ -899,23 +951,39 @@ public class StatementOfAssetsViewer
         manager.add(new LabelOnly(Messages.LabelTaxonomies));
         for (final Taxonomy t : client.getTaxonomies())
         {
-            Action action = new Action(t.getName())
-            {
-                @Override
-                public void run()
-                {
-                    taxonomy = t;
-                    setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
-                }
-            };
+            Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+                taxonomy = t;
+                setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
+            });
             action.setChecked(t.equals(taxonomy));
             manager.add(action);
         }
 
         manager.add(new Separator());
-
         manager.add(new LabelOnly(Messages.LabelColumns));
         support.menuAboutToShow(manager);
+
+        manager.add(new Separator());
+
+        MenuManager submenu = new MenuManager(Messages.PrefTitlePresentation);
+        manager.add(submenu);
+
+        Action action = new SimpleAction(Messages.LabelTotalsAtTheTop, a -> {
+            model.setHideTotalsAtTheTop(!model.isHideTotalsAtTheTop());
+            assets.setInput(model.getElements());
+            assets.refresh();
+        });
+        action.setChecked(!model.isHideTotalsAtTheTop());
+        submenu.add(action);
+
+        action = new SimpleAction(Messages.LabelTotalsAtTheBottom, a -> {
+            model.setHideTotalsAtTheBottom(!model.isHideTotalsAtTheBottom());
+            assets.setInput(model.getElements());
+            assets.refresh();
+        });
+        action.setChecked(!model.isHideTotalsAtTheBottom());
+        submenu.add(action);
+
     }
 
     public void setInput(ClientFilter filter, LocalDate date, CurrencyConverter converter)
@@ -923,7 +991,8 @@ public class StatementOfAssetsViewer
         assets.getTable().setRedraw(false);
         try
         {
-            this.model = new Model(client, filter, converter, date, taxonomy);
+            this.model = new Model(preference, client, filter, converter, date, taxonomy);
+
             assets.setInput(model.getElements());
             assets.refresh();
         }
@@ -1157,7 +1226,7 @@ public class StatementOfAssetsViewer
             if (a != b)
             {
                 int direction = ColumnViewerSorter.SortingContext.getSortDirection();
-                return direction == SWT.DOWN ? a - b : b - a;
+                return direction == SWT.UP ? a - b : b - a;
             }
 
             return comparator.compare(o1, o2);

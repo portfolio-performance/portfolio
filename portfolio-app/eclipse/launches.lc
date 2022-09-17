@@ -8,7 +8,7 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient45.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
 	feature org.eclipse.ecf.core.ssl.feature;
 	feature org.eclipse.ecf.filetransfer.ssl.feature;
 	feature org.eclipse.ecf.core.feature;
@@ -50,7 +50,7 @@ abstract junit-plugin configuration TestBase {
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient45.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
 	feature org.eclipse.ecf.core.ssl.feature;
 	feature org.eclipse.ecf.filetransfer.ssl.feature;
 	feature org.eclipse.ecf.core.feature;
@@ -61,20 +61,18 @@ abstract junit-plugin configuration TestBase {
 	ignore org.eclipse.jdt.annotation;
 	ignore org.eclipse.ui;
 	ignore org.eclipse.ui.workbench;
-	
-    test {
-        runner junit4;
-    }
 }
 
 junit-plugin configuration PortfolioPerformance_Tests:TestBase {
     test {
         container '/name.abuchen.portfolio.tests';
+        runner junit4;
     }
 }
 
 junit-plugin configuration PortfolioPerformance_UI_Tests:TestBase {
     test {
         container '/name.abuchen.portfolio.ui.tests';
+        runner junit4;
     }
 }

@@ -156,6 +156,7 @@ public class CommandPalettePopup extends PopupDialog
         provider.add(NavigationElements.class);
         provider.add(BookmarkElements.class);
         provider.add(TransactionElements.class);
+        provider.add(ViewElements.class);
 
         for (Class<? extends ElementProvider> clazz : provider)
             elements.addAll(ContextInjectionFactory.make(clazz, context).getElements());

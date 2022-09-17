@@ -33,7 +33,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.UncheckedIOException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -50,6 +50,7 @@ import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -114,7 +115,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         protected boolean matches(Element header)
         {
-            String text = TextUtil.strip(header.text());
+            String text = TextUtil.trim(header.text());
             for (Pattern pattern : patterns)
             {
                 if (pattern.matcher(text).matches())
@@ -192,14 +193,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d MMM y", Locale.ENGLISH), //$NON-NLS-1$
-                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("yyyy.MM.dd."), //$NON-NLS-1$
             };
         }
 
         @Override
         void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
-            String text = TextUtil.strip(value.text());
+            String text = TextUtil.trim(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
                 try
@@ -231,7 +233,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, ExtractedPrice price, String languageHint) throws ParseException
         {
-            String text = TextUtil.strip(value.text());
+            String text = TextUtil.trim(value.text());
             for (DateTimeFormatter formatter : formatters)
             {
                 try
@@ -256,7 +258,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", ".*[Pp]rice",
                             "akt. Kurs", "Dernier", "Kurs" });
         }
 
@@ -474,6 +476,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
             return new Pair<>(collectRawResponse ? html : "", prices); //$NON-NLS-1$
         }
+        catch (WebAccessException e)
+        {
+            data.addError(e);
+            return new Pair<>(String.valueOf(e.getMessage()), Collections.emptyList());
+        }
         catch (URISyntaxException | IOException | UncheckedIOException e)
         {
             data.addError(new IOException(url + '\n' + e.getMessage(), e));
@@ -542,7 +549,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (prices.isEmpty())
         {
             data.addError(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
-                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
+                            Jsoup.clean(document.html(), Safelist.relaxed()))));
             return Collections.emptyList();
         }
 

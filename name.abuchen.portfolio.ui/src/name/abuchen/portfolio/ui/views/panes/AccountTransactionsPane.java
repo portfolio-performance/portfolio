@@ -37,6 +37,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -52,11 +53,15 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
@@ -119,30 +124,24 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
-
         ColumnEditingSupport.prepare(transactions);
+        CopyPasteSupport.enableFor(transactions);
 
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         view.getPreferenceStore(), transactions, layout);
 
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((AccountTransaction) e).getDateTime())
         {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.DateTime.format(((AccountTransaction) e).getDateTime());
-            }
-
-            @Override
+             @Override
             public Color getForeground(Object element)
             {
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
+        ColumnViewerSorter.create(Transaction.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(AccountTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
@@ -347,7 +346,25 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
-        transactionsColumns.createColumns();
+        column = new Column("source", Messages.ColumnSource, SWT.None, 120); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((AccountTransaction) e).getSource();
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        transactionsColumns.addColumn(column);
+
+        transactionsColumns.createColumns(true);
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
@@ -364,6 +381,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     @Override
     public void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(transactions).export(getLabel(),
+                                        account != null ? account.getName() : null)));
+
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> transactionsColumns.menuAboutToShow(manager)));
 
@@ -523,7 +544,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             return;
 
         List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
+        Collections.sort(tx, Transaction.BY_DATE);
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,8 +36,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -64,8 +63,11 @@ import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodLis
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -80,6 +82,7 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.ui.views.panes.CalculationLineItemPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.util.Interval;
@@ -257,6 +260,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
+        CopyPasteSupport.enableFor(records);
 
         createCommonColumns();
         createDividendColumns();
@@ -265,7 +269,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         createRiskColumns();
         createAdditionalColumns();
 
-        recordColumns.createColumns();
+        recordColumns.createColumns(true);
 
         records.getTable().setHeaderVisible(true);
         records.getTable().setLinesVisible(true);
@@ -331,6 +335,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         // security name
         column = new NameColumn(getClient());
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);
 
         // cost value - fifo
@@ -862,15 +867,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
-                return date != null ? Values.Date.format(date) : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(r -> ((SecurityPerformanceRecord) r).getLastDividendPayment()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -963,7 +960,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         AttributeColumn.createFor(getClient(), Security.class) //
                         .forEach(column -> {
-                            column.setEditingSupport(null);
+                            column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
                             recordColumns.addColumn(column);
                         });
     }
@@ -975,6 +972,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         pages.add(make(SecurityPriceChartPane.class));
         pages.add(make(CalculationLineItemPane.class));
         pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override

@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.online.impl.variableurl.macros;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 import java.util.regex.Matcher;
@@ -16,6 +18,7 @@ public class Today implements Macro
 
     private final DateTimeFormatter formatter;
     private final TemporalAmount delta;
+    private final boolean useUnixTime;
 
     public Today(CharSequence input)
     {
@@ -25,7 +28,12 @@ public class Today implements Macro
             throw new IllegalArgumentException();
 
         String p = matcher.group(2);
-        if (p == null || p.isEmpty())
+
+        useUnixTime = "unixtime".equals(p); //$NON-NLS-1$
+
+        if (useUnixTime)
+            formatter = null;
+        else if (p == null || p.isEmpty())
             formatter = DateTimeFormatter.ISO_DATE;
         else
             formatter = DateTimeFormatter.ofPattern(p);
@@ -46,6 +54,11 @@ public class Today implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return formatter.format(LocalDate.now().plus(delta));
+        LocalDate ld = LocalDate.now().plus(delta);
+
+        if (useUnixTime)
+            return String.valueOf(ld.toEpochSecond(LocalTime.MIDNIGHT, ZoneOffset.UTC));
+        else
+            return formatter.format(ld);
     }
 }

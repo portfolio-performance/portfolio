@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewTransactionsPage extends AbstractWizardPage
@@ -73,9 +74,8 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                     return Values.Share.format(t.getShares());
                 case 3:
                     if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
-                    {
-                        long shares = t.getShares() * model.getNewShares() / model.getOldShares();
-                        return Values.Share.format(shares);
+                    {                     
+                        return Values.Share.format(model.calculateNewStock(t.getShares()));
                     }
                     return null;
                 case 4:
@@ -105,7 +105,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
     {
         Security security = model.getSecurity();
         List<TransactionPair<?>> transactions = security.getTransactions(model.getClient());
-        Collections.sort(transactions, new TransactionPair.ByDate());
+        Collections.sort(transactions, TransactionPair.BY_DATE);
         tableViewer.setInput(transactions);
     }
 
@@ -127,6 +127,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);

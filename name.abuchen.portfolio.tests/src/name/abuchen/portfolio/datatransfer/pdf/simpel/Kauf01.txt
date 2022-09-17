@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ein Service von:
+Für Rückfragen wenden Sie sich bitte an:
+kontakt@own360.app
+Herr Fondsabrechnung
+Max Muster Wien,  11.01.2022
+Musterstraße 12/6 Depotinhaber: Max Muster
+4567 Musterort Depotnummer: 123456789
+Österreich
+Hiermit bestätigen wir Ihnen folgende Transaktion für Sie ausgeführt zu haben:
+Transaktion Fondsname Betrag Preis Anteile 
+Auftrags-Nummer WKN/ISIN Preisdatum Bestand neu
+Verwahrart/Lagerland
+ Kauf  Standortfonds Österreich 10.00 €  140.59 €  0.071
+AT0000A1QA38 10.01.2022 5.123
+Girosammelverwahrung/AT
+Abrechnungsbetrag: 10.00 €
+Ausgabeaufschlag/Provision: 0,00%
+Auftrags-Nummer: 20220106123456789000000612345
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG: 
+ 0.071       Anteile.
+Steuerlicher Anschaffungswert: 9.98 €
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller ausführli-
+cher Verkaufsprospekt, Kundeninformationsdokumente, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt 
+über die OWN360 Kanäle erhalten bzw. vor Auftragserteilung dort eingesehen. 
+Hinweis: Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte 
+schriftlich spätestens einen Monat nach Zugang an: kontakt@own360.app
+Simpel S.A., 33, Boulevard Prince Henri, L-1724 Luxemburg; Sitz: Luxemburg; Umsatzsteuer-lD-Nr. LU32888126; Vorsitzender des Verwaltungsrats:
+Thomas Niss; Conducting Officers: Martin Foussek, Christian McFadden
+Simpel Zweigniederlassung Österreich, 1040 Wien, Gußhausstraße 3/2a; Handelsgericht Wien, FN 562615a ; Niederlassungsleiter:
+Christian McFadden, Martin Foussek, Ständiger Vertreter: Thomas Niss

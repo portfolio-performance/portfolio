@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.16
+-----------------------------------------  
+RB Augsburger Land West eG · Augsburger Str. 12 · 86441 Zusmarshausen Seite 1 von 2
+Depotnummer
+ 1234567
+ Kundennummer 1234567
+Muster
+ Auftragsnummer 183260/06.00
+Muster Datum 06.07.2021
+Tannholzstr. 2 Ihr Berater Herr Muster
+86424 Dinkelscherben Rechnungsnummer W06626-1234567
+Steuernummer 1234567
+VR-NETWORLD-KUNDE
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 110 BIONTECH SE                        US09075V1026 (A2PSR2)
+NAM.-AKT.(SP.ADRS)1/O.N.           
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 06.07.2021 11:39:42 Auftraggeber Muster
+Ausführungskurs 181,90 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 20.009,00 EUR
+Provision 0,2000 % vom Kurswert 40,02- EUR
+Eigene Spesen 2,50- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 6.116,14 EUR
+Veräußerungsverlust 166,47- EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 5.949,67 EUR
+ 
+Ausmachender Betrag 19.966,38 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 08.07.2021 zu Gunsten des Kontos 1234567
+(IBAN DE98 7206 9274 1234567), BLZ 72069274 (BIC GENODEF1ZUS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Kein KapSt-Abzug bei NV-Bescheinigung 1 nach §36 und §44 EStG.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+6626.07061738.0000007OR07
+Seite 2 von 2
+Depotnummer 1234567
+Kundennummer 1234567
+Auftragsnummer 183260/06.00
+Datum 06.07.2021
+ 
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 7683650500 15.04.2021 Stück 90,0000 10.219,99- 16.336,13 6.116,14 (D)
+Kauf 1662226400 23.06.2021 Stück 20,0000 3.796,72- 3.630,25 166,47- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 5.949,67
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6626.07061738.0000008OR07

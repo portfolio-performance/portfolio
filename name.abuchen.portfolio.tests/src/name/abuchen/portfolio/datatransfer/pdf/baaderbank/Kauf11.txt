@@ -1,0 +1,49 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstrasse 8e
+80538 Munich 
+service@scalable.capital
+Page 1/1
+Scalable Capital GmbH Munich
+2022-02-01
+Seitzstr. 8 e
+80538 München Name Surname
+Client ID: 1960017    Portfolio: 1
+Sec. Account No.: 1860517011
+Transaction No.: 65879250
+Reference No.: 202566521
+Transaction Statement: Purchase COPY
+Order Date: 2022-02-28 Execution Venue: GETTEX - MM Munich
+Order Time: 13:48:41:66
+Quantity ISIN: IE00B4L5Y983 WKN: A0RPWH Price 
+Units 2.734 iShsIII-Core MSCI World U.ETF EUR 73.128
+Registered Shs USD (Acc) o.N.
+Order placed by: ext. Asset Manager
+Method of Order Entry: DROP COPY from electr. interface
+Market Value EUR 199.93
+Amount debited to account 1960017000 Value: 2022-03-02 EUR 199.93
+Securities will be posted into your sec. account.
+Details:
+Trade Date Trade Time
+2022-02-28 13:48:52:44
+Safekeeping: Domestic Time Zone of Trade Time: CET/CEST
+Depository: 1583 MIC of Execution Venue: MUNC
+Place of Custody: Belgium
+This order will be executed in accordance with the practices of the respective venue of execution.
+This confirmation/statement was created by Baader Bank AG. Please check that this confirmation/statement is correct and complete. You must 
+notify Baader Bank AG of any objections to this confirmation/statement as soon as you receive it.
+This instruction was given without any recommendation from the bank. The bank did not provide any investment advice or individual explanation.
+If no VAT is shown, it is a VAT exempted financial service.
+x5sP1qPV3AKqpnv5Tcawp
+Please note that the income from capital assets are fully subject to income tax in Germany.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 • 
+www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 • 
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+WPABRECHNUNG-058.112
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

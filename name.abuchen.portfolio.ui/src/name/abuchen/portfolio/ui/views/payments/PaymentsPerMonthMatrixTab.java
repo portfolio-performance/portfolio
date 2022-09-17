@@ -4,8 +4,12 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.ToLongFunction;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -13,6 +17,7 @@ import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -44,6 +49,7 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -51,6 +57,10 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsPerMonthMatrixTab implements PaymentsTab
 {
+    // Keys in PreferenceStore
+    private static final String KEY_SHOW_ONE_YEAR = PaymentsPerMonthMatrixTab.class.getSimpleName()
+                    + "-showOnlyOneYear"; //$NON-NLS-1$
+
     @Inject
     private IStylingEngine stylingEngine;
 
@@ -63,7 +73,11 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
     @Inject
     protected PaymentsViewModel model;
 
+    @Inject
+    protected IPreferenceStore preferences;
+
     private boolean showOnlyOneYear = false;
+    private boolean columnsInReverseOrder = false;
 
     protected Font boldFont;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
@@ -90,15 +104,35 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         });
     }
 
+    private String getKeyForReverseOrder()
+    {
+        // Separate keys for sub-classes
+        return this.getClass().getSimpleName() + "-columnsInReverseOrder"; //$NON-NLS-1$
+    }
+
+    protected void addReverseColumnAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
+            columnsInReverseOrder = !columnsInReverseOrder;
+            sortColumnOrder();
+            preferences.setValue(getKeyForReverseOrder(), columnsInReverseOrder);
+        });
+        action.setChecked(columnsInReverseOrder);
+        manager.add(action);
+    }
+
     @Override
     public void addConfigActions(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
             showOnlyOneYear = !showOnlyOneYear;
             updateColumns(tableViewer, tableLayout);
+            preferences.setValue(KEY_SHOW_ONE_YEAR, showOnlyOneYear);
         });
         action.setChecked(showOnlyOneYear);
         manager.add(action);
+
+        addReverseColumnAction(manager);
     }
 
     @Override
@@ -106,11 +140,15 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
     {
         Composite container = new Composite(parent, SWT.NONE);
 
+        showOnlyOneYear = preferences.getBoolean(KEY_SHOW_ONE_YEAR);
+        columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
+
         tableLayout = new TableColumnLayout();
         container.setLayout(tableLayout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         // make sure to apply the styles (including font information to the
         // table) before creating the bold font. Otherwise the font does not
@@ -121,6 +159,7 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         boldFont = resources.createFont(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));
 
         createColumns(tableViewer, tableLayout);
+        sortColumnOrder();
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -167,6 +206,36 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
         {
             new SecurityContextMenu(view).menuAboutToShow(manager, (Security) vehicle);
         }
+    }
+
+    protected void sortColumnOrder()
+    {
+        // Keep first and last column in same position
+        sortColumnOrder(1, 1);
+    }
+
+    /**
+     * Set column order in a given range.
+     *
+     * @param startOffset
+     *            Number of unchanged columns at the start
+     * @param endOffset
+     *            Number of unchanged columns at the end
+     */
+    protected void sortColumnOrder(int startOffset, int endOffset)
+    {
+        // Natural order for all columns
+        List<Integer> columnList = new ArrayList<>();
+        IntStream.range(0, tableViewer.getTable().getColumnCount()).forEachOrdered(columnList::add);
+
+        if (columnsInReverseOrder)
+        {
+            // subList is view of original list => original list is changed
+            Collections.reverse(columnList.subList(startOffset, columnList.size() - endOffset));
+        }
+
+        int[] newColumnOrder = columnList.stream().mapToInt(i -> i).toArray();
+        tableViewer.getTable().setColumnOrder(newColumnOrder);
     }
 
     protected void createColumns(TableViewer records, TableColumnLayout layout)
@@ -237,9 +306,9 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
             PaymentsViewModel.Line line2 = (PaymentsViewModel.Line) o2;
 
             if (line1.getVehicle() == null)
-                return direction == SWT.DOWN ? 1 : -1;
+                return direction == SWT.UP ? 1 : -1;
             if (line2.getVehicle() == null)
-                return direction == SWT.DOWN ? -1 : 1;
+                return direction == SWT.UP ? -1 : 1;
 
             return comparator.compare(line1, line2);
         });
@@ -337,6 +406,8 @@ public class PaymentsPerMonthMatrixTab implements PaymentsTab
 
             for (int ii = 0; ii < count; ii++)
                 records.getTable().getColumn(0).dispose();
+
+            sortColumnOrder();
 
             records.setInput(model.getAllLines());
 

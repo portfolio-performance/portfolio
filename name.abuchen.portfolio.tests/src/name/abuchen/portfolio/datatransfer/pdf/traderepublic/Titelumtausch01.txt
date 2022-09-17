@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Musterstraße 4 DATUM 01.02.2022
+12345 Musterstadt DEPOT 0123456789
+TITELUMTAUSCH
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung Shell PLC 25 Stk.
+Reg. Shares Class A EO -,07
+GB00B03MLX29
+2 Einbuchung Shell PLC 25 Stk.
+Reg. Shares Class EO -,07
+GB00BP6MXD84
+Shell PLC Reg. Shares Class EO -,07 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+DUAN / 14.01.2022 / 90012332 / 6820-dddd

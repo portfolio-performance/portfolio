@@ -1,0 +1,52 @@
+﻿PDF Autor: 'Computershare Communication Services GmbH'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=
+Erträgnisgutschrift aus Wertpapieren DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=
+ADRESSZEILE2=
+Dividende für ADRESSZEILE3=
+01.06.2020 - 31.05.2021 ADRESSZEILE4=
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+ / 26.08.2020 ADRESSZEILE6=
+BELEGNUMMER=
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+
+München, 26.08.2020
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Paychex Inc. Registered Shares DL -,01 US7043261079
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 10,000 31.07.2020 27.08.2020 USD 0,620000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+27.08.2020 123456789 USD 4,64
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 5,25
+US-Quellensteuer 15% USD 0,93
+davon anrechenbare US-Quellensteuer 15% EUR 0,79
+Aktienverlusttopf EUR 
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 2,09
+einbehaltene Kapitalertragsteuer EUR 0,52
+einbehaltener Solidaritätszuschlag EUR 0,02
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,52
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,02
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt/M. V-Höchst, Steuernummer .
+Steuerlicher Stichtag: 27.08.2020
+Devisenkurs: EUR/USD 1,1814
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.17/ABREEREIERTR/GDBERTRG/002770/260820/232426

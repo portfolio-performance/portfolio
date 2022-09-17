@@ -3,6 +3,7 @@ name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed
 name.abuchen.portfolio.online.impl.BitfinexQuoteFeed
 name.abuchen.portfolio.online.impl.BinanceQuoteFeed
 name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed
+name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed
 name.abuchen.portfolio.online.impl.FinnhubQuoteFeed
 name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed
 name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed

@@ -19,12 +19,18 @@ public class BuySellEntry implements CrossEntry, Annotated
 
     public BuySellEntry(Portfolio portfolio, Account account)
     {
+        this(portfolio, new PortfolioTransaction(), account, new AccountTransaction());
+    }
+
+    /* protobuf only */ BuySellEntry(Portfolio portfolio, PortfolioTransaction portfolioTx, Account account,
+                    AccountTransaction accountTx)
+    {
         this.portfolio = portfolio;
-        this.portfolioTransaction = new PortfolioTransaction();
+        this.portfolioTransaction = portfolioTx;
         this.portfolioTransaction.setCrossEntry(this);
 
         this.account = account;
-        this.accountTransaction = new AccountTransaction();
+        this.accountTransaction = accountTx;
         this.accountTransaction.setCrossEntry(this);
     }
 
@@ -100,6 +106,19 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         this.portfolioTransaction.setNote(note);
         this.accountTransaction.setNote(note);
+    }
+
+    @Override
+    public String getSource()
+    {
+        return this.portfolioTransaction.getSource();
+    }
+
+    @Override
+    public void setSource(String source)
+    {
+        this.portfolioTransaction.setSource(source);
+        this.accountTransaction.setSource(source);
     }
 
     @Override

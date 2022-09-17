@@ -74,10 +74,12 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).spacing(3, 3).applyTo(container);
         container.setBackground(parent.getBackground());
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(container.getBackground());
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(title);
 
         TableLayout layout = get(LayoutConfig.class).getValue();

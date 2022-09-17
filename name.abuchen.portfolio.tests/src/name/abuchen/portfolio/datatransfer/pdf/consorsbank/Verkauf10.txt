@@ -1,0 +1,71 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank � 90318 Nürnberg
+Depotnummer: 1111 111 111
+1111111111/00
+Vermerk der Bank: 2000
+2
+AAA AAA
+AAA 1
+11111 AAA Datum: 08.10.2021Seite: 1 von 2
+Ordernummer 111111111.001
+Orderdatum 08.10.2021
+ORDERABRECHNUNG
+VERKAUF AM 08.10.2021 UM 14:29:55 XETRA FRANKFURT NR. 111111111.001
+Bezeichnung WKN ISIN
+ISH.STOX.EUROPE 600 U.ETF 263530 DE0002635307
+Einheit Umsatz
+ST 200,00000
+Preis pro Anteil 45,490000 EUR
+Kurswert 9.098,00 EUR
+abzgl. Börsenplatzgebühr 1,50 EUR
+abzgl. Provision 22,75 EUR
+abzgl. Grundgebühr 4,95 EUR
+abzgl. Kapitalertragssteuer 25,00% 1.068,76 EUR 267,19 EUR
+abzgl. Solidaritätszuschlag 5,50% 267,19 EUR 14,69 EUR
+zugunsten Konto-Nr. 1111111111 8.786,92 EUR
+Valuta 12.10.2021
+Bestand zulasten Girosammelverwahrung
+CBF 1111
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+Limitkurs 45,490000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d�Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 1111 111 111
+1111111111/00
+Vermerk der Bank: 2000
+2
+Datum: 08.10.2021
+Seite: 2 von 2
+Ordernummer 111111111.001
+Orderdatum 08.10.2021
+Informationen bei Gewinn Aktien / Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode 1.526,80 EUR
+Details zur Investmentbesteuerung
+KapSt-pflichtige Kapitalerträge 1.526,80 EUR
+Ergebnis seit 01.01.2018 bestandsgeschützter Alt-Anteile 1.068,76 EUR
+Berücksichtigung Teilfreistellung 30,00 % - 458,04 EUR
+Ergebnis nach Teilfreistellung / Vorabpauschale 1.068,76 EUR
+Steuerpflichtiger Gesamtbetrag 1.068,76 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 1.068,76 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Es wurde keine Kirchensteuer einbehalten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d�Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

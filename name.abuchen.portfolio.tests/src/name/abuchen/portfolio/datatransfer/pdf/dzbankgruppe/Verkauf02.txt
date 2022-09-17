@@ -1,0 +1,65 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank Stuttgart eG · Postfach 200333 · 70372 Stuttgart Seite 1 von 2
+Depotnummer
+ 5052257500
+ Kundennummer 50544500
+Max Mustermann
+ Auftragsnummer 133682/08.00
+Max Mustermann Datum 26.09.2019
+Straßenname-Str. 15 Rechnungsnummer W07202-0000007184/19
+70372 Stuttgart Steuernummer 24210508812   
+Onlinedepot
+ 
+Wertpapier Abrechnung Verkauf 
+Auftrag vom 19.09.2019 17:42:31 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 30 BAYER AG                           DE000BAY0017 (BAY001)
+NAMENS-AKTIEN O.N.                 
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Stop-Limit-Order
+Stoplimit 65,10 EUR Limit 64,50 EUR 
+Schlusstag/-Zeit 26.09.2019 09:04:37 Auftraggeber Max Mustermann
+Ausführungskurs 65,10 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 1.953,00 EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 143,95 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 143,95 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 143,95 EUR 35,99- EUR
+Solidaritätszuschlag 5,50% auf 35,99 EUR 1,98- EUR
+Ausmachender Betrag 1.904,98 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 30.09.2019 zu Gunsten des Kontos 5052258000
+(IBAN DE27 9509 0000 3074 2520 00), BLZ 60090100 (BIC VOBADES).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+7202.09261748.0000011OR07
+Seite 2 von 2
+Depotnummer 5052257500
+Kundennummer 50544500
+Auftragsnummer 133682/08.00
+Datum 26.09.2019
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.210,07
+Verkauf 0,00 0,00 0,00 0,00 143,95
+Nachher 0,00 0,00 0,00 0,00 1.354,02
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 7677318300 16.07.2019 Stück 30,0000 1.799,00- 1.942,95 143,95 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 143,95
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7202.09261748.0000012OR07

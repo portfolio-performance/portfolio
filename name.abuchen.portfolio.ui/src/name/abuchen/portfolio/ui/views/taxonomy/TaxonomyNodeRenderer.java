@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.List;
 
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.ColorConversion;
 
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.graphics.Color;
@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
         public Segment(String color)
         {
-            RGB rgb = Colors.toRGB(color);
+            RGB rgb = ColorConversion.hex2RGB(color);
             createColors(rgb, rgb.getHSB());
         }
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -242,6 +243,19 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
+
+                MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
+                IntStream.range(1, 4).forEach(i -> {
+                    Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
+                        series.setLineWidth(i);
+                        configurator.fireUpdate();
+                    });
+                    action.setChecked(i == series.getLineWidth());
+                    lineWidth.add(action);
+
+                });
+                manager.add(lineWidth);
+
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)

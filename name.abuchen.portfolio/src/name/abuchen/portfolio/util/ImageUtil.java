@@ -27,11 +27,13 @@ public class ImageUtil
     {
         private int logicalWidth;
         private int logicalHeight;
+        private int xOffset;
         private ImageData fullSize;
         private HashMap<Integer, ImageData> zoomLevels = new HashMap<Integer, ImageData>();
 
-        public ZoomingImageDataProvider(byte[] data, int logicalWidth, int logicalHeight)
+        public ZoomingImageDataProvider(byte[] data, int xOffset, int logicalWidth, int logicalHeight)
         {
+            this.xOffset = xOffset;
             this.logicalWidth = logicalWidth;
             this.logicalHeight = logicalHeight;
             this.fullSize = ImageUtil.toImageData(data);
@@ -47,7 +49,7 @@ public class ImageUtil
             float scaleW = 1f / fullSize.width * logicalWidth * (zoom / 100f);
             float scaleH = 1f / fullSize.height * logicalHeight * (zoom / 100f);
 
-            imageData = ImageUtil.resize(fullSize, (int) (fullSize.width * scaleW), (int) (fullSize.height * scaleH),
+            imageData = ImageUtil.resize(fullSize, xOffset, (int) (fullSize.width * scaleW), (int) (fullSize.height * scaleH),
                             false);
 
             zoomLevels.put(zoom, imageData);
@@ -56,7 +58,15 @@ public class ImageUtil
         }
     }
 
-    public static Image toImage(String value, int logicalWidth, int logicalHeight)
+    /**
+     * 
+     * @param value
+     * @param xOffset Additional transparent offset. Width of the resulting image is (xOffset + maxWidth)
+     * @param logicalWidth
+     * @param logicalHeight
+     * @return
+     */
+    public static Image toImage(String value, int xOffset, int logicalWidth, int logicalHeight)
     {
         if (value == null || value.length() == 0)
             return null;
@@ -73,7 +83,7 @@ public class ImageUtil
             if (buff == null || buff.length == 0)
                 return null;
 
-            return new Image(null, new ZoomingImageDataProvider(buff, logicalWidth, logicalHeight));
+            return new Image(null, new ZoomingImageDataProvider(buff, xOffset, logicalWidth, logicalHeight));
         }
         catch (Exception ex)
         {
@@ -119,13 +129,13 @@ public class ImageUtil
 
         if (imgData.width > maxWidth || imgData.height > maxHeight)
         {
-            imgData = ImageUtil.resize(imgData, maxWidth, maxHeight, true);
+            imgData = ImageUtil.resize(imgData, 0, maxWidth, maxHeight, true);
             data = ImageUtil.encode(imgData);
         }
         return BASE64PREFIX + Base64.getEncoder().encodeToString(data);
     }
 
-    private static ImageData resize(ImageData image, int maxWidth, int maxHeight, boolean preserveRatio)
+    private static ImageData resize(ImageData image, int xOffset, int maxWidth, int maxHeight, boolean preserveRatio)
     {
         if (image.width == maxWidth && image.height == maxHeight)
             return image;
@@ -148,7 +158,7 @@ public class ImageUtil
         if (posY + newHeight > imageHeight)
             newWidth = imageHeight - posY;
 
-        ImageData imageData = getTransparentImage(imageWidth, imageHeight);
+        ImageData imageData = getTransparentImage(imageWidth + xOffset, imageHeight);
 
         Image canvas = new Image(null, imageData);
 
@@ -157,7 +167,7 @@ public class ImageUtil
         gc.setInterpolation(SWT.HIGH);
 
         Image source = new Image(null, image);
-        gc.drawImage(source, 0, 0, image.width, image.height, posX, posY, newWidth, newHeight);
+        gc.drawImage(source, 0, 0, image.width, image.height, posX+xOffset, posY, newWidth, newHeight);
         gc.dispose();
         source.dispose();
 

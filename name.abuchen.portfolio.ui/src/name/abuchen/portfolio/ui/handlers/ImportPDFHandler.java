@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
@@ -88,16 +89,27 @@ public class ImportPDFHandler
 
     public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
+        String importPath = part.getEclipsePreferences().get(UIConstants.Preferences.PDF_IMPORT_PATH, null);
+
+        if (importPath != null && !Files.isDirectory(Paths.get(importPath)))
+            importPath = null;
+
+        if (importPath == null)
+            importPath = System.getProperty("user.home"); //$NON-NLS-1$
+
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
         fileDialog.setFilterExtensions(new String[] { "*.pdf;*.zip" }); //$NON-NLS-1$
+        fileDialog.setFilterPath(importPath);
         fileDialog.open();
 
         String[] filenames = fileDialog.getFileNames();
 
         if (filenames.length == 0)
             return;
+
+        part.getEclipsePreferences().put(UIConstants.Preferences.PDF_IMPORT_PATH, fileDialog.getFilterPath());
 
         List<File> files = new ArrayList<>();
         List<File> filesToDelete = new ArrayList<>();

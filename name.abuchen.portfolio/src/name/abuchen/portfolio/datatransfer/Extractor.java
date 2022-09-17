@@ -147,6 +147,15 @@ public interface Extractor
             investmentPlanItem = flag;
         }
 
+        @SuppressWarnings("nls")
+        @Override
+        public String toString()
+        {
+            // debug output
+            return String.format("%s %s %s %s", getDate() != null ? Values.DateTime.format(getDate()) : "",
+                            getTypeInformation(), getAmount() != null ? Values.Money.format(getAmount()) : "",
+                            getSecurity() != null ? getSecurity().getName() : "");
+        }
     }
 
     /**

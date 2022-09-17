@@ -1,0 +1,43 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BNP Paribas S.A. Niederlassung Österreich 36607608-15.1.2020
+Hello bank! Depot-Nr.: XXXXXXXXXXX
+Elisabethstraße 22 XXX XXXXXXX
+5020 Salzburg 33/9865
+Hello bank!                        
+Herrn
+XXXX XXXXX
+Addresse X
+XXXX Stadt                                                                                                                                                                                                        
+Wir haben für Sie am 15.1.2020 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Verkauf
+Auftrags-Nr.: 36404481-15.1.2020
+Auftragseingang: 15.1.2020-14:12:59
+Abgang: 19 Stk
+Titel: DE0007472060  W i r e c a r d  A G                        
+Inhaber-Aktien o.N.                
+Kurs: 121,6 EUR 
+Handelsplatz: XBER     Börse Berlin
+Handelszeit: 15.1.2020 um 14:13:23 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: 2.310,40 EUR 
+Kapitalertragsteuer: -73,93 EUR 
+Fremde Spesen: -4,58 EUR 
+Eigene Spesen: -4,04 EUR 
+Grundgebühr: -7,95 EUR 
+Zu Gunsten IBAN ATXX XXXX XXXX XXXX XXXX 2.219,90 EUR 
+Valuta 17.1.2020
+Schlusstag: 15.1.2020
+Kassatag: 17.1.2020
+Die KESt-Abfuhr erfolgt an das Finanzamt Wien (FA09).
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 19 Stk
+steuerlicher Anschaffungswert: 2.041,55 EUR
+steuerlicher Veräußerungswert: 2.310,40 EUR
+steuerpflichtiger Kursgewinn: 268,85 EUR
+3.3.2020 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+21533 Doknr.: EK00-036-0365009956

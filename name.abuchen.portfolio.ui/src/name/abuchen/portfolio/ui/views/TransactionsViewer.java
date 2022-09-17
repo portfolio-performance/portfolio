@@ -41,12 +41,15 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -153,13 +156,14 @@ public final class TransactionsViewer implements ModificationListener
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(tableViewer);
+        CopyPasteSupport.enableFor(tableViewer);
 
         tableViewer.setUseHashlookup(true);
 
         support = new ShowHideColumnHelper(identifier, owner.getPreferenceStore(), tableViewer, layout);
 
         addColumns();
-        support.createColumns();
+        support.createColumns(true);
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -246,10 +250,24 @@ public final class TransactionsViewer implements ModificationListener
 
     private void addColumns()
     {
+        TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
+
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> Values.DateTime.format(t.getDateTime())));
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
-                        SWT.UP);
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()) {
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colors.getForeground(element);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                return colors.getBackground(element);
+            }
+        });
+        
+        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
@@ -286,27 +304,25 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new IsinColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new SymbolColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new WknColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column("3", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            private TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
-
             @Override
             public Long getValue(Object element)
             {
@@ -435,6 +451,11 @@ public final class TransactionsViewer implements ModificationListener
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
         new StringEditingSupport(Transaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
+
+        column = new Column("source", Messages.ColumnSource, SWT.None, 200); //$NON-NLS-1$
+        column.setLabelProvider(new TransactionLabelProvider(Transaction::getSource));
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column); // $NON-NLS-1$
+        support.addColumn(column);
     }
 
     public ShowHideColumnHelper getColumnSupport()
@@ -450,6 +471,7 @@ public final class TransactionsViewer implements ModificationListener
 
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
+        tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         tableViewer.getTable().addDisposeListener(e -> TransactionsViewer.this.widgetDisposed());
     }

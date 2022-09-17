@@ -1,0 +1,38 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+x x Email: service@justtrade.com
+x x Str 2 Web: www.justtrade.com
+58965 x
+Name des Kunden: x x
+Depotnummer: 98745632
+24. September 2021
+Dividende - Vierteljährlich
+Produktbezeichnung - Newmont Corp.
+Internationale Wertpapierkennnummer US6516391066
+(ISIN)
+Anzahl/Nominale 40,00
+Referenz 8197
+Ex Datum - Tag 08. September 2021
+Zahlbarkeitstag 23. September 2021
+Valutadatum 23. September 2021
+Dividende pro Stück/Nominal EUR 0,467707
+Devisenkurs (EUR/ USD) 1,1760
+Dividendengutschrift EUR 18,71
+Einbehaltende Quellensteuer EUR 2,81
+Anrechenbare Quellensteuer EUR 2,81
+Ausmachender Betrag EUR 15,90
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Dies ist keine Steuerbescheinigung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

@@ -29,6 +29,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
@@ -59,6 +61,8 @@ public class ChartWidget extends WidgetDelegate<Object>
             String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CONFIG_UUID.name());
             config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst()
                             .orElseGet(() -> new ConfigurationSet.Configuration(Messages.LabelNoName, null)));
+
+            addConfig(new ChartShowYAxisConfig(delegate, false));
         }
 
         @Override
@@ -197,9 +201,11 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
-        chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
+        chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             chart.getToolTip().setDefaultValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        else
+            chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
         chart.getToolTip().reverseLabels(true);
 
         int yHint = get(ChartHeightConfig.class).getPixel();
@@ -265,6 +271,13 @@ public class ChartWidget extends WidgetDelegate<Object>
 
             List<DataSeries> series = Lists.reverse(
                             new DataSeriesSerializer().fromString(dataSeriesSet, get(ChartConfig.class).getData()));
+
+            if (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS)
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
+            else
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+
+            chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 
             Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
                             .toInterval(LocalDate.now());

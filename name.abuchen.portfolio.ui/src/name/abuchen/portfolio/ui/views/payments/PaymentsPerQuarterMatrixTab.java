@@ -33,7 +33,7 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
     @Override
     public void addConfigActions(IMenuManager manager)
     {
-        // do not add config option from divident / month tab
+        addReverseColumnAction(manager);
     }
 
     @Override
@@ -44,6 +44,15 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
         createQuarterColumns(records, layout);
 
         createSumColumn(records, layout);
+
+        sortColumnOrder();
+    }
+
+    @Override
+    protected void sortColumnOrder()
+    {
+        // Keep first column in same position
+        sortColumnOrder(1, 0);
     }
 
     private void createQuarterColumns(TableViewer records, TableColumnLayout layout)

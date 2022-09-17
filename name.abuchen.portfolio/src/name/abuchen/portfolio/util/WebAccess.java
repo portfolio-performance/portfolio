@@ -5,22 +5,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
-import org.apache.http.Header;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.util.Timeout;
 
 //@formatter:off
 /**
@@ -86,12 +90,13 @@ import org.apache.http.util.EntityUtils;
  *                       .get();
  */
 //@formatter:on
+@SuppressWarnings("restriction")
 public class WebAccess
 {
     @FunctionalInterface
     private interface Request
     {
-        HttpRequestBase create(URI uri) throws IOException;
+        HttpUriRequestBase create(URI uri) throws IOException;
     }
 
     public static class WebAccessException extends IOException
@@ -111,8 +116,10 @@ public class WebAccess
         }
     }
 
-    public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
-                    .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
+    public static final RequestConfig defaultRequestConfig = RequestConfig.custom()
+                    .setConnectTimeout(Timeout.ofSeconds(5)) //
+                    .setResponseTimeout(Timeout.ofSeconds(20)) //
+                    .setCookieSpec(StandardCookieSpec.STRICT) //
                     .build();
 
     private final URIBuilder builder;
@@ -170,8 +177,15 @@ public class WebAccess
 
     public String get() throws IOException
     {
-        CloseableHttpResponse response = executeWith(HttpGet::new);
-        return EntityUtils.toString(response.getEntity());
+        try
+        {
+            CloseableHttpResponse response = executeWith(HttpGet::new);
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch (ParseException e)
+        {
+            throw new IOException(e);
+        }
     }
 
     public void post(String body) throws IOException
@@ -198,12 +212,11 @@ public class WebAccess
                             .build();
 
             URI uri = builder.build();
-            HttpRequestBase request = function.create(uri);
+            HttpUriRequestBase request = function.create(uri);
             response = client.execute(request);
 
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new WebAccessException(uri.toString() + " --> " + response.getStatusLine().getStatusCode(), //$NON-NLS-1$
-                                response.getStatusLine().getStatusCode());
+            if (response.getCode() != HttpStatus.SC_OK)
+                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode());
 
             return response;
         }
@@ -211,6 +224,22 @@ public class WebAccess
         {
             throw new IOException(e);
         }
+    }
+
+    private String buildMessage(URI uri, int statusCode)
+    {
+        String message = uri.toString() + " --> " + statusCode; //$NON-NLS-1$
+        try
+        {
+            String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
+            if (reason != null)
+                return message + " " + reason; //$NON-NLS-1$
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore -> unable to retrieve message
+        }
+        return message;
     }
 
     public String getURL() throws URISyntaxException

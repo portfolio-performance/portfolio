@@ -22,6 +22,8 @@ public interface SecuritySearchProvider
         String getType();
 
         String getExchange();
+        
+        String getSource();
 
         default String getExtraAttributes()
         {

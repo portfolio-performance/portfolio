@@ -4,12 +4,15 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import org.eclipse.swt.SWT;
+import org.swtchart.Chart;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 
 public class PaymentsAccumulatedChartTab extends AbstractChartTab
 {
@@ -57,5 +60,13 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
             }
 
         }
+    }
+
+    @Override
+    protected void attachTooltipTo(Chart chart)
+    {
+        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
+        toolTip.enableCategory(true);
+        toolTip.setDefaultValueFormat(new AmountNumberFormat());
     }
 }

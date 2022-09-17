@@ -1,13 +1,12 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.DecimalFormatSymbols;
+
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 
 public final class NumberVerifyListener implements VerifyListener
 {
-    private static final String ALLOWED_CHARS = ",.0123456789"; //$NON-NLS-1$
-    private static final String ALLOWED_NEGATIVE = "-" + ALLOWED_CHARS; //$NON-NLS-1$
-
     private String pattern;
 
     public NumberVerifyListener()
@@ -17,7 +16,16 @@ public final class NumberVerifyListener implements VerifyListener
 
     public NumberVerifyListener(boolean allowNegativeValues)
     {
-        this.pattern = allowNegativeValues ? ALLOWED_NEGATIVE : ALLOWED_CHARS;
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+
+        StringBuilder allowedChars = new StringBuilder();
+        allowedChars.append("0123456789"); //$NON-NLS-1$
+        allowedChars.append(symbols.getGroupingSeparator());
+        allowedChars.append(symbols.getDecimalSeparator());
+        if (allowNegativeValues)
+            allowedChars.append("-"); //$NON-NLS-1$
+
+        this.pattern = allowedChars.toString();
     }
 
     @Override

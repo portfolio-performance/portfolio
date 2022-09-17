@@ -101,7 +101,7 @@ import name.abuchen.portfolio.money.Money;
                 AccountTransferEntry entry = new AccountTransferEntry();
                 entry.setAmount(Math.abs(amount.getAmount()));
                 entry.setCurrencyCode(amount.getCurrencyCode());
-                entry.setDate(date.withHour(0).withMinute(0));
+                entry.setDate(date);
                 entry.setNote(note);
                 item = new AccountTransferItem(entry, type == Type.TRANSFER_OUT);
                 break;
@@ -170,7 +170,7 @@ import name.abuchen.portfolio.money.Money;
                 if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES
                                 || type == Type.FEES_REFUND)
                     t.setSecurity(security);
-                t.setDateTime(date.withHour(0).withMinute(0));
+                t.setDateTime(date);
                 t.setNote(note);
 
                 if (type == Type.DIVIDENDS)

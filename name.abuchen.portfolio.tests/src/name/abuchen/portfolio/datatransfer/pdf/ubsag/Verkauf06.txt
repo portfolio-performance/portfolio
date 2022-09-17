@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+Personnel Financial Affairs
+PFA Services
+Tel. 044-238 27 80
+UBS Wertschriftendepot CHF
+Depot-Nr. 292-123456.S1
+Herr Rubrik DEPOTNAME
+Max Mustermann
+Musterstrasse 3 Kunden-Nr. 123-456789
+1234 Musterhausen
+Auftrags-Nr. 6615705
+Anzeige / Abrechnung Erstellt am 8. Januar 2021
+FRAKTIONS-ABRECHNUNG
+Stück Valor 58198423 ISIN US92556V1061 Preis
+0.167 N-AKT VIATRIS INC USD 18.21874
+(VTRSV)
+Zum Preis von USD 3.04
+USD 3.04
+USD/CHF 0.86661 CHF 2.63
+Zugunsten Konto 292-123456.40R CHF Valuta 04.01.2020 CHF 2.63
+KONTONAME
+Die Fraktionen haben wir aus Ihrem Depot ausgebucht.
+Freundliche Grüsse
+UBS Switzerland AG
+Formular ohne Unterschrift Seite 1 / 1
+EG550L05 / 022620 / Z59B4SAHHTW8J49A00001 07.01.2021

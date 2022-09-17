@@ -37,7 +37,7 @@ public final class DataSeries implements Adaptable
     {
         TOTALS, INVESTED_CAPITAL, ABSOLUTE_INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, ABSOLUTE_DELTA_ALL_RECORDS, //
         DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED, //
-        EARNINGS, EARNINGS_ACCUMULATED;
+        EARNINGS, EARNINGS_ACCUMULATED, FEES, FEES_ACCUMULATED;
     }
 
     /**
@@ -80,6 +80,7 @@ public final class DataSeries implements Adaptable
     private String label;
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
+    private int lineWidth = 2;
 
     private RGB color;
 
@@ -199,6 +200,16 @@ public final class DataSeries implements Adaptable
     public void setLineStyle(LineStyle lineStyle)
     {
         this.lineStyle = lineStyle;
+    }
+
+    public int getLineWidth()
+    {
+        return lineWidth;
+    }
+
+    public void setLineWidth(int lineWidth)
+    {
+        this.lineWidth = lineWidth;
     }
 
     public Image getImage()

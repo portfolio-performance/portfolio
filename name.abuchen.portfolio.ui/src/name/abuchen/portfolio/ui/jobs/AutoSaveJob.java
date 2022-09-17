@@ -26,9 +26,15 @@ public final class AutoSaveJob extends AbstractClientJob
         // 0 means not to autosave at all
         if (delay != 0L)
         {
-            PortfolioPlugin.info("Auto-saving " + clientInput.getLabel()); //$NON-NLS-1$
-            this.clientInput.autoSave();
-            schedule(delay);
+            try
+            {
+                PortfolioPlugin.info("Auto-saving " + clientInput.getLabel()); //$NON-NLS-1$
+                this.clientInput.autoSave();
+            }
+            finally
+            {
+                schedule(delay);
+            }
         }
         return Status.OK_STATUS;
     }

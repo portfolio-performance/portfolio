@@ -39,6 +39,8 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
@@ -90,6 +92,7 @@ public class TransactionsTab implements PaymentsTab
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(TransactionsTab.class.getSimpleName() + "@v3", //$NON-NLS-1$
                         preferences, tableViewer, layout);
@@ -122,16 +125,9 @@ public class TransactionsTab implements PaymentsTab
     private void addColumns(ShowHideColumnHelper support)
     {
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
-            }
-        });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
-                        SWT.UP);
+        column.setLabelProvider(new DateTimeLabelProvider(
+                        element -> ((TransactionPair<?>) element).getTransaction().getDateTime()));
+        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         support.addColumn(column);
 
         Function<Object, Comparable<?>> tx2type = element -> ((TransactionPair<?>) element)
@@ -349,6 +345,19 @@ public class TransactionsTab implements PaymentsTab
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.None, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((TransactionPair<?>) element).getTransaction().getSource();
+            }
+        });
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()).attachTo(column);
+        column.setVisible(false);
         support.addColumn(column);
     }
 

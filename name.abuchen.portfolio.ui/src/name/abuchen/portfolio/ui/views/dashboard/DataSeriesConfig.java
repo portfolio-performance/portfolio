@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -21,21 +23,28 @@ public class DataSeriesConfig implements WidgetConfig
     private final boolean supportsBenchmarks;
     private final String label;
     private final Dashboard.Config configurationKey;
+    private final Predicate<DataSeries> predicate;
 
     private DataSeries dataSeries;
 
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
-        this(delegate, supportsBenchmarks, false, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+        this(delegate, supportsBenchmarks, false, null, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+    }
+
+    public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, Predicate<DataSeries> predicate)
+    {
+        this(delegate, supportsBenchmarks, false, predicate, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
     }
 
     protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
-                    String label, Dashboard.Config configurationKey)
+                    Predicate<DataSeries> predicate, String label, Dashboard.Config configurationKey)
     {
         this.delegate = delegate;
         this.supportsBenchmarks = supportsBenchmarks;
         this.label = label;
         this.configurationKey = configurationKey;
+        this.predicate = predicate;
 
         String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name());
         if (uuid != null && !uuid.isEmpty())
@@ -71,8 +80,12 @@ public class DataSeriesConfig implements WidgetConfig
 
     private void doAddSeries(boolean showOnlyBenchmark)
     {
-        List<DataSeries> list = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
-                        .filter(ds -> ds.isBenchmark() == showOnlyBenchmark).collect(Collectors.toList());
+        Stream<DataSeries> stream = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
+                        .filter(ds -> ds.isBenchmark() == showOnlyBenchmark);
+        if (predicate != null)
+            stream = stream.filter(predicate);
+
+        List<DataSeries> list = stream.collect(Collectors.toList());
 
         DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
         dialog.setElements(list);

@@ -309,7 +309,7 @@ public class StackedChartViewer extends AbstractChartPage
             }
 
             chart.getAxisSet().adjustRange();
-            chart.getAxisSet().getYAxis(0).setRange(new Range(-0.01, 1.01));
+            chart.getAxisSet().getYAxis(0).setRange(new Range(-0.025, 1.025));
         }
         finally
         {

@@ -1,0 +1,164 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=XXXXX
+aus Wertpapieren ADRESSZEILE2=XXXXXX XXXXXXADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX XXXXXX
+XXXXX ADRESSZEILE5=
+XXXXXX XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=6719
+XXXXXX XXXXXX 35XXXXXXX 21408694 / 10.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX XXXXXX
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 10.01.2020
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+Deka DAX UCITS ETF Inhaber-Anteile DE000ETFL011
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
+Wert Konto-Nr. Betrag zu Ihren Lasten
+10.01.2020 123456789 EUR 0,02
+Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 0,11
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 0,11
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR 0,08
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,08
+einbehaltene Kapitalertragsteuer EUR 0,02
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,16
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 02.01.2020
+Jahressteuerbescheinigung folgt
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/006719/110120/021036
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=XXXXX
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXX XXXXXX
+35XXXXXXX 21408694 2 ADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX XXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=6719
+Fondsart: Aktienfonds (§ 2 Abs. 6 InvStG) SEITENNUMMER=2
+Angewendete Teilfreistellungsquote: 30% STEUERERSTATTUNG=N
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/006719/110120/021036
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=XXXXX
+aus Wertpapieren ADRESSZEILE2=XXXXXX XXXXXXADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX XXXXXX
+XXXXX ADRESSZEILE5=
+XXXXXX XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=6720
+XXXXXX XXXXXX 35XXXXXXX 96003514 / 10.01.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX XXXXXX
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 10.01.2020
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+iShares MDAX UCITS ETF DE Inhaber-Anteile DE0005933923
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 0,9265 02.01.2020 02.01.2020 EUR 0,6672
+Wert Konto-Nr. Betrag zu Ihren Lasten
+10.01.2020 123456789 EUR 0,09
+Investmentertrag für 2019 (besitzzeitanteilig, vor Teilfreistellung) EUR 0,49
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR 0,49
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR 0,34
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,34
+einbehaltene Kapitalertragsteuer EUR 0,08
+einbehaltener Solidaritätszuschlag EUR 0,01
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,24
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,01
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 02.01.2020
+Jahressteuerbescheinigung folgt
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/006720/110120/021036
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=35XXXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=XXXXX
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXX XXXXXX
+35XXXXXXX 96003514 2 ADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX XXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=6720
+Fondsart: Aktienfonds (§ 2 Abs. 6 InvStG) SEITENNUMMER=2
+Angewendete Teilfreistellungsquote: 30% STEUERERSTATTUNG=N
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/006720/110120/021036

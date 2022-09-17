@@ -1,0 +1,74 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 102 18 010
+Herrn Telefon: 04106 - 708 25 00
+Vorname Nachname Telefax: 04106 - 708 25 85
+Strasse 1 E-Mail: www.comdirect.de/kontakt
+11111 Stadt (E-Mail über Kontaktformular)
+Kundennummer: 222 2222222
+Finanzreport Nr. 7 per 01.08.2018
+Sehr geehrter Herr Nachname,
+ 
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Konten und Ihr
+Depot.
+Für Fragen zum Finanzreport oder unseren Leistungen stehen Ihnen unsere Kundenbetreuer
+telefonisch unter 04106 - 708 25 00 rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Aktuelle Informationen:
+Aktion für Sie verlängert: Noch bis 31.08.2018 erhalten Sie die Fonds Allianz Aktienzins und
+Fondak von Allianz Global Investors ohne Ausgabeaufschlag. Lassen Sie sich diese Aktion nicht
+entgehen und sichern Sie sich jetzt diese beiden Top-Aktienfonds zu Vorzugskonditionen unter
+www.comdirect.de/allianz
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2018 - Seite 2
+Kundennummer 222 2222222
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in Saldo in
+Kontowährung EUR
+Girokonto DE33 3333 3333 3333 3333 33 +0,00
+Tagesgeld PLUS-Konto DE44 4444 4444 4444 4444 44 +0,86
+Visa-Karte 1111 +0,00
+Gesamtsaldo 01.08.2018 +0,86
+ 
+Girokonto Dispositionskredit girocard Tages-/WochenlimitEUR 0 EUR 1.000/EUR 2.000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.07.2018 +30,00
+01.08.2018 Lastschrift/Bela comdirect VISA-KARTE NR. 11111111XXXX1111 -30,00
+01.08.2018 st. Visa-Monatsabrechnung SUMME MONATSABRECHNUNG VISA
+AA1111111111 VORNAME NACHNAME
+1111/111111
+Neuer Saldo 01.08.2018 +0,00
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.07.2018 +0,00
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 7 per 01.08.2018 - Seite 3
+Kundennummer 111 1111111
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+01.08.2018 Übertrag/Über COMDIRECT BANK AG GUTSCHR. WECHSELGELD-SPAREN +0,86
+01.08.2018 weisung 1111111 111
+AA1111111111 End-to-End-Ref.: nicht
+111/11111 angegeben
+Neuer Saldo 01.08.2018 +0,86
+Visa-Karte 1111 Visa Limit Verfügungslimit am GeldautomatEUR 1.000/Monat EUR 600/Tag
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.07.2018 +0,00
+24.07.2018 Wechselgeld-Sp WECHSELGELD-SPARBETRAG -0,86
+23.07.2018 aren
+111111111111
+11
+24.07.2018 Visa-Umsatz EINKAUFSLADEN -29,14
+23.07.2018 1111111111111
+11
+31.07.2018 Visa-Kartenabre SUMME MONATSABRECHNUNG VISA +30,00
+31.07.2018 chnung
+111111111111
+11
+Neuer Saldo 01.08.2018 +0,00

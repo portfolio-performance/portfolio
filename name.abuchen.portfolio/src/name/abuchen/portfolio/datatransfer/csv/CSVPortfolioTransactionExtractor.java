@@ -18,6 +18,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -169,6 +170,8 @@ import name.abuchen.portfolio.money.Money;
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
 
+        PDFExtractorUtils.fixGrossValueBuySell().accept(entry);
+        
         return new BuySellEntryItem(entry);
     }
 
@@ -232,6 +235,8 @@ import name.abuchen.portfolio.money.Money;
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, t);
 
+        PDFExtractorUtils.fixGrossValue().accept(t);
+       
         return new TransactionItem(t);
     }
 

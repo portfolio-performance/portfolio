@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|ER03|265484||||||||ERTRAEGE.D220103.AFP||||20220103||4126|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 250 SIXTH STREET SPECIALITY LEND. US83012A1097 (A2P60W)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,070000000 USD
+Bestandsstichtag 26.11.2021 Herkunftsland USA
+Ex-Tag 29.11.2021
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD 1,1396
+Devisenkursdatum 03.01.2022
+Ausschüttung 17,50 USD 15,36+ EUR
+Einbehaltene Quellensteuer 15 % auf 17,50 USD 2,30- EUR
+Anrechenbare Quellensteuer pro Stück 0,0105 USD 2,63 USD
+Kapitalertragsteuerpflichtiger Ertrag 17,50 USD
+Umrechnung in EUR 15,36 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 2,31 EUR 9,24 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 6,12 EUR
+Kapitalertragsteuer 24,51 % auf 6,12 EUR 1,50- EUR
+Solidaritätszuschlag 5,5 % auf 1,50 EUR 0,08- EUR
+Kirchensteuer 8 % auf 1,50 EUR 0,12- EUR
+Ausmachender Betrag 11,36+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.01032142.0010223ER03
+SBRO_ER03_v10.7P.ERTRAEGE.D220103.AFP_4126
+
+Seite 2
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 241,42
+Ertrag 2,31
+0,00 0,00 0,00 2,31- 6,12
+Nachher 0,00 0,00 0,00 0,00 247,54
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.01032142.0010224ER03

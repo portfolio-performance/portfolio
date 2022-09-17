@@ -1,0 +1,65 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                 
+Flatstreet Str. 3              
+01234 FlatCity                 
+Abrechnung: August 2021
+Ihre Abrechnung vom 22.07.2021 bis 20.08.2021 Abrechnungsdatum: 20. August 2021
+DKB-VISA-Card: 4930 00XX XXXX 1111
+Karteninhaber: Max Mustermann 
+Seite 1 von 2
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+Beleg BuchungVerwendungszweck EUR
+22.07.21 Saldo letzte Abrechnung 263,55+
+23.07.21 26.07.21 *DEUTSCHE BANK AG, DD-LOEBTAU  > 100,00 -
+31.07.21 02.08.21 VB FlatCity-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+04.08.21 04.08.21 Einzahlung 300,00+
+04.08.21 05.08.21 VB FlatCity-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+07.08.21 09.08.21 VB FlatCity-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+10.08.21 11.08.21 VB FlatCity-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+17.08.21 18.08.21 *DEUTSCHE BANK AG, DD-LOEBTAU  > 100,00 -
+17.08.21 18.08.21 GITHUB, HTTPSGITHUB.C USD 5,00 1,1706 4,27 -
+Neuer Saldo 40,72 -
+Sehr geehrter Herr Max Mustermann,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut unverzüglich
+nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden.
+Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                 
+Flatstreet Str. 3              
+01234 FlatCity                 
+Abrechnung: August 2021
+Ihre Abrechnung vom 22.07.2021 bis 20.08.2021 Abrechnungsdatum: 20. August 2021
+DKB-VISA-Card: 4930 00XX XXXX 1111
+Karteninhaber: Max Mustermann 
+Seite 2 von 2
+Der Rechnungsbetrag wird innerhalb der nächsten Tage Ihrem Hinweis:
+Konto Nr. XXXXXX6428, BLZ 120 300 00 belastet. Über Zinsen und Gebühren informiert unser Preis- und
+Leistungsverzeichnis, das Sie online unter www.DKB.de
+Der monatliche Verfügungsrahmen (Kartenlimit) Ihrer abrufen können.
+DKB-VISA-Card beträgt 500 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
+Kreditkartenkonto ein Guthaben vorhanden ist, sind
+Kartenumsätze über den monatlichen Verfügungsrahmen
+hinaus in Höhe des jeweiligen Guthabens möglich.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den 
+Sie auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+ 

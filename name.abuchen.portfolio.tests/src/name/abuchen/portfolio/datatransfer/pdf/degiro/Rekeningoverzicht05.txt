@@ -1,0 +1,17 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1.qualifier
+-----------------------------------------
+Dhr. John
+Doe
+Hoofdstraat 1
+1001AA Amsterdam
+Gebruikersnaam: ****bob
+Rekeningoverzicht van 01-06-2022 t/m 02-06-2022
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+01-06-2022 19:55 31-05-2022 Giro Exchange Connection Fee 2022 EUR -1,01 EUR -6,39
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2022-07-17
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 1 / 1
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.

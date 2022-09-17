@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,14 +11,16 @@ import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class StockSplitModel extends BindingHelper.Model
 {
     private Security security;
     private LocalDate exDate = LocalDate.now();
-    private int newShares = 1;
-    private int oldShares = 1;
+    private BigDecimal newShares = BigDecimal.ONE;
+    private BigDecimal oldShares = BigDecimal.ONE;
+    private BigDecimal stockMultiplier = BigDecimal.ONE;
 
     private boolean changeTransactions = true;
     private boolean changeHistoricalQuotes = true;
@@ -48,24 +52,26 @@ public class StockSplitModel extends BindingHelper.Model
         firePropertyChange("exDate", this.exDate, this.exDate = exDate); //$NON-NLS-1$
     }
 
-    public int getNewShares()
+    public BigDecimal getNewShares()
     {
         return newShares;
     }
 
-    public void setNewShares(int newShares)
+    public void setNewShares(BigDecimal newShares)
     {
         firePropertyChange("newShares", this.newShares, this.newShares = newShares); //$NON-NLS-1$
+        calculateStockMultiplier();
     }
 
-    public int getOldShares()
+    public BigDecimal getOldShares()
     {
         return oldShares;
     }
 
-    public void setOldShares(int oldShares)
+    public void setOldShares(BigDecimal oldShares)
     {
         firePropertyChange("oldShares", this.oldShares, this.oldShares = oldShares); //$NON-NLS-1$
+        calculateStockMultiplier();
     }
 
     public boolean isChangeTransactions()
@@ -90,9 +96,28 @@ public class StockSplitModel extends BindingHelper.Model
                         this.changeHistoricalQuotes = changeHistoricalQuotes);
     }
 
+    private void calculateStockMultiplier()
+    {
+        stockMultiplier =  newShares.divide(oldShares, Values.MC);
+    }
+    
+    public long calculateNewStock(long oldStock)
+    {
+        return BigDecimal.valueOf(oldStock).multiply(stockMultiplier)
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+    }
+    
+    public long calculateNewQuote(long oldQuote)
+    {
+        return BigDecimal.valueOf(oldQuote).divide(stockMultiplier, Values.MC) // when stock is multiplied, quote must be divided
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+    }
+    
     @Override
     public void applyChanges()
     {
+        // save stock split ratio as technical values (and hence do not format
+        // in the local of user) in order to restore/retrieve ratio later
         SecurityEvent event = new SecurityEvent(exDate, SecurityEvent.Type.STOCK_SPLIT, newShares + ":" + oldShares); //$NON-NLS-1$
         security.addEvent(event);
 
@@ -103,7 +128,7 @@ public class StockSplitModel extends BindingHelper.Model
             {
                 Transaction t = pair.getTransaction();
                 if (t.getDateTime().toLocalDate().isBefore(exDate))
-                    t.setShares(t.getShares() * newShares / oldShares);
+                    t.setShares(calculateNewStock(t.getShares()));
             }
         }
 
@@ -113,7 +138,7 @@ public class StockSplitModel extends BindingHelper.Model
             for (SecurityPrice p : quotes)
             {
                 if (p.getDate().isBefore(exDate))
-                    p.setValue(p.getValue() * oldShares / newShares);
+                    p.setValue(calculateNewQuote(p.getValue()));
             }
         }
 

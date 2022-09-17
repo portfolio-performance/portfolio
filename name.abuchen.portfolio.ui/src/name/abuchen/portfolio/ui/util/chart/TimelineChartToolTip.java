@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,8 +44,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private Function<Object, String> xAxisFormat;
 
-    private DecimalFormat defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
-    private Map<String, DecimalFormat> overrideValueFormat = new HashMap<>();
+    private Format defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
+    private Map<String, Format> overrideValueFormat = new HashMap<>();
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
@@ -81,12 +82,12 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.xAxisFormat = format;
     }
 
-    public void setDefaultValueFormat(DecimalFormat defaultValueFormat)
+    public void setDefaultValueFormat(Format defaultValueFormat)
     {
         this.defaultValueFormat = defaultValueFormat;
     }
 
-    public void overrideValueFormat(String series, DecimalFormat valueFormat)
+    public void overrideValueFormat(String series, Format valueFormat)
     {
         this.overrideValueFormat.put(series, valueFormat);
     }
@@ -216,7 +217,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             GridDataFactory.fillDefaults().grab(true, false).applyTo(cl);
 
             right = new Label(data, SWT.RIGHT);
-            DecimalFormat valueFormat = overrideValueFormat.getOrDefault(series.getId(), defaultValueFormat);
+            Format valueFormat = overrideValueFormat.getOrDefault(series.getId(), defaultValueFormat);
             right.setText(valueFormat.format(value.getRight()));
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
         }

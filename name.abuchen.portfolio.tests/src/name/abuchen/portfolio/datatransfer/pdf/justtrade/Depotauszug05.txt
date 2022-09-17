@@ -1,0 +1,185 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Herrn Max Mustermann Depotnummer: 0000000000
+Musterstraße 1
+12345 Frankfurt am Main IBAN: DE13 1234 1234 1234 1234 12
+Hamburg, im Oktober 2020
+Depotauszug MAX HEINR. SUTOR OHG
+ HERMANNSTRASSE 46
+ 20095 HAMBURG
+Sehr geehrter Herr Mustermann,
+ INFO@SUTORBANK.DE
+Sie erhalten heute von uns den Depotauszug per 30.09.2020 zu nachfolgendem Vertrag: WWW.SUTORBANK.DE
+ 
+Sutor fairriester 2.0 Nr. 0000000000
+ GESCHÄFTSLEITUNG
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen ROBERT FREITAG
+THOMAS MEIER
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie erfolgt
+automatisch vorbehaltlich Irrtum. MITGLIED IM EINLAGEN-
+ SICHERUNGSFONDS DES
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach Maßgabe BUNDESVERBANDES
+DEUTSCHER BANKEN
+des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie bitte dem
+„Informationsbogen für den Einleger“, der auf www.sutorbank.de/agb als PDF hinterlegt ist.
+ UNABHÄNGIG.
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig mit,
+PRODUKTNEUTRAL.
+anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen. INHABERGEFÜHRT.
+ 
+Mit freundlichen Grüßen
+FINANZAMT HAMBURG
+Ihre SUTOR BANK
+ STNR. 2761000074
+ 
+ 
+Anlagen AMTSGERICHT HAMBURG
+HRA25379
+weiss auf weiss
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 8
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Übersicht mit Bewertung zum 30.09.2020
+Max Mustermann
+"fairriester-Portfolio 12" Nr. 0000000000 / IBAN: DE13 1234 1234 1234 1234 12
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Xtrackers MSCI World Min Vol ETF IE00BL25JN58 Vereinigtes Königreich Wertpapierrechnung 1,80 % 8,0960  Anteile 33,8510 US$* 234,08 EUR
+Xtr II iBoxx Euroz Gov Bd 1-3 ETF LU0925589839 Deutschland Girosammelverwahrung 97,00 % 87,9791  Anteile 144,1275 EUR 12.680,21 EUR
+iShares Edge MSCI EM Min Vol ETF IE00B8KGV557 Irland Wertpapierrechnung 0,30 % 1,5742  Anteile 28,6845 US$* 38,57 EUR
+Amundi Solution MSCI Europe Min Vol LU1681041627 Deutschland Girosammelverwahrung 0,90 % 1,1509  Anteile 101,5600 EUR 116,89 EUR
+Vanguard EUR Eurozone Gov Bond ETF IE00BH04GL39 Vereinigtes Königreich Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+* Währungskurs: 1,1708 US$
+Kurswert Gesamt 13.069,75 EUR
+Geldsaldo -0,01 EUR
+Erstellt im Oktober 2020 Seite 1 von 8
+Umsätze vom 01.07.2020 bis 30.09.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+23.06.2020 22.06.2020 Storno Kauf Storno Kauf Xtrackers MSCI World Min Vol ETF -3,9988 1,0000 130,57
+13:31 OTC IE00BL25JN58 32,6523 US$
+01.07.2020 01.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 26,7524 -719,05
+12:46 OTC IE00BH04GL39 26,8780 EUR
+01.07.2020 01.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 1,4517 -145,32
+12:53 OTC LU1681041627 100,1000 EUR
+01.07.2020 01.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,9784 1,1200 -48,44
+12:56 OTC IE00B8KGV557 27,4228 US$
+01.07.2020 01.07.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -34,7017 1,1200 1.000,97
+13:20 OTC IE00BL25JN58 32,3064 US$
+02.07.2020 02.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 25,3618 -683,50
+15:20 OTC IE00BH04GL39 26,9500 EUR
+02.07.2020 02.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 1,5282 -155,66
+15:24 OTC LU1681041627 101,8600 EUR
+02.07.2020 02.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 2,0802 1,1286 -51,89
+15:36 OTC IE00B8KGV557 28,1529 US$
+02.07.2020 02.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,7334 1,1286 -21,47
+15:38 OTC IE00BL25JN58 33,0398 US$
+03.07.2020 03.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 24,2090 -653,40
+13:43 OTC IE00BH04GL39 26,9900 EUR
+03.07.2020 03.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 1,6319 -165,93
+13:45 OTC LU1681041627 101,6800 EUR
+03.07.2020 03.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 2,2017 1,1224 -55,24
+13:48 OTC IE00B8KGV557 28,1610 US$
+03.07.2020 03.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 1,3694 1,1224 -39,89
+13:50 OTC IE00BL25JN58 32,6955 US$
+06.07.2020 06.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 4,2697 -115,11
+14:15 OTC IE00BH04GL39 26,9600 EUR
+06.07.2020 06.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 3,3863 -346,82
+14:19 OTC LU1681041627 102,4200 EUR
+06.07.2020 06.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 4,5074 1,1325 -115,03
+14:21 OTC IE00B8KGV557 28,9014 US$
+06.07.2020 06.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 13,1368 1,1325 -385,17
+14:24 OTC IE00BL25JN58 33,2049 US$
+07.07.2020 07.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 29,6770 -801,28
+15:51 OTC IE00BH04GL39 27,0000 EUR
+07.07.2020 07.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,8213 -83,69
+15:59 OTC LU1681041627 101,9000 EUR
+07.07.2020 07.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,0785 1,1290 -27,49
+16:11 OTC IE00B8KGV557 28,7782 US$
+07.07.2020 07.07.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -12,0853 1,1290 351,56
+18:47 OTC IE00BL25JN58 32,8426 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 8
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.07.2020 bis 30.09.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+08.07.2020 08.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 29,0525 -786,16
+14:37 OTC IE00BH04GL39 27,0600 EUR
+08.07.2020 08.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,8713 -88,84
+14:44 OTC LU1681041627 101,9600 EUR
+08.07.2020 08.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,1278 1,1286 -28,72
+14:49 OTC IE00B8KGV557 28,7398 US$
+08.07.2020 08.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,3485 1,1286 -10,12
+14:58 OTC IE00BL25JN58 32,7745 US$
+09.07.2020 09.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 26,7793 -724,30
+13:24 OTC IE00BH04GL39 27,0470 EUR
+09.07.2020 09.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 1,0562 -107,58
+13:30 OTC LU1681041627 101,8600 EUR
+09.07.2020 09.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,3355 1,1342 -34,17
+13:34 OTC IE00B8KGV557 29,0185 US$
+09.07.2020 09.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 1,6494 1,1342 -47,85
+13:38 OTC IE00BL25JN58 32,9031 US$
+11.07.2020 10.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 31,6526 -858,07
+14:28 OTC IE00BH04GL39 27,1090 EUR
+11.07.2020 10.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,1321 -13,45
+15:01 OTC LU1681041627 101,7800 EUR
+11.07.2020 10.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,2016 1,1276 -5,13
+15:06 OTC IE00B8KGV557 28,6997 US$
+11.07.2020 10.07.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -3,7348 1,1276 108,14
+15:13 OTC IE00BL25JN58 32,6497 US$
+13.07.2020 13.07.2020 Verkauf Verkauf Vanguard EUR Eurozone Gov Bond ETF -10,2897 277,41
+15:19 OTC IE00BH04GL39 26,9600 EUR
+13.07.2020 13.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 5,5625 1,1329 -162,12
+15:34 OTC IE00BL25JN58 33,0184 US$
+13.07.2020 13.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,8336 -85,23
+15:43 OTC LU1681041627 102,2400 EUR
+13.07.2020 13.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,1798 1,1329 -30,08
+15:49 OTC IE00B8KGV557 28,8833 US$
+14.07.2020 14.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 15,9700 -431,83
+15:01 OTC IE00BH04GL39 27,0400 EUR
+14.07.2020 14.07.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -1,3164 133,75
+15:11 OTC LU1681041627 101,6000 EUR
+14.07.2020 14.07.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -1,7908 1,1375 44,59
+15:23 OTC IE00B8KGV557 28,3238 US$
+14.07.2020 14.07.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -8,8113 1,1375 253,50
+15:36 OTC IE00BL25JN58 32,7259 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 3 von 8
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.07.2020 bis 30.09.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+15.07.2020 15.07.2020 Verkauf Verkauf Vanguard EUR Eurozone Gov Bond ETF -13,0631 352,86
+14:15 OTC IE00BH04GL39 27,0120 EUR
+15.07.2020 15.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,9939 -102,85
+14:22 OTC LU1681041627 103,4800 EUR
+15.07.2020 15.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,6946 1,1444 -42,61
+14:28 OTC IE00B8KGV557 28,7759 US$
+15.07.2020 15.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 7,0652 1,1444 -207,40
+14:35 OTC IE00BL25JN58 33,5939 US$
+17.07.2020 17.07.2020 Verkauf Verkauf Vanguard EUR Eurozone Gov Bond ETF -9,7407 263,68
+13:46 OTC IE00BH04GL39 27,0700 EUR
+17.07.2020 17.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,7338 -75,92
+13:53 OTC LU1681041627 103,4600 EUR
+17.07.2020 17.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,1513 1,1428 -28,76
+14:00 OTC IE00B8KGV557 28,5471 US$
+17.07.2020 17.07.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 5,4242 1,1428 -159,01
+14:07 OTC IE00BL25JN58 33,5012 US$
+21.07.2020 21.07.2020 Verkauf Verkauf Vanguard EUR Eurozone Gov Bond ETF -33,7619 915,96
+14:37 OTC IE00BH04GL39 27,1300 EUR
+21.07.2020 21.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 2,6196 -274,53
+14:47 OTC LU1681041627 104,8000 EUR
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 8 von 8
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag

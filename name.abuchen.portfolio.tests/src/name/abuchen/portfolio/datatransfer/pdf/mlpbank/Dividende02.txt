@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP FDL AG · Alte Heerstraße 40 · 69168 Wiesloch Seite 1
+Depotnummer 9876543210
+Kundennummer 7654321
+Max Mustermann
+Abrechnungsnr. 59443767900
+Max Mustermann Datum 04.04.2017
+Musterweg 1
+11111 Musterstadt
+Vermögensdepot
+0016
+Thesaurierung von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 80,043 ZINSPLUS OP DE000A0MUWS7 (A0MUWS)
+INHABER-ANTEILE
+Tag des Zuflusses 31.03.2017 Thesaurierung brutto pro St. 0,557000000 EUR
+Bestandsstichtag 31.03.2017 Thesaurierung netto pro St. 0,387000000 EUR
+Ex-Tag 03.04.2017 Zinsanteil pro St. 0,557000000 EUR
+Geschäftsjahr 01.04.2016 - 31.03.2017 Steuerliquidität pro St. 0,170000000 EUR
+Thesaurierungsbetrag mit Steuern (brutto) 44,58 EUR
+Thesaurierungsbetrag ohne Steuern (netto) 30,98 EUR
+Anrechenbare Quellensteuer pro Stück 0,0036 EUR 0,29 EUR
+Kapitalertragsteuerpflichtiger Zinsanteil gesamt 44,58 EUR
+Eingebuchte sonstige negative Kapitalerträge 0,33 - EUR
+Verrechneter Sparer-Pauschbetrag 44,25 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Verrechnung der Steuerliquidität
+Durch die Gesellschaft zur Verfügung gestellte
+Steuerliquidität gesamt 13,61 EUR
+Summe der abgeführten Kapitalertragsteuer,
+Solidaritätszuschlag und Kirchensteuer 0,00 - EUR
+Verbleibende Differenz zur Steuerliquidität 13,61 EUR 13,61+ EUR
+Ausmachender Betrag 13,61+ EUR
++ anrechenbare Quellensteuer pro Stück 0,000000000 EUR
++ anrechenbare fiktive Quellensteuer pro Stück 0,003600000 EUR
+= anrechenbare Quellensteuer pro Stück gesamt 0,003600000 EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Bitte ggf. Rückseite beachten.
+0866.04050104.0004952ER03
+
+Seite 2
+Depotnummer 9876543210
+Kundennummer 7654321
+Abrechnungsnr. 59443767900
+Datum 04.04.2017
+Den Betrag buchen wir mit Wertstellung 18.04.2017 zu Gunsten des Kontos 987654321 (IBAN DE15 6723 0000 0502 4791
+58).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,33 300,00 0,00 0,00
+Ertrag 0,00 0,33- 44,25- 0,29 0,00
+Nachher 0,00 0,00 255,75 0,29 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.04050104.0004953ER03

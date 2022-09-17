@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.payments;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 
 import org.eclipse.jface.action.Action;
@@ -9,8 +10,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DropDown;

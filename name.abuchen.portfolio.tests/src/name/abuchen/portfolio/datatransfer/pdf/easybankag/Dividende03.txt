@@ -1,0 +1,35 @@
+Abrechnung Ereignis
+easybank Service Center 36315551-12.5.2022
+BAWAG P.S.K. AG Depot-Nr.: 35955489806
+Wiedner Gürtel 11 Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 12.5.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+1.204,86 Stk
+Titel: IE00B9CQXS71  S P D R  S & P  G l ob.Div.Aristocr.ETF     
+Registered Shares o.N.             
+Fondsgesellschaft: SSgA SPDR ETFs EUROPE I PLC
+Ertrag: 0,279 USD 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 336,16 USD 
+336,16 USD 
+Devisenkurs: 1,06145 (11.5.2022) 316,70 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 315,56 EUR 
+Valuta 12.5.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 3.5.2022
+Record-Tag: 4.5.2022
+Bemessungsgrundlage USt: -0,95 EUR
+1.6.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+04602 Doknr.: ON00-036-0000000001
