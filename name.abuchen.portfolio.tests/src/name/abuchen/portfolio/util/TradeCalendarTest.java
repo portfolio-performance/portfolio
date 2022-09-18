@@ -245,6 +245,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("1981-07-29")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("1999-12-31")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2011-04-29")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-09-19")), is(true));
     }
 
     @Test
