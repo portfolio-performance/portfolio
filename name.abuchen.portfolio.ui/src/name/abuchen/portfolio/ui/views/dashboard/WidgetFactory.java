@@ -280,6 +280,9 @@ public enum WidgetFactory
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
 
+    SECURITY_PRICE_TIMELINESS(Messages.LabelSecuritiesPriceTimeliness, Messages.LabelCommon,
+                    SecurityPriceTimelinessWidget::new),
+
     LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Quote) //
