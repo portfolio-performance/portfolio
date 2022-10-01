@@ -1043,6 +1043,98 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierDividende07()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("JP3420600003"));
+        assertThat(security.getWkn(), is("850022"));
+        assertThat(security.getName(), is("SEKISUI HOUSE LTD. REGISTERED SHARES O.N."));
+        assertThat(security.getCurrencyCode(), is("JPY"));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
+        assertThat(transaction.getSource(), is("Dividende07.txt"));
+        assertThat(transaction.getNote(), is("Zwischendividende"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(378.24))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(514.76))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.84 + 25.18 + 25.18 + 1.39 + 1.39 + 2.27 + 2.27))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of("JPY", Values.Amount.factorize(72800.00))));
+    }
+
+    @Test
+    public void testWertpapierDividende07WithSecurityinEUR()
+    {
+        Security security = new Security("SEKISUI HOUSE LTD. REGISTERED SHARES O.N.", "JPY");
+        security.setIsin("JP3420600003");
+        security.setWkn("850022");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
+        assertThat(transaction.getSource(), is("Dividende07.txt"));
+        assertThat(transaction.getNote(), is("Zwischendividende"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(378.24))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(514.76))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.84 + 25.18 + 25.18 + 1.39 + 1.39 + 2.27 + 2.27))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testUmsatzuebersicht01()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());

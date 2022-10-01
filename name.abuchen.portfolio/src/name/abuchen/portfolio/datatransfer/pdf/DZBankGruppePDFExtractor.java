@@ -47,7 +47,6 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
         if (!bJointAccount)
             context.put(isJointAccount, Boolean.FALSE.toString());
-
     };
 
     public DZBankGruppePDFExtractor(Client client)
@@ -105,7 +104,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // Handels-/Ausführungsplatz XETRA (gemäß Weisung)
                 // Kurswert 5.047,65- EUR
                 .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert [\\.,\\d]+(\\-)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -176,7 +175,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 // INHABER-AKTIEN C ZY 1
                 // Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
                 .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^.* ((Dividende|Ertrag) ([\\s]+)?pro St.ck|Aussch.ttung pro St\\.) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -236,7 +235,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Abrechnung Nr\\. [\\d]+", (context, lines) -> {
             Pattern pAccountingNumber = Pattern.compile("^(?<accountingNumber>Abrechnung Nr\\. [\\d]+)$");
             Pattern pBaseCurrency = Pattern.compile("^.* Preis\\/(?<baseCurrency>[\\w]{3}) .*$");
-            Pattern pNameIsin = Pattern.compile("^(Fonds: )?(?<name>((?!MusterFonds).)*) ISIN: (?<isin>[\\w]{12}) .*$");
+            Pattern pNameIsin = Pattern.compile("^(Fonds: )?(?<name>((?!MusterFonds).)*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$");
 
             // Set end of line of the securities transaction block
             int endOfLineOfSecurityTransactionBlock = lines.length;
