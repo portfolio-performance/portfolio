@@ -38,7 +38,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
+        DocumentType type = new DocumentType("Abrechnung (Dauerauftrag|Handel)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -48,7 +48,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$");
+        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$", "^Diese Mitteilung wird nicht unterschrieben.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -125,10 +125,10 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
+        DocumentType type = new DocumentType("Abrechnung Ereignis");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Gesch.ftsart: Ertrag$");
+        Block block = new Block("^Gesch.ftsart: Ertrag$", "^Diese Mitteilung wird nicht unterschrieben.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -153,7 +153,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                 // 100 Stk
                 .section("shares")
-                .match("^(Abgang: )?(?<shares>[\\.,\\d]+) Stk.*$")
+                .match("^(?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Valuta 5.5.2022
@@ -208,9 +208,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -236,7 +234,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
 
                     t.setDateTime(asDate(v.get("date") + "." + context.get("year")));
-                    
+
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setNote(v.get("note"));

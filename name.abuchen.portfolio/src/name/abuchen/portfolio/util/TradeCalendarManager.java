@@ -16,10 +16,11 @@ import static name.abuchen.portfolio.util.HolidayName.FAMILY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_NIXON;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
+import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_QUEEN_ELIZABETH_II;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
-import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
+import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
@@ -158,6 +159,7 @@ public class TradeCalendarManager
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(2020)); // moved for VE Day 75th anniversary
         tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 2).onlyIn(2022)); // moved for four-day weekend
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
+        tc.add(fixed(FUNERAL_OF_QUEEN_ELIZABETH_II, Month.SEPTEMBER, 19).onlyIn(2022)); // Funeral of Queen Elizabeth II
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext, STANDARD_WEEKEND); //$NON-NLS-1$

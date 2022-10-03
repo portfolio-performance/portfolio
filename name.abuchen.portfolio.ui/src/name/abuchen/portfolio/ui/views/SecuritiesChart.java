@@ -1122,7 +1122,10 @@ public class SecuritiesChart
                         Point textExtent = event.gc.textExtent(label);
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
-                        event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
+
+                        // If the label does not start in negative, then we print it.
+                        if (x - (textExtent.x / 2) >= 0) 
+                            event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
                     }
                 });
             }
@@ -1234,7 +1237,10 @@ public class SecuritiesChart
                                 yPosLabel = yPosLabel - textExtent.y;
                                 lastWriteLabelLevel3 = (x + (textExtent.x / 2));
                             }
-                            event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
+
+                            // If the label does not start in negative, then we print it.
+                            if (x - (textExtent.x / 2) >= 0)
+                                event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
                         }
                     }
                 });
@@ -1323,7 +1329,9 @@ public class SecuritiesChart
                     else
                         y = y + inner.getSymbolSize();
 
-                    event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
+                    // If the label does not start in negative, then we print it.
+                    if (x - (textExtent.x / 2) >= 0) 
+                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);   
                 });
             }
         }

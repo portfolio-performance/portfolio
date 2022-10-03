@@ -72,9 +72,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Storno Wertpapierabrechnung Kauf Fonds/Zertifikate
@@ -83,9 +81,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Storno") || v.get("type").equals("Stornierung"))
-                    {
                         t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                    }
                 })
 
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
@@ -489,27 +485,25 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
                 // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
-                .section("name", "isin", "wkn", "currency")
+                .section("name", "isin", "wkn", "currency").optional()
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
                 .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
                 // davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr
-                .section("shares")
+                .section("shares").optional()
                 .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\. .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
                 // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
-                .section("date", "time")
+                .section("date", "time").optional()
                 .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}{2}).*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
@@ -523,7 +517,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
-                .section("amount", "currency")
+                .section("amount", "currency").optional()
                 .match("^.* Endbetrag([\\s]+)?: ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -595,7 +589,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
-                .wrap(BuySellEntryItem::new);
+                .wrap(t -> {
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                        return new BuySellEntryItem(t);
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1566,19 +1564,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // Nr.60797017/1  Verkauf             HANN.RUECK SE NA O.N. (DE0008402215/840221)
                 // Kurs         : 59,4890 EUR             Kurswert       :           5.948,90 EUR
-                .section("name", "isin", "wkn", "currency")
+                .section("name", "isin", "wkn", "currency").optional()
                 .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[\\w]{12})\\/(?<wkn>.*)\\)$")
                 .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
-                .section("shares")
+                .section("shares").optional()
                 .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\. .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
                 // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
-                .section("date", "time")
+                .section("date", "time").optional()
                 .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>\\d+:\\d+).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
@@ -1586,7 +1584,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // it will be converted and reset.
 
                 // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
-                .section("currency")
+                .section("currency").optional()
                 .match("^.* Endbetrag([:\\s]+)? (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
 

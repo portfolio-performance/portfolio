@@ -3,7 +3,12 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -15,6 +20,28 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class PostbankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
+
+    BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
+        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*"); //$NON-NLS-1$
+        Boolean bJointAccount = false;
+
+        for (String line : lines)
+        {
+            Matcher m = pJointAccount.matcher(line);
+            if (m.matches())
+            {
+                context.put(isJointAccount, Boolean.TRUE.toString());
+                bJointAccount = true;
+                break;
+            }
+        }
+
+        if (!bJointAccount)
+            context.put(isJointAccount, Boolean.FALSE.toString());
+
+    };
+
     public PostbankPDFExtractor(Client client)
     {
         super(client);
@@ -33,7 +60,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Verkauf\\-Festpreisgesch.ft|Ausgabe Investmentfonds|R.cknahme Investmentfonds)");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf|Verkauf\\-Festpreisgesch.ft|Ausgabe Investmentfonds|R.cknahme Investmentfonds)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -139,7 +166,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Gutschrift von Investmentertr.gen|Ertragsgutschrift)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Gutschrift von Investmentertr.gen|Ertragsgutschrift)", jointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift"
@@ -219,12 +246,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
                 .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ % .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Einbehaltende Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
                 .section("creditableWithHoldingTax", "currency").optional()
-                .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Anrechenbare Quellensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                 // Anrechenbare Quellensteuer pro Stück 0,0144878 EUR 0,29 EUR
@@ -232,20 +259,95 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
+                // Kapitalertragsteuer (Account)
                 // Kapitalertragsteuer 24,51% auf 0,71 EUR 0,17- EUR
                 .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer [\\.,\\d]+% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                        processTaxEntries(t, v, type);
+                })
 
-                // Kirchensteuer auf Kapitalertragsteuer EUR -1,23
-                .section("tax", "currency").optional()
-                .match("^Kirchensteuer [\\.,\\d]+% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+                // Kapitalerstragsteuer (Joint Account)
+                // Kapitalertragsteuer 25 % auf 50,51 EUR 12,63- EUR
+                // Kapitalertragsteuer 25 % auf 50,51 EUR 12,63- EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
+                .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
 
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Solidaritätszuschlag (Account)
                 // Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
                 .section("tax", "currency").optional()
-                .match("^Solidarit.tszuschlag [\\.,\\d]+% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                        processTaxEntries(t, v, type);
+                })
+
+                // Solitaritätszuschlag (Joint Account)
+                // Solidaritätszuschlag 5,5 % auf 12,63 EUR 0,69- EUR
+                // Solidaritätszuschlag 5,5 % auf 12,63 EUR 0,69- EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
+                .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
+
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // Kirchensteuer (Account)
+                // Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                        processTaxEntries(t, v, type);
+                })
+
+                // Kirchensteuer (Joint Account)
+                // Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
+                // Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
+                .section("tax1", "currency1", "tax2", "currency2").optional()
+                .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
+                .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    {
+                        // Account 1
+                        v.put("currency", v.get("currency1"));
+                        v.put("tax", v.get("tax1"));
+                        processTaxEntries(t, v, type);
+
+                        // Account 2
+                        v.put("currency", v.get("currency2"));
+                        v.put("tax", v.get("tax2"));
+                        processTaxEntries(t, v, type);
+                    }
+                });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
