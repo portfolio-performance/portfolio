@@ -195,6 +195,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("d MMM y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("yyyy.MM.dd."), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("M/d/yyyy"), //$NON-NLS-1$
             };
         }
 
