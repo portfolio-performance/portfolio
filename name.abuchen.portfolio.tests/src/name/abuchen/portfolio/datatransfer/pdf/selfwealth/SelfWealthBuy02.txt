@@ -1,7 +1,7 @@
 PDF author: ''
 PDFBox Version: 1.8.16
 -----------------------------------------
-SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au
+Selfwealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au
 This trade was executed and cleared by OpenMarkets Australia Ltd ABN 38 090 472 012,
 AFSL 246 705, Market Particpant of ASX, CHI­X and NSX.
 Buy Confirmation
