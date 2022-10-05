@@ -277,9 +277,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // @formatter:off
                 // AT0000809058                 IMMOFINANZ AG  
                 // INHABERAKTIEN O.N. 
-                // STK                        0,400     EUR       1,996972         NETTO Inland                     0,80  EUR 
+                // STK                        0,400     EUR       1,996972         NETTO Inland                     0,80  EUR
+                // @formatter:on
                 .section("isin", "name", "nameContinued", "currency").optional()
                 .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) [\\s]+$")
                 .match("^(?<nameContinued>.*)$")
@@ -292,7 +294,21 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency").optional()
                 .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Kupon: .*$")
                 .match("^(?<name1>.*)$")
-                .match("^[\\.,\\d]+ STK (?<currency>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\.,\\d]+ STK ([\\s]+)?[\\.,\\d]+ (?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Limit:"))
+                        v.put("name", v.get("name") + " " + v.get("name1"));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // US00287Y1091 ABBVIE INC.
+                // REGISTERED SHARES DL -,01
+                // 5,00 STK 139,454 USD  697,27 USD
+                .section("isin", "name", "name1", "currency").optional()
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
+                .match("^(?<name1>.*)$")
+                .match("^[\\.,\\d]+ STK ([\\s]+)?[\\.,\\d]+ (?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Limit:"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
@@ -310,7 +326,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                 // 10,00 STK 166,86 EUR 1.668,60 EUR
                                 section -> section
                                         .attributes("shares")
-                                        .match("^(?<shares>[\\.,\\d]+) STK [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^(?<shares>[\\.,\\d]+) STK ([\\s]+)?[\\.,\\d]+ [\\w]{3} ([\\s]+)?[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
@@ -329,8 +345,10 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         )
 
                 .oneOf(
+                                // @formatter:off
                                 //  Zu   G u n st e n  1 2  3- 1  2 3-  1 2 3/  12                                        1  2 . 06  .2 0  1 7                        0,  8 0  E U R 
                                 //  Z u  L a s t e n  1 2  3- 1  2 3-  1 2 3/  12                                            2 7 . 0 3 . 2 0 2 0                     8 6 6 , 0 5   E U R  
+                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^([\\s]+)?Z([\\s]+)?u"
@@ -351,6 +369,21 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
                                         })
                         )
+
+                // 5,00 STK 139,454 USD  697,27 USD
+                // USD Devisenkurs Mitte 0,9955 Umgerechneter Kurswert 700,42 EUR
+                .section("termCurrency", "fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
+                .match("^[\\.,\\d]+ STK ([\\s]+)?[\\.,\\d]+ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^USD Devisenkurs Mitte (?<exchangeRate>[\\.,\\d]+) Umgerechneter Kurswert [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    PDFExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(asExchangeRate(v));
+
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
 
                 //  Limit:                                       Bestens                               Beratungsfreies Geschäft 
                 // Limit: Bestens beratungsfreies Geschäft

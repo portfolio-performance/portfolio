@@ -734,6 +734,99 @@ public class erstebankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf14()
+    {
+        ErsteBankPDFExtractor extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US00287Y1091"));
+        assertThat(security.getName(), is("ABBVIE INC. REGISTERED SHARES DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getSource(), is("Kauf14.txt"));
+        assertThat(entry.getNote(), is("Limit: Bestens"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750.95))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700.42))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.00 + 3.54 + 5.00 + 6.99))));
+
+        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(697.27))));
+    }
+
+    @Test
+    public void testWertpapierKauf14WithSecurityInEUR()
+    {
+        Security security = new Security("ABBVIE INC. REGISTERED SHARES DL -,01", CurrencyUnit.EUR);
+        security.setIsin("US00287Y1091");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ErsteBankPDFExtractor extractor = new ErsteBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getSource(), is("Kauf14.txt"));
+        assertThat(entry.getNote(), is("Limit: Bestens"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750.95))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(700.42))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.00 + 3.54 + 5.00 + 6.99))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(entry, account, entry.getPortfolio());
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         ErsteBankPDFExtractor extractor = new ErsteBankPDFExtractor(new Client());
