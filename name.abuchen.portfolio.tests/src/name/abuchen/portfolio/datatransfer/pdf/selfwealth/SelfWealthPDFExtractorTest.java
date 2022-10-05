@@ -35,7 +35,7 @@ public class SelfWealthPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SelfWealthBuy01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -57,7 +57,7 @@ public class SelfWealthPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
-        assertThat(entry.getSource(), is("SelfWealthBuy01.txt"));
+        assertThat(entry.getSource(), is("Buy01.txt"));
         assertThat(entry.getNote(), is("T20210701123456­-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -77,7 +77,7 @@ public class SelfWealthPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SelfWealthBuy02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -99,7 +99,49 @@ public class SelfWealthPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
-        assertThat(entry.getSource(), is("SelfWealthBuy02.txt"));
+        assertThat(entry.getSource(), is("Buy02.txt"));
+        assertThat(entry.getNote(), is("T20210701123456­1"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("AUD", Values.Amount.factorize(325.12))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("AUD", Values.Amount.factorize(312.50))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("AUD", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("AUD", Values.Amount.factorize(9.50 + 3.12))));
+    }
+
+    @Test
+    public void testSecurityBuy03()
+    {
+        SelfWealthPDFExtractor extractor = new SelfWealthPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "AUD");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getTickerSymbol(), is("UMAX"));
+        assertThat(security.getName(), is("BETA S&P500 YIELDMAX"));
+        assertThat(security.getCurrencyCode(), is("AUD"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+        assertThat(entry.getSource(), is("Buy03.txt"));
         assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -119,7 +161,7 @@ public class SelfWealthPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SelfWealthSell01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -141,7 +183,7 @@ public class SelfWealthPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(397)));
-        assertThat(entry.getSource(), is("SelfWealthSell01.txt"));
+        assertThat(entry.getSource(), is("Sell01.txt"));
         assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -161,7 +203,7 @@ public class SelfWealthPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SelfWealthSell02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -183,7 +225,7 @@ public class SelfWealthPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(397)));
-        assertThat(entry.getSource(), is("SelfWealthSell02.txt"));
+        assertThat(entry.getSource(), is("Sell02.txt"));
         assertThat(entry.getNote(), is("T20210701123456­1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
