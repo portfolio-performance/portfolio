@@ -20,6 +20,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("SelfWealth"); //$NON-NLS-1$
+        addBankIdentifier("Selfwealth"); //$NON-NLS-1$
 
         addBuySellTransaction();
     }
@@ -27,7 +28,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "SelfWealth"; //$NON-NLS-1$
+        return "SelfWealth Ltd"; //$NON-NLS-1$
     }
 
     private void addBuySellTransaction()
