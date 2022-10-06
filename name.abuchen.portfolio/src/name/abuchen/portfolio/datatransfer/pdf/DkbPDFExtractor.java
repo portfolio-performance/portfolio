@@ -140,7 +140,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Kurswert 1.950,00- EUR
                 .section("name", "isin", "wkn", "nameContinued", "currency")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^(St.ck|[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(St.ck|[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(Kurswert|R.ckzahlungsbetrag) [\\.,\\d]+([\\+|\\-])? (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -256,7 +256,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Zinsertrag 181,25+ EUR
                 .section("name", "isin", "wkn", "nameContinued", "currency").optional()
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("(?<nameContinued>.*)")
                 .match("^(Zinsertrag|Zahlbarkeitstag .*) [\\.,\\d]+(\\+)? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -270,7 +270,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                 .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*)$")
                 .match("(?<nameContinued>.*)")
-                .match("^(?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("^Ertrag pro St. [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -358,7 +358,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // EO-ANL. 14(16) RWE
                 .section("currency", "shares", "name", "isin", "wkn", "nameContinued")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^(?<currency>[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(?<currency>[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
@@ -409,7 +409,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Zahlbarkeitstag 04.01.2021 Vorabpauschale pro St. 0,037971560 EUR
                 .section("name", "isin", "wkn", "nameContinued", "currency")
                 .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^(St.ck|[\\w]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^.* Vorabpauschale pro St\\. [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -451,7 +451,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private void addBuyTransactionFundsSavingsPlan()
     {
         final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", (context, lines) -> {
-            Pattern pSecurity = Pattern.compile("^(?<name>.*) (?<isin>[\\w]{12}) (\\((?<wkn>.*)\\).*)$");
+            Pattern pSecurity = Pattern.compile("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\((?<wkn>.*)\\).*)$");
             Pattern pCurrency = Pattern.compile("^(?<currency>[\\w]{3}) in .*$");
             // read the current context here
             for (String line : lines)
@@ -645,7 +645,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Kartenzahlung.*"
                         + "|Kreditkartenabr\\."
                         + "|Verf.gung Geldautomat"
-                        + "|Verf.g\\. Geldautom\\. FW) "
+                        + "|Verf.g\\. Geldautom\\. FW"
+                        + "|Überweis\\. entgeltfr\\.) "
                         + "[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -665,7 +666,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "|Kartenzahlung.*"
                                 + "|Kreditkartenabr\\."
                                 + "|Verf.gung Geldautomat"
-                                + "|Verf.g\\. Geldautom\\. FW) "
+                                + "|Verf.g\\. Geldautom\\. FW"
+                                + "|Überweis\\. entgeltfr\\.) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -696,6 +698,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                     if (v.get("note").equals("Kartenzahlung onl"))
                         v.put("note", "Kartenzahlung online");
+
+                    if (v.get("note").equals("Überweis. entgeltfr."))
+                        v.put("note", "Überweisung entgeltfrei");
 
                     t.setNote(v.get("note"));
                 })
