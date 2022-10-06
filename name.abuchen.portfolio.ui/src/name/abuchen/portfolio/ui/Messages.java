@@ -1186,6 +1186,7 @@ public class Messages extends NLS
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
+    public static String TooltipAllTimeHigh;
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
