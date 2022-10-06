@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.math;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,6 +14,7 @@ public class AllTimeHigh
     private Security security;
     private Interval interval;
     private Long athValue;
+    private LocalDate athDate;
     private Double athDistanceInPercent;
 
     public AllTimeHigh(Security security, Interval interval)
@@ -38,6 +40,7 @@ public class AllTimeHigh
         SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
 
         this.athValue = max.get().getValue();
+        this.athDate = max.get().getDate();
         this.athDistanceInPercent = (latest.getValue() - max.get().getValue()) / (double) max.get().getValue();
     }
 
@@ -49,5 +52,10 @@ public class AllTimeHigh
     public Double getDistance()
     {
         return this.athDistanceInPercent;
+    }
+    
+    public LocalDate getDate()
+    {
+        return this.athDate;
     }
 }

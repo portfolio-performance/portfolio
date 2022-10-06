@@ -306,6 +306,23 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .with(ds -> ds.getInstance() instanceof Security) //
                                     .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return null;
+
+                                        Security security = (Security) ds.getInstance();
+                                        AllTimeHigh ath = new AllTimeHigh(security, period);
+                                        if (ath.getValue() == null)
+                                            return null;
+
+                                        return MessageFormat.format(Messages.TooltipAllTimeHigh,
+                                                        period.getDays(), Values.Date.format(ath.getDate()),
+                                                        ath.getValue() / Values.Quote.divider(),
+                                                        security.getSecurityPrice(LocalDate.now()).getValue()
+                                                                        / Values.Quote.divider(),
+                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now())
+                                                                        .getDate()));
+                                    }) //
                                     .build()),
 
     // typo is API now!!
