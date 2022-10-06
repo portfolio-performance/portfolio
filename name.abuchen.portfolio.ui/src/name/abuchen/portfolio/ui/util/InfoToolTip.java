@@ -50,8 +50,12 @@ public final class InfoToolTip extends ToolTip
     protected Composite createToolTipContentArea(Event event, Composite parent)
     {
         parent.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
+        
+        if (message.get() == null || message.get().equals("")) //$NON-NLS-1$
+            return parent;
 
         Composite result = new Composite(parent, SWT.NONE);
+
         GridLayout layout = new GridLayout();
         result.setLayout(layout);
 
@@ -66,6 +70,7 @@ public final class InfoToolTip extends ToolTip
         gridData.widthHint = widthHint;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
+
         return result;
     }
 
