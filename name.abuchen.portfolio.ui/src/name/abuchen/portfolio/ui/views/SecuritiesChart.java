@@ -25,6 +25,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -32,10 +33,14 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.swtchart.IAxis;
+import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
+import org.swtchart.IPlotArea;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
@@ -381,6 +386,8 @@ public class SecuritiesChart
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        new CrosshairPainter().attachTo(chart);
     }
 
     public IntervalOption getIntervalOption()
@@ -959,9 +966,14 @@ public class SecuritiesChart
 
             LimitPrice limitAttribute = (LimitPrice) val;
 
-            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap because ReadOnlyClient only contains/provides default attributes
-                            .getSettings().getAttributeTypes()
-                            .filter(attr -> attr.getId().equals(key)).findFirst();
+            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap
+                                                                                  // because
+                                                                                  // ReadOnlyClient
+                                                                                  // only
+                                                                                  // contains/provides
+                                                                                  // default
+                                                                                  // attributes
+                            .getSettings().getAttributeTypes().filter(attr -> attr.getId().equals(key)).findFirst();
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
                 return;
@@ -1044,7 +1056,8 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase, PlotSymbolType.TRIANGLE);
+        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase,
+                        PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
@@ -1053,10 +1066,12 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).collect(Collectors.toList());
 
-        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale, PlotSymbolType.INVERTED_TRIANGLE);
+        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale,
+                        PlotSymbolType.INVERTED_TRIANGLE);
     }
 
-    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color, PlotSymbolType symbol)
+    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color,
+                    PlotSymbolType symbol)
     {
         if (transactions.isEmpty())
             return;
@@ -1123,8 +1138,9 @@ public class SecuritiesChart
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
 
-                        // If the label does not start in negative, then we print it.
-                        if (x - (textExtent.x / 2) >= 0) 
+                        // If the label does not start in negative, then we
+                        // print it.
+                        if (x - (textExtent.x / 2) >= 0)
                             event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
                     }
                 });
@@ -1238,7 +1254,8 @@ public class SecuritiesChart
                                 lastWriteLabelLevel3 = (x + (textExtent.x / 2));
                             }
 
-                            // If the label does not start in negative, then we print it.
+                            // If the label does not start in negative, then we
+                            // print it.
                             if (x - (textExtent.x / 2) >= 0)
                                 event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
                         }
@@ -1284,9 +1301,9 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, // 
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, // 
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
@@ -1329,9 +1346,10 @@ public class SecuritiesChart
                     else
                         y = y + inner.getSymbolSize();
 
-                    // If the label does not start in negative, then we print it.
-                    if (x - (textExtent.x / 2) >= 0) 
-                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);   
+                    // If the label does not start in negative, then we print
+                    // it.
+                    if (x - (textExtent.x / 2) >= 0)
+                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
                 });
             }
         }
@@ -1602,5 +1620,82 @@ public class SecuritiesChart
                         .getRecord(security) //
                         .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
                         .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
+    }
+
+    private class CrosshairPainter implements Listener
+    {
+        TimelineChart chart;
+        Integer mouseX;
+        Integer mouseY;
+
+        private void attachTo(TimelineChart chart)
+        {
+            this.chart = chart;
+            ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+            {
+                @Override
+                public void paintControl(PaintEvent e)
+                {
+                    if (mouseX == null || mouseY == null)
+                        return;
+
+                    e.gc.setLineStyle(SWT.LINE_SOLID);
+                    e.gc.setForeground(Colors.ICON_ORANGE);
+                    e.gc.drawLine(mouseX, 0, mouseX, e.height);
+                    e.gc.drawLine(0, mouseY, e.width, mouseY);
+
+                    Range yRange = chart.getAxisSet().getYAxis(0).getRange();
+                    double currentValue = (yRange.upper - yRange.lower) * (1 - (float) mouseY / e.height)
+                                    + yRange.lower;
+                    e.gc.drawText("" + currentValue, e.width - 80, mouseY + 5, true); //$NON-NLS-1$
+
+                    Range xRange = chart.getAxisSet().getXAxis(0).getRange();
+                    currentValue = (xRange.lower - xRange.upper) * (1 - (double) mouseX / e.width) + xRange.upper;
+                    LocalDate date = Instant.ofEpochMilli((long) currentValue).atZone(ZoneId.systemDefault())
+                                    .toLocalDate();
+                    e.gc.drawText(Values.Date.format(date), mouseX + 5, e.height - 20, true);
+                }
+
+                @Override
+                public boolean drawBehindSeries()
+                {
+                    return false;
+                }
+            });
+
+            chart.getPlotArea().addListener(SWT.MouseDown, this);
+            chart.getPlotArea().addListener(SWT.MouseMove, this);
+            chart.getPlotArea().addListener(SWT.MouseUp, this);
+        }
+
+        private boolean redrawOnMove = false;
+
+        @Override
+        public void handleEvent(Event e)
+        {
+            switch (e.type)
+            {
+                case SWT.MouseMove:
+                    if (!redrawOnMove)
+                        return;
+
+                    mouseX = e.x;
+                    mouseY = e.y;
+                    chart.redraw();
+                    return;
+                case SWT.MouseDown:
+                    mouseX = e.x;
+                    mouseY = e.y;
+                    chart.redraw();
+                    if (e.button == 2)
+                        redrawOnMove = true;
+                    return;
+                case SWT.MouseUp:
+                    if (e.button == 2)
+                        redrawOnMove = false;
+                default:
+                    return;
+            }
+        }
     }
 }
