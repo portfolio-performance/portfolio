@@ -89,6 +89,9 @@ public abstract class AbstractChartToolTip implements Listener
                     moveToolTip(event);
                 break;
             case SWT.MouseDown:
+                if ((event.stateMask & SWT.SHIFT) != 0)
+                    return; // shift reserved for measurement tool
+                
                 if (event.button == 1 && (event.stateMask & SWT.MOD1) != SWT.MOD1)
                 {
                     showToolTip = true;

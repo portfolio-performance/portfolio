@@ -37,11 +37,15 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.swtchart.IAxis;
+import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
@@ -421,11 +425,13 @@ public class SecuritiesChart
 
         messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
-        setupTooltip();
-
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        new MeasureToolsPainter(chart);
+
+        setupTooltip();
     }
 
     public IntervalOption getIntervalOption()
@@ -1686,6 +1692,261 @@ public class SecuritiesChart
         {
             if (font != null)
                 font.dispose();
+        }
+    }
+
+    private class MeasureToolsPainter implements Listener
+    {
+        TimelineChart chart;
+        Point p1;
+        Point p2;
+        boolean isDateCorrectMeasuring = false;
+
+        private MeasureToolsPainter(TimelineChart chart)
+        {
+            this.chart = chart;
+            ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+            {
+                @Override
+                public void paintControl(PaintEvent e)
+                {
+                    if (p1 == null)
+                        return;
+
+                    if (p2 == null)
+                    {
+                        if (!redrawOnMove)
+                            drawCrosshair(e, p1);
+
+                        return;
+                    }
+
+                    drawMeasureLine(e, p1, p2);
+                }
+
+                private void drawCrosshairDateTextbox(PaintEvent e, Point p)
+                {
+                    LocalDate date = getDateTime(p);
+                    String xText = Values.Date.format(date);
+
+                    // Add margin to text
+                    Point txtXExtend = e.gc.textExtent(xText);
+                    txtXExtend.x += 5;
+                    txtXExtend.y += 5;
+
+                    Point rectPoint = new Point(0, e.height - txtXExtend.y - 2);
+                    Point textPoint = new Point(0, e.height - txtXExtend.y + 1);
+
+                    // Visual shift vertical of the container
+                    if (p.x <= e.width / 2)
+                    {
+                        rectPoint.x = p.x + 5;
+                        textPoint.x = p.x + 8;
+                    }
+                    else
+                    {
+                        rectPoint.x = p.x - txtXExtend.x - 5;
+                        textPoint.x = p.x - txtXExtend.x - 1;
+                    }
+
+                    e.gc.fillRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
+                    e.gc.drawRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
+                    e.gc.drawText(xText, textPoint.x, textPoint.y, true);
+                }
+
+                private void drawCrosshairValueTextbox(PaintEvent e, Point p)
+                {
+                    double value = getYValue(p);
+
+                    String yText = new DecimalFormat(Values.Quote.pattern()).format(value);
+
+                    // Add margin to text
+                    Point txtYExtend = e.gc.textExtent(yText);
+                    txtYExtend.x += 5;
+                    txtYExtend.y += 5;
+
+                    Point rectPoint = new Point(e.width - txtYExtend.x - 2, 0);
+                    Point textPoint = new Point(e.width - txtYExtend.x + 1, 0);
+
+                    // Visual shift horizontally of the container
+                    if (p.y <= e.height / 2)
+                    {
+                        rectPoint.y = p.y + 4;
+                        textPoint.y = p.y + 7;
+                    }
+                    else
+                    {
+                        rectPoint.y = p.y - txtYExtend.y - 4;
+                        textPoint.y = p.y - txtYExtend.y - 1;
+                    }
+                    e.gc.fillRectangle(rectPoint.x, rectPoint.y, txtYExtend.x, txtYExtend.y);
+                    e.gc.drawRectangle(rectPoint.x, rectPoint.y, txtYExtend.x, txtYExtend.y);
+                    e.gc.drawText(yText, textPoint.x, textPoint.y, true);
+                }
+
+                private void drawCrosshair(PaintEvent e, Point p)
+                {
+                    e.gc.setLineStyle(SWT.LINE_SOLID);
+                    e.gc.setForeground(Colors.ICON_ORANGE);
+
+                    // draw crosshair
+                    e.gc.drawLine(p.x, 0, p.x, e.height);
+                    e.gc.drawLine(0, p.y, e.width, p.y);
+
+                    // set textbox style
+                    e.gc.setForeground(Colors.theme().defaultForeground());
+                    e.gc.setBackground(Colors.theme().defaultBackground());
+                    e.gc.setAlpha(220);
+
+                    drawCrosshairDateTextbox(e, p);
+                    drawCrosshairValueTextbox(e, p);
+                }
+
+                private void drawMeasureLine(PaintEvent e, Point p1, Point p2)
+                {
+                    int antiAlias = e.gc.getAntialias();
+                    try
+                    {
+                        // in Date Correct Measure mode, p1 should be always
+                        // the point with lower x
+                        if (isDateCorrectMeasuring && p1.x > p2.x)
+                        {
+                            Point temp = p1;
+                            p1 = p2;
+                            p2 = temp;
+                        }
+
+                        e.gc.setLineWidth(1);
+                        e.gc.setLineStyle(SWT.LINE_SOLID);
+                        e.gc.setForeground(Colors.ICON_ORANGE);
+                        e.gc.setBackground(Colors.ICON_ORANGE);
+                        e.gc.setAntialias(SWT.ON);
+                        e.gc.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+                        e.gc.fillOval(p1.x - 2, p1.y - 2, 5, 5);
+                        e.gc.fillOval(p2.x - 2, p2.y - 2, 5, 5);
+
+                        double yValP1 = getYValue(p1);
+                        double yValP2 = getYValue(p2);
+
+                        // @formatter:off
+                        String text = Messages.LabelChartMeasureToolPoint1 + ": " + new DecimalFormat(Values.Quote.pattern()).format(yValP1) + " (" //$NON-NLS-1$//$NON-NLS-2$
+                                        + getDateTime(p1) + ")" //$NON-NLS-1$
+                                        + System.lineSeparator() //
+                                        + Messages.LabelChartMeasureToolPoint2 + ": " + new DecimalFormat(Values.Quote.pattern()).format(yValP2) + " (" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + getDateTime(p2) + ")" //$NON-NLS-1$
+                                        + System.lineSeparator() //
+                                        + Messages.LabelChartMeasureToolAbsoluteDeviation + ": " //$NON-NLS-1$
+                                        + new DecimalFormat(Values.Quote.pattern()).format(yValP2 - yValP1)
+                                        + System.lineSeparator() //
+                                        + Messages.LabelChartMeasureToolRelativeDeviation + ": "//$NON-NLS-1$
+                                        + new DecimalFormat(Values.Percent.pattern()).format(yValP2 / yValP1)
+                                        + System.lineSeparator() //
+                                        + Messages.LabelChartMeasureToolPercentageDeviation + ": "//$NON-NLS-1$
+                                        + new DecimalFormat(Values.PercentWithSign.pattern()).format((yValP2 / yValP1 - 1));
+                        // @formatter:on
+
+                        Point txtExtend = e.gc.textExtent(text);
+
+                        e.gc.setForeground(Colors.theme().defaultForeground());
+                        e.gc.setBackground(Colors.theme().defaultBackground());
+                        e.gc.setAlpha(220);
+
+                        int offsetX = 10;
+                        int offsetY = 10;
+
+                        if ((p1.x < p2.x && p1.y < p2.y) || (p1.x > p2.x && p1.y > p2.y))
+                            offsetY = -txtExtend.y - 20;
+
+                        int rectX = (p1.x + p2.x) / 2 + offsetX;
+                        int rectY = (p1.y + p2.y) / 2 + offsetY;
+
+                        // check plot area borders
+                        if (rectY < 0)
+                            rectY = 0;
+
+                        if (rectY + txtExtend.y + 15 > chart.getPlotArea().getSize().y)
+                            rectY = chart.getPlotArea().getSize().y - txtExtend.y - 12;
+
+                        if (rectX < 0)
+                            rectX = 0;
+
+                        if (rectX + txtExtend.x + 15 > chart.getPlotArea().getSize().x)
+                            rectX = chart.getPlotArea().getSize().x - txtExtend.x - 12;
+
+                        e.gc.fillRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
+                        e.gc.drawRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
+                        e.gc.drawText(text, rectX + 5, rectY + 5, true);
+                    }
+                    finally
+                    {
+                        e.gc.setAntialias(antiAlias);
+                    }
+                }
+
+                @Override
+                public boolean drawBehindSeries()
+                {
+                    return false;
+                }
+
+            });
+
+            chart.getPlotArea().addListener(SWT.MouseDown, this);
+            chart.getPlotArea().addListener(SWT.MouseMove, this);
+            chart.getPlotArea().addListener(SWT.MouseUp, this);
+        }
+
+        private LocalDate getDateTime(Point p)
+        {
+            return Instant.ofEpochMilli((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(p.x))
+                            .atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+
+        private double getYValue(Point p)
+        {
+            return chart.getAxisSet().getYAxis(0).getDataCoordinate(p.y);
+        }
+
+        private boolean redrawOnMove = false;
+
+        @Override
+        public void handleEvent(Event e)
+        {
+            switch (e.type)
+            {
+                case SWT.MouseDown:
+                    if ((e.stateMask & SWT.SHIFT) != 0 && e.button == 1)
+                    {
+                        p2 = null;
+                        p1 = new Point(e.x, e.y);
+                        redrawOnMove = true;
+                        chart.redraw();
+                        return;
+                    }
+                    // all other clicks, are resetting the measure mode
+                    p1 = null;
+                    p2 = null;
+                    chart.redraw();
+                    return;
+                case SWT.MouseMove:
+                    if (redrawOnMove)
+                    {
+                        p2 = new Point(e.x, e.y);
+                        chart.redraw();
+                    }
+
+                    return;
+                case SWT.MouseUp:
+                    if (e.button == 1)
+                    {
+                        redrawOnMove = false;
+                        chart.redraw();
+                    }
+                    return;
+                default:
+                    return;
+            }
         }
     }
 }
