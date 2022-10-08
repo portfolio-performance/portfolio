@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -105,6 +106,15 @@ public class TimelineChart extends Chart // NOSONAR
         y2Axis.getTick().setVisible(false);
         y2Axis.getGrid().setStyle(LineStyle.NONE);
         y2Axis.setPosition(Position.Primary);
+        
+        // 3rd y axis (percentage)
+        int axisId3rd = getAxisSet().createYAxis();
+        IAxis y3Axis = getAxisSet().getYAxis(axisId3rd);
+        y3Axis.getTitle().setVisible(false);
+        y3Axis.getTick().setVisible(false);
+        y3Axis.getTick().setFormat(new DecimalFormat("+#.##%;-#.##%")); //$NON-NLS-1$
+        y3Axis.getGrid().setStyle(LineStyle.NONE);
+        y3Axis.setPosition(Position.Primary);
 
         ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
         {
