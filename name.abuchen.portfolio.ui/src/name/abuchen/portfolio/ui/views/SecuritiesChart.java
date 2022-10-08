@@ -1641,19 +1641,17 @@ public class SecuritiesChart
 
                     e.gc.setLineStyle(SWT.LINE_SOLID);
                     e.gc.setForeground(Colors.ICON_ORANGE);
+                    // draw crosshair
                     e.gc.drawLine(mouseX, 0, mouseX, e.height);
                     e.gc.drawLine(0, mouseY, e.width, mouseY);
 
-                    Range yRange = chart.getAxisSet().getYAxis(0).getRange();
-                    double currentValue = (yRange.upper - yRange.lower) * (1 - (float) mouseY / e.height)
-                                    + yRange.lower;
-                    e.gc.drawText("" + currentValue, e.width - 80, mouseY + 5, true); //$NON-NLS-1$
-
-                    Range xRange = chart.getAxisSet().getXAxis(0).getRange();
-                    currentValue = (xRange.lower - xRange.upper) * (1 - (double) mouseX / e.width) + xRange.upper;
-                    LocalDate date = Instant.ofEpochMilli((long) currentValue).atZone(ZoneId.systemDefault())
-                                    .toLocalDate();
+                    // draw x- and y-value
+                    LocalDate date = Instant
+                                    .ofEpochMilli((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(mouseX))
+                                    .atZone(ZoneId.systemDefault()).toLocalDate();
                     e.gc.drawText(Values.Date.format(date), mouseX + 5, e.height - 20, true);
+                    e.gc.drawText(String.valueOf(chart.getAxisSet().getYAxis(0).getDataCoordinate(mouseY)),
+                                    e.width - 80, mouseY + 5, true);
                 }
 
                 @Override
