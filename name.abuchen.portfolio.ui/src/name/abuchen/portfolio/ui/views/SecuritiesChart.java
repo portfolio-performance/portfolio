@@ -387,7 +387,7 @@ public class SecuritiesChart
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
 
-        new CrosshairPainter().attachTo(chart);
+        new CrosshairPainter(chart);
     }
 
     public IntervalOption getIntervalOption()
@@ -966,14 +966,10 @@ public class SecuritiesChart
 
             LimitPrice limitAttribute = (LimitPrice) val;
 
-            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap
-                                                                                  // because
-                                                                                  // ReadOnlyClient
-                                                                                  // only
-                                                                                  // contains/provides
-                                                                                  // default
-                                                                                  // attributes
-                            .getSettings().getAttributeTypes().filter(attr -> attr.getId().equals(key)).findFirst();
+            // unwrap because ReadOnlyClient only contains/provides default
+            // attributes
+            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client).getSettings().getAttributeTypes()
+                            .filter(attr -> attr.getId().equals(key)).findFirst();
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
                 return;
@@ -1628,7 +1624,7 @@ public class SecuritiesChart
         Integer mouseX;
         Integer mouseY;
 
-        private void attachTo(TimelineChart chart)
+        private CrosshairPainter(TimelineChart chart)
         {
             this.chart = chart;
             ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
