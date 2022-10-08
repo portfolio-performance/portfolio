@@ -1680,13 +1680,24 @@ public class SecuritiesChart
                 case SWT.MouseDown:
                     mouseX = e.x;
                     mouseY = e.y;
-                    chart.redraw();
+
+                    // enable immediate drawing when holding mousewheel
                     if (e.button == 2)
                         redrawOnMove = true;
+
+                    // delete/erase crosshair on right mouse click
+                    if (e.button == 3)
+                    {
+                        mouseX = null;
+                        mouseY = null;
+                    }
+
+                    chart.redraw();
                     return;
                 case SWT.MouseUp:
                     if (e.button == 2)
                         redrawOnMove = false;
+                    return;
                 default:
                     return;
             }
