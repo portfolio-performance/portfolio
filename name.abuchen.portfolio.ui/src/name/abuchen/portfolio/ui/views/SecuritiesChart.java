@@ -798,7 +798,7 @@ public class SecuritiesChart
             double[] valuesRelativePositive = new double[range.size];
             double[] valuesRelativeNegative = new double[range.size];
             double[] valuesZeroLine = new double[range.size];
-            double firstQuote = 0;
+            Double firstQuote = null;
 
             // Disable SWT antialias for more than 1000 records due to SWT
             // performance issue in Drawing
@@ -879,11 +879,21 @@ public class SecuritiesChart
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
             IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
+            IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
+            
+            if (firstQuote == null)
+                firstQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
+                
             yAxis2nd.setRange(
                             new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
 
+            yAxis3rd.setRange(
+                            new Range(yAxis1st.getRange().lower / firstQuote - 1, yAxis1st.getRange().upper / firstQuote - 1));
+
             yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
             yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
+            // hide percentage axis in logarithmic mode
+            yAxis3rd.getTick().setVisible(!chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
 
