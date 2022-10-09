@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.Clock;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -12,38 +17,30 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.util.SecurityTimeliness;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class SecurityPriceTimelinessWidget extends WidgetDelegate<Number>
 {
-    /**
-     * @see name.abuchen.portfolio.ui.views.SecuritiesTable#addColumnDateOfLatestPrice()
-     */
-    private static final int CONSIDER_AS_OLD_AFTER_DAYS = 7;
     protected Label title;
     protected ColoredLabel indicator;
-    private LocalDate daysAgo;
-    private long oldSecuritiesCount;
+    private List<Security> staleSecurities;
     private long allSecuritiesCount;
+
+    @Preference(value = UIConstants.Preferences.QUOTES_STALE_AFTER_DAYS_PATH)
+    @Inject
+    private int numberOfTradeDaysToLookBack;
 
     protected SecurityPriceTimelinessWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
-
-        this.daysAgo = LocalDate.now().minusDays(CONSIDER_AS_OLD_AFTER_DAYS);
-
-        this.oldSecuritiesCount = this.getClient().getSecurities().stream()
-                        .filter(s -> !s.isRetired()
-                                        && (s.getLatest() == null || s.getLatest().getDate().isBefore(this.daysAgo)))
-                        .count();
-
-        this.allSecuritiesCount = this.getClient().getSecurities().stream().filter(s -> !s.isRetired()).count();
     }
 
     @Override
@@ -67,10 +64,9 @@ public class SecurityPriceTimelinessWidget extends WidgetDelegate<Number>
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
 
-        InfoToolTip.attach(indicator, () -> {
-            return MessageFormat.format(Messages.TooltipSecurityPriceTimeliness, this.oldSecuritiesCount, this.allSecuritiesCount,
-                            CONSIDER_AS_OLD_AFTER_DAYS);
-        });
+        this.update();
+
+        InfoToolTip.attach(indicator, this::getTooltip);
 
         return container;
     }
@@ -91,7 +87,30 @@ public class SecurityPriceTimelinessWidget extends WidgetDelegate<Number>
     @Override
     public Supplier<Number> getUpdateTask()
     {
-        return () -> 1 - (double) this.oldSecuritiesCount / this.allSecuritiesCount;
+        this.staleSecurities = this.getClient().getSecurities().stream().filter(
+                        s -> (new SecurityTimeliness(s, this.numberOfTradeDaysToLookBack, Clock.systemDefaultZone()))
+                                        .isStale())
+                        .collect(Collectors.toList());
 
+        this.allSecuritiesCount = this.getClient().getSecurities().stream().filter(s -> !s.isRetired()).count();
+
+        return () -> this.allSecuritiesCount > 0 ? 1 - (double) this.staleSecurities.size() / this.allSecuritiesCount
+                        : 0;
+    }
+
+    private String getTooltip()
+    {
+        if (this.staleSecurities == null)
+            return ""; //$NON-NLS-1$
+        
+        String securities = this.staleSecurities.stream()
+                        .map(s -> s.getName() + (s.getLatest() != null
+                                        ? " (" + Values.Date.format(s.getLatest().getDate()) + ")" //$NON-NLS-1$//$NON-NLS-2$
+                                        : "")) //$NON-NLS-1$
+                        .sorted().collect(Collectors.joining("\n")); //$NON-NLS-1$
+
+        return MessageFormat.format(Messages.TooltipSecurityPriceTimeliness, this.staleSecurities.size(),
+                        this.allSecuritiesCount, this.numberOfTradeDaysToLookBack)
+                        + (!securities.equals("") ? ":\n\n" + securities : ""); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
     }
 }
