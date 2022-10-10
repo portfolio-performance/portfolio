@@ -1106,6 +1106,8 @@ public class Messages extends NLS
     public static String PrefPortfolioReportAPIKey;
     public static String PrefPortfolioReportAPIURL;
     public static String PrefQuandlAPIKey;
+    public static String PrefQuotesStaleAfterDays;
+    public static String PrefQuotesStaleNote;
     public static String PrefRelativeBackupDirectoryName;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefUpdateQuotesAfterFileOpen;
@@ -1127,6 +1129,7 @@ public class Messages extends NLS
     public static String PrefTitleLeeway;
     public static String PrefTitlePortfolioReport;
     public static String PrefTitleQuandl;
+    public static String PrefTitleQuotes;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PresetsPrefPageDescription;

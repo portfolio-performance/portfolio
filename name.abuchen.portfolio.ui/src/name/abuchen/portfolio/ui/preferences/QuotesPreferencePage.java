@@ -12,7 +12,7 @@ public class QuotesPreferencePage extends FieldEditorPreferencePage
     public QuotesPreferencePage()
     {
         super(GRID);
-        setTitle("Quotes");
+        setTitle(Messages.PrefTitleQuotes);
     }
 
     @Override
@@ -21,12 +21,10 @@ public class QuotesPreferencePage extends FieldEditorPreferencePage
         addField(new BooleanFieldEditor(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, //
                         Messages.PrefUpdateQuotesAfterFileOpen, getFieldEditorParent()));
 
-        addField(new IntegerFieldEditor(UIConstants.Preferences.QUOTES_STALE_AFTER_DAYS_PATH,
-                        "Number of days after a security price is not up-to-date anymore",
-                        getFieldEditorParent()));
+        addField(new IntegerFieldEditor(UIConstants.Preferences.QUOTES_STALE_AFTER_DAYS_PATH, //
+                        Messages.PrefQuotesStaleAfterDays, getFieldEditorParent()));
 
         createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
-                        Messages.PrefLabelNote,
-                        "After this amount of days a security price is marked as not up-to-date.\nPlease note that only days with open trade markets are considered\n(depends on the configured calendar for each security)");
+                        Messages.PrefLabelNote, Messages.PrefQuotesStaleNote);
     }
 }
