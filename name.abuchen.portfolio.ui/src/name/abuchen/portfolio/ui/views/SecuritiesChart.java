@@ -272,7 +272,9 @@ public class SecuritiesChart
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
-        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits);
+        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits), //
+        SHOW_MAIN_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesMain), //
+        SHOW_PERCENTAGE_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesPercentage);
 
         private final String label;
 
@@ -391,7 +393,7 @@ public class SecuritiesChart
     private IntervalOption intervalOption = IntervalOption.Y2;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
-                    ChartDetails.SCALING_LINEAR);
+                    ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
@@ -669,6 +671,9 @@ public class SecuritiesChart
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
+        subMenuChartSettings.add(new Separator());
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES));
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -896,6 +901,16 @@ public class SecuritiesChart
             yAxis3rd.getTick().setVisible(!chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
+            
+            if(chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
+                yAxis1st.getGrid().setStyle(LineStyle.DOT);
+            else
+                yAxis1st.getGrid().setStyle(LineStyle.NONE);
+            
+            if(chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES) && yAxis3rd.getTick().isVisible())
+                yAxis3rd.getGrid().setStyle(LineStyle.DOT);
+            else
+                yAxis3rd.getGrid().setStyle(LineStyle.NONE);
 
             if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
             {

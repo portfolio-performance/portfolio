@@ -821,6 +821,8 @@ public class ClientFactory
                 addKeyToTaxonomyClassifications(client);
             case 55:
                 fixGrossValueUnits(client);
+            case 56: // TODO: place correct version
+                setAxisHorizontalLineMode(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -829,6 +831,19 @@ public class ClientFactory
             default:
                 break;
         }
+    }
+
+    private static void setAxisHorizontalLineMode(Client client)
+    {
+        String chartConfig = client.getProperty("security-chart-details"); //$NON-NLS-1$
+        if (chartConfig == null)
+            return;
+
+        if (!chartConfig.isEmpty())
+            chartConfig += ","; //$NON-NLS-1$
+
+        chartConfig += "SHOW_MAIN_HORIZONTAL_LINES"; //$NON-NLS-1$
+        client.setProperty("security-chart-details", chartConfig); //$NON-NLS-1$
     }
 
     private static void fixAssetClassTypes(Client client)
