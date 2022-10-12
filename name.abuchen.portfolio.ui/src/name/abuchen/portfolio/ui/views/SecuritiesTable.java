@@ -64,6 +64,7 @@ import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
@@ -165,6 +166,8 @@ public final class SecuritiesTable implements ModificationListener
 
     private TableViewer securities;
 
+    private int numberOfTradeDaysAfterQuoteIsStale;
+
     private Map<Security, QuoteQualityMetrics> metricsCache = new HashMap<Security, QuoteQualityMetrics>()
     {
         private static final long serialVersionUID = 1L;
@@ -181,6 +184,9 @@ public final class SecuritiesTable implements ModificationListener
     public SecuritiesTable(Composite parent, AbstractFinanceView view)
     {
         this.view = view;
+
+        this.numberOfTradeDaysAfterQuoteIsStale = view.getPart().getClientInput().getEclipsePreferences()
+                        .getInt(UIConstants.Preferences.QUOTES_STALE_AFTER_DAYS_PATH, 7);
 
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -493,6 +499,14 @@ public final class SecuritiesTable implements ModificationListener
 
         column.setLabelProvider(new DateLabelProvider(dataProvider)
         {
+            private int numberOfDaysWithWarning;
+
+            public DateLabelProvider setNumberOfDaysWithWarning(int numberOfDays)
+            {
+                this.numberOfDaysWithWarning = numberOfDays;
+                return this;
+            }
+
             @Override
             public Color getBackground(Object element)
             {
@@ -505,10 +519,10 @@ public final class SecuritiesTable implements ModificationListener
                 if (QuoteFeed.MANUAL.equals(feed))
                     return null;
 
-                LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.theme().warningBackground() : null;
+                LocalDate daysAgo = LocalDate.now().minusDays(this.numberOfDaysWithWarning);
+                return latest.getDate().isBefore(daysAgo) ? Colors.theme().warningBackground() : null;
             }
-        });
+        }.setNumberOfDaysWithWarning(this.numberOfTradeDaysAfterQuoteIsStale));
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
@@ -530,6 +544,14 @@ public final class SecuritiesTable implements ModificationListener
 
         column.setLabelProvider(new DateLabelProvider(dataProvider)
         {
+            private int numberOfDaysWithWarning;
+            
+            public DateLabelProvider setNumberOfDaysWithWarning(int numberOfDays)
+            {
+                this.numberOfDaysWithWarning = numberOfDays;
+                return this;
+            }
+            
             @Override
             public Color getBackground(Object element)
             {
@@ -542,12 +564,13 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
+                if (!((Security) element).isRetired() && latest.getDate()
+                                .isBefore(LocalDate.now().minusDays(numberOfDaysWithWarning)))
                     return Colors.theme().warningBackground();
                 else
                     return null;
             }
-        });
+        }.setNumberOfDaysWithWarning(this.numberOfTradeDaysAfterQuoteIsStale));
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
