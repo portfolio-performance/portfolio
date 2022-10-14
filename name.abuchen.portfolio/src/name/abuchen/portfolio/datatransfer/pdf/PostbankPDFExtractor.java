@@ -93,7 +93,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 // REGISTERED SHARES 1C O.N.
                 // Ausführungskurs 62,821 EUR
                 .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
                 .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -118,7 +118,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                 // Schlusstag/-Zeit 04.02.2020 08:00:04
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Schlusstag\\/-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Den Gegenwert buchen wir mit Valuta 14.01.2020 zu Gunsten des Kontos 012345678
@@ -168,13 +168,18 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Gutschrift von Investmentertr.gen|Ertragsgutschrift)", jointAccount);
+        DocumentType type = new DocumentType("(Dividendengutschrift"
+                        + "|Aussch.ttung Investmentfonds"
+                        + "|Gutschrift von Investmentertr.gen"
+                        + "|Ertragsgutschrift"
+                        + "|Zinsgutschrift)", jointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift"
                         + "|Aussch.ttung Investmentfonds"
                         + "|Gutschrift von Investmentertr.gen"
-                        + "|Ertragsgutschrift .*)$");
+                        + "|Ertragsgutschrift .*"
+                        + "|Zinsgutschrift)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -186,8 +191,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 // Stück 12 JOHNSON & JOHNSON SHARES US4781601046 (853260)
                 // REGISTERED SHARES DL 1
                 // Zahlbarkeitstag 14.01.2022 Ausschüttung pro St. 1,390000000 USD
-                .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}.*) \\((?<wkn>.*)\\)$")
+                .section("name", "isin", "wkn", "name1", "currency").optional()
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
                 .match("(?<name1>.*)")
                 .match("^.* (Aussch.ttung|Dividende|Ertrag) ([\\s]+)?pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -197,10 +202,34 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Stück 12 JOHNSON & JOHNSON SHARES US4781601046
-                .section("shares")
-                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // EUR 15.000,00 ENEL FINANCE INTL N.V. XS0177089298 (908043)
+                // EO-MEDIUM-TERM NOTES 2003(23)
+                .section("currency", "name", "isin", "wkn", "name1").optional()
+                .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$")
+                .match("(?<name1>.*)")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                .oneOf(
+                                // Stück 12 JOHNSON & JOHNSON SHARES US4781601046
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // EUR 15.000,00 ENEL FINANCE INTL N.V. XS0177089298 (908043)
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\(.*\\)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            t.setShares((asShares(v.get("shares")) / 100));
+                                        })
+                        )
 
                 // Zahlbarkeitstag 08.04.2021 Ertrag  pro Stück 0,60 EUR
                 .section("date")
@@ -215,24 +244,46 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Devisenkurs EUR / USD 1,1920
-                // Devisenkursdatum 09.03.2021
-                // Dividendengutschrift 12,12 USD 10,17+ EUR
-                .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                .optionalOneOf(
+                                // Devisenkurs EUR / USD 1,1920
+                                // Dividendengutschrift 12,12 USD 10,17+ EUR
+                                section -> section
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
+                                        .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Devisenkurs EUR / USD  0,9997  
+                                // Zinsertrag 166,25 USD 166,30+ EUR
+                                section -> section
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$")
+                                        .match("^Zinsertrag (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                        )
 
                 // Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
                 .section("note").optional()
                 .match("^.* Art der Dividende (?<note>.*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // Bestandsstichtag 13.09.2022 Laufzeit Zinsschein 180 Tag(e)     
+                .section("note").optional()
+                .match("^.* (?<note>Zinsschein .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
