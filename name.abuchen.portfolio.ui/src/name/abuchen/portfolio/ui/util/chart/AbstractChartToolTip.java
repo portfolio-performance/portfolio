@@ -56,6 +56,7 @@ public abstract class AbstractChartToolTip implements Listener
     @Override
     public void handleEvent(Event event)
     {
+        if(true) return;
         switch (event.type)
         {
             case SWT.Dispose:

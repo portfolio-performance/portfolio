@@ -1621,8 +1621,8 @@ public class SecuritiesChart
     private class CrosshairPainter implements Listener
     {
         TimelineChart chart;
-        Integer mouseX;
-        Integer mouseY;
+        Point p1;
+        Point p2;
 
         private CrosshairPainter(TimelineChart chart)
         {
@@ -1632,9 +1632,22 @@ public class SecuritiesChart
                 @Override
                 public void paintControl(PaintEvent e)
                 {
-                    if (mouseX == null || mouseY == null)
+                    if (p1 == null)
                         return;
+                    
+                    if (p2 == null)
+                    {
+                        if (!redrawOnMove)
+                            drawCrosshair(e, p1.x, p1.y);
+                        
+                        return;
+                    }
+                    
+                    drawMeasureLine(e, p1, p2);
+                }
 
+                private void drawCrosshair(PaintEvent e, int mouseX, int mouseY)
+                {
                     e.gc.setLineStyle(SWT.LINE_SOLID);
                     e.gc.setForeground(Colors.ICON_ORANGE);
                     // draw crosshair
@@ -1649,11 +1662,44 @@ public class SecuritiesChart
                     e.gc.drawText(String.valueOf(chart.getAxisSet().getYAxis(0).getDataCoordinate(mouseY)),
                                     e.width - 80, mouseY + 5, true);
                 }
+                
+                private void drawMeasureLine(PaintEvent e, Point p1, Point p2)
+                {
+                    e.gc.setLineStyle(SWT.LINE_SOLID);
+                    e.gc.setForeground(Colors.ICON_ORANGE);
+                    
+                    e.gc.drawLine(p1.x, p1.y, p2.x,p2.y);
+                    e.gc.setBackground(Colors.ICON_ORANGE);
+                    e.gc.fillOval(p1.x-2, p1.y-2, 4, 4);  
+                    e.gc.fillOval(p2.x-2, p2.y-2, 4, 4);
+                    
+                    double yValP1 = getYValue(p1);
+                    double yValP2 = getYValue(p2);                    
+                    
+                    String text = "P1: " + yValP1 + System.lineSeparator() 
+                        + "P2: " + yValP2 + System.lineSeparator() 
+                        + "P2/P1: " + new DecimalFormat("#.##%").format(yValP2/yValP1) + System.lineSeparator()
+                        + "P2/P1-1: " + new DecimalFormat("+#.##%;-#.##%").format(yValP2/yValP1 - 1);
+                    
+                    Point txtExtend = e.gc.textExtent(text);
+                    e.gc.setBackground(Colors.SIDEBAR_TEXT);
+                    
+                    e.gc.fillRectangle((p1.x + p2.x) / 2 - 5, (p1.y + p2.y) / 2 - 5, txtExtend.x + 10, txtExtend.y + 10);
+                    e.gc.setForeground(Colors.GRAY);
+                    e.gc.drawRectangle((p1.x + p2.x) / 2 - 5, (p1.y + p2.y) / 2 - 5, txtExtend.x + 10, txtExtend.y + 10);
+                    e.gc.setForeground(Colors.ICON_ORANGE);
+                    e.gc.drawText(text, (p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+                }
 
                 @Override
                 public boolean drawBehindSeries()
                 {
                     return false;
+                }
+                
+                private double getYValue(Point p)
+                {
+                    return chart.getAxisSet().getYAxis(0).getDataCoordinate(p.y);
                 }
             });
 
@@ -1669,34 +1715,38 @@ public class SecuritiesChart
         {
             switch (e.type)
             {
-                case SWT.MouseMove:
-                    if (!redrawOnMove)
-                        return;
-
-                    mouseX = e.x;
-                    mouseY = e.y;
-                    chart.redraw();
+                case SWT.MouseMove:                   
+                    if (redrawOnMove)
+                    {
+                        p2 = new Point(e.x, e.y);
+                        chart.redraw();
+                    }
+                    
                     return;
                 case SWT.MouseDown:
-                    mouseX = e.x;
-                    mouseY = e.y;
-
-                    // enable immediate drawing when holding mousewheel
-                    if (e.button == 2)
+                    if (e.button==1)
+                    {
+                        p2 = null;
+                        p1 = new Point(e.x, e.y);
                         redrawOnMove = true;
-
+                        chart.redraw();
+                    }
+                    
                     // delete/erase crosshair on right mouse click
                     if (e.button == 3)
                     {
-                        mouseX = null;
-                        mouseY = null;
+                        p1 = null;
+                        p2 = null;
+                        chart.redraw();
                     }
-
-                    chart.redraw();
+                    
                     return;
                 case SWT.MouseUp:
-                    if (e.button == 2)
+                    if (e.button == 1)
+                    {
                         redrawOnMove = false;
+                        chart.redraw();
+                    }
                     return;
                 default:
                     return;
