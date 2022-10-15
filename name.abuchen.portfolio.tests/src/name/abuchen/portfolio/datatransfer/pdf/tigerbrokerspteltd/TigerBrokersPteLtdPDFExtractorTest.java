@@ -80,11 +80,11 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(16070.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(16068.12))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(16068.27))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.14 + 0.99 + 0.15 + 1.00))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.14 + 0.99 + 1.00))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -101,11 +101,11 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1302.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1299.86))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1300.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01 + 0.99 + 0.14 + 1.00))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01 + 0.99 + 1.00))));
 
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
@@ -122,11 +122,11 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7063.20))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7061.02))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7061.16))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.05 + 0.99 + 0.14 + 1.00))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.05 + 0.99 + 1.00))));
 
         // check 4th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
@@ -143,11 +143,11 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2719.50))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2717.35))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2717.49))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02 + 0.99 + 0.14 + 1.00))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02 + 0.99 + 1.00))));
 
         // check 5th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
@@ -164,11 +164,11 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6679.20))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6676.85))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6677.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.21 + 0.99 + 0.15 + 1.00))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.21 + 0.99 + 1.00))));
 
         // check 1st dividends transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
@@ -177,14 +177,14 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(69.012442)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(69)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordinary Dividend"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.75))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(12.43))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(23.07))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.75))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5.32))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -197,14 +197,14 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(24.9981800)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ordinary Dividend"));
 
         assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(34.34))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(24.04))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(44.64))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(34.34))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.30))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
