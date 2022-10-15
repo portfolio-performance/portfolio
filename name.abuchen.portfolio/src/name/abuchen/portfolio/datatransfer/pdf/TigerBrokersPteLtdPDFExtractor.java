@@ -44,18 +44,25 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
             Pattern pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[\\w]{3})$");
             Pattern pSecurity = Pattern.compile("^(?<tickerSymbol>[\\w]{2,3}) (?<name>.*) [\\d]$");
             Pattern pSecurityDividendTax = Pattern.compile("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<tickerSymbol>[\\w]{2,4}) Cash Dividend .* \\-(?<tax>[\\.,\\d]+)$");
+            Pattern pSecurityDividendShares = Pattern.compile("^(?<tickerSymbol>[\\w]{2,3}) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}.* (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$");
             Pattern pSecurityBlockStart = Pattern.compile("^Stock$");
             Pattern pSecurityBlockEnd = Pattern.compile("^Base Currency Exchange Rate$");
             Pattern pSecurityDividendTaxStart = Pattern.compile("^Withholding Tax$");
-            Pattern pSecurityDividendTaxEnd = Pattern.compile("^Total$");
+            Pattern pSecurityDividendTaxEnd = Pattern.compile("^Change in Dividend Accruals$");
+            Pattern pSecurityDividendSharesStart = Pattern.compile("^Change in Dividend Accruals$");
+            Pattern pSecurityDividendSharesEnd = Pattern.compile("^GST$");
 
-            // Set start and end line for security list
+            // Set start and end line for the securities list
             int startBlockSecurityList = 0;
             int endBlockSecurityList = lines.length;
 
-            // Set start and end line for security list
+            // Set start and end line for the list of dividend taxes
             int startBlockDividendTaxList = 0;
             int endBlockDividendTaxList = lines.length;
+
+            // Set start and end line for the list of shares for dividends
+            int startBlockDividendSharesList = 0;
+            int endBlockDividendSharesList = lines.length;
 
             String securityCurrency = CurrencyUnit.USD;
             String baseCurrency = CurrencyUnit.USD;
@@ -84,7 +91,15 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                 m = pSecurityDividendTaxEnd.matcher(lines[i]);
                 if (m.matches())
-                    endBlockDividendTaxList = i;
+                    endBlockDividendTaxList = i;   
+
+                m = pSecurityDividendSharesStart.matcher(lines[i]);
+                if (m.matches())
+                    startBlockDividendSharesList = i;
+
+                m = pSecurityDividendSharesEnd.matcher(lines[i]);
+                if (m.matches())
+                    endBlockDividendSharesList = i;
             }
 
             for (int i = endBlockSecurityList - 1; i >= startBlockSecurityList; i--)
@@ -103,10 +118,31 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     // @formatter:on
                     StringBuilder securityListKey = new StringBuilder("security_");
                     securityListKey.append(trim(m.group("name"))).append("_");
-                    securityListKey.append(securityCurrency).append("_");
+                    securityListKey.append(securityCurrency);
                     context.put(securityListKey.toString(), m.group("tickerSymbol"));
                 }
             }
+
+            for (int i = endBlockDividendSharesList - 1; i >= startBlockDividendSharesList; i--)
+            {
+                Matcher m = pSecurityDividendShares.matcher(lines[i]);
+                if (m.matches())
+                {
+                    // @formatter:off
+                    // Stringbuilder:
+                    // pSecurityDividendShares_(shares) = tickerSymbol
+                    // 
+                    // Example:
+                    // Change in Dividend Accruals
+                    // Symbol Date Ex Date Pay Date Quantity Tax GST Fee(include ADR) Gross Rate Gross Amount Net Amount Code
+                    // QQQ 2022-03-21 2022-03-21T00:00-04:00[US/Eastern] 2022-04-29T00:00-04:00[US/Eastern] 52 6.77 0.00 0.00 22.55 15.78
+                    // @formatter:on
+                    StringBuilder dividendSharesBySecurityKey = new StringBuilder("securityDividendShares_");
+                    dividendSharesBySecurityKey.append(m.group("shares"));
+                    context.put(dividendSharesBySecurityKey.toString(), m.group("tickerSymbol"));
+                }
+            }
+
             for (int i = endBlockDividendTaxList - 1; i >= startBlockDividendTaxList; i--)
             {
                 Matcher m = pCurrency.matcher(lines[i]);
@@ -127,7 +163,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     // @formatter:on
                     StringBuilder dividendTaxBySecurityKey = new StringBuilder("securityDividendTax_");
                     dividendTaxBySecurityKey.append(m.group("tax")).append("_");
-                    dividendTaxBySecurityKey.append(baseCurrency).append("_");
+                    dividendTaxBySecurityKey.append(baseCurrency);
                     context.put(dividendTaxBySecurityKey.toString(), m.group("tickerSymbol"));
                 }
             }
@@ -155,7 +191,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                 + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), "
                                 + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* "
                                 + "(?<shares>[\\.,\\d]+) "
-                                + "[\\.,\\d]+ [\\.,\\d]+ "
+                                + "[\\.,\\d]+ "
+                                + "[\\.,\\d]+ "
                                 + "(?<amount>[\\.,\\d]+).*$")
                 .match("^Platform Fee: \\-[\\.,\\d]+$")
                 .assign((t, v) -> {
@@ -207,6 +244,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+                    Money tax = null;
 
                     Security securityData = getSecurity(context, v.get("tickerSymbol"));
                     if (securityData != null)
@@ -218,9 +256,12 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                     t.setDateTime(asDate(v.get("date")));
 
-                    // Calculate shares
-                    BigDecimal shares = asBigDecimal(v.get("perShare"));
-                    t.setShares(Values.Share.factorize(asAmount(v.get("amount")) / shares.doubleValue()) * 100);
+                    // Set dividend shares
+                    SecurityDividendShares securityDividendeShares = getSecurityDividendeShares(context, v.get("tickerSymbol"));
+                    if (securityDividendeShares != null)
+                    {
+                        t.setShares(asShares(securityDividendeShares.getShares()));
+                    }
 
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
@@ -230,19 +271,21 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     SecurityDividendTax securityDividendeTax = getSecurityDividendeTax(context, v.get("tickerSymbol"));
                     if (securityDividendeTax != null)
                     {
-                        v.put("tickerSymbol", securityDividendeTax.getTickerSymbol());
-                        v.put("tax", securityDividendeTax.getTax());
-                        v.put("currency", asCurrencyCode(securityDividendeTax.getCurrency()));
-
-                        Money tax = null;
-                        tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                        tax = Money.of(asCurrencyCode(securityDividendeTax.getCurrency()), asAmount(securityDividendeTax.getTax()));
 
                         checkAndSetTax(tax, t, type);
                     }
+
+                    // Dividends are stated in gross.
+                    // If taxes exist, then we subtract this amount.
+                    if (tax != null)
+                        t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+
+                    t.setNote(trim(v.get("note")));
                 })
 
                 .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0 && t.getShares() != 0)
                         return new TransactionItem(t);
                     return null;
                 });
@@ -268,7 +311,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
+                    t.setNote(trim(v.get("note")));
                 })
 
                 .wrap(t -> {
@@ -284,16 +327,6 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                 // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
                 .section("fee").optional()
                 .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+.*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", asCurrencyCode(context.get("currency")));
-
-                    processFeeEntries(t, v, type);
-                })
-
-                // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
-                .section("fee").optional()
-                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-[\\.,\\d]+ \\-(?<fee>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", asCurrencyCode(context.get("currency")));
@@ -368,23 +401,48 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         }
     }
 
+    private static class SecurityDividendShares
+    {
+        public SecurityDividendShares(String tickerSymbol, String shares)
+        {
+            this.shares = shares;
+        }
+
+        private String shares;
+
+        public String getShares()
+        {
+            return shares;
+        }
+    }
+
+    private SecurityDividendShares getSecurityDividendeShares(Map<String, String> context, String tickerSymbol)
+    {
+        for (String key : context.keySet())
+        {
+            String[] parts = key.split("_"); //$NON-NLS-1$
+            if (parts[0].equalsIgnoreCase("securityDividendShares")) //$NON-NLS-1$
+            {
+                if (context.get(key).equals(tickerSymbol))
+                {
+                    // returns tickerSymbol, shares
+                    return new SecurityDividendShares(context.get(key), parts[1]);
+                }
+            }
+        }
+        return null;
+    }
+
     private static class SecurityDividendTax
     {
         public SecurityDividendTax(String tickerSymbol, String tax, String currency)
         {
-            this.tickerSymbol = tickerSymbol;
             this.tax = tax;
             this.currency = currency;
         }
 
-        private String tickerSymbol;
         private String tax;
         private String currency;
-
-        public String getTickerSymbol()
-        {
-            return tickerSymbol;
-        }
 
         public String getTax()
         {
