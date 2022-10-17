@@ -381,13 +381,13 @@ public class SecuritiesChart
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
         chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
 
-        setupTooltip();
-
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
 
-        new CrosshairPainter(chart);
+        new MeasureToolsPainter(chart);
+
+        setupTooltip();
     }
 
     public IntervalOption getIntervalOption()
@@ -1618,13 +1618,14 @@ public class SecuritiesChart
                         .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
     }
 
-    private class CrosshairPainter implements Listener
+    private class MeasureToolsPainter implements Listener
     {
         TimelineChart chart;
         Point p1;
         Point p2;
+        boolean isDateCorrectMeasuring = false;
 
-        private CrosshairPainter(TimelineChart chart)
+        private MeasureToolsPainter(TimelineChart chart)
         {
             this.chart = chart;
             ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
@@ -1634,61 +1635,144 @@ public class SecuritiesChart
                 {
                     if (p1 == null)
                         return;
-                    
+
                     if (p2 == null)
                     {
                         if (!redrawOnMove)
-                            drawCrosshair(e, p1.x, p1.y);
-                        
+                            drawCrosshair(e, p1);
+
                         return;
                     }
-                    
+
                     drawMeasureLine(e, p1, p2);
                 }
 
-                private void drawCrosshair(PaintEvent e, int mouseX, int mouseY)
+                private void drawCrosshairDateTextbox(PaintEvent e, Point p)
+                {
+                    LocalDate date = getDateTime(p);
+                    String xText = Values.Date.format(date);
+                    Point txtXExtend = e.gc.textExtent(xText);
+                    txtXExtend.x += 5; // add margin to text
+                    txtXExtend.y += 5; // add margin to text
+
+                    Point rectPoint = new Point(0, e.height - txtXExtend.y - 2);
+                    Point textPoint = new Point(0, e.height - txtXExtend.y + 1);
+                    if (p.x <= e.width / 2)
+                    { // draw box on right side of vertical line
+                        rectPoint.x = p.x + 5;
+                        textPoint.x = p.x + 8;
+                    }
+                    else
+                    { // draw box on left side of vertical line
+                        rectPoint.x = p.x - txtXExtend.x - 5;
+                        textPoint.x = p.x - txtXExtend.x - 1;
+                    }
+                    e.gc.fillRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
+                    e.gc.drawRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
+                    e.gc.drawText(xText, textPoint.x, textPoint.y, true);
+                }
+
+                private void drawCrosshairValueTextbox(PaintEvent e, Point p)
+                {
+                    // e.gc.drawText(String.valueOf(chart.getAxisSet().getYAxis(0).getDataCoordinate(y)),
+                    double value = getYValue(p);
+                    String yText = new DecimalFormat(Values.Quote.pattern()).format(value);
+                    Point txtYExtend = e.gc.textExtent(yText);
+                    txtYExtend.x += 5; // add margin to text
+                    txtYExtend.y += 5; // add margin to text
+
+                    Point rectPoint = new Point(e.width - txtYExtend.x - 2, 0);
+                    Point textPoint = new Point(e.width - txtYExtend.x + 1, 0);
+                    if (p.y <= e.height / 2)
+                    { // draw box below horizontal line
+                        rectPoint.y = p.y + 4;
+                        textPoint.y = p.y + 7;
+                    }
+                    else
+                    { // draw box above horizontal line
+                        rectPoint.y = p.y - txtYExtend.y - 4;
+                        textPoint.y = p.y - txtYExtend.y - 1;
+                    }
+                    e.gc.fillRectangle(rectPoint.x, rectPoint.y, txtYExtend.x, txtYExtend.y);
+                    e.gc.drawRectangle(rectPoint.x, rectPoint.y, txtYExtend.x, txtYExtend.y);
+                    e.gc.drawText(yText, textPoint.x, textPoint.y, true);
+                }
+
+                private void drawCrosshair(PaintEvent e, Point p)
                 {
                     e.gc.setLineStyle(SWT.LINE_SOLID);
                     e.gc.setForeground(Colors.ICON_ORANGE);
-                    // draw crosshair
-                    e.gc.drawLine(mouseX, 0, mouseX, e.height);
-                    e.gc.drawLine(0, mouseY, e.width, mouseY);
 
-                    // draw x- and y-value
-                    LocalDate date = Instant
-                                    .ofEpochMilli((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(mouseX))
-                                    .atZone(ZoneId.systemDefault()).toLocalDate();
-                    e.gc.drawText(Values.Date.format(date), mouseX + 5, e.height - 20, true);
-                    e.gc.drawText(String.valueOf(chart.getAxisSet().getYAxis(0).getDataCoordinate(mouseY)),
-                                    e.width - 80, mouseY + 5, true);
+                    // draw crosshair
+                    e.gc.drawLine(p.x, 0, p.x, e.height);
+                    e.gc.drawLine(0, p.y, e.width, p.y);
+
+                    // set textbox style
+                    e.gc.setForeground(Colors.theme().defaultForeground());
+                    e.gc.setBackground(Colors.SIDEBAR_TEXT);
+                    e.gc.setAlpha(200);
+
+                    drawCrosshairDateTextbox(e, p);
+                    drawCrosshairValueTextbox(e, p);
                 }
-                
+
                 private void drawMeasureLine(PaintEvent e, Point p1, Point p2)
                 {
-                    e.gc.setLineStyle(SWT.LINE_SOLID);
-                    e.gc.setForeground(Colors.ICON_ORANGE);
-                    
-                    e.gc.drawLine(p1.x, p1.y, p2.x,p2.y);
-                    e.gc.setBackground(Colors.ICON_ORANGE);
-                    e.gc.fillOval(p1.x-2, p1.y-2, 4, 4);  
-                    e.gc.fillOval(p2.x-2, p2.y-2, 4, 4);
-                    
-                    double yValP1 = getYValue(p1);
-                    double yValP2 = getYValue(p2);                    
-                    
-                    String text = "P1: " + yValP1 + System.lineSeparator() 
-                        + "P2: " + yValP2 + System.lineSeparator() 
-                        + "P2/P1: " + new DecimalFormat("#.##%").format(yValP2/yValP1) + System.lineSeparator()
-                        + "P2/P1-1: " + new DecimalFormat("+#.##%;-#.##%").format(yValP2/yValP1 - 1);
-                    
-                    Point txtExtend = e.gc.textExtent(text);
-                    e.gc.setBackground(Colors.SIDEBAR_TEXT);
-                    
-                    e.gc.fillRectangle((p1.x + p2.x) / 2 - 5, (p1.y + p2.y) / 2 - 5, txtExtend.x + 10, txtExtend.y + 10);
-                    e.gc.setForeground(Colors.GRAY);
-                    e.gc.drawRectangle((p1.x + p2.x) / 2 - 5, (p1.y + p2.y) / 2 - 5, txtExtend.x + 10, txtExtend.y + 10);
-                    e.gc.setForeground(Colors.ICON_ORANGE);
-                    e.gc.drawText(text, (p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+                    int antiAlias = e.gc.getAntialias();
+                    try
+                    {
+                        if (isDateCorrectMeasuring && p1.x > p2.x)
+                        {
+                            // in Date Correct Measure mode, p1 should be always
+                            // the point with lower x
+                            Point temp = p1;
+                            p1 = p2;
+                            p2 = temp;
+                        }
+
+                        e.gc.setLineStyle(SWT.LINE_SOLID);
+                        e.gc.setForeground(Colors.ICON_ORANGE);
+                        e.gc.setBackground(Colors.ICON_ORANGE);
+                        e.gc.setAntialias(SWT.ON);
+                        e.gc.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+                        e.gc.fillOval(p1.x - 2, p1.y - 2, 4, 4);
+                        e.gc.fillOval(p2.x - 2, p2.y - 2, 4, 4);
+
+                        double yValP1 = getYValue(p1);
+                        double yValP2 = getYValue(p2);
+
+                        String text = "P1: " + new DecimalFormat(Values.Quote.pattern()).format(yValP1) + " (" //$NON-NLS-1$//$NON-NLS-2$
+                                        + getDateTime(p1) + ")" ////$NON-NLS-1$
+                                        + System.lineSeparator() //
+                                        + "P2: " + new DecimalFormat(Values.Quote.pattern()).format(yValP2) + " (" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + getDateTime(p2) + ")" // //$NON-NLS-1$
+                                        + System.lineSeparator() //
+                                        + "absolute Abweichung: " // //$NON-NLS-1$
+                                        + new DecimalFormat(Values.Quote.pattern()).format(yValP2 - yValP1)
+                                        + System.lineSeparator() //
+                                        + "relative Abweichung: " // //$NON-NLS-1$
+                                        + new DecimalFormat(Values.Percent.pattern()).format(yValP2 / yValP1)
+                                        + System.lineSeparator() //
+                                        + "prozentuale Abweichung: " // //$NON-NLS-1$
+                                        + new DecimalFormat("+#.##%;-#.##%").format((yValP2 / yValP1) - 1); //$NON-NLS-1$
+
+                        Point txtExtend = e.gc.textExtent(text);
+
+                        e.gc.setForeground(Colors.theme().defaultForeground());
+                        e.gc.setBackground(Colors.SIDEBAR_TEXT);
+                        e.gc.setAlpha(200);
+
+                        int rectX = (p1.x + p2.x) / 2 - 5;
+                        int rectY = (p1.y + p2.y) / 2 - 5;
+                        e.gc.fillRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
+                        e.gc.drawRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
+                        e.gc.drawText(text, rectX + 5, rectY + 5);
+                    }
+                    finally
+                    {
+                        e.gc.setAntialias(antiAlias);
+                    }
                 }
 
                 @Override
@@ -1696,16 +1780,23 @@ public class SecuritiesChart
                 {
                     return false;
                 }
-                
-                private double getYValue(Point p)
-                {
-                    return chart.getAxisSet().getYAxis(0).getDataCoordinate(p.y);
-                }
+
             });
 
             chart.getPlotArea().addListener(SWT.MouseDown, this);
             chart.getPlotArea().addListener(SWT.MouseMove, this);
             chart.getPlotArea().addListener(SWT.MouseUp, this);
+        }
+
+        private LocalDate getDateTime(Point p)
+        {
+            return Instant.ofEpochMilli((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(p.x))
+                            .atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+
+        private double getYValue(Point p)
+        {
+            return chart.getAxisSet().getYAxis(0).getDataCoordinate(p.y);
         }
 
         private boolean redrawOnMove = false;
@@ -1715,31 +1806,27 @@ public class SecuritiesChart
         {
             switch (e.type)
             {
-                case SWT.MouseMove:                   
-                    if (redrawOnMove)
-                    {
-                        p2 = new Point(e.x, e.y);
-                        chart.redraw();
-                    }
-                    
-                    return;
                 case SWT.MouseDown:
-                    if (e.button==1)
+                    if ((e.stateMask & SWT.SHIFT) != 0 && e.button == 1)
                     {
                         p2 = null;
                         p1 = new Point(e.x, e.y);
                         redrawOnMove = true;
                         chart.redraw();
+                        return;
                     }
-                    
-                    // delete/erase crosshair on right mouse click
-                    if (e.button == 3)
+                    // all other clicks, are resetting the measure mode
+                    p1 = null;
+                    p2 = null;
+                    chart.redraw();
+                    return;
+                case SWT.MouseMove:
+                    if (redrawOnMove)
                     {
-                        p1 = null;
-                        p2 = null;
+                        p2 = new Point(e.x, e.y);
                         chart.redraw();
                     }
-                    
+
                     return;
                 case SWT.MouseUp:
                     if (e.button == 1)
