@@ -1709,8 +1709,8 @@ public class SecuritiesChart
 
                     // set textbox style
                     e.gc.setForeground(Colors.theme().defaultForeground());
-                    e.gc.setBackground(Colors.SIDEBAR_TEXT);
-                    e.gc.setAlpha(200);
+                    e.gc.setBackground(Colors.theme().defaultBackground());
+                    e.gc.setAlpha(220);
 
                     drawCrosshairDateTextbox(e, p);
                     drawCrosshairValueTextbox(e, p);
@@ -1760,14 +1760,14 @@ public class SecuritiesChart
                         Point txtExtend = e.gc.textExtent(text);
 
                         e.gc.setForeground(Colors.theme().defaultForeground());
-                        e.gc.setBackground(Colors.SIDEBAR_TEXT);
-                        e.gc.setAlpha(200);
+                        e.gc.setBackground(Colors.theme().defaultBackground());
+                        e.gc.setAlpha(220);
 
                         int rectX = (p1.x + p2.x) / 2 - 5;
                         int rectY = (p1.y + p2.y) / 2 - 5;
                         e.gc.fillRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
                         e.gc.drawRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
-                        e.gc.drawText(text, rectX + 5, rectY + 5);
+                        e.gc.drawText(text, rectX + 5, rectY + 5, true);
                     }
                     finally
                     {
