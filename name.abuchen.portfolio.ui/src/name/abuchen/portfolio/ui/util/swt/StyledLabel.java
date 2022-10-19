@@ -267,7 +267,7 @@ public class StyledLabel extends Canvas // NOSONAR
             return;
 
         TextStyle style = this.textLayout.getStyle(offset);
-        if (style != null && style.data != null)
+        if (style != null && style.data != null && event.button == 1)
         {
             if (openLinkHandler != null)
                 openLinkHandler.accept(String.valueOf(style.data));
