@@ -96,7 +96,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
         }));
     }
 
-    private void doSelect(ReportingPeriod period)
+    public void doSelect(ReportingPeriod period)
     {
         selected = period;
         part.setSelectedPeriod(period);

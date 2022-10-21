@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -48,6 +49,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private TimelineChart chart;
     private DataSeriesConfigurator configurator;
     private StatementOfAssetsSeriesBuilder seriesBuilder;
+    private ChartViewConfig chartViewConfig;
 
     @Inject
     @Optional
@@ -55,6 +57,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     {
         if (chart != null)
             chart.redraw();
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) ChartViewConfig config)
+    {
+        this.chartViewConfig = config;
     }
 
     @Override
@@ -123,6 +132,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
+        if (chartViewConfig != null)
+        {
+            // do *not* update reporting period as it changes the default for
+            // all other views as well --> unexpected UX
+            configurator.activate(chartViewConfig.getUUID());
+        }
+
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
 
