@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -21,6 +22,7 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -48,6 +50,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private TimelineChart chart;
     private DataSeriesConfigurator configurator;
     private StatementOfAssetsSeriesBuilder seriesBuilder;
+    private Configuration initViewConfig;
 
     @Inject
     @Optional
@@ -125,6 +128,10 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
+        if (this.initViewConfig != null)
+        {
+            configurator.getStore().activate(this.initViewConfig);
+        }
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
         legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
@@ -180,6 +187,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     public void reportingPeriodUpdated()
     {
         notifyModelUpdated();
+    }
+
+    @Inject
+    @Optional
+    public void initViewConfig(@Named(UIConstants.Parameter.VIEW_PARAMETER) Configuration config)
+    {
+        this.initViewConfig = config;
     }
 
     private void updateChart()

@@ -9,7 +9,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -25,12 +28,14 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -55,6 +60,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private TimelineChart chart;
     private DataSeriesConfigurator picker;
+    private Configuration initViewConfig;
 
     private Aggregation.Period aggregationPeriod;
 
@@ -113,6 +119,10 @@ public class PerformanceChartView extends AbstractHistoricView
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
         picker.addListener(this::updateChart);
         picker.setToolBarManager(getViewToolBarManager());
+        if (this.initViewConfig != null)
+        {
+            picker.getStore().activate(this.initViewConfig);
+        }
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
         legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
@@ -158,6 +168,13 @@ public class PerformanceChartView extends AbstractHistoricView
     {
         seriesBuilder.getCache().clear();
         updateChart();
+    }
+
+    @Inject
+    @Optional
+    public void initViewConfig(@Named(UIConstants.Parameter.VIEW_PARAMETER) Configuration config)
+    {
+        this.initViewConfig = config;
     }
 
     private void updateChart()

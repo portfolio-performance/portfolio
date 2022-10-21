@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -16,6 +18,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
@@ -24,8 +29,10 @@ import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.Aggregation;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -91,6 +98,11 @@ public class ChartWidget extends WidgetDelegate<Object>
         public String getData()
         {
             return config != null ? config.getData() : null;
+        }
+
+        public ConfigurationSet.Configuration getConfig()
+        {
+            return config;
         }
 
         @Override
@@ -174,6 +186,9 @@ public class ChartWidget extends WidgetDelegate<Object>
     private Label title;
     private TimelineChart chart;
 
+    @Inject
+    private PortfolioPart part;
+
     public ChartWidget(Widget widget, DashboardData dashboardData, DataSeries.UseCase useCase)
     {
         super(widget, dashboardData);
@@ -192,11 +207,25 @@ public class ChartWidget extends WidgetDelegate<Object>
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
+
+        ImageHyperlink button = new ImageHyperlink(container, SWT.NONE);
+        button.setImage(Images.VIEW_SHARE.image());
+        button.addHyperlinkListener(new HyperlinkAdapter()
+        {
+            @Override
+            public void linkActivated(HyperlinkEvent e)
+            {
+                part.activateView(
+                                useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS ? StatementOfAssetsHistoryView.class
+                                                : PerformanceChartView.class,
+                                get(ChartConfig.class).getConfig());
+            }
+        });
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
@@ -209,7 +238,8 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getToolTip().reverseLabels(true);
 
         int yHint = get(ChartHeightConfig.class).getPixel();
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).span(2, 1).applyTo(chart);
+
 
         getDashboardData().getStylingEngine().style(chart);
 

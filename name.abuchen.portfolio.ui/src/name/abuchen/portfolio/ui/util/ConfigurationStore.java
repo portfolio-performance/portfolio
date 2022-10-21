@@ -212,7 +212,7 @@ public class ConfigurationStore
         listeners.forEach(l -> l.onConfigurationPicked(active.getData()));
     }
 
-    private void activate(Configuration config)
+    public void activate(Configuration config)
     {
         listeners.forEach(ConfigurationStoreOwner::beforeConfigurationPicked);
         active = config;

@@ -50,6 +50,11 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
         return store.getActiveName();
     }
 
+    public ConfigurationStore getStore()
+    {
+        return this.store;
+    }
+
     /**
      * Shows the menu to add and remove data series from the current set of data
      * series.
