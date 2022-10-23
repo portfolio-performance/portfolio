@@ -885,29 +885,32 @@ public class SecuritiesChart
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
             IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
             IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
-            
+
             if (firstQuote == null)
                 firstQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
-                
+
             yAxis2nd.setRange(
                             new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
 
-            yAxis3rd.setRange(
-                            new Range(yAxis1st.getRange().lower / firstQuote - 1, yAxis1st.getRange().upper / firstQuote - 1));
+            if (firstQuote != 0)
+            {
+                yAxis3rd.setRange(new Range(yAxis1st.getRange().lower / firstQuote - 1,
+                                yAxis1st.getRange().upper / firstQuote - 1));
+                // hide percentage axis in logarithmic mode
+                yAxis3rd.getTick().setVisible(!chartConfig.contains(ChartDetails.SCALING_LOG));
+            }
 
             yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
             yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
-            // hide percentage axis in logarithmic mode
-            yAxis3rd.getTick().setVisible(!chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
-            
-            if(chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
+
+            if (chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
                 yAxis1st.getGrid().setStyle(LineStyle.DOT);
             else
                 yAxis1st.getGrid().setStyle(LineStyle.NONE);
-            
-            if(chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES) && yAxis3rd.getTick().isVisible())
+
+            if (chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES) && yAxis3rd.getTick().isVisible())
                 yAxis3rd.getGrid().setStyle(LineStyle.DOT);
             else
                 yAxis3rd.getGrid().setStyle(LineStyle.NONE);
@@ -1042,6 +1045,7 @@ public class SecuritiesChart
             // attributes
             Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client).getSettings().getAttributeTypes()
                             .filter(attr -> attr.getId().equals(key)).findFirst();
+
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
                 return;
