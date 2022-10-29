@@ -62,7 +62,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk\\. Teil\\-\\/Bezugsr\\.)|R.ckzahlung)", jointAccount);
+        DocumentType type = new DocumentType("(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk\\. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -72,14 +78,20 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$");
+        Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
+                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Kauf aus Sparplan|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
                 .assign((t, v) -> {                    
                     if (v.get("type").equals("Verkauf")
                             || v.get("type").equals("Verk. Teil-/Bezugsr.")
@@ -139,11 +151,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Kurswert USD 1.503,75
+                // Zwischensumme USD 1.503,75
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
                 // Endbetrag zu Ihren Lasten EUR 1.335,07
                 .section("fxCurrency", "fxGross", "currency", "baseCurrency", "gross", "termCurrency", "exchangeRate").optional()
-                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .match("^Zwischensumme (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
                 .match("^.* Devisenkurs (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
@@ -496,6 +508,31 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         // fee = fee - discount
                         fee = fee.subtract(discount);
+
+                        checkAndSetFee(fee, t, type);
+                    }
+                })
+
+                // Kurswert EUR 52,63
+                // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
+                .section("currency", "amount", "percentageFee").optional()
+                .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .find("(?!Rabatt .*)")
+                .match("^Der regul.re Ausgabeaufschlag von (?<percentageFee>[\\.,\\d]+)% .*$")
+                .assign((t, v) -> {
+                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                    BigDecimal amount = asBigDecimal(v.get("amount"));
+
+                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                        BigDecimal fxFee = amount
+                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
+                                                        .add(BigDecimal.ONE), Values.MC)
+                                        .multiply(percentageFee, Values.MC);
+
+                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                         checkAndSetFee(fee, t, type);
                     }
