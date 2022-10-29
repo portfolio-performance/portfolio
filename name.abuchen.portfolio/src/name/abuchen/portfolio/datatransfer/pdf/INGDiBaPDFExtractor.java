@@ -511,31 +511,6 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         checkAndSetFee(fee, t, type);
                     }
-                })
-
-                // Kurswert EUR 52,63
-                // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
-                .section("currency", "amount", "percentageFee").optional()
-                .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .find("(?!Rabatt .*)")
-                .match("^Der regul.re Ausgabeaufschlag von (?<percentageFee>[\\.,\\d]+)% .*$")
-                .assign((t, v) -> {
-                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                    BigDecimal amount = asBigDecimal(v.get("amount"));
-
-                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
-                    {
-                        // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
-                        BigDecimal fxFee = amount
-                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
-                                                        .add(BigDecimal.ONE), Values.MC)
-                                        .multiply(percentageFee, Values.MC);
-
-                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
-                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
-
-                        checkAndSetFee(fee, t, type);
-                    }
                 });
     }
 }
