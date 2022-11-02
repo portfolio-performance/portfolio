@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: CH3308781000123456700
+Herrn Max Mustermann
+Muster Str. 1
+DE-12345 Musterstadt
+Gland, 31.10.2022
+Kauf * Unsere Referenz: 312345678 
+Gemäss Ihrem Kaufauftrag vom 31.10.2022 haben wir folgende Transaktionen vorgenommen:
+Titel Haupthandelsplatz **
+RICHEMONT N ISIN: CH0210483332 SIX Swiss Exchange 
+NKN: 21048333
+Anzahl Preis Betrag
+1.0269 97.38 CHF 100.00
+Total CHF 100.00
+Kommission CHF 1.00
+Abgabe (Eidg. Stempelsteuer) CHF 0.10
+Benutzter Trading Credit 1.00
+Zu Ihren Lasten CHF 100.10
+Betrag belastet auf Kontonummer  123456700, Valutadatum 02.11.2022
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen den Allgemeinen Geschäftsbedingungen für Yuh Accounts, der
+Vereinbarung über den Handel mit fraktionalen Instrumenten für Yuh Accounts sowie der Best Execution Policy für Yuh Accounts.
+(*) Bitte beachten Sie, dass, wenn Sie Transaktionen mit Finanzinstrumenten eingehen, die Swissquote Bank AG diese Finanzinstrumente als
+Treuhänderin verwahrt und Ihnen einen Treuhandanteil einräumt. Eine Buchung von Finanzinstrumenten auf Ihrem Konto stellt eine Buchung eines
+Treuhandanteils gemäss der Vereinbarung über den Handel mit Fraktionalen Instrumenten für Yuh Accounts dar.
+(**) Der Haupthandelsplatz wird nur zu Informationszwecken angegeben. Zum Zeitpunkt der Ausführung Ihres Auftrags haben wir das betreffende
+Finanzinstrument möglicherweise noch nicht erworben oder veräussert. Die Buchung dieser Transaktion ist gemäss der Vereinbarung über den
+Handel mit Fraktionalen Instrumenten für Yuh Accounts für einige Tage möglicherweise vorläufig. Bitte setzen Sie sich mit uns in Verbindung, wenn
+Sie weitere Informationen dazu benötigen.
+Vielen Dank für Ihren Auftrag.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
