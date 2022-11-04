@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+                                     INVESTMENTGESELLSCH.
+           
+TRANSAKTIONSABRECHNUNG
+                                                                            A N G E G E B EN  IN :      EUR
+ D A T U M :    22-10-2022    ROBECO EURO GOVERMENT BONDS I'EUR ACC               W E C H S E LK U R S :        1,00
+ I SI N :      LU0210245469
+       INHABER        XXXXXXXX  XXXXXX                                            ID      XXXXXXXXXX
+     V E R  T R A G S N U  M M E R  :         0 0  7  3   0  1 00 823 0000000 MIT DER TRANSAKTION
+IBAN
+                                       V  E R K N Ü  P T E S         ES58 0073 0100 0000 0000 0000
+     T R A  N S A K T I O N S N U  M M E R  :   0  0  0  0 8  8  1  1 1  1    PERSÖNLICHES KONTO
+Sehr geehrter Anteilseigner: Gemäß Ihren Anweisungen haben wir folgende Transaktion durchgeführt:
+    TRANSAKTION                MAXIMAL VERFÜGBARE ERSTATTUNG
+    DATUM NETTOINVENTARWERT    20.10.2022
+    BETEILIGUNGEN                       0,0065000
+    NETTOINVENTARWERT                   146,76000 EUR
+    BETRAG                                    ,95 EUR
+    EINBEHALT                                     EUR
+    GESAMTKOSTEN                                  EUR
+    GESAMTANREIZE                                 EUR
+    NETTOBETRAG                               ,95 EUR
+       Verwaltungsgesellsc : ALLFUNDS BANK S.A. CL/ NURIA Nº 57 ,28034 MADRID,MADRID,ESPAÑA
+       VERTRIEBSGESELLSCH. : OPEN BANK, S.A. AV DE CANTABRIA S/N 28660 - BOADILLA DEL MONTE MADRID
+       H A NDELSREG. ST STEUERIDENA28021079 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, D0033
+       G E SELLSCHAFT : STEUERIDEN V99999999 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, F0254GRÜNDUNGSDATUM 01.04.2005
