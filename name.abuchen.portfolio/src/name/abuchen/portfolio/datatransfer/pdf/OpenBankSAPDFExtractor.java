@@ -46,9 +46,9 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG))$")
+                .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("RÜCKERSTATTUNG"))
+                    if (v.get("type").equals("RÜCKERSTATTUNG") || v.get("type").equals("MAXIMAL VERFÜGBARE ERSTATTUNG"))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
