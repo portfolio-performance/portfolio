@@ -71,6 +71,78 @@ public class CSVPortfolioTransactionExtractorTest
     }
 
     @Test
+    public void testDeliveryTransactionWithNegativExponent()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2021-09-06", "10:38:20", "DE0007164600", "SAP.DE", "", "SAP SE",
+                                        "100", "EUR", "11", "10", "", "", "", "1,98e-06", "DELIVERY_INBOUND", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("SAP SE"));
+        assertThat(security.getIsin(), is("DE0007164600"));
+        assertThat(security.getWkn(), is(nullValue()));
+        assertThat(security.getTickerSymbol(), is("SAP.DE"));
+
+        PortfolioTransaction t = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findAny().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(t.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(t.getNote(), is("Notiz"));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-09-06T10:38")));
+        assertThat(t.getShares(), is(Values.Share.factorize(0.00000198)));
+        assertThat(t.getSecurity(), is(security));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 11_00)));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 10_00)));
+    }
+
+    @Test
+    public void testDeliveryTransactionWithPositivExponent()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2021-09-06", "10:38:20", "DE0007164600", "SAP.DE", "", "SAP SE",
+                                        "100", "EUR", "11", "10", "", "", "", "1,98E6", "DELIVERY_INBOUND", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("SAP SE"));
+        assertThat(security.getIsin(), is("DE0007164600"));
+        assertThat(security.getWkn(), is(nullValue()));
+        assertThat(security.getTickerSymbol(), is("SAP.DE"));
+
+        PortfolioTransaction t = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findAny().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(t.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(t.getNote(), is("Notiz"));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2021-09-06T10:38")));
+        assertThat(t.getShares(), is(Values.Share.factorize(1980000)));
+        assertThat(t.getSecurity(), is(security));
+        assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 11_00)));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 10_00)));
+    }
+
+    @Test
     public void testTransferTransaction()
     {
         Client client = new Client();

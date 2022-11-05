@@ -20,6 +20,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -100,6 +101,33 @@ public abstract class CSVExtractor implements Extractor
         if (value == null)
             return null;
 
+        String patternStr = "(?<base>[\\.,\\d\\-]+)(?<exponent>[e|E](\\-)?[\\d]+)"; //$NON-NLS-1$
+        Pattern pattern = Pattern.compile(patternStr);
+
+        Matcher m = pattern.matcher(value);
+        if (m.matches())
+        {
+            String language = "de"; //$NON-NLS-1$
+            String country = "DE"; //$NON-NLS-1$
+
+            int lastDot = m.group("base").lastIndexOf("."); //$NON-NLS-1$ //$NON-NLS-2$
+            int lastComma = m.group("base").lastIndexOf(","); //$NON-NLS-1$ //$NON-NLS-2$
+
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en"; //$NON-NLS-1$
+                country = "US"; //$NON-NLS-1$
+            }
+
+            // Converts the exponent notation to a double word
+            Double valueWithoutExponent = Double.parseDouble(PDFExtractorUtils
+                            .convertToNumberBigDecimal(m.group("base"), Values.Share, language, country).toPlainString() //$NON-NLS-1$
+                            + m.group("exponent")); //$NON-NLS-1$
+
+            value = String.format("%,.8f", valueWithoutExponent); //$NON-NLS-1$
+        }
+
         try
         {
             Number num = (Number) field2column.get(name).getFormat().getFormat()
@@ -112,7 +140,6 @@ public abstract class CSVExtractor implements Extractor
             throw new ParseException(MessageFormat.format(Messages.MsgErrorParseErrorWithGivenPattern, value,
                             field2column.get(name).getFormat().toPattern()), e.getErrorOffset());
         }
-
     }
 
     protected final LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
