@@ -14,9 +14,6 @@ import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
 import static name.abuchen.portfolio.util.HolidayName.FAMILY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
-import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_NIXON;
-import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
-import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_QUEEN_ELIZABETH_II;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
@@ -31,13 +28,13 @@ import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
-import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.STATE_FUNERAL;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.TERRORIST_ATTACKS;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
@@ -124,11 +121,11 @@ public class TradeCalendarManager
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         // one-time closings since 1990; see https://www.bcm-news.de/wp-content/uploads/closings-nyse.pdf
         // for a complete list from 1885 to 2011
-        tc.add(fixed(FUNERAL_OF_PRESIDENT_NIXON, Month.APRIL, 27).onlyIn(1994));
+        tc.add(fixed(STATE_FUNERAL, Month.APRIL, 27).onlyIn(1994)); // funeral of former president Nixon
         for (int d = 11; d <= 14; d++)
             tc.add(fixed(TERRORIST_ATTACKS, Month.SEPTEMBER, d).onlyIn(2001));
-        tc.add(fixed(FUNERAL_OF_PRESIDENT_REAGAN, Month.JUNE, 11).onlyIn(2004));
-        tc.add(fixed(REMEMBERANCE_OF_PRESIDENT_FORD, Month.JANUARY, 2).onlyIn(2007));
+        tc.add(fixed(STATE_FUNERAL, Month.JUNE, 11).onlyIn(2004)); // funeral of former president Reagan
+        tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 2).onlyIn(2007)); // funeral of former president Ford
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         CACHE.put(tc.getCode(), tc);
@@ -159,7 +156,7 @@ public class TradeCalendarManager
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(2020)); // moved for VE Day 75th anniversary
         tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 2).onlyIn(2022)); // moved for four-day weekend
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
-        tc.add(fixed(FUNERAL_OF_QUEEN_ELIZABETH_II, Month.SEPTEMBER, 19).onlyIn(2022)); // Funeral of Queen Elizabeth II
+        tc.add(fixed(STATE_FUNERAL, Month.SEPTEMBER, 19).onlyIn(2022)); // state funeral of Elizabeth II
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext, STANDARD_WEEKEND); //$NON-NLS-1$
