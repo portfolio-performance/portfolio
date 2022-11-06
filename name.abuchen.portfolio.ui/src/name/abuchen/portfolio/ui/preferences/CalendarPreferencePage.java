@@ -12,8 +12,11 @@ import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -68,6 +71,31 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         infoLabel = new Label(composite, SWT.WRAP);
         infoLabel.setFont(getFieldEditorParent().getFont());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(infoLabel);
+
+        new Label(composite, SWT.NONE)
+            .setText(Messages.LabelYear);
+
+        Spinner yearSpinner = new Spinner(composite, SWT.BORDER);
+        yearSpinner.setTextLimit(5);
+        yearSpinner.setIncrement(1);
+        yearSpinner.setPageIncrement(10);
+        // Maximum, minimum, and selection (value) must be set in that order:
+        yearSpinner.setMaximum(2150);
+        yearSpinner.setMinimum(1850);
+        yearSpinner.setSelection(year);
+        yearSpinner.addModifyListener(new ModifyListener()
+        {
+            @Override
+            public void modifyText(ModifyEvent e)
+            {
+                int newYear = yearSpinner.getSelection();
+                if (newYear != year)
+                {
+                    year = newYear;
+                    updateInfoLabel();
+                }
+            }
+        });
 
         updateInfoLabel();
     }
