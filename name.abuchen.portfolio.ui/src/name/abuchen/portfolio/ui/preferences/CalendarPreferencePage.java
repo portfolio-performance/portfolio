@@ -25,6 +25,8 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 public class CalendarPreferencePage extends FieldEditorPreferencePage
 {
     private Label infoLabel;
+    private int year;
+    private String calendar;
 
     public CalendarPreferencePage()
     {
@@ -60,12 +62,14 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
     protected void createInfo(Composite composite)
     {
-        int year = LocalDate.now().getYear();
-        infoLabel = new Label(composite, SWT.WRAP);
-        infoLabel.setText(createHolidayText(TradeCalendarManager.getDefaultInstance().getCode(), year));
-        infoLabel.setFont(getFieldEditorParent().getFont());
+        year = LocalDate.now().getYear();
+        calendar = TradeCalendarManager.getDefaultInstance().getCode();
 
+        infoLabel = new Label(composite, SWT.WRAP);
+        infoLabel.setFont(getFieldEditorParent().getFont());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(infoLabel);
+
+        updateInfoLabel();
     }
 
     @Override
@@ -75,11 +79,19 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
         if (event.getProperty().equals(FieldEditor.VALUE))
         {
-            int year = LocalDate.now().getYear();
             String newCode = (String) event.getNewValue();
-            infoLabel.setText(createHolidayText(newCode, year));
-            infoLabel.getParent().getParent().layout(true);
+            if (! newCode.equals(calendar))
+            {
+                calendar = newCode;
+                updateInfoLabel();
+            }
         }
+    }
+
+    private void updateInfoLabel()
+    {
+        infoLabel.setText(createHolidayText(calendar, year));
+        infoLabel.getParent().getParent().layout(true);
     }
 
     private static final DateTimeFormatter shortDayOfWeekFormatter = DateTimeFormatter.ofPattern("E"); //$NON-NLS-1$
