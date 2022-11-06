@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.preferences;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.osgi.framework.Version;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -29,7 +30,8 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
         store.setDefault(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, false);
-        store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, false);
+        store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, Platform.getOS().equals(Platform.OS_MACOSX)
+                        && Platform.getOSArch().equals(Platform.ARCH_X86_64) && compareOSVersion("13.0") >= 0); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
@@ -39,5 +41,26 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.BACKUP_MODE, BackupMode.getDefault().name());
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, ""); //$NON-NLS-1$
+    }
+
+    public static int compareOSVersion(String version)
+    {
+        String current = System.getProperty("os.version"); //$NON-NLS-1$
+        return compareVersionNumbers(current, version);
+    }
+
+    public static int compareVersionNumbers(String newer, String older)
+    {
+        try
+        {
+            Version n = new Version(newer);
+            Version o = new Version(older);
+
+            return n.compareTo(o);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return -1;
+        }
     }
 }
