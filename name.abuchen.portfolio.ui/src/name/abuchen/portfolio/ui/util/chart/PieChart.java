@@ -36,6 +36,8 @@ public class PieChart extends Chart
     private IPieChart.ChartType chartType;
     private ILabelProvider labelProvider;
 
+    private Font labelFont;
+
     public PieChart(Composite parent, IPieChart.ChartType chartType)
     {
         this(parent, chartType, new DefaultLabelProvider());
@@ -154,6 +156,14 @@ public class PieChart extends Chart
 
     protected void renderLabels(PaintEvent e)
     {
+        if (labelFont == null)
+        {
+            // lazily create font _after_ CSS has been applied
+
+            FontDescriptor fd = FontDescriptor.createFrom(e.gc.getFont());
+            labelFont = fd.increaseHeight(-2).createFont(getDisplay());
+        }
+
         for (ISeries<?> series : getSeriesSet().getSeries())
         {
             if (series instanceof ICircularSeries)
@@ -190,15 +200,13 @@ public class PieChart extends Chart
         int level = node.getLevel() - series.getRootNode().getLevel() + (chartType == IPieChart.ChartType.PIE ? 0 : 1);
 
         Font oldFont = gc.getFont();
-        gc.setForeground(Colors.WHITE);
+        gc.setForeground(Colors.getTextColor(node.getColor()));
+        gc.setFont(labelFont);
 
         int angleStart = node.getAngleBounds().x;
         int angleWidth = (int) (node.getAngleBounds().y * 0.5);
 
         Point outerEnd = calcPixelCoord(xAxis, yAxis, level * 0.85, angleStart + angleWidth);
-
-        FontDescriptor boldDescriptor = FontDescriptor.createFrom(gc.getFont()).setHeight(9);
-        gc.setFont(boldDescriptor.createFont(getDisplay()));
 
         String label = labelProvider.getLabel(node);
         if (label != null)

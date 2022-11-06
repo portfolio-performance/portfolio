@@ -67,12 +67,6 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     }
 
     @Override
-    protected boolean isHoverMode()
-    {
-        return true;
-    }
-
-    @Override
     void onFocusChanged(Object newFocus)
     {
         // Update highlighted node
