@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.util.Interval;
 
+@SuppressWarnings("nls")
 public class AllTimeHighTest
 {
     private Security securityOnePrice;
