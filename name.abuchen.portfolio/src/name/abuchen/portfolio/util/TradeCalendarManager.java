@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
 import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
+import static name.abuchen.portfolio.util.HolidayName.CORONATION;
 import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
@@ -158,6 +159,7 @@ public class TradeCalendarManager
         tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 2).onlyIn(2022)); // moved for four-day weekend
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
         tc.add(fixed(STATE_FUNERAL, Month.SEPTEMBER, 19).onlyIn(2022)); // state funeral of Elizabeth II
+        tc.add(fixed(CORONATION, Month.MAY, 8).onlyIn(2023)); // coronation of Charles III
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext, STANDARD_WEEKEND); //$NON-NLS-1$
