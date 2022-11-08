@@ -27,6 +27,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("RB Augsburger Land West eG"); //$NON-NLS-1$
         addBankIdentifier("Raiffeisenlandesbank"); //$NON-NLS-1$
         addBankIdentifier("Freisinger Bank eG"); //$NON-NLS-1$
+        addBankIdentifier("VR Bank"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -498,6 +499,21 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Kapitalertragsteuer 24,51 % auf 15,08 EUR 3,69- EUR
+                .section("tax", "currency").optional()
+                .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Solidaritätszuschlag 5,5 % auf 3,69 EUR 0,20- EUR
+                .section("tax", "currency").optional()
+                .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kirchensteuer 8 % auf 3,69 EUR 0,30- EUR
+                .section("tax", "currency").optional()
+                .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\d.]+,\\d+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 // Quellensteuer: -47,48 EUR 
                 .section("tax", "currency").optional()
                 .match("^Quellensteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
