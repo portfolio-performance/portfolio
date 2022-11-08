@@ -185,10 +185,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             //
             // 27-05-2022 07:34 26-05-2022 Valuta Creditering EUR 0,53 EUR 0,53
             // 27-05-2022 07:34 26-05-2022 Valuta Debitering 1,0758 USD -0,57 USD 0,00
+            //
+            // 30-09-2022 07:52 29-09-2022 Credito FX EUR 68,23 EUR 762,14
+            // 30-09-2022 07:52 29-09-2022 Prelievo FX 0,9840 USD -67,14 USD 0,00
             // @formatter:on
             Pattern pCurrencyFx = Pattern.compile("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}:[\\d]{2} "
                             + "(?<valuta>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                            + "(W.hrungswechsel|FX Debit|Valuta Debitering).* "
+                            + "(W.hrungswechsel|FX Debit|Valuta Debitering|Prelievo).* "
                             + "(?<fxRate>[\\.,'\\d]+) "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
@@ -214,10 +217,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // 27-05-2022 07:34 26-05-2022 Valuta Creditering EUR 0,53 EUR 0,53
             // 27-05-2022 07:34 26-05-2022 Valuta Debitering 1,0758 USD -0,57 USD 0,00
             //
+            // 30-09-2022 07:52 29-09-2022 Credito FX EUR 68,23 EUR 762,14
+            // 30-09-2022 07:52 29-09-2022 Prelievo FX 0,9840 USD -67,14 USD 0,00
             // @formatter:on
             Pattern pCurrencyBase = Pattern.compile("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} "
                             + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                            + "(W.hrungswechsel|FX Debit|Valuta Creditering).* "
+                            + "(W.hrungswechsel|FX Debit|Valuta Creditering|Credito).* "
                             + "(?<currency>[\\w]{3}) "
                             + "(\\-)?(?<amount>[\\.,'\\d]+) "
                             + "[\\w]{3}.*$");
@@ -343,8 +348,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // Data Ora | Data Valore | Prodotto | ISIN | Descrizione  | Borsa Variazioni | Saldo
         // -------------------------------------
         // 05-08-2019 00:09 05-08-2019 Auszahlung EUR -1.000,00 EUR 1.445,06
+        // 20-04-2022 17:30 21-04-2022 Prelievo flatex EUR -1.046,92 EUR 1.411,80
         // @formatter:on
-        Block blockRemoval = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) Auszahlung [\\w]{3} \\-[\\.,'\\d]+ [\\w]{3} [\\.,'\\d]+$");
+        Block blockRemoval = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (Auszahlung|Prelievo flatex) [\\w]{3} \\-[\\.,'\\d]+ [\\w]{3} [\\.,'\\d]+$");
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>()
 
@@ -357,7 +363,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>Auszahlung) "
+                                        + "(?<note>(Auszahlung|Prelievo flatex)) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "\\-(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
@@ -439,7 +445,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // Gross amount in EUR: (1,74 * 0,89) + (0,52 * 0,89) + (0,08 * 0,89) = 2,0826 EUR
         // @formatter:on
         Block blockDividends = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
-                        + "(Dividende|Dividend(?! Tax)|Fondsaussch.ttung) "
+                        + "(Dividende|Dividend(?! Tax)|Fondsaussch.ttung|Dividendo) "
                         + ".*$");
         type.addBlock(blockDividends);
         blockDividends.set(new Transaction<AccountTransaction>()
@@ -453,12 +459,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
                         // 05-08-2019 14:12 31-07-2019 MORGAN STANLEY USD LIQUIDITY FUND LU0904783114 Fondsausschüttung USD 1,64 USD 6.383,23
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
+                        // 31-03-2022 07:36 30-03-2022 ISHARES GLOB HIG YLD CORP BOND UCITS IE00B74DQ490 Dividendo USD 24,19 USD 24,19
                         .section("date", "time", "name", "isin", "currency", "amount").optional()
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(?<name>.*) "
                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                        + "(Dividende|Dividend|Fondsaussch.ttung) "
+                                        + "(Dividende|Dividend|Fondsaussch.ttung|Dividendo) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
@@ -507,12 +514,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend Tax CAD -4.55 CAD -4.55
                         // 11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividendbelasting EUR -0,38 EUR 1,71
+                        // 12-11-2021 07:31 11-11-2021 APPLE INC. - COMMON ST US0378331005 Ritenuta sul dividendo USD -0,23 USD -0,23
                         .section("isin", "currencyTax", "tax").optional()
                         .match("^([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                                         + "(.*) "
                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*"
-                                        + "(Dividendensteuer|Dividend Tax|Dividendbelasting) "
+                                        + "(Dividendensteuer|Dividend Tax|Dividendbelasting|Ritenuta sul dividendo) "
                                         + "(?<currencyTax>[\\w]{3}) "
                                         + "\\-(?<tax>[\\.,'\\d]+) "
                                         + "[\\w]{3} "
@@ -641,9 +649,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 01-03-2021 18:47 28-02-2021 Interest EUR -0.88 EUR -1,644.64
         // 01-04-2021 21:00 31-03-2021 Flatex Interest EUR -0,15 EUR 117,98
         // 02-07-2021 07:41 30-06-2021 Flatex Interest Income EUR 0,00 EUR 0,00
+        // 02-11-2020 16:06 31-10-2020 Interesse EUR -0,01 EUR -2,51
         // @formatter:on
         Block blockInterest = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
-                        + "(Zinsen|Interest) "
+                        + "(Zinsen|Interest|Interesse) "
                         + ".*$");
         type.addBlock(blockInterest);
         blockInterest.set(new Transaction<AccountTransaction>()
@@ -657,7 +666,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "type", "amount")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(Flatex )?(Zinsen|Interest)( (f.r Leerverkauf|Income))?) "
+                                        + "(?<note>(Flatex )?(Zinsen|Interest|Interesse)( (f.r Leerverkauf|Income))?) "
                                         + "(?<currency>[\\w]{3})"
                                         + "(?<type>\\s(\\-)?)"
                                         + "(?<amount>[\\.,'\\d]+) "
