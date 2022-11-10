@@ -595,6 +595,8 @@ public class Messages extends NLS
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
     public static String LabelDescription;
+    public static String LabelDistanceFromATHPrice;
+    public static String LabelDistanceFromATHPerformance;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;
@@ -1089,7 +1091,6 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterDateReached;
-    public static String SecurityListFilterDistanceFromAth;
     public static String SecurityListFilterHideInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
@@ -1186,7 +1187,8 @@ public class Messages extends NLS
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
-    public static String TooltipAllTimeHigh;
+    public static String TooltipAllTimeHighPrice;
+    public static String TooltipAllTimeHighPerformance;
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;

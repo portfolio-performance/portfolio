@@ -13,7 +13,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
-public class AllTimeHighTest
+public class AllTimeHighPriceTest
 {
     private Security securityOnePrice;
     private Security securityTenPrices;
@@ -57,7 +57,7 @@ public class AllTimeHighTest
     public void testSecurityIsNull()
     {
         Interval interval = Interval.of(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
-        AllTimeHigh ath = new AllTimeHigh(null, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(null, interval);
 
         assertNull(ath.getDistance());
         assertNull(ath.getValue());
@@ -68,7 +68,7 @@ public class AllTimeHighTest
     public void testSecurityHasOnlyOnePrice()
     {
         Interval interval = Interval.of(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
-        AllTimeHigh ath = new AllTimeHigh(this.securityOnePrice, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityOnePrice, interval);
 
         assertNull(ath.getValue());
         assertNull(ath.getDistance());
@@ -79,7 +79,7 @@ public class AllTimeHighTest
     public void testAthValueFor10Prices()
     {
         Interval interval = Interval.of(securityTenPrices.getPrices().get(0).getDate(), LocalDate.now());
-        AllTimeHigh ath = new AllTimeHigh(this.securityTenPrices, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityTenPrices, interval);
 
         assertEquals(Long.valueOf(2133L), ath.getValue());
         assertEquals(-0.47444, ath.getDistance(), 0.00001);
@@ -90,7 +90,7 @@ public class AllTimeHighTest
     public void testAthValueFor7PricesWithDateGaps()
     {
         Interval interval = Interval.of(this.securitySevenPricesWithGaps.getPrices().get(0).getDate(), LocalDate.now());
-        AllTimeHigh ath = new AllTimeHigh(this.securitySevenPricesWithGaps, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securitySevenPricesWithGaps, interval);
 
         assertEquals(Long.valueOf(2062L), ath.getValue());
         assertEquals(-0.24005, ath.getDistance(), 0.00001);
@@ -101,7 +101,7 @@ public class AllTimeHighTest
     public void testAthValueFor10PricesForLargerInterval()
     {
         Interval interval = Interval.of(LocalDate.of(2021, 1, 1), LocalDate.of(2023, 12, 31));
-        AllTimeHigh ath = new AllTimeHigh(this.securityTenPrices, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityTenPrices, interval);
 
         assertEquals(Long.valueOf(2133L), ath.getValue());
         assertEquals(-0.47444, ath.getDistance(), 0.00001);
@@ -112,7 +112,7 @@ public class AllTimeHighTest
     public void testAthValueFor10PricesForLast2DaysInterval()
     {
         Interval interval = Interval.of(LocalDate.of(2022, 6, 10), LocalDate.of(2022, 6, 11));
-        AllTimeHigh ath = new AllTimeHigh(this.securityTenPrices, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityTenPrices, interval);
 
         assertEquals(Long.valueOf(1121L), ath.getValue());
         assertEquals(0, ath.getDistance(), 0.00001);
@@ -123,7 +123,7 @@ public class AllTimeHighTest
     public void testAthValueFor10PricesFor5DaysInterval()
     {
         Interval interval = Interval.of(LocalDate.of(2022, 6, 7), LocalDate.of(2022, 6, 10));
-        AllTimeHigh ath = new AllTimeHigh(this.securityTenPrices, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityTenPrices, interval);
 
         assertEquals(Long.valueOf(1500L), ath.getValue());
         assertEquals(-0.4, ath.getDistance(), 0.00001);
@@ -134,7 +134,7 @@ public class AllTimeHighTest
     public void testAthValueFor10PricesForFirst3DaysInterval()
     {
         Interval interval = Interval.of(LocalDate.of(2022, 1, 31), LocalDate.of(2022, 6, 4));
-        AllTimeHigh ath = new AllTimeHigh(this.securityTenPrices, interval);
+        AllTimeHighPrice ath = new AllTimeHighPrice(this.securityTenPrices, interval);
 
         assertEquals(Long.valueOf(699L), ath.getValue());
         assertEquals(0, ath.getDistance(), 0.00001);

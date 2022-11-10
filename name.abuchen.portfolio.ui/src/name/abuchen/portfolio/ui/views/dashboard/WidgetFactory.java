@@ -5,11 +5,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.stream.LongStream;
 
-import name.abuchen.portfolio.math.AllTimeHigh;
+import name.abuchen.portfolio.math.AllTimeHighPerformance;
+import name.abuchen.portfolio.math.AllTimeHighPrice;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
@@ -288,7 +291,9 @@ public enum WidgetFactory
 
     WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
 
-    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
+    
+    // Price-based ATH
+    DISTANCE_TO_ATH(Messages.LabelDistanceFromATHPrice, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
@@ -297,7 +302,7 @@ public enum WidgetFactory
 
                                         Security security = (Security) ds.getInstance();
 
-                                        Double distance = new AllTimeHigh(security, period).getDistance();
+                                        Double distance = new AllTimeHighPrice(security, period).getDistance();
                                         if (distance == null)
                                             return (double) 0;
 
@@ -311,17 +316,43 @@ public enum WidgetFactory
                                             return null;
 
                                         Security security = (Security) ds.getInstance();
-                                        AllTimeHigh ath = new AllTimeHigh(security, period);
+                                        AllTimeHighPrice ath = new AllTimeHighPrice(security, period);
                                         if (ath.getValue() == null)
                                             return null;
 
-                                        return MessageFormat.format(Messages.TooltipAllTimeHigh,
-                                                        period.getDays(), Values.Date.format(ath.getDate()),
+                                        return MessageFormat.format(Messages.TooltipAllTimeHighPrice,
+                                                        period.getDays(),
+                                                        ChronoUnit.DAYS.between(ath.getDate(), LocalDate.now()),
+                                                        Values.Date.format(ath.getDate()),
                                                         ath.getValue() / Values.Quote.divider(),
                                                         security.getSecurityPrice(LocalDate.now()).getValue()
                                                                         / Values.Quote.divider(),
                                                         Values.Date.format(security.getSecurityPrice(LocalDate.now())
                                                                         .getDate()));
+                                    }) //
+                                    .build()),
+
+    DISTANCE_TO_ATH_PERFORMANCE(Messages.LabelDistanceFromATHPerformance, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        OptionalDouble distance = new AllTimeHighPerformance(index).getDistance();
+                                        return distance.orElse(0);
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        AllTimeHighPerformance ath = new AllTimeHighPerformance(index);
+                                        Optional<LocalDate> optionalDate = ath.getDate();
+                                        if (optionalDate.isEmpty())
+                                            return null;
+
+                                        return MessageFormat.format(Messages.TooltipAllTimeHighPerformance,
+                                                        period.getDays(),
+                                                        ChronoUnit.DAYS.between(optionalDate.get(), LocalDate.now()),
+                                                        Values.Date.format(optionalDate.get()));
                                     }) //
                                     .build()),
 
