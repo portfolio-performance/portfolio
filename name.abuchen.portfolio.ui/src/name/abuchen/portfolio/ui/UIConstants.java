@@ -129,6 +129,11 @@ public interface UIConstants
         String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
 
         /**
+         * Add "p.a." to annualized return rates 
+         */
+        String DISPLAY_PA = "DISPLAY_PA"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */

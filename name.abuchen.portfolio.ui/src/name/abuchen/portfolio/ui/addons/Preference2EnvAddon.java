@@ -104,6 +104,13 @@ public class Preference2EnvAddon
     }
 
     @Inject
+    public void setDisplayPA(
+                    @Preference(value = UIConstants.Preferences.DISPLAY_PA) boolean displayPA)
+    {
+        FormatHelper.setDisplayPA(displayPA);
+    }
+
+    @Inject
     public void setTimePreset(@Preference(value = UIConstants.Preferences.PRESET_VALUE_TIME) String timePresetValue)
     {
         PresetValues.setTimePreset(timePresetValue);

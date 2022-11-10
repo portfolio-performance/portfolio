@@ -1043,6 +1043,7 @@ public class Messages extends NLS
     public static String PrefFinnhubAPIKey;
     public static String PrefLabelAlwaysDisplayCurrencyCode;
     public static String PrefLabelAutoSaveFrequency;
+    public static String PrefLabelDisplayPA;
     public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
