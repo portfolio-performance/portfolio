@@ -26,5 +26,8 @@ public class PresentationPreferencePage extends FieldEditorPreferencePage
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE, //
                         Messages.PrefLabelAlwaysDisplayCurrencyCode, getFieldEditorParent()));
+
+        addField(new BooleanFieldEditor(UIConstants.Preferences.DISPLAY_PER_ANNUM, //
+                        Messages.PrefLabelDisplayPA, getFieldEditorParent()));
     }
 }

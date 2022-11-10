@@ -11,8 +11,9 @@ public class FormatHelper
     private static String sharesDecimalPlaceholder = "000"; //$NON-NLS-1$
 
     private static int calculatedQuotePrecision = 2;
-    
+
     private static boolean alwaysDisplayCurrencyCode = false;
+    private static boolean displayPerAnnum = false;
 
     private FormatHelper()
     {
@@ -53,5 +54,15 @@ public class FormatHelper
     public static void setAlwaysDisplayCurrencyCode(boolean alwaysDisplayCurrencyCode)
     {
         FormatHelper.alwaysDisplayCurrencyCode = alwaysDisplayCurrencyCode;
+    }
+
+    public static boolean isDisplayPerAnnum()
+    {
+        return displayPerAnnum;
+    }
+
+    public static void setDisplayPerAnnum(boolean displayPerAnnum)
+    {
+        FormatHelper.displayPerAnnum = displayPerAnnum;
     }
 }

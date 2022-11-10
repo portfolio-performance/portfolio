@@ -104,6 +104,13 @@ public class Preference2EnvAddon
     }
 
     @Inject
+    public void setDisplayPA(
+                    @Preference(value = UIConstants.Preferences.DISPLAY_PER_ANNUM) boolean displayPA)
+    {
+        FormatHelper.setDisplayPerAnnum(displayPA);
+    }
+
+    @Inject
     public void setTimePreset(@Preference(value = UIConstants.Preferences.PRESET_VALUE_TIME) String timePresetValue)
     {
         PresetValues.setTimePreset(timePresetValue);

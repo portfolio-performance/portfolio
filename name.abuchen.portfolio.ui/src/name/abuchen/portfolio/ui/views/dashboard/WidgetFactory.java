@@ -54,7 +54,7 @@ public enum WidgetFactory
 
     TTWROR_ANNUALIZED(Messages.LabelTTWROR_Annualized, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
+                                    .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         return index.getFinalAccumulatedAnnualizedPercentage();
@@ -62,7 +62,7 @@ public enum WidgetFactory
 
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
+                                    .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
