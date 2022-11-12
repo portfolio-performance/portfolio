@@ -263,6 +263,28 @@ public abstract class Values<E>
                 return format.format(amount / divider());
         }
     };
+    
+    public static final class AmountWithOptionalCurrencyCode extends Values<Long>
+    {
+        private String currencyCode;
+        
+        public AmountWithOptionalCurrencyCode(String currencyCode) 
+        {
+            super("#,##0.00", 2); //$NON-NLS-1$
+            this.currencyCode = currencyCode;
+        }
+        
+        @Override
+        public String format(Long amount)
+        {
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else if(FormatHelper.alwaysDisplayCurrencyCode())
+                return String.format("%s %,.2f", currencyCode, amount / divider()); //$NON-NLS-1$
+            else
+                return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
+        }
+    }
 
     public static final Values<Long> Share = new Values<Long>("#,##0.########", 8) //$NON-NLS-1$
     {

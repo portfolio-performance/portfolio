@@ -146,6 +146,11 @@ public class DashboardData
         return converter;
     }
 
+    public String getMainCurrency()
+    {
+        return converter.getTermCurrency();
+    }
+
     public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);

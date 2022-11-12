@@ -33,7 +33,7 @@ public enum WidgetFactory
 
     TOTAL_SUM(Messages.LabelTotalSum, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
@@ -67,7 +67,7 @@ public enum WidgetFactory
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
@@ -78,7 +78,7 @@ public enum WidgetFactory
 
     DELTA(Messages.LabelDelta, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateDelta();
                                         return d.length > 0 ? d[d.length - 1] : 0L;
@@ -88,7 +88,7 @@ public enum WidgetFactory
 
     ABSOLUTE_DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteDelta();
                                         return d.length > 0 ? d[d.length - 1] : 0L;
@@ -98,7 +98,7 @@ public enum WidgetFactory
 
     SAVINGS(Messages.LabelPNTransfers, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).getTransferals();
                                         return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
@@ -109,7 +109,7 @@ public enum WidgetFactory
 
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateInvestedCapital();
                                         return d.length > 0 ? d[d.length - 1] : 0L;
@@ -119,7 +119,7 @@ public enum WidgetFactory
 
     ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                                    .with(new Values.AmountWithOptionalCurrencyCode(data.getMainCurrency())) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteInvestedCapital();
                                         return d.length > 0 ? d[d.length - 1] : 0L;
