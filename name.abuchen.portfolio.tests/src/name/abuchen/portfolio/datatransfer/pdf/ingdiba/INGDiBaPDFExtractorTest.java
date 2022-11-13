@@ -7,10 +7,12 @@ import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -2383,5 +2385,78 @@ public class INGDiBaPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+    
+    @Test
+    public void testGiroKontoauszug01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(30)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Dauerauftrag/Terminüberweisung"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-16T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Lastschrift"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-22T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-12T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Gutschrift"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-13T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.01)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("Gutschrift/Dauerauftrag"));
     }
 }

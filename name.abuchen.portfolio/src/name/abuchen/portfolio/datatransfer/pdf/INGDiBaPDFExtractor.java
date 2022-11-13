@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +53,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -384,6 +386,88 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 });
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug .* [\\d]{4}", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                    context.put("currency", m.group("currency"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Ueberweisung"
+                        + "|Dauerauftrag\\/Terminueberw\\."
+                        + "|Lastschrift) "
+                        + ".* \\-[\\.,\\d]+$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "note", "amount")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                        + "(?<note>Ueberweisung"
+                                        + "|Dauerauftrag\\/Terminueberw\\."
+                                        + "|Lastschrift) "
+                                        + ".* \\-(?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                            // Formatting some notes
+                            if (v.get("note").equals("Ueberweisung"))
+                                v.put("note", "Überweisung");
+
+                            if (v.get("note").equals("Dauerauftrag/Terminueberw."))
+                                v.put("note", "Dauerauftrag/Terminüberweisung");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Gutschrift" + "|Gutschrift\\/Dauerauftrag) "
+                        + ".* [\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "note", "amount")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                        + "(?<note>Gutschrift"
+                                        + "|Gutschrift\\/Dauerauftrag) "
+                                        + ".* (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
