@@ -44,7 +44,67 @@ public class MessagesTest
     }
 
     @Test
-    public void testExchnageLabels()
+    public void testHolidayNameLabels()
+    {
+        test("name.abuchen.portfolio.util.holiday-names"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesAssetClassesLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.assetclasses"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesIndustrySimpleLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.industry-simple"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesIndustryGICSLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.industry-gics"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesKommerLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.kommer"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesRegionsLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.regions"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesRegionsMSCILabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.regions-msci"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesSecurityTypeLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.security-type"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testMoneyCurrenciesPLabels()
+    {
+        test("name.abuchen.portfolio.money.currencies"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testEurostatHICPLabels()
+    {
+        test("name.abuchen.portfolio.online.impl.eurostathicp-labels"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testExchangeLabels()
     {
         test("name.abuchen.portfolio.online.impl.exchange-labels"); //$NON-NLS-1$
     }
