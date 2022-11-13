@@ -66,7 +66,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.94)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 00000000-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(468.43))));
@@ -108,7 +108,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(73.84)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(475.72))));
@@ -150,7 +150,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.75)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(476.01))));
@@ -192,7 +192,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.855)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(476.31))));
@@ -234,7 +234,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(78.80)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(479.35))));
@@ -276,7 +276,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60.75)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(479.98))));
@@ -318,7 +318,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.67)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(483.94))));
@@ -360,7 +360,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.373)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(489.27))));
@@ -402,7 +402,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(491.08))));
@@ -444,7 +444,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(110.20)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(704.42))));
@@ -486,7 +486,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90.68)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(960.67))));
@@ -528,7 +528,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.622)));
         assertThat(entry.getSource(), is("Kauf12.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(243.10))));
@@ -570,7 +570,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.04)));
         assertThat(entry.getSource(), is("Kauf13.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(464.86))));
@@ -612,7 +612,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-25T09:00:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80.00)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 36978407-25.7.2022"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1482.52))));
@@ -622,6 +622,258 @@ public class EasyBankAGPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.86 + 25.31 + 7.95))));
+    }
+
+    @Test
+    public void testWertpapierKauf15()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("AT0000815402"));
+        assertThat(security.getName(), is("UBM Development AG STAMMAKTIEN O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T09:04:16")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100.00)));
+        assertThat(entry.getSource(), is("Kauf15.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25095540 | Limit: 42,500000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4210.01))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4200.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.47 + 0.24 + 6.30))));
+    }
+
+    @Test
+    public void testWertpapierKauf16()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0006204407"));
+        assertThat(security.getName(), is("KUKA AG Inhaber-Aktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-27T09:11:22")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(27)));
+        assertThat(entry.getSource(), is("Kauf16.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25484466 | Limit: 73,400000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1997.80))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1981.80))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00 + 14.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf17()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US1912161007"));
+        assertThat(security.getName(), is("COCA-COLA CO., THE Registered Shares DL -,25"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-10-27T12:21:47")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
+        assertThat(entry.getSource(), is("Kauf17.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25456794 | Limit: 59,150000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(780.59))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(768.95))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.69 + 2.00 + 8.95))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("AT0000743059"));
+        assertThat(security.getName(), is("OMV AG AKTIEN O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-04T13:12:12")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
+        assertThat(entry.getSource(), is("Verkauf01.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25866072 | Limit: 51,520000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2482.91))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2584.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(93.23))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.67 + 0.24 + 5.95))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0006204407"));
+        assertThat(security.getName(), is("KUKA AG Inhaber-Aktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-10-27T11:15:57")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(27)));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25058391 | Limit: 83,100000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2155.68))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2243.70))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(72.02))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00 + 14.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US0231351067"));
+        assertThat(security.getName(), is("AMAZON.COM INC. Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-22T09:04:18")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
+        assertThat(entry.getSource(), is("Verkauf03.txt"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 25521770 | Stoplimit: 2.725,000000"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21414.65))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21648.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(178.20))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.19 + 2.00 + 51.96))));
     }
 
     @Test
@@ -1359,6 +1611,132 @@ public class EasyBankAGPDFExtractorTest
         account.setCurrencyCode(CurrencyUnit.EUR);
         Status s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende13()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("AT0000821103"));
+        assertThat(security.getName(), is("UNIQA Insurance Group AG Stamm-Aktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-07T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1200)));
+        assertThat(transaction.getSource(), is("Dividende13.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(478.50))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(660.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(181.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende14()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0005937007"));
+        assertThat(security.getName(), is("MAN SE Inhaber-Stammaktien o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
+        assertThat(transaction.getSource(), is("Dividende14.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.03))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.60))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.83 + 1.74))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende15()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US46625H1005"));
+        assertThat(security.getName(), is("JPMorgan Chase & Co. Registered Shares DL 1"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-02T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
+        assertThat(transaction.getSource(), is("Dividende15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.56))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.00 * 0.99975))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((2.00 + 2.40) * 0.99975))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(16.00))));
     }
 
     @Test

@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 02.07.2021
+Wir haben für Sie am 02.07.2021 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Verlusttopf Nr.: 111111111111
+Geschäftsart: Ertrag
+Bestand: Stk 60
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 60
+Titel: DE0005937007 MAN SE
+Inhaber-Stammaktien o.N.
+Dividende: 0,11 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Ertrag: 6,60 EUR
+Auslands-KESt neu: -0,83 EUR
+Quellensteuer: -1,74 EUR
+Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 02.07.2021 4,03 EUR
+Eingang vorbehalten
+QUSt pro Stück: 26,375%
+KESt-pflichtiges Wertpapier
+Extag: 30.06.2021
+Record-Tag: 01.07.2021
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2021070200762P02_a/4115
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 4.320,00 EUR
+Steuerrelevanter Anschaffungswert aktuell: 4.320,00 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt bezahlt: 461,49 EUR
+KESt bezahlt: 0,83 EUR
+Aktueller Stand KESt bezahlt: 462,32 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt Wien 1/23.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2021070200762P02_a/4116
