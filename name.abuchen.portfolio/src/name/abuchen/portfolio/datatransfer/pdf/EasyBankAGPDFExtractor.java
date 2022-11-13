@@ -38,7 +38,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Abrechnung (Dauerauftrag|Handel)");
+        DocumentType type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -48,14 +48,14 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)$", "^Diese Mitteilung wird nicht unterschrieben.*$");
+        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^Gesch.ftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag))$")
+                .match("^Gesch.ftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag)).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -75,25 +75,33 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Handelszeit: 13.6.2022 um 09:04:00 Uhr
-                .section("time").optional()
-                .match("^Handelszeit: .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
-                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                .oneOf(
+                                // Handelszeit: 13.6.2022 um 09:04:00 Uhr
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Schlusstag/-zeit: 05.07.2021 09:04:16
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Schlusstag\\/\\-zeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        )
 
-                // Handelszeit: 13.6.2022 um 09:04:00 Uhr
-                .section("date")
-                .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> {
-                    if (type.getCurrentContext().get("time") != null)
-                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                    else
-                        t.setDate(asDate(v.get("date")));
-                })
-
-                // Zugang: 6,94 Stk
-                .section("shares")
-                .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk.*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // Zugang: 6,94 Stk
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk.*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Zugang: Stk 100
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(Zugang|Abgang): Stk (?<shares>[\\.,\\d]+).*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // Zu Lasten IBAN AT00 0000 0000 0000 0000 -468,43 EUR 
                 .section("amount", "currency")
@@ -117,6 +125,44 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
+                .optionalOneOf(
+                                //  Auftrags-Nr.: 00000000-3.5.2017
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(?<note>Auftrags-Nr\\.: .*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                ,
+                                // Geschäftsart: Verkauf Auftrags-Nr.: 25866072 - 04.01.2022
+                                section -> section
+                                        .attributes("note")
+                                        .match("^.* (?<note>Auftrags-Nr\\.: .*) \\- .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        )
+
+                .optionalOneOf(
+                                //  Limit: Stoplimit: 2.725,000000
+                                section -> section
+                                        .attributes("note")
+                                        .match("^Limit: (?<note>.*: .*)$")
+                                        .assign((t, v) -> {
+                                            if (t.getPortfolioTransaction().getNote() == null)
+                                                t.setNote(trim(v.get("note")));
+                                            else
+                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note"))); //$NON-NLS-1$
+                                        })
+                                ,
+                                // Limit: 42,500000
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(?<note>Limit: .*)$")
+                                        .assign((t, v) -> {
+                                            if (t.getPortfolioTransaction().getNote() == null)
+                                                t.setNote(trim(v.get("note")));
+                                            else
+                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note"))); //$NON-NLS-1$
+                                        })
+                        )
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -125,10 +171,10 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Abrechnung Ereignis");
+        DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Gesch.ftsart: Ertrag$", "^Diese Mitteilung wird nicht unterschrieben.*$");
+        Block block = new Block("^Gesch.ftsart: Ertrag.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -143,7 +189,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
-                .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -151,40 +197,83 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // 100 Stk
-                .section("shares")
-                .match("^(?<shares>[\\.,\\d]+) Stk.*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // 100 Stk
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) Stk.*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Bestand: Stk 1.200
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Bestand: Stk (?<shares>[\\.,\\d]+).*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
-                // Valuta 5.5.2022
-                .section("date")
-                .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .oneOf(
+                                // Valuta 5.5.2022
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                ,
+                                // Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
 
                 // Zu Gunsten IBAN AT12 1234 1234 1234 1234 123,75 EUR 
                 .section("amount", "currency")
-                .match("^Zu Gunsten .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Ertrag: 0,279 USD 
-                // Bruttoertrag: 336,16 USD 
-                // Devisenkurs: 1,06145 (11.5.2022) 316,70 EUR 
-                .section("termCurrency","fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
-                .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
-                .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                .optionalOneOf(
+                                // Ertrag: 0,279 USD 
+                                // Bruttoertrag: 336,16 USD 
+                                // Devisenkurs: 1,06145 (11.5.2022) 316,70 EUR
+                                section -> section
+                                        .attributes("termCurrency","fxGross", "fxCurrency", "exchangeRate", "currency")
+                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Dividende: 1 USD
+                                // Ertrag: 16,00 USD
+                                // Devisenkurs: 0,99975 (31.10.2022) 11,60 EUR
+                                section -> section
+                                        .attributes("termCurrency", "fxGross", "fxCurrency", "exchangeRate", "currency")
+                                        .match("^Dividende: [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^Ertrag: (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+
+                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(asExchangeRate(v));
+
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                        )
 
                 .wrap(TransactionItem::new);
 
@@ -255,6 +344,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // KESt aus Neubestand: -93,23 EUR
+                .section("tax", "currency").optional()
+                .match("^KESt aus Neubestand: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Auslands-KESt neu: -0,83 EUR
+                .section("tax", "currency").optional()
+                .match("^Auslands\\-KESt neu: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
                 .section("tax", "currency").optional()
                 .match("^KESt Ausl.ndische Dividende: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
@@ -278,6 +377,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // Fremde Börsespesen: -3,47 EUR
+                .section("fee", "currency").optional()
+                .match("^Fremde B.rsespesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Fremde Settlementspesen: -0,24 EUR
+                .section("fee", "currency").optional()
+                .match("^Fremde Settlementspesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
                 // Fremde Spesen: -2,86 EUR 
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
@@ -286,6 +395,11 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 // Eigene Spesen: -1,28 EUR 
                 .section("fee", "currency").optional()
                 .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Devisenprovision: -0,04 EUR
+                .section("fee", "currency").optional()
+                .match("^Devisenprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Grundgebühr: -3,-- EUR 

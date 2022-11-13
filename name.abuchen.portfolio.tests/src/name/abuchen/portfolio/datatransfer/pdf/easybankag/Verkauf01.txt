@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 04.01.2022
+Wir haben für Sie am 04.01.2022 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Verlusttopf Nr.: 111111111111
+Geschäftsart: Verkauf Auftrags-Nr.: 25866072 - 04.01.2022
+Abgang: Stk 50
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 50
+Titel: AT0000743059 OMV AG
+AKTIEN O.N.
+Kurs: 51,68 EUR
+Verwahrart: SVK
+Positionsdaten: Loco: Wien_K
+Kurswert: 2.584,00 EUR
+KESt aus Neubestand: -93,23 EUR
+Fremde Börsespesen: -1,67 EUR
+Fremde Settlementspesen: -0,24 EUR
+Eigene Spesen: -5,95 EUR
+Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 06.01.2022 2.482,91 EUR
+Handelsplatz: WIENER BOERSE
+Eingang vorbehalten
+Schlusstag/-zeit: 04.01.2022 13:12:12
+Kassatag: 06.01.2022
+Limit: 51,520000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2022010400631P04_a/623
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 2.245,00 EUR
+Steuerrelevanter Veräußerungswert : 2.584,00 EUR
+Steuerpflichtiger Kursgewinn: 339,00 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand: 0,00 EUR
+KESt bezahlt: 93,23 EUR
+Aktueller Stand KESt bezahlt: 93,23 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2022010400631P04_a/624
