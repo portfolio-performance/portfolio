@@ -41,6 +41,20 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+    
+    RATIO(Messages.LabelRatio, Messages.LabelStatementOfAssets,
+                    (widget, data) -> IndicatorWidget.<Double>createForMultipleDataseries(widget, data, 2)
+                                    .addDataSeries(Messages.MenuSelectDataSeries, false, false, null)
+                                    .addDataSeries(Messages.LabelBase, false, false, null)
+                                    .with(Values.Percent2)
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds[0], period);
+                                        int length = index.getTotals().length;
+                                        PerformanceIndex base = data.calculate(ds[1], period);
+                                        int lengthBase = base.getTotals().length;
+                                        return (double) index.getTotals()[length - 1] / base.getTotals()[lengthBase - 1];
+                                    }) //
+                                    .build()),
 
     TTWROR(Messages.LabelTTWROR, Messages.ClientEditorLabelPerformance, // cumulative
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
