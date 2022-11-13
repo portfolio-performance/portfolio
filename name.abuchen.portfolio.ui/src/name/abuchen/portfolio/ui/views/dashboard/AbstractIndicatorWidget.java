@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig.DataSeriesConfigElement;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -35,6 +36,15 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
         super(widget, dashboardData);
 
         addConfig(new DataSeriesConfig(this, supportsBenchmarks, predicate));
+        addConfig(new ReportingPeriodConfig(this));
+    }
+
+    protected AbstractIndicatorWidget(Widget widget, DashboardData dashboardData,
+                    DataSeriesConfigElement[] dataSeriesConfigElements)
+    {
+        super(widget, dashboardData);
+
+        addConfig(new DataSeriesConfig(this, dataSeriesConfigElements));
         addConfig(new ReportingPeriodConfig(this));
     }
 

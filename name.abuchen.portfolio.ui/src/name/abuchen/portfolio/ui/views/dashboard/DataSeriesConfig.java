@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,13 +20,28 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSelectionDialog;
 
 public class DataSeriesConfig implements WidgetConfig
 {
+    public static class DataSeriesConfigElement
+    {
+        private final String message;
+        private final boolean isBenchmark;
+        private final Predicate<DataSeries> predicate;
+        private final boolean isEmptyAllowed;
+        
+        public DataSeriesConfigElement(String message, boolean isBenchmark, Predicate<DataSeries> predicate, boolean isEmptyAllowed)
+        {
+            this.message = message;
+            this.isBenchmark = isBenchmark;
+            this.predicate = predicate;
+            this.isEmptyAllowed = isEmptyAllowed;
+        }
+    }
+    
     private final WidgetDelegate<?> delegate;
-    private final boolean supportsBenchmarks;
+    private final DataSeriesConfigElement[] dataSeriesConfigElements;
     private final String label;
     private final Dashboard.Config configurationKey;
-    private final Predicate<DataSeries> predicate;
 
-    private DataSeries dataSeries;
+    private DataSeries[] dataSeries;
 
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
@@ -36,28 +52,64 @@ public class DataSeriesConfig implements WidgetConfig
     {
         this(delegate, supportsBenchmarks, false, predicate, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
     }
-
-    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
+    
+    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmark, boolean supportsEmptyDataSeries,
                     Predicate<DataSeries> predicate, String label, Dashboard.Config configurationKey)
     {
+        this(delegate, getSimpleDataSeriesConfigElements(supportsBenchmark, predicate), label, configurationKey);
+    }
+    
+    private static DataSeriesConfigElement[] getSimpleDataSeriesConfigElements(boolean supportsBenchmark, Predicate<DataSeries> predicate)
+    {
+
+        DataSeriesConfigElement[] dataSeriesConfigElements = new DataSeriesConfigElement[supportsBenchmark? 2 : 1];
+        dataSeriesConfigElements[0] = new DataSeriesConfigElement(Messages.MenuSelectDataSeries, false, predicate, false);
+        if(supportsBenchmark)
+            dataSeriesConfigElements[1] = new DataSeriesConfigElement(Messages.MenuSelectBenchmarkDataSeries, true, predicate, true);
+        return dataSeriesConfigElements;
+    }
+
+    public DataSeriesConfig(WidgetDelegate<?> delegate,  DataSeriesConfigElement[] dataSeriesConfigElements)
+    {
+        this(delegate, dataSeriesConfigElements, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+    }
+
+    protected DataSeriesConfig(WidgetDelegate<?> delegate, DataSeriesConfigElement[] dataSeriesConfigElements,
+                    String label, Dashboard.Config configurationKey)
+    {
         this.delegate = delegate;
-        this.supportsBenchmarks = supportsBenchmarks;
         this.label = label;
         this.configurationKey = configurationKey;
-        this.predicate = predicate;
+        this.dataSeriesConfigElements = dataSeriesConfigElements;
 
-        String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name());
-        if (uuid != null && !uuid.isEmpty())
-            dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
-        if (dataSeries == null && !supportsEmptyDataSeries)
-            dataSeries = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
-                            .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny()
-                            .orElseThrow(IllegalArgumentException::new);
+        dataSeries = new DataSeries[dataSeriesConfigElements.length];
+        
+        for(int i = 0; i < dataSeriesConfigElements.length; i++)
+        {
+            String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name()
+                            + indexToUUIDSuffix(i));
+            if (uuid != null && !uuid.isEmpty())
+                dataSeries[i] = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
+            if (dataSeries[i] == null && !dataSeriesConfigElements[i].isEmptyAllowed)
+                dataSeries[i] = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
+                                .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny()
+                                .orElseThrow(IllegalArgumentException::new);
+        }
     }
 
     public DataSeries getDataSeries()
     {
-        return dataSeries;
+        return dataSeries[0];
+    }
+
+    public DataSeries getDataSeries(int index)
+    {
+        return dataSeries[index];
+    }
+
+    public DataSeries[] getAllDataSeries()
+    {
+        return Arrays.copyOf(dataSeries, dataSeries.length);
     }
 
     @Override
@@ -68,22 +120,25 @@ public class DataSeriesConfig implements WidgetConfig
         // use configurationKey as contribution id to allow other context menus
         // to attach to this menu manager later
         MenuManager subMenu = new MenuManager(label, configurationKey.name());
-        subMenu.add(new LabelOnly(dataSeries != null ? dataSeries.getLabel() : "-")); //$NON-NLS-1$
+        for(int i = 0; i < dataSeriesConfigElements.length; i++)
+            subMenu.add(new LabelOnly(dataSeries[i] != null ? dataSeries[i].getLabel() : "-")); //$NON-NLS-1$
         subMenu.add(new Separator());
-        subMenu.add(new SimpleAction(Messages.MenuSelectDataSeries, a -> doAddSeries(false)));
-
-        if (supportsBenchmarks)
-            subMenu.add(new SimpleAction(Messages.MenuSelectBenchmarkDataSeries, a -> doAddSeries(true)));
+        for(int i = 0; i < dataSeriesConfigElements.length; i++)
+        {
+            int iFinal = i; 
+            subMenu.add(new SimpleAction(dataSeriesConfigElements[i].message, a ->
+                doAddSeries(iFinal, dataSeriesConfigElements[iFinal].isBenchmark)));
+        }
 
         manager.add(subMenu);
     }
 
-    private void doAddSeries(boolean showOnlyBenchmark)
+    private void doAddSeries(int index, boolean showOnlyBenchmark)
     {
         Stream<DataSeries> stream = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
                         .filter(ds -> ds.isBenchmark() == showOnlyBenchmark);
-        if (predicate != null)
-            stream = stream.filter(predicate);
+        if (dataSeriesConfigElements[index].predicate != null)
+            stream = stream.filter(dataSeriesConfigElements[index].predicate);
 
         List<DataSeries> list = stream.collect(Collectors.toList());
 
@@ -98,13 +153,13 @@ public class DataSeriesConfig implements WidgetConfig
         if (result.isEmpty())
             return;
 
-        dataSeries = result.get(0);
-        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
+        dataSeries[index] = result.get(0);
+        delegate.getWidget().getConfiguration().put(configurationKey.name() + indexToUUIDSuffix(index), dataSeries[index].getUUID());
 
         // construct label to indicate the data series (user can manually change
         // the label later)
         delegate.getWidget().setLabel(WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
-                        + dataSeries.getLabel());
+                        + getAllDataSeriesLabels());
 
         delegate.update();
         delegate.getClient().touch();
@@ -113,6 +168,39 @@ public class DataSeriesConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return label + ": " + (dataSeries != null ? dataSeries.getLabel() : "-"); //$NON-NLS-1$ //$NON-NLS-2$
+        String dataSeriesLabel = getAllDataSeriesLabels();
+        return label + ": " + (dataSeriesLabel.length() > 0 ? dataSeriesLabel : "-"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    private String getAllDataSeriesLabels() 
+    {
+        String dataSeriesLabel = ""; //$NON-NLS-1$
+        boolean first = true;
+        for(DataSeries series : dataSeries)
+        {
+            if(series != null)
+            {
+                if(!first)
+                {
+                    dataSeriesLabel += ", "; //$NON-NLS-1$
+                }
+                first = false;
+                dataSeriesLabel += series.getLabel();
+            }
+        }
+        return dataSeriesLabel;
+    }
+    
+    private String indexToUUIDSuffix(int index)
+    {
+        // Converts "0" to the empty string, necessary for backwards compatibility. //$NON-NLS-1$
+        if (index == 0)
+        {
+            return ""; //$NON-NLS-1$
+        }
+        else
+        {
+            return Integer.toString(index);
+        }
     }
 }
