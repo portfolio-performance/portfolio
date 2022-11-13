@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -23,18 +24,49 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
 {
+    public static class DataSeriesConfigSetup
+    {
+        private String label;
+        private boolean supportsBenchmark;
+        private Predicate<DataSeries> predicate;
+        private boolean supportsEmptyDataSeries;
+        
+        public DataSeriesConfigSetup(String label, boolean supportsBenchmark, Predicate<DataSeries> predicate,
+                        boolean supportsEmptyDataSeries)
+        {
+            this.label = label;
+            this.supportsBenchmark = supportsBenchmark;
+            this.predicate = predicate;
+            this.supportsEmptyDataSeries = supportsEmptyDataSeries;
+        }
+    }
+    
     @Inject
     protected AbstractFinanceView view;
 
     protected Label title;
     protected ColoredLabel indicator;
+    protected DataSeriesConfig[] dataSeriesConfigs;
 
     protected AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks,
                     Predicate<DataSeries> predicate)
     {
+        this(widget, dashboardData, new DataSeriesConfigSetup[] {new DataSeriesConfigSetup(Messages.LabelDataSeries,
+                        supportsBenchmarks, predicate, false)});
+    }
+
+    protected AbstractIndicatorWidget(Widget widget, DashboardData dashboardData,
+                    DataSeriesConfigSetup[] dataSeriesConfigSetups)
+    {
         super(widget, dashboardData);
 
-        addConfig(new DataSeriesConfig(this, supportsBenchmarks, predicate));
+        dataSeriesConfigs = new DataSeriesConfig[dataSeriesConfigSetups.length];
+        for(int i = 0; i < dataSeriesConfigSetups.length; i++)
+        {
+            dataSeriesConfigs[i] = new DataSeriesConfig(this, i, dataSeriesConfigSetups[i].supportsBenchmark,
+                            dataSeriesConfigSetups[i].supportsEmptyDataSeries, dataSeriesConfigSetups[i].predicate, dataSeriesConfigSetups[i].label);
+            addConfig(dataSeriesConfigs[i]);
+        }
         addConfig(new ReportingPeriodConfig(this));
     }
 
@@ -75,6 +107,28 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     @Override
     public void update(D data)
     {
+        // construct label to indicate the data series (user can manually change
+        // the label later)
+        getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
+                        + getAllDataSeriesLabels());
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
+    }
+    
+    private String getAllDataSeriesLabels() 
+    {
+        String dataSeriesLabel = ""; //$NON-NLS-1$
+        for(int i = 0; i < dataSeriesConfigs.length; i++)
+        {
+            DataSeries series = dataSeriesConfigs[i].getDataSeries();
+            if(series != null)
+            {
+                if(i > 0)
+                {
+                    dataSeriesLabel += ", "; //$NON-NLS-1$
+                }
+                dataSeriesLabel += series.getLabel();
+            }
+        }
+        return dataSeriesLabel;
     }
 }

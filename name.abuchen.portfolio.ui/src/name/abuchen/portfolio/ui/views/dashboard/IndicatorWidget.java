@@ -78,6 +78,76 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
             IndicatorWidget<N> indicatorWidget = new IndicatorWidget<>(widget, dashboardData, supportsBenchmarks,
                             predicate);
             indicatorWidget.setFormatter(formatter);
+            BiFunction<DataSeries[], Interval, N> newProvider = (ds, interval) -> provider.apply(ds[0], interval); 
+            indicatorWidget.setProvider(newProvider);
+            BiFunction<DataSeries[], Interval, String> newTooltip = (ds, intveral) -> tooltip.apply(ds[0], intveral);
+            indicatorWidget.setTooltip(newTooltip);
+            indicatorWidget.setValueColored(isValueColored);
+            return indicatorWidget;
+        }
+    }
+    public static class BuilderForMultipleDataseries<N extends Number>
+    {
+        private Widget widget;
+        private DashboardData dashboardData;
+        
+        private DataSeriesConfigSetup[] dataSeriesConfigElements;
+        private int counter;
+        
+        private Values<N> formatter;
+        private BiFunction<DataSeries[], Interval, N> provider;
+        private BiFunction<DataSeries[], Interval, String> tooltip;
+        private boolean isValueColored = true;
+
+        public BuilderForMultipleDataseries(Widget widget, DashboardData dashboardData, int numberOfDataSeries)
+        {
+            this.widget = widget;
+            this.dashboardData = dashboardData;
+            dataSeriesConfigElements = new DataSeriesConfigSetup[numberOfDataSeries];
+            counter = 0;
+        }
+        
+        BuilderForMultipleDataseries<N> addDataSeries(String label, boolean isBenchmark,
+                        boolean isEmptyAllowed, Predicate<DataSeries> predicate)
+        {
+            dataSeriesConfigElements[counter] = new DataSeriesConfigSetup(label, isBenchmark, predicate, isEmptyAllowed);
+            counter++;
+            return this;
+        }
+
+        BuilderForMultipleDataseries<N> with(Values<N> formatter)
+        {
+            this.formatter = formatter;
+            return this;
+        }
+
+        BuilderForMultipleDataseries<N> with(BiFunction<DataSeries[], Interval, N> provider)
+        {
+            this.provider = provider;
+            return this;
+        }
+
+        BuilderForMultipleDataseries<N> withTooltip(BiFunction<DataSeries[], Interval, String> tooltip)
+        {
+            this.tooltip = tooltip;
+            return this;
+        }
+
+        BuilderForMultipleDataseries<N> withColoredValues(boolean isValueColored)
+        {
+            this.isValueColored = isValueColored;
+            return this;
+        }
+
+        IndicatorWidget<N> build()
+        {
+            Objects.requireNonNull(formatter);
+            Objects.requireNonNull(provider);
+            if(counter != dataSeriesConfigElements.length)
+                throw new IllegalArgumentException("Not enouh data series configurations where provided"); //$NON-NLS-1$
+
+            IndicatorWidget<N> indicatorWidget = new IndicatorWidget<>(widget, dashboardData, dataSeriesConfigElements);
+            indicatorWidget.setFormatter(formatter);
             indicatorWidget.setProvider(provider);
             indicatorWidget.setTooltip(tooltip);
             indicatorWidget.setValueColored(isValueColored);
@@ -86,8 +156,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     }
 
     private Values<N> formatter;
-    private BiFunction<DataSeries, Interval, N> provider;
-    private BiFunction<DataSeries, Interval, String> tooltip;
+    private BiFunction<DataSeries[], Interval, N> provider;
+    private BiFunction<DataSeries[], Interval, String> tooltip;
     private boolean isValueColored = true;
 
     public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks,
@@ -95,10 +165,21 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     {
         super(widget, dashboardData, supportsBenchmarks, predicate);
     }
+    
+    public IndicatorWidget(Widget widget, DashboardData dashboardData, DataSeriesConfigSetup[] dataSeriesConfigElements)
+    {
+        super(widget, dashboardData, dataSeriesConfigElements);
+    }
 
     public static <N extends Number> Builder<N> create(Widget widget, DashboardData dashboardData)
     {
         return new IndicatorWidget.Builder<>(widget, dashboardData);
+    }
+
+    public static <N extends Number> BuilderForMultipleDataseries<N> createForMultipleDataseries(Widget widget,
+                    DashboardData dashboardData, int numberOfDataSeries)
+    {
+        return new IndicatorWidget.BuilderForMultipleDataseries<>(widget, dashboardData, numberOfDataSeries);
     }
 
     void setFormatter(Values<N> formatter)
@@ -106,12 +187,12 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         this.formatter = formatter;
     }
 
-    void setProvider(BiFunction<DataSeries, Interval, N> provider)
+    void setProvider(BiFunction<DataSeries[], Interval, N> provider)
     {
         this.provider = provider;
     }
 
-    void setTooltip(BiFunction<DataSeries, Interval, String> tooltip)
+    void setTooltip(BiFunction<DataSeries[], Interval, String> tooltip)
     {
         this.tooltip = tooltip;
     }
@@ -127,8 +208,10 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         Composite container = super.createControl(parent, resources);
 
         if (tooltip != null)
-            InfoToolTip.attach(indicator, () -> tooltip.apply(get(DataSeriesConfig.class).getDataSeries(),
+        {
+            InfoToolTip.attach(indicator, () -> tooltip.apply(getAllDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));
+        }
 
         return container;
     }
@@ -136,8 +219,14 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     @Override
     public Supplier<N> getUpdateTask()
     {
-        return () -> provider.apply(get(DataSeriesConfig.class).getDataSeries(),
+        return () -> provider.apply(getAllDataSeries(),
                         get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+    }
+    
+    private DataSeries[] getAllDataSeries()
+    {
+        return getAll(DataSeriesConfig.class).sorted((dsc1, dsc2) -> dsc1.getIndex() - dsc2.getIndex())
+                        .map(dsc-> dsc.getDataSeries()).toArray(DataSeries[]::new);
     }
 
     @Override

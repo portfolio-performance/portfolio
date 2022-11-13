@@ -24,20 +24,29 @@ public class DataSeriesConfig implements WidgetConfig
     private final String label;
     private final Dashboard.Config configurationKey;
     private final Predicate<DataSeries> predicate;
+    private final int index; // indicates the index among all DataSeriesConfigs for this widget.
 
     private DataSeries dataSeries;
 
+    // Use only when this is the only DataSeriesConfig for the widget
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
-        this(delegate, supportsBenchmarks, false, null, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+        this(delegate, 0, supportsBenchmarks, false, null, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
     }
 
+    // Use only when this is the only DataSeriesConfig for the widget
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, Predicate<DataSeries> predicate)
     {
-        this(delegate, supportsBenchmarks, false, predicate, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+        this(delegate, 0, supportsBenchmarks, false, predicate, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
     }
 
-    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
+    public DataSeriesConfig(WidgetDelegate<?> delegate, int index, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
+                    Predicate<DataSeries> predicate, String label)
+    {
+        this(delegate, index, supportsBenchmarks, supportsEmptyDataSeries, predicate, label, Dashboard.Config.DATA_SERIES);
+    }
+
+    protected DataSeriesConfig(WidgetDelegate<?> delegate,int index, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
                     Predicate<DataSeries> predicate, String label, Dashboard.Config configurationKey)
     {
         this.delegate = delegate;
@@ -45,8 +54,9 @@ public class DataSeriesConfig implements WidgetConfig
         this.label = label;
         this.configurationKey = configurationKey;
         this.predicate = predicate;
+        this.index = index;
 
-        String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name());
+        String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name() + indexToUUIDSuffix(index));
         if (uuid != null && !uuid.isEmpty())
             dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
         if (dataSeries == null && !supportsEmptyDataSeries)
@@ -99,20 +109,33 @@ public class DataSeriesConfig implements WidgetConfig
             return;
 
         dataSeries = result.get(0);
-        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
-
-        // construct label to indicate the data series (user can manually change
-        // the label later)
-        delegate.getWidget().setLabel(WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
-                        + dataSeries.getLabel());
+        delegate.getWidget().getConfiguration().put(configurationKey.name() + indexToUUIDSuffix(index), dataSeries.getUUID());
 
         delegate.update();
         delegate.getClient().touch();
+    }
+    
+    public int getIndex()
+    {
+        return index;
     }
 
     @Override
     public String getLabel()
     {
         return label + ": " + (dataSeries != null ? dataSeries.getLabel() : "-"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    private String indexToUUIDSuffix(int index)
+    {
+        // Converts "0" to the empty string, necessary for backwards compatibility.
+        if (index == 0)
+        {
+            return ""; //$NON-NLS-1$
+        }
+        else
+        {
+            return Integer.toString(index);
+        }
     }
 }

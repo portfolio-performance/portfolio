@@ -56,6 +56,11 @@ public abstract class WidgetDelegate<D>
                         .orElseThrow(IllegalArgumentException::new));
     }
 
+    public <C extends WidgetConfig> Stream<C> getAll(Class<C> type)
+    {
+        return config.stream().filter(c -> type.equals(c.getClass())).map(type::cast);
+    }
+
     public <C extends WidgetConfig> Optional<C> optionallyGet(Class<C> type)
     {
         return config.stream().filter(c -> type.equals(c.getClass())).findAny().map(type::cast);
