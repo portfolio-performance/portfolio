@@ -2370,7 +2370,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(30)));
         assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag/Terminüberw."));
+        assertThat(transaction.getNote(), is("Dauerauftrag/Terminüberweisung"));
 
         item = iter.next();
 
