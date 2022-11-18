@@ -117,11 +117,29 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Nominale Stück 14,00
-                // Nominale 11,00 Stück
-                .section("shares")
-                .match("^Nominale( St.ck)? (?<shares>[\\.,\\d]+)( St.ck)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // Nominale Stück 14,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale St.ck (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale 11,00 Stück
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale (?<shares>[\\.,\\d]+) St.ck$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale EUR 1.000,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale [\\w]{3} (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                        )
 
                 // Ausführungstag / -zeit 17.11.2015 um 16:17:32 Uhr
                 // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
@@ -176,6 +194,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Rückzahlung
                 .section("note").optional()
                 .match("^(?<note>R.ckzahlung)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
+                .section("note").optional()
+                .match("^(?<note>St.ckzinsen .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
@@ -235,11 +258,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$")
                 .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        // Percentage quotation, workaround for bonds
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));   
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // Valuta 15.12.2016

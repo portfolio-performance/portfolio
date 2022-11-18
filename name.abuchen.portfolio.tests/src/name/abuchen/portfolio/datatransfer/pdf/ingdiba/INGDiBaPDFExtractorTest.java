@@ -612,6 +612,49 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("XS2263517364"));
+        assertThat(security.getWkn(), is("A27DLG"));
+        assertThat(security.getName(), is("0,01 % Landwirtschaftliche Rentenbank Med.T.Nts.v.20(40)"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-16T14:40:15")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
+        assertThat(entry.getSource(), is("Kauf12.txt"));
+        assertThat(entry.getNote(), is("Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(615.57))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(609.15))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.42))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
