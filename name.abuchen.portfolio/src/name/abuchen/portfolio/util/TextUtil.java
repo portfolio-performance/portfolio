@@ -212,4 +212,14 @@ public final class TextUtil
 
         return json;
     }
+
+    public static String limit(String text, int length)
+    {
+        if (text == null)
+            return null;
+        
+        int l = text.length();
+        
+        return l <= length ? text : text.substring(0, length) + "…"; //$NON-NLS-1$
+    }
 }

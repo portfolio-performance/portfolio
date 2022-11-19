@@ -11,6 +11,8 @@ public class FormatHelper
     private static String sharesDecimalPlaceholder = "000"; //$NON-NLS-1$
 
     private static int calculatedQuotePrecision = 2;
+    
+    private static boolean alwaysDisplayCurrencyCode = false;
 
     private FormatHelper()
     {
@@ -41,5 +43,15 @@ public class FormatHelper
     public static int getCalculatedQuoteDisplayPrecision()
     {
         return calculatedQuotePrecision;
+    }
+
+    public static boolean alwaysDisplayCurrencyCode()
+    {
+        return alwaysDisplayCurrencyCode;
+    }
+
+    public static void setAlwaysDisplayCurrencyCode(boolean alwaysDisplayCurrencyCode)
+    {
+        FormatHelper.alwaysDisplayCurrencyCode = alwaysDisplayCurrencyCode;
     }
 }

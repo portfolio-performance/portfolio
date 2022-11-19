@@ -140,6 +140,14 @@ public class DataSeriesSet
                         Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
+                        Colors.GRAY.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
+                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
+        availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)

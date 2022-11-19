@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -160,9 +161,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // Amount debited to account 1960017000 Value: 2022-03-02 EUR 199.93
+                                // Amount credited to account 1209625007 Value: 2022-07-13 EUR 329.36
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^Amount debited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .match("^Amount (debited|credited) to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -229,6 +231,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                     if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("Lasten"))
                         t.setType(AccountTransaction.Type.TAXES);
+                })
+
+                // Dividendenabrechnung STORNO
+                .section("type").optional()
+                .match("^Dividendenabrechnung (?<type>STORNO)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("STORNO"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
                 })
 
                 // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
@@ -310,6 +320,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     // the "noTax" flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
                     return new TransactionItem(t);
                 });
 
@@ -517,6 +534,32 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 .section("note", "date", "amount")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Transaktionskostenpauschale o\\. MwSt\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block feesEnglishBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Ordergeb.hr [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [\\.,\\d]+ \\-$");
+        type.addBlock(feesEnglishBlock);
+        feesEnglishBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES);
+                    return t;
+                })
+
+                .section("note", "date", "amount")
+                .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     t.setDateTime(asDate(v.get("date")));

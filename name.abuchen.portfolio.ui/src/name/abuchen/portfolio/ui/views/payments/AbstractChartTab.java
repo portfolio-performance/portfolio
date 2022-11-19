@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -22,8 +24,8 @@ import org.swtchart.Range;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
 public abstract class AbstractChartTab implements PaymentsTab
 {
@@ -49,6 +51,14 @@ public abstract class AbstractChartTab implements PaymentsTab
 
     private LocalResourceManager resources;
     private Chart chart;
+
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        if (chart != null)
+            chart.redraw();
+    }
 
     protected abstract void createSeries();
 
@@ -97,6 +107,10 @@ public abstract class AbstractChartTab implements PaymentsTab
         {
             yAxis.getTick().setFormat(new ThousandsNumberFormat());
         }
+        else
+        {
+            yAxis.getTick().setFormat(new AmountNumberFormat());
+        }
 
         attachTooltipTo(chart);
 
@@ -105,11 +119,7 @@ public abstract class AbstractChartTab implements PaymentsTab
         return chart;
     }
 
-    protected void attachTooltipTo(Chart chart)
-    {
-        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
-        toolTip.enableCategory(true);
-    }
+    protected abstract void attachTooltipTo(Chart chart);
 
     protected Color getColor(int year)
     {

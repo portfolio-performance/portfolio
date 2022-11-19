@@ -28,6 +28,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("DB Privat- und Firmenkundenbank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
+        addBuySellPartialExecutionsTransaction();
         addDividendeTransaction();
         addAccountStatementTransaction();
     }
@@ -57,7 +58,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^Abrechnung: (?<type>Verkauf) von Wertpapieren$")
+                .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -91,10 +92,86 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                             )
 
-                
                 // Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 675,50
-                .section("amount", "currency").optional()
+                .section("amount", "currency")
                 .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(t -> {
+                    // If we have multiple entries in the document, with
+                    // fee and fee refunds, then the "noProvision" flag
+                    // must be removed.
+                    type.getCurrentContext().remove("noProvision");
+
+                    return new BuySellEntryItem(t);
+                });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellPartialExecutionsTransaction()
+    {
+        DocumentType type = new DocumentType("Abrechnung: (Kauf|Verkauf) von Wertpapieren \\/ Zusammenfassung von Teilausf.hrungen");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^[\\d]{1,2}\\. .* [\\d]{4}$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren \\/ Zusammenfassung von Teilausf.hrungen$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
+                // 444 1234567 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 1/2
+                // WKN 744850 Nominal 120
+                // ISIN DE0007448508 Mischkurs (EUR) 14,80
+                .section("name", "wkn", "isin", "currency")
+                .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) 1\\/[\\d]{1,2}$")
+                .match("^WKN (?<wkn>.*) Nominal [\\.,\\d]+$")
+                .match("^ISIN (?<isin>[\\w]{12}) Mischkurs \\((?<currency>[\\w]{3})\\) .*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // WKN 744850 Nominal 120
+                .section("shares")
+                .match("^.* Nominal (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
+                .section("time").optional()
+                .match("^(?<time>[\\d]{2}:[\\d]{2}) MEZ [\\d]+ [\\d]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$")
+                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                // Schlusstag 07.07.2022 Ordernummer 123545
+                .section("date")
+                .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> {
+                    if (type.getCurrentContext().get("time") != null)
+                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
+
+                // Gesamtbetrag
+                // EUR 9.613,77
+                .section("amount", "currency")
+                .find("Gesamtbetrag")
+                .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -142,10 +219,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Gutschrift mit Wert 15.12.2014 64,88 EUR
-                .section("date", "amount", "currency")
-                .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("date")
+                .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // Gutschrift mit Wert 15.12.2014 64,88 EUR
+                .section("amount", "currency")
+                .match("^Gutschrift mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
@@ -160,7 +241,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    
+
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 

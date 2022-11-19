@@ -2594,6 +2594,231 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testDividende12WithSecurityinEUR()
+    {
+        Security security = new Security("McDonald's Corp. Registered Shares DL-,01", CurrencyUnit.EUR);
+        security.setIsin("US5801351017");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-12-16T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
+        assertThat(transaction.getSource(), is("Dividende12.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.95))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.95 + (2.430 / 1.3841)))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.430 / 1.3841))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende13()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US74348T1025"));
+        assertThat(security.getWkn(), is("A0B746"));
+        assertThat(security.getName(), is("Prospect Capital Corp. Registered Shares DL -,001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-21T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10000)));
+        assertThat(transaction.getSource(), is("Dividende13.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450.84))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(605.57))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.83 + 60.57 + 3.33))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(600.00))));
+    }
+
+    @Test
+    public void testDividende13WithSecurityinEUR()
+    {
+        Security security = new Security("Prospect Capital Corp. Registered Shares DL -,001", CurrencyUnit.EUR);
+        security.setIsin("US74348T1025");
+        security.setWkn("A0B746");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-21T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10000)));
+        assertThat(transaction.getSource(), is("Dividende13.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(450.84))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(605.57))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.83 + 60.57 + 3.33))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende14()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US8288061091"));
+        assertThat(security.getWkn(), is("916647"));
+        assertThat(security.getName(), is("SIMON PROPERTY GROUP INC. Reg. Paired Shares DL-,0001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(850)));
+        assertThat(transaction.getSource(), is("Dividende14.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1119.09))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1516.31))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(227.45 + 148.29 + 8.14 + 13.34))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1487.50))));
+    }
+
+    @Test
+    public void testDividende14WithSecurityinEUR()
+    {
+        Security security = new Security("SIMON PROPERTY GROUP INC. Reg. Paired Shares DL-,0001", CurrencyUnit.EUR);
+        security.setIsin("US8288061091");
+        security.setWkn("916647");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(850)));
+        assertThat(transaction.getSource(), is("Dividende14.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1119.09))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1516.31))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(227.45 + 148.29 + 8.14 + 13.34))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testEinbuchung01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
@@ -2734,84 +2959,65 @@ public class DABPDFExtractorTest
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(6L));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        Item item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
-        }
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
 
+        item = iter.next();
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
-        }
+        item = iter.next();
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1900.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1900.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-17T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Gutschrift"));
-        }
+        item = iter.next();
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        item = iter.next();
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
-
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-13T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-13T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze01.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
     }
 
     @Test
@@ -2832,69 +3038,54 @@ public class DABPDFExtractorTest
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        Item item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
-            assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Lastschrift"));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.02))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
-            assertThat(transaction.getNote(), is("Managementgebühr"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.02))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
+        assertThat(transaction.getNote(), is("Managementgebühr"));
 
-        if (iter.hasNext())
-        {
-            Item item = iter.next();
+        item = iter.next();
 
-            // assert transaction
-            AccountTransaction transaction = (AccountTransaction) item.getSubject();
-            assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-            assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.05))));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
-            assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
-            assertThat(transaction.getNote(), is("Managementgebühr"));
-        }
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.05))));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-29T00:00")));
+        assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
+        assertThat(transaction.getNote(), is("Managementgebühr"));
     }
 }

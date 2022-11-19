@@ -104,23 +104,14 @@ public class StackedTimelineChart extends Chart // NOSONAR
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
 
-        final LocalDate start = dates.get(0);
-        final LocalDate end = dates.get(dates.size() - 1);
+        LocalDate start = dates.get(0);
+        LocalDate end = dates.get(dates.size() - 1);
+        int days = Dates.daysBetween(start, end) + 1;
 
-        int totalDays = Dates.daysBetween(start, end) + 1;
-
-        e.gc.setForeground(getAxisSet().getAxes()[0].getGrid().getForeground());
-
-        LocalDate current = start.plusYears(1).withDayOfYear(1);
-        while (current.isBefore(end))
-        {
-            int days = Dates.daysBetween(start, current);
-            int y = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(String.valueOf(current.getYear()), y + 5, 5);
-
-            current = current.plusYears(1);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> {
+            int d = Dates.daysBetween(start, cursor);
+            return xAxis.getPixelCoordinate(d * range.upper / days);
+        });
     }
 
     @Override

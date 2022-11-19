@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -8,9 +9,11 @@ import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.stream.LongStream;
 
+import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
@@ -25,6 +28,8 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 public enum WidgetFactory
 {
     HEADING(Messages.LabelHeading, Messages.LabelCommon, HeadingWidget::new),
+
+    DESCRIPTION(Messages.LabelDescription, Messages.LabelCommon, DescriptionWidget::new),
 
     TOTAL_SUM(Messages.LabelTotalSum, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
@@ -253,6 +258,72 @@ public enum WidgetFactory
     LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
+
+    LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.LabelCommon, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Quote) //
+                                    .with((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return 0L;
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        return security.getSecurityPrice(LocalDate.now()).getValue();
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .with(ds -> ds.getInstance() instanceof Security)
+                                    .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return ""; //$NON-NLS-1$
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        return MessageFormat.format(Messages.TooltipSecurityLatestPrice,
+                                                        security.getName(),
+                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now()).getDate())
+                                                        );
+                                    }) //
+                                    .build()),
+
+    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
+
+    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return (double) 0;
+
+                                        Security security = (Security) ds.getInstance();
+
+                                        Double distance = new AllTimeHigh(security, period).getDistance();
+                                        if (distance == null)
+                                            return (double) 0;
+
+                                        return distance;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .with(ds -> ds.getInstance() instanceof Security) //
+                                    .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return null;
+
+                                        Security security = (Security) ds.getInstance();
+                                        AllTimeHigh ath = new AllTimeHigh(security, period);
+                                        if (ath.getValue() == null)
+                                            return null;
+
+                                        return MessageFormat.format(Messages.TooltipAllTimeHigh,
+                                                        period.getDays(), Values.Date.format(ath.getDate()),
+                                                        ath.getValue() / Values.Quote.divider(),
+                                                        security.getSecurityPrice(LocalDate.now()).getValue()
+                                                                        / Values.Quote.divider(),
+                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now())
+                                                                        .getDate()));
+                                    }) //
+                                    .build()),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);

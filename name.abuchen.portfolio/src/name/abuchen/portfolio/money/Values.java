@@ -28,13 +28,17 @@ public abstract class Values<E>
         @Override
         public String format(Money amount)
         {
-            return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
+            if (DiscreetMode.isActive())
+                return amount.getCurrencyCode() + " " + DiscreetMode.HIDDEN_AMOUNT; //$NON-NLS-1$
+            else
+                return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
         }
 
         public String format(Money amount, String skipCurrencyCode)
         {
-            if (skipCurrencyCode.equals(amount.getCurrencyCode()))
-                return String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
+            if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
+                return DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+                                : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
             else
                 return format(amount);
         }
@@ -84,7 +88,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -173,7 +177,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -205,7 +209,10 @@ public abstract class Values<E>
         @Override
         public String format(Long amount)
         {
-            return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
         }
     };
 
@@ -218,7 +225,10 @@ public abstract class Values<E>
         @Override
         public String format(Long share)
         {
-            return format.format(share / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(share / divider());
         }
     };
 
@@ -233,7 +243,10 @@ public abstract class Values<E>
         @Override
         public String format(Long amount)
         {
-            return format.format(amount / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(amount / divider());
         }
     };
 
@@ -244,7 +257,10 @@ public abstract class Values<E>
         @Override
         public String format(Long amount)
         {
-            return format.format(amount / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(amount / divider());
         }
     };
 
@@ -255,7 +271,10 @@ public abstract class Values<E>
         @Override
         public String format(Long share)
         {
-            return format.format(share / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(share / divider());
         }
     };
 

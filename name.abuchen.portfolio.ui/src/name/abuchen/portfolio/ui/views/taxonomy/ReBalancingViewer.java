@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 
 import javax.inject.Inject;
@@ -12,8 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;

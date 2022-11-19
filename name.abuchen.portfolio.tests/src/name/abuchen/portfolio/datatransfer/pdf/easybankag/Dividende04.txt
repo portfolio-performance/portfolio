@@ -1,0 +1,36 @@
+Abrechnung Ereignis
+easybank Service Center 36651740-17.5.2022
+BAWAG P.S.K. AG Depot-Nr.: 35955489806
+Wiedner Gürtel 11 Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 17.5.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+200 Stk
+Titel: US7427181091  P R O C T E R  &  G AMBLE CO., THE          
+Registered Shares o.N.             
+Dividende: 0,9133 USD 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 182,66 USD 
+Quellensteuer US-Emittent: -54,80 USD 
+127,86 USD 
+Devisenkurs: 1,05005 (16.5.2022) 121,76 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 120,62 EUR 
+Valuta 17.5.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 21.4.2022
+Record-Tag: 22.4.2022
+Bemessungsgrundlage USt: -0,95 EUR
+QUSt pro Stück 30,00 %
+1.6.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+04603 Doknr.: ON00-036-0000000001

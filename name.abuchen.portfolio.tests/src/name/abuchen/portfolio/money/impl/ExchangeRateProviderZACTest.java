@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.money.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,9 +26,9 @@ public class ExchangeRateProviderZACTest
         ExchangeRateTimeSeries eur_zar = factory.getTimeSeries("EUR", "ZAR");
         assertThat(eur_zar.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("17.975")));
 
-        // inverse of default EUR -> GBP
-        ExchangeRateTimeSeries gbx_eur = factory.getTimeSeries("ZAC", "EUR");
-        assertThat(gbx_eur.lookupRate(LocalDate.now()).get().getValue(),
+        // inverse of default EUR -> ZAC
+        ExchangeRateTimeSeries zar_eur = factory.getTimeSeries("ZAC", "EUR");
+        assertThat(zar_eur.lookupRate(LocalDate.now()).get().getValue(),
                         comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("1797.5"), 12, RoundingMode.HALF_DOWN)));
 
         // ZAC -> ZAR
@@ -39,8 +39,9 @@ public class ExchangeRateProviderZACTest
         ExchangeRateTimeSeries zar_zac = factory.getTimeSeries("ZAR", "ZAC");
         assertThat(zar_zac.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
 
-        // ZAC -> EUR
+        // EUR -> ZAR -> ZAC
         // default value EUR -> ZAR is 17.975
+        // default value ZAR -> ZAC is 100.0
         double calculatedRate = 0.01d * (1 / 17.975d);
 
         ExchangeRateTimeSeries zac_eur = factory.getTimeSeries("ZAC", "EUR");

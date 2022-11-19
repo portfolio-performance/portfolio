@@ -63,7 +63,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shares Class A DL -,01
                 // Kurswert: -1.800,-- EUR
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) ([\\s]+)?(?<name>.*)$")
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert: [\\-\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
@@ -136,7 +136,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Kurs                     80,340000  KURSWERT               -98,01 EUR
                 .section("date", "year", "isin", "name", "shares", "currency")
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Kauf|Kauf aus Dauerauftrag|Verkauf) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$")
-                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) [\\s]+(?<shares>[\\.,\\d]+) STK$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [\\s]+(?<shares>[\\.,\\d]+) STK$")
                 .match("^.* KURSWERT [\\s]+(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setDate(asDate(v.get("date") + "." + v.get("year")));
@@ -197,7 +197,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Reg. Shares Class A DL -,01
                 // Dividende: 4,13 USD 
                 .section("isin", "name", "name1", "currency")
-                .match("^Titel: (?<isin>[\\w]{12}) ([\\s]+)?(?<name>.*)$")
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("Dividende: [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -280,7 +280,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // Kurs                      0,250000  ZINSERTRAG               11,25 EUR                
                 .section("date", "year", "amount", "isin", "name", "shares", "currency").optional()
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
-                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
                 .match("^.* ZINSERTRAG ([\\s]+)?(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
@@ -298,7 +298,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // DevKurs        1,195900/30.7.2021
                 .section("date", "year", "amount", "isin", "name", "shares", "fxGross", "fxCurrency", "exchangeRate").optional()
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
-                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
                 .match("^.* ZINSERTRAG ([\\s]+)?(\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
@@ -322,7 +322,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -358,11 +362,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
                 // Kurs                      0,000000  KEST                     -1,51 USD
                 // DevKurs        1,123200/2.1.2020
-                .section("date", "year", "gross", "isin", "name", "shares", "fxCurrency", "exchangeRate")
+                .section("date", "year", "gross", "isin", "name", "shares", "fxCurrency", "exchangeRate").optional()
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<gross>[\\.,\\d]+)(\\-)?$")
-                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
-                .match("^.*KEST ([\\s]+)?\\-[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
-                .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
+                .match("^.* KEST ([\\s]+)?\\-[\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
+                .match("^.*DevKurs ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)\\/.*$")
                 .assign((t, v) -> {
                     v.put("currency", v.get("fxCurrency"));
                     v.put("baseCurrency", asCurrencyCode(type.getCurrentContext().get("currency")));
@@ -383,6 +387,25 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
+                })
+
+                // 10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-76196684 09.11 5,18-
+                // ISIN IE00BYX2JD69 ISHSIV-MSCI WLD.SRI U.EOA              68,80900 STK
+                // Kurs                      0,000000  KEST                     -3,45 EUR
+                // Auslands-KESt            -1,73 EUR
+                .section("date", "year", "amount", "isin", "name", "shares").optional()
+                .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
+                .match("^.*KEST ([\\s]+)?\\-[\\.,\\d]+ [\\w]{3}$")
+                .match("^Auslands\\-KESt ([\\s]+)?\\-[\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                    t.setShares(asShares(v.get("shares")));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+
+                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 .wrap(t -> {
@@ -414,7 +437,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // KEST                    159,57 EUR
                 .section("date", "note", "year", "amount", "isin", "name", "currency")
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>KESt\\-Verlustausgleich) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
-                .match("^ISIN (?<isin>[\\w]{12}) (?<name>.*)$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^KEST ([\\s]+)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date") + "." + v.get("year")));

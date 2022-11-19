@@ -1,13 +1,8 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,22 +27,11 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart // NOSONAR
 {
-
-    /**
-     * pixel threshold below which sparse label mode is used. The value is a bit arbitrary, but should be fine.
-     */
-    private static final int SPARSE_LABEL_MODE_PIXEL_THRESHOLD = 320;
-    
-    /**
-     * Minimum label width in pixels. Used to suppress last x-axis labels that are too short to be useful.
-     */
-    private static final int MIN_LABEL_WIDTH = 50;
 
     private static class MarkerLine
     {
@@ -84,27 +68,6 @@ public class TimelineChart extends Chart // NOSONAR
         public long getTimeMillis()
         {
             return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
-        }
-    }
-
-    public static class ThousandsNumberFormat extends Format
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
-        {
-            if (!(obj instanceof Number))
-                throw new IllegalArgumentException();
-
-            return toAppendTo.append(Values.Thousands.format(((Number) obj).doubleValue()));
-        }
-
-        @Override
-        public Object parseObject(String source, ParsePosition pos)
-        {
-            pos.setErrorIndex(0);
-            return null;
         }
     }
 
@@ -263,87 +226,8 @@ public class TimelineChart extends Chart // NOSONAR
         LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
         LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
 
-        LocalDate cursor = start.getDayOfMonth() == 1 ? start : start.plusMonths(1).withDayOfMonth(1);
-        Period period;
-        DateTimeFormatter format;
-
-        long days = ChronoUnit.DAYS.between(start, end);
-        
-        if (e.width > SPARSE_LABEL_MODE_PIXEL_THRESHOLD)
-        {
-            if (days < 250)
-            {
-                period = Period.ofMonths(1);
-                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
-            }
-            else if (days < 800)
-            {
-                period = Period.ofMonths(3);
-                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
-            }
-            else if (days < 1200)
-            {
-                period = Period.ofMonths(6);
-                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
-            }
-            else
-            {
-                period = Period.ofYears(days > 5000 ? 2 : 1);
-                format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-    
-                if (cursor.getMonthValue() > 1)
-                    cursor = cursor.plusYears(1).withDayOfYear(1);
-            }
-        }
-        else
-        {
-            // Sparse labeling mode used in low width conditions.
-            // Its purpose is to ensure enough space between the labels to avoid overlays and ensure readability. 
-            // It is mainly relevant to charts embedded into dashboards with narrow columns.
-            if (days < 100)
-            {
-                period = Period.ofMonths(1);
-                format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
-            }   
-            else if (days < 400)
-            {
-                period = Period.ofMonths(3);
-                format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-                cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
-            }
-            else
-            {
-                period = Period.ofYears(1);
-                format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-
-                if (cursor.getMonthValue() > 1)
-                    cursor = cursor.plusYears(1).withDayOfYear(1);
-            }          
-        }
-
-        e.gc.setForeground(getTitle().getForeground());
-
-        int previousLabelExtend = -1;
-        int xMax = xAxis.getPixelCoordinate(xAxis.getRange().upper);
-        while (cursor.isBefore(end))
-        {
-            int x = xAxis.getPixelCoordinate(cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
-            e.gc.drawLine(x, 0, x, e.height);
-            
-            if (isLabelable(x, xMax, previousLabelExtend)) 
-            {
-                String labelText = format.format(cursor);
-                int currentLabelX = x + 5;
-                e.gc.drawText(labelText, currentLabelX, 5, true);
-                
-                int textExtend = e.gc.textExtent(labelText).x;
-                previousLabelExtend = currentLabelX + textExtend + 5;     // remember the total label extend 
-            }
-            
-            cursor = cursor.plus(period);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end,
+                        cursor -> xAxis.getPixelCoordinate(cursor.atStartOfDay(zoneId).toInstant().toEpochMilli()));
     }
 
     private void paintMarkerLines(PaintEvent e) // NOSONAR
@@ -465,18 +349,5 @@ public class TimelineChart extends Chart // NOSONAR
     public boolean setFocus()
     {
         return getPlotArea().setFocus();
-    }
-    
-    private boolean isLabelable(int currentX, int xMax, int previousLabelExtend)
-    {
-        // allow adding a text label to the vertical line, if 
-        //  a) it is the very first line at the beginning of the chart, or
-        //  b1) the new label fits to the right of the line, not exceeding the x-axis, and
-        //  b2) there is sufficient space between the label of the previous line and this new line
-        
-        if (previousLabelExtend == -1) 
-            return true;
-        
-        return currentX + MIN_LABEL_WIDTH <= xMax && currentX - previousLabelExtend >= 0;
     }
 }

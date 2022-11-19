@@ -60,16 +60,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                 // Titel: NO0003054108  M a r i n e  H a r v est ASA   
                 // Kurs: 140 NOK 
-                .section("isin", "name", "name1", "currency")
+                .section("isin", "name", "nameContinued", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
-                .match("^(?<name1>.*)$")
+                .match("^(?<nameContinued>.*)$")
                 .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Kurs"))
-                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Handelszeit: 11.5.2021
                 // Handelszeit: 30.6.2017 um 09:00:10 Uhr
@@ -141,16 +136,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 // Titel: NO0003054108  M a r i n e  H a r v est ASA                 
                 // Navne-Aksjer NK 7,50               
                 // Dividende: 3,2 NOK 
-                .section("isin", "name", "name1", "currency")
+                .section("isin", "name", "nameContinued", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
-                .match("^(?<name1>.*)$")
+                .match("^(?<nameContinued>.*)$")
                 .match("^(Dividende|Ertrag): (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Kurs"))
-                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 200 Stk
                 .section("shares")

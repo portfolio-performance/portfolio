@@ -548,7 +548,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?"
                                 + "|TWINT .*(ENDEN|DIENSTLEISTUNG)"
                                 + "|E\\-FINANCE .*\\-[\\d]+"
-                                + "|AUFTRAG DEBIT DIRECT)"
+                                + "|AUFTRAG DEBIT DIRECT"
+                                + "|.BERWEISUNG AUF KONTO)"
                                 + ") "
                                 + "(?<amount>[\\.,'\\d\\s]+) "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
@@ -572,6 +573,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
                     if ("LASTSCHRIFT".equals(v.get("note")))
                         v.put("note", "Lastschrift");
+
+                    if ("ÜBERWEISUNG AUF KONTO".equals(v.get("note")))
+                        v.put("note", "Überweisung");
 
                     if ("AUFTRAG DEBIT DIRECT".equals(v.get("note")))
                         v.put("note", "Auftrag DEBIT DIRECT");

@@ -1,0 +1,51 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+09.08.2022
+Vorname Nachname
+Strasse Hausnummer Vorname Nachname
+PLZ Ort Stamm-Nr.: XXXXX    Portfolio: 1
+Depot-Nr.: XXXXX
+ÖSTERREICH Vorgangs-Nr.: XXXXX
+Referenz-Nr.: XXXXX
+Dividendenabrechnung STORNO
+Ex-Tag: 16.05.2022
+Nominale ISIN: DE0005785604 WKN: 578560 Ausschüttung
+STK 10,672 Fresenius SE & Co. KGaA EUR 0,66 p.STK
+Bruttobetrag EUR 7,04
+Zu Gunsten Konto 1111111111 Valuta: 13.06.2022 EUR 7,04
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Dividendenabrechnung STORNO
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+inl. Div. EUR 7,04 EUR 7,04
+AbgSt inl. Div. Zahlstelle ohne KiSt EUR 7,04 EUR 7,04
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

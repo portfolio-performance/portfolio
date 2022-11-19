@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.views.SecurityListView;
@@ -71,12 +72,14 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
         container.setBackground(parent.getBackground());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new StyledLabel(container, SWT.NONE);
         title.setBackground(container.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
 
         title.setOpenLinkHandler(d -> {
             @SuppressWarnings("unchecked")

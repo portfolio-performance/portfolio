@@ -34,6 +34,11 @@ public interface UIConstants
         {
             String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$
         }
+
+        interface Global // NOSONAR
+        {
+            String DISCREET_MODE = "global/discreet-mode"; //$NON-NLS-1$
+        }
     }
 
     interface Context // NOSONAR
@@ -118,6 +123,12 @@ public interface UIConstants
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
 
         /**
+         * Preference key to display the currency code also for the reporting
+         * currency.
+         */
+        String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */
@@ -189,6 +200,16 @@ public interface UIConstants
          * Preference key for the absolute backup
          */
         String BACKUP_FOLDER_ABSOLUTE = "BACKUP_FOLDER_ABSOLUTE"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to import PDF files
+         */
+        String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to import CSV files
+         */
+        String CSV_IMPORT_PATH = "CSV_IMPORT_PATH"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR
@@ -197,6 +218,7 @@ public interface UIConstants
         String HEADING1 = "heading1"; //$NON-NLS-1$
         String HEADING2 = "heading2"; //$NON-NLS-1$
         String KPI = "kpi"; //$NON-NLS-1$
+        String TITLE = "title"; //$NON-NLS-1$
         String DATAPOINT = "datapoint"; //$NON-NLS-1$
     }
 

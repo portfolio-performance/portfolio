@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -400,6 +401,8 @@ public class IBFlexStatementExtractor implements Extractor
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
             transaction.setNote(element.getAttribute("description"));
+
+            PDFExtractorUtils.fixGrossValueBuySell().accept(transaction);
 
             return new BuySellEntryItem(transaction);
         };

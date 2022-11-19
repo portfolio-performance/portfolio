@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
+import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsCenteredInPie;
 import name.abuchen.portfolio.ui.views.IPieChart;
 
 public class HoldingsPieChartSWT implements IPieChart
@@ -40,7 +41,6 @@ public class HoldingsPieChartSWT implements IPieChart
     private class NodeData
     {
         AssetPosition position;
-        Double percentage;
         String percentageString;
         String shares;
         String valueSingle;
@@ -58,6 +58,7 @@ public class HoldingsPieChartSWT implements IPieChart
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent, IPieChart.ChartType.DONUT, this::getNodeLabel);
+        chart.addLabelPainter(new RenderLabelsCenteredInPie(chart));
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder((container, currentNode) -> {
@@ -93,9 +94,6 @@ public class HoldingsPieChartSWT implements IPieChart
             }
         });
 
-        chart.getTitle().setVisible(false);
-        chart.getLegend().setPosition(SWT.RIGHT);
-
         updateChart();
 
         return chart;
@@ -123,7 +121,6 @@ public class HoldingsPieChartSWT implements IPieChart
                             values.add(p.getValuation().getAmount() / Values.Amount.divider());
                             NodeData data = new NodeData();
                             data.position = p;
-                            data.percentage = p.getShare();
                             data.percentageString = Values.Percent2.format(p.getShare());
                             data.shares = Values.Share.format(p.getPosition().getShares());
                             data.value = Values.Money.format(p.getValuation());
@@ -201,9 +198,6 @@ public class HoldingsPieChartSWT implements IPieChart
     private String getNodeLabel(Node node)
     {
         NodeData nodeData = nodeDataMap.get(node.getId());
-        if (nodeData != null)
-            return nodeData.percentage > 0.025 ? nodeData.percentageString : null;
-        else
-            return null;
+        return nodeData != null ? nodeData.percentageString : null;
     }
 }

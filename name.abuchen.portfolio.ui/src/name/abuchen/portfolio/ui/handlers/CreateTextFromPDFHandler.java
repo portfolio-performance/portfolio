@@ -41,6 +41,7 @@ public class CreateTextFromPDFHandler
             inputFile.convertPDFtoText();
 
             String text = "PDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$
+            text += "\nPortfolio Performance Version: " + PortfolioPlugin.getDefault().getBundle().getVersion().toString(); //$NON-NLS-1$
             text += "\n-----------------------------------------\n"; //$NON-NLS-1$
             text += inputFile.getText().replace("\r","");   // CRLF to spac; //$NON-NLS-1$ //$NON-NLS-2$
 

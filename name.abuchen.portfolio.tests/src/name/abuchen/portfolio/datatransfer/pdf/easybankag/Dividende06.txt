@@ -1,0 +1,37 @@
+Abrechnung Ereignis
+easybank Service Center 36432058-31.5.2022
+BAWAG P.S.K. AG Depot-Nr.: 35955489806
+Wiedner Gürtel 11 Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 31.5.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+3.568,5778 Stk
+Titel: IE00B1XNHC34  i S h s I I - G l . C lean Energy U.ETF       
+Registered Shares o.N.             
+Fondsgesellschaft: iShares II PLC
+Ertrag: 0,031 USD 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 110,63 USD 
+110,63 USD 
+Devisenkurs: 1,07305 (25.5.2022) 103,10 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 101,96 EUR 
+Valuta 27.5.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 12.5.2022
+Record-Tag: 13.5.2022
+Bemessungsgrundlage USt: -0,95 EUR
+KESt auf inl. Dividende pro Fondsanteil (verlusttopfrelevant): 0,00 USD
+KESt auf intransparente Grundstücksgesellschaften (verlusttopfrelevant): 0,00 USD
+1.6.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+04605 Doknr.: ON00-036-0000000001

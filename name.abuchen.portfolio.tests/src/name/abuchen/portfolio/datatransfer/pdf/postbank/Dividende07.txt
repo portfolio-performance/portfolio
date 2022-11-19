@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 11999999
+ Kundennummer 11999999
+Gxxxx Kxxx Axxxx Kxxx
+ Abrechnungsnr. 72953370000
+Herrn und Frau Datum 17.08.2022
+Axxxx Kxxx und
+Gxxxx Kxxx
+Bxxxx
+Kxxxxxxxxxtr. 99a
+79999 Sxxxxx
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.430 FR.TEMP.INV.FDS -T.GL.BD FD LU0029871042 (971663)
+NAMENS-ANTEILE A(MDIS.)USD O.N
+Zahlbarkeitstag 16.08.2022 Ausschüttung pro St. 0,072000000 USD
+Bestandsstichtag 05.08.2022 Herkunftsland Luxemburg
+Ex-Tag 08.08.2022
+Geschäftsjahr 01.07.2022 - 30.06.2023
+Devisenkurs EUR / USD  1,0192
+Devisenkursdatum 17.08.2022
+Ausschüttung 102,96 USD 101,02+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 102,96 USD
+Umrechnung in EUR 101,02 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 101,02 EUR
+Anteilige Berechnungsgrundlage für Gxxxx Kxxx (50,00 %) entspricht 50,51 EUR
+Kapitalertragsteuer 25 % auf 50,51 EUR 12,63- EUR
+Solidaritätszuschlag 5,5 % auf 12,63 EUR 0,69- EUR
+Anteilige Berechnungsgrundlage für Axxxx Kxxxx (50,00 %) entspricht 50,51 EUR
+Kapitalertragsteuer 25 % auf 50,51 EUR 12,63- EUR
+Solidaritätszuschlag 5,5 % auf 12,63 EUR 0,69- EUR
+Ausmachender Betrag 74,38+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 18.08.2022 zu Gunsten des Kontos 99999999999 (IBAN DE70 9999 9999 9999 9999
+11), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0860.08180100.0000148ER03
+
+Seite 2
+Depotnummer 119999999
+Kundennummer 11999999
+Abrechnungsnr. 72953378330
+Datum 17.08.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 13,45 0,00 0,00 0,00 0,00 32.401,96
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.08180100.0000149ER03

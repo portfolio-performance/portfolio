@@ -8,8 +8,11 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
+import name.abuchen.portfolio.online.impl.DivvyDiarySearchProvider;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
+import name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
+import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
@@ -47,6 +50,7 @@ public class Preference2EnvAddon
     public void setFinnhubApiKey(@Preference(value = UIConstants.Preferences.FINNHUB_API_KEY) String finnhubApiKey)
     {
         ((FinnhubQuoteFeed) Factory.getQuoteFeedProvider(FinnhubQuoteFeed.ID)).setApiKey(finnhubApiKey);
+        Factory.getSearchProvider(FinnhubSearchProvider.class).setApiKey(finnhubApiKey);
     }
 
     @Inject
@@ -55,6 +59,7 @@ public class Preference2EnvAddon
                     @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
     {
         Factory.getDividendFeed(DivvyDiaryDividendFeed.class).setApiKey(divvyDiaryApiKey);
+        Factory.getSearchProvider(DivvyDiarySearchProvider.class).setApiKey(divvyDiaryApiKey);
     }
 
     @Inject
@@ -64,6 +69,7 @@ public class Preference2EnvAddon
     {
         ((EODHistoricalDataQuoteFeed) Factory.getQuoteFeedProvider(EODHistoricalDataQuoteFeed.ID))
                         .setApiKey(eodhistoricialdataApiKey);
+        Factory.getSearchProvider(EODHistoricalDataSearchProvider.class).setApiKey(eodhistoricialdataApiKey);
     }
 
     @Inject
@@ -88,6 +94,13 @@ public class Preference2EnvAddon
                     @Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
     {
         FormatHelper.setCalculatedQuoteDisplayPrecision(quotePrecision);
+    }
+
+    @Inject
+    public void setDisplayBaseCurrencyCode(
+                    @Preference(value = UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE) boolean alwaysDisplayCurrencyCode)
+    {
+        FormatHelper.setAlwaysDisplayCurrencyCode(alwaysDisplayCurrencyCode);
     }
 
     @Inject

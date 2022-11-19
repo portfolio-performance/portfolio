@@ -27,6 +27,7 @@ public class HeadingWidget extends WidgetDelegate<Object>
     {
         Composite heading = new Composite(parent, SWT.NONE);
         heading.setBackground(parent.getBackground());
+        heading.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
         FillLayout layout = new FillLayout();
         layout.marginWidth = 5;
         layout.marginHeight = 10;

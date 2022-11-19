@@ -176,9 +176,20 @@ public class ClientInput
         return exchangeRateProviderFacory;
     }
 
+    /**
+     * Returns the preferences store per data file.
+     */
     public PreferenceStore getPreferenceStore()
     {
         return preferenceStore;
+    }
+
+    /**
+     * Returns the eclipse preferences which exist per installation.
+     */
+    public IEclipsePreferences getEclipsePreferences()
+    {
+        return preferences;
     }
 
     public void savePreferences()
@@ -575,6 +586,13 @@ public class ClientInput
             exchangeRateProviderFacory.clearCache();
             listeners.forEach(ClientInputListener::onRecalculationNeeded);
         }
+    }
+
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        listeners.forEach(ClientInputListener::onRecalculationNeeded);
     }
 
     private void scheduleOnlineUpdateJobs()

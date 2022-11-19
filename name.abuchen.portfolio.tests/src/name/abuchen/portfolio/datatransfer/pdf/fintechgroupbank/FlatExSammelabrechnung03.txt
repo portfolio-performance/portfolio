@@ -1,0 +1,103 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0303502000001250497070
+Herrn
+xxxxx xxxxxxx
+xxxxxxxxxxx Str. xx
+xxxxxx xxxxxx
+          Frankfurt, 26.07.2019
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 0000000000
+Depotinhaber:     xxxxx xxxxxxx
+Nr.0000000000/1    Verkauf      DT.BOERSE COM. XETRA-GOLD (DE000A0S9GB0/A0S9GB)
+Ordervolumen  : 38,00 St.               Handelsplatz  :                  XETRA
+davon ausgef. : 38,00 St.               Schlusstag    :      25.07.2019, 09:04
+Kurs          : 41,1640 EUR             Kurswert      :           1.564,23 EUR
+Devisenkurs   :                         Provision     :               3,80 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :               2,38 EUR
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+Gewinn/Verlust: 95,23 EUR               grundlage     :              79,84 EUR
+Valuta        : 29.07.2019            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :           1.558,05 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,82 EUR
+                                Regulierung             :             1,49 EUR
+                                Schlussnoten            :             0,07 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    0000000000.
+______________________________________________________________________________
+                                                                     Seite 1/3
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001250497070 0113303500000101
+Nr.1000000000/1    Kauf                 XIAOMI CORP. CL.B (KYG9830T1067/A2JNY1)
+Ordervolumen  : 1.470,00 St.            Handelsplatz  :                 Berlin
+davon ausgef. : 1.470,00 St.            Schlusstag    :      25.07.2019, 09:09
+Kurs          : 1,0695 EUR              Kurswert      :           1.572,17 EUR
+Devisenkurs   :                         Provision     :               3,80 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               5,55 EUR
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Hongkong                Bemessungs-
+Gewinn/Verlust: 0,00 EUR                grundlage     :               0,00 EUR
+Valuta        : 29.07.2019            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1.581,52 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             1,26 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,67 EUR
+                                Schlussnoten            :             1,62 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    0000000000.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 0000000000
+Gewinne oder Verluste sind als private Veräußerungsgeschäfte nach § 23 Abs. 1
+Satz 1 Nr. 2 EStG grundsätzlich steuerpflichtig, wenn zwischen Anschaffung und
+Veräußerung/ Einlösung nicht mehr als ein Jahr liegt. Die Gewinne/ Verluste
+sind unter Beachtung der jährlichen Freigrenze nach § 23 Abs. 3 EStG
+eigenständig im Rahmen des steuerlichen Veranlagungsverfahrens zu deklarieren
+und mit dem persönlichen Einkommensteuersatz zu versteuern. Dies betrifft
+folgende Geschäfte:
+Nr.0000000000/1    Verkauf      DT.BOERSE COM. XETRA-GOLD (DE000A0S9GB0/A0S9GB)
+______________________________________________________________________________
+                                                                     Seite 2/3
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001250497070
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 3/3
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001250497070

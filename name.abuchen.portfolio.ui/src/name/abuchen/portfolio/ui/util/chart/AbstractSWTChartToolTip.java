@@ -28,9 +28,7 @@ public abstract class AbstractSWTChartToolTip implements Listener
         this.chart = chart;
 
         Composite plotArea = (Composite) chart.getPlotArea();
-        plotArea.addListener(SWT.MouseDown, this);
         plotArea.addListener(SWT.MouseMove, this);
-        plotArea.addListener(SWT.MouseUp, this);
         plotArea.addListener(SWT.Dispose, this);
     }
 
@@ -59,21 +57,10 @@ public abstract class AbstractSWTChartToolTip implements Listener
         switch (event.type)
         {
             case SWT.Dispose:
-            case SWT.MouseUp:
-                if (!isHoverMode())
-                {
-                    closeToolTip();
-                }
+                closeToolTip();
                 break;
             case SWT.MouseMove:
                 moveToolTip(event);
-                break;
-            case SWT.MouseDown:
-                if (!isHoverMode() && event.button == 1 && (event.stateMask & SWT.MOD1) != SWT.MOD1)
-                {
-                    isAltPressed = (event.stateMask & SWT.MOD3) == SWT.MOD3;
-                    showToolTip(event);
-                }
                 break;
             default:
                 break;
@@ -121,9 +108,6 @@ public abstract class AbstractSWTChartToolTip implements Listener
 
     private void moveToolTip(Event event)
     {
-        if (!isHoverMode() && (tip == null || tip.isDisposed()))
-            return;
-
         Object newTipFocus = getFocusObjectAt(event);
         if (newTipFocus == null)
         {
@@ -131,7 +115,7 @@ public abstract class AbstractSWTChartToolTip implements Listener
             onFocusChanged(newTipFocus);
             return;
         }
-        else if (isHoverMode() && (tip == null || tip.isDisposed()))
+        else if (tip == null || tip.isDisposed())
         {
             showToolTip(event);
             onFocusChanged(newTipFocus);
@@ -174,10 +158,5 @@ public abstract class AbstractSWTChartToolTip implements Listener
 
         Point pt = ((Composite) chart.getPlotArea()).toDisplay(x, y);
         return new Rectangle(pt.x, pt.y, size.x, size.y);
-    }
-
-    protected boolean isHoverMode()
-    {
-        return false;
     }
 }

@@ -64,7 +64,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug");
+        DocumentType type = new DocumentType("(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug|Wertpapierumtausch)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -74,16 +74,16 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(\\*[\\s]+)?(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug).*$");
+        Block firstRelevantLine = new Block("^(\\*[\\s]+)?(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug|Wertpapierumtausch).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(\\*[\\s]+)?(?<type>(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug)).*$")
+                .match("^(\\*[\\s]+)?(?<type>(Wertpapierkauf|Wertpapierverkauf|Wertpapierbezug|Wertpapierumtausch)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Wertpapierverkauf"))
+                    if (v.get("type").equals("Wertpapierverkauf") || v.get("type").equals("Wertpapierumtausch"))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -96,12 +96,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^Wertpapier-Bezeichnung .*$")
                 .match("^(?<name>([\\S]{1,}[\\s]{1})+) [\\s]{3,}(?<wkn>[\\w]{1,}).*$")
                 .match("^(?<nameContinued>.*) ([\\s]+)?(?<isin>[\\w]{12}).*$")
-                .match("^(([\\s]+)?Summe ([\\s]+)?)?St\\. ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}).*$")
+                .match("^(([\\s]+)?Summe ([\\s]+)?)?([\\s]+)?St\\. ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // // St.  1,000                EUR  1,000                                            
+                // St.  1,000                EUR  1,000                                            
                 .section("shares")
-                .match("^(([\\s]+)?Summe ([\\s]+)?)?St\\. ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?[\\w]{3}.*$")
+                .match("^(([\\s]+)?Summe ([\\s]+)?)?([\\s]+)?St\\. ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?[\\w]{3}.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelszeit       : 09:04 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft) 
@@ -317,15 +317,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         )
 
                 // 000000000  EUR            00000000      15.12.2010         EUR             335,92
+                // Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
                 .section("date")
-                .match("^.* Zu Ihren Gunsten vor Steuern.*$")
+                .match("^.* Zu Ihren Gunsten( vor Steuern)?.*$")
                 .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+.*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Verrechnung über Konto                  Valuta       Zu Ihren Gunsten vor Steuern
                 // 0000000 00     EUR                      27.04.2009         EUR           1.546,13
+                // Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+                // 1111111 11     EUR                      15.05.2008         EUR             126,24  
                 .section("currency", "amount")
-                .match("^.* Zu Ihren Gunsten vor Steuern.*$")
+                .match("^.* Zu Ihren Gunsten( vor Steuern)?.*$")
                 .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -726,12 +729,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^Wertpapier-Bezeichnung .*$")
                 .match("^(?<name>([\\S]{1,}[\\s]{1})+) [\\s]{3,}(?<wkn>[\\w]{1,}).*$")
                 .match("^(?<nameContinued>.*) ([\\s]+)?(?<isin>[\\w]{12}).*$")
-                .match("^(([\\s]+)?Summe ([\\s]+)?)?St\\. ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}).*$")
+                .match("^(([\\s]+)?Summe ([\\s]+)?)?([\\s]+)?St\\. ([\\s]+)?[\\.,\\d]+ ([\\s]+)?(?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // St.  1,000                EUR  1,000                                            
                 .section("shares")
-                .match("^(([\\s]+)?Summe ([\\s]+)?)?St\\. ([\\s]+)?(?<shares>[\\.,\\d]+) .*$")
+                .match("^(([\\s]+)?Summe ([\\s]+)?)?([\\s]+)?St\\. ([\\s]+)?(?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Handelszeit       : 09:04 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft) 

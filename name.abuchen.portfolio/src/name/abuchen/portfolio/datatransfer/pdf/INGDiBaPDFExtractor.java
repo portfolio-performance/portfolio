@@ -62,7 +62,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk\\. Teil\\-\\/Bezugsr\\.)|R.ckzahlung)", jointAccount);
+        DocumentType type = new DocumentType("(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk\\. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -72,14 +78,20 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$");
+        Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
+                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Kauf aus Sparplan|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
                 .assign((t, v) -> {                    
                     if (v.get("type").equals("Verkauf")
                             || v.get("type").equals("Verk. Teil-/Bezugsr.")
@@ -105,11 +117,29 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Nominale Stück 14,00
-                // Nominale 11,00 Stück
-                .section("shares")
-                .match("^Nominale( St.ck)? (?<shares>[\\.,\\d]+)( St.ck)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // Nominale Stück 14,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale St.ck (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale 11,00 Stück
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale (?<shares>[\\.,\\d]+) St.ck$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale EUR 1.000,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale [\\w]{3} (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                        )
 
                 // Ausführungstag / -zeit 17.11.2015 um 16:17:32 Uhr
                 // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
@@ -139,11 +169,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Kurswert USD 1.503,75
+                // Zwischensumme USD 1.503,75
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
                 // Endbetrag zu Ihren Lasten EUR 1.335,07
                 .section("fxCurrency", "fxGross", "currency", "baseCurrency", "gross", "termCurrency", "exchangeRate").optional()
-                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .match("^Zwischensumme (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
                 .match("^.* Devisenkurs (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
@@ -164,6 +194,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Rückzahlung
                 .section("note").optional()
                 .match("^(?<note>R.ckzahlung)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
+                .section("note").optional()
+                .match("^(?<note>St.ckzinsen .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
@@ -223,11 +258,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$")
                 .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        // Percentage quotation, workaround for bonds
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));   
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // Valuta 15.12.2016

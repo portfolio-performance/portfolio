@@ -328,8 +328,30 @@ import name.abuchen.portfolio.model.TypedMap;
             return section;
         }
 
+        /**
+         * The document must contain one of the sections. The sections are
+         * matched in order of the definition and the first matching section is
+         * used. If no section is matching, the parsing is aborted.
+         */
         @SafeVarargs
         public final Transaction<T> oneOf(Function<Section<T>, Transaction<T>>... alternatives)
+        {
+            return internalOneOf(false, alternatives);
+        }
+
+        /**
+         * The document must contain at most one of the sections. The sections are
+         * matched in order of the definition and the first matching section is
+         * used. If no section is matching, parsing continues with the next sections.
+         */
+        @SafeVarargs
+        public final Transaction<T> optionalOneOf(Function<Section<T>, Transaction<T>>... alternatives)
+        {
+            return internalOneOf(true, alternatives);
+        }
+
+        @SafeVarargs
+        private final Transaction<T> internalOneOf(boolean isOptional, Function<Section<T>, Transaction<T>>... alternatives)
         {
             List<Section<T>> subSections = new ArrayList<>();
             for (Function<Section<T>, Transaction<T>> function : alternatives)
@@ -361,10 +383,12 @@ import name.abuchen.portfolio.model.TypedMap;
                             errors.add(ignore.getMessage());
                         }
                     }
-
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoneOfSubSectionsMatched,
-                                    String.valueOf(subSections.size()), String.join("; ", errors), lineNo + 1, //$NON-NLS-1$
-                                    lineNoEnd + 1));
+                    
+                    if (!isOptional)
+                        throw new IllegalArgumentException(MessageFormat.format(
+                                        Messages.MsgErrorNoneOfSubSectionsMatched, String.valueOf(subSections.size()),
+                                        String.join("; ", errors), lineNo + 1, //$NON-NLS-1$
+                                        lineNoEnd + 1));
                 }
             });
             return this;

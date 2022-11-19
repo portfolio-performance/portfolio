@@ -129,6 +129,7 @@ public class Messages extends NLS
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
+    public static String ColumnCountByYear;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -278,6 +279,9 @@ public class Messages extends NLS
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
+    public static String ColumnQuoteDistanceFromAthPercent;
+    public static String ColumnQuoteDistanceFromAthPercent_Description;
+    public static String ColumnQuoteDistanceFromAthPercent_Option;
     public static String ColumnQuoteFeedHistoric;
     public static String ColumnQuoteFeedLatest;
     public static String ColumnRealizedCapitalGains;
@@ -300,6 +304,7 @@ public class Messages extends NLS
     public static String ColumnStatus;
     public static String ColumnSubTotal;
     public static String ColumnSum;
+    public static String ColumnSumByYear;
     public static String ColumnSymbol;
     public static String ColumnTargetCurrency;
     public static String ColumnTargetCurrencyToolTip;
@@ -567,6 +572,7 @@ public class Messages extends NLS
     public static String FilterOnlyClosedTrades;
     public static String LabelCoinGeckoCoinId;
     public static String LabelCoinGeckoCoinIdHint;
+    public static String LabelCollapse;
     public static String LabelCollapseAll;
     public static String LabelColorSchema;
     public static String LabelColumns;
@@ -588,9 +594,11 @@ public class Messages extends NLS
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
+    public static String LabelDescription;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;
+    public static String LabelExpand;
     public static String LabelExpandAll;
     public static String LabelExpenses;
     public static String LabelError;
@@ -603,6 +611,8 @@ public class Messages extends NLS
     public static String LabelExchangeRate;
     public static String LabelExchangeRates;
     public static String LabelExport;
+    public static String LabelFees;
+    public static String LabelFeesAccumulated;
     public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;
@@ -713,6 +723,7 @@ public class Messages extends NLS
     public static String LabelSaving;
     public static String LabelSearch;
     public static String LabelSecurities;
+    public static String LabelSecurityLatestPrice;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
     public static String LabelSecurityCalendar;
@@ -815,12 +826,14 @@ public class Messages extends NLS
     public static String LabelYTD;
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
+    public static String MenuActivateDiscreetMode;
     public static String MenuAddAll;
     public static String MenuAddNewDashboardColumnLeft;
     public static String MenuAddNewDashboardColumnRight;
     public static String MenuApplyToAllWidgets;
     public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
+    public static String MenuChartShowYAxis;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
     public static String MenuChartXScrollDown;
@@ -829,6 +842,7 @@ public class Messages extends NLS
     public static String MenuChartXZoomOut;
     public static String MenuChartYZoomIn;
     public static String MenuChartYZoomOut;
+    public static String MenuChangeUrl;
     public static String MenuChooseClientFilter;
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
@@ -846,6 +860,7 @@ public class Messages extends NLS
     public static String MenuCreateAccountOrTransaction;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
+    public static String MenuDeactivateDiscreetMode;
     public static String MenuDeleteAllTransactions;
     public static String MenuDeleteDashboardColumn;
     public static String MenuDeleteWidget;
@@ -1026,6 +1041,7 @@ public class Messages extends NLS
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelAlwaysDisplayCurrencyCode;
     public static String PrefLabelAutoSaveFrequency;
     public static String PrefLabelEnableExperimentalFeatures;
     public static String PrefLabelNote;
@@ -1073,6 +1089,7 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldNotZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterDateReached;
+    public static String SecurityListFilterDistanceFromAth;
     public static String SecurityListFilterHideInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
@@ -1169,6 +1186,7 @@ public class Messages extends NLS
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
+    public static String TooltipAllTimeHigh;
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
@@ -1181,14 +1199,17 @@ public class Messages extends NLS
     public static String TooltipPortfolioTaxRate;
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
+    public static String TooltipSecurityLatestPrice;
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String Url;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
+    public static String Website;
     public static String BookmarkMenu_EditBookmarks;
     public static String FilterNotRetired;
     public static String MenuFilterTrades;

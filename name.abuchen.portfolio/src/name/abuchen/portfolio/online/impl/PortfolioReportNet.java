@@ -287,6 +287,12 @@ public class PortfolioReportNet
 
             return isDirty || !remote.isEmpty();
         }
+
+        @Override
+        public String getSource()
+        {
+            return "Porfolio Report"; //$NON-NLS-1$
+        }
     }
 
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$

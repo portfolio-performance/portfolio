@@ -44,7 +44,8 @@ public class PDFExtractorUtils
 
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.UK) }; //$NON-NLS-1$
 
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of(Locale.GERMANY, DATE_FORMATTER_GERMANY,
                     Locale.US, DATE_FORMATTER_US, Locale.UK, DATE_FORMATTER_UK);
@@ -57,7 +58,9 @@ public class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss a", Locale.UK) }; //$NON-NLS-1$
 
     private PDFExtractorUtils()
     {

@@ -83,7 +83,7 @@ import org.apache.hc.core5.util.Timeout;
  *  String html = new WebAccess("example.com", "/path/page.html")
  *                       .withScheme("http")
  *                       .addParameter("parameter", "value")
- *                       .addHeader("Content-Type", "application/json;chartset=UTF-8")
+ *                       .addHeader("Content-Type", "application/json;charset=UTF-8")
  *                       .addHeader("X-Response", "daily")
  *                       .addUserAgent("Mozilla/1.0N (Windows)")
  *                       .ignoreContentType(true)
@@ -117,8 +117,8 @@ public class WebAccess
     }
 
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom()
-                    .setConnectTimeout(Timeout.ofSeconds(2)) //
-                    .setResponseTimeout(Timeout.ofSeconds(2)) //
+                    .setConnectTimeout(Timeout.ofSeconds(5)) //
+                    .setResponseTimeout(Timeout.ofSeconds(20)) //
                     .setCookieSpec(StandardCookieSpec.STRICT) //
                     .build();
 

@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+Personnel Financial Affairs
+PFA Services
+Tel. 044-238 27 80
+UBS Wertschriftendepot CHF
+Depot-Nr. 292-123456.S1
+Herr Rubrik DEPOTNAME
+Max Mustermann
+Musterstrasse 3 Kunden-Nr. 123-456789
+1234 Musterhausen MWST-Nummer CHE-123.456.292 MWST
+Depotführungspreis Erstellt am 22. Juni 2021
+Abrechnung vom 01.04.2021 - 30.06.2021
+Position Basis Preis p.a. Betrag (CHF)
+Depotverwahrungspreis 71 095.00 CHF 0.35 % 62.21
+Fremdverwahrungspreis 64 676.00 CHF 0.20 % 32.33
+Bruttopreis 94.54
+Totalpreis Depotführung 94.54
+Mehrwertsteuer 94.54 CHF 7.70 % 7.28
+Depotführungspreis inkl. Steuern 101.82
+Zu Lasten Konto 292-123456.40R, Valuta 30. Juni 2021
+Freundliche Grüsse
+UBS Switzerland AG
+Seite 1 / 1
+CP1DFA01 / 025650 / JB9B4SALC39FB2CA00001 21.06.2021

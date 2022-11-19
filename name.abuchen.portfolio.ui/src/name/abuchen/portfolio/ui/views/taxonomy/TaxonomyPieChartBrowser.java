@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.text.MessageFormat;
+
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.json.simple.JSONObject;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;

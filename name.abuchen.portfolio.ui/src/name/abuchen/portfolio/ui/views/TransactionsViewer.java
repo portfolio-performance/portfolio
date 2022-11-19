@@ -304,19 +304,19 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new IsinColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new SymbolColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new WknColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 

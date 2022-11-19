@@ -1,0 +1,75 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Wertpapierabrechnung
+Verkauf
+Referenz-Nr 123452676
+ExAnte Ref-Nr 267633547
+Datum 06.12.2021
+Herrn Depot 1234567800
+Hans Muster Muster, Dipl. Ing.
+Straße 2 Hans
+12345 Berlin
+Betreuer Hans Wurst
+E-Mail Hans.Wurst@quirinprivatbank.de
+Seite 1 von 2
+Wertpapierbezeichnung iShs MSCI EM U.ETF USD (D) Registered Shares o.N.
+ISIN IE00B0M63177
+WKN A0HGWC
+Ausführungsplatz Frankfurt - Xetra
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Handelstag / Zeit 06.12.2021 16:52:15
+Nominal / Stück 325,0000 ST
+Kurs EUR 41,752
+Kurswert EUR 13.569,40
+Spesen * EUR - 0,81
+Abwicklungsgebühren * EUR - 8,50
+Bank-Provision EUR 0,00
+Courtage * EUR 0,00
+Kapitalertragsteuer EUR - 752,05
+Solidaritätszuschlag EUR - 41,36
+Ausmachender Betrag EUR 12.766,68
+Der Abrechnungsbetrag wird mit Valuta 08.12.2021 über Ihr Konto 1234567800 EUR gebucht.
+Keine Steuerbescheinigung!
+*Fremde Gebühren und Spesen
+Diesem Geschäft liegt keine Anlageberatung der Bank zugrunde.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: STEX / OrderType: S / Timestamp: 20211206 17:00:24
+Wertpapierabrechnung
+Verkauf
+Referenz-Nr 123452676
+Seite 2 von 2
+Steuerliche Informationen
+Veräußerungsgewinn/-verlust vor Teilfreistellung: EUR 1.258,55
+Ersatzbemessungsgrundlage § 43a Abs. 2 EStG: EUR 0,00
+Besitzzeitanteilige akkumulierte Vorabpauschale vor Teilfreistellung: EUR 0,00
+Zu berücksichtigende Teilfreistellung (im Privatvermögen): EUR -377,56
+Steuerpflichtiger Betrag nach Teilfreistellung im Privatvermögen: EUR 880,99
+Veräußerungsgewinn/-verlust aus der Veräußerungsfiktion § 22 InvStG ab 01.01.2018: EUR 0,00
+Veräußerungsgewinn/-verlust aus der Veräußerungsfiktion § 56 InvStG per 31.12.2017: EUR 2.075,54
+Noch nicht dem Steuerabzug unterworfene Erträge aus der Veräußerungsfiktion: EUR 51,66
+Steuerpfl. Betrag aus der Veräußerungsfiktion § 56 InvStG per 31.12.2017: EUR 2.127,20
+Kapitalertragsteuerpflichtiger Betrag: EUR 3.008,19
+Stand allg. Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung allg. Verlustverrechnungstopf: EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand Quellensteuerguthaben vor Veränderung: EUR 0,00
+Veränderung Quellensteuerguthaben: EUR 0,00
+Stand Quellensteuerguthaben nach Veränderung: EUR 0,00
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 3.008,19
+Kapitalertragsteuer: EUR -752,05
+Solidaritätszuschlag: EUR -41,36
+Kirchensteuer: EUR 0,00
+Steuerliche Information für Veranlagungszwecke
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (EStG): EUR 503,42
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (KStG): EUR 251,71
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: STEX / OrderType: S / Timestamp: 20211206 17:00:24

@@ -379,7 +379,11 @@ public class AttributeColumn extends Column
         }
         else if (attribute.getType() == Bookmark.class)
         {
-            setLabelProvider(new BookmarkLabelProvider(attribute));
+            // the bookmark label provider is a StyledCellLabelProvider that
+            // cannot be used for more than one column. Always create a new
+            // instance.
+
+            setLabelProvider(() -> new BookmarkLabelProvider(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getConverter() instanceof ImageConverter)

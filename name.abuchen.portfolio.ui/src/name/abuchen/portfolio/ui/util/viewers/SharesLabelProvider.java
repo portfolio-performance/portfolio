@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.FormatHelper;
 
@@ -123,7 +124,8 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             event.gc.setForeground(newForeground);
         }
 
-        String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
+        String text = DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+                        : FormatHelper.getSharesFormat().format(value / Values.Share.divider());
         Rectangle size = getSize(event, text);
 
         TextLayout textLayout = getSharedTextLayout(event.display);

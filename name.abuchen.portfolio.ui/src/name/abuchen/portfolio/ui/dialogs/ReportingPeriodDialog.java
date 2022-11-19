@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.util.Dates;
@@ -30,6 +31,8 @@ public class ReportingPeriodDialog extends Dialog
 {
     private final ReportingPeriod template;
     private ReportingPeriod result;
+
+    private Label message;
 
     private Button radioLast;
     private Spinner years;
@@ -86,6 +89,9 @@ public class ReportingPeriodDialog extends Dialog
         Composite editArea = new Composite(composite, SWT.NONE);
         editArea.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
         editArea.setLayout(new FormLayout());
+
+        message = new Label(editArea, SWT.CENTER);
+        message.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
         radioLast = new Button(editArea, SWT.RADIO);
         radioLast.setText(Messages.LabelReportingDialogLast);
@@ -153,7 +159,7 @@ public class ReportingPeriodDialog extends Dialog
 
         radioPreviousDay = new Button(editArea, SWT.RADIO);
         radioPreviousDay.setText(Messages.LabelReportingDialogDay);
-        
+
         radioPreviousTradingDay = new Button(editArea, SWT.RADIO);
         radioPreviousTradingDay.setText(Messages.LabelReportingDialogTradingDay);
 
@@ -173,8 +179,11 @@ public class ReportingPeriodDialog extends Dialog
         // form layout
         //
 
-        FormDataFactory.startingWith(radioLast).top(new FormAttachment(0, 10)).thenRight(years).thenRight(lblYears)
-                        .thenRight(months).thenRight(lblMonths);
+        FormDataFactory.startingWith(message).top(new FormAttachment(0, 10)).left(new FormAttachment(0))
+                        .right(new FormAttachment(100, 10));
+
+        FormDataFactory.startingWith(radioLast).top(new FormAttachment(message, 20)).thenRight(years)
+                        .thenRight(lblYears).thenRight(months).thenRight(lblMonths);
 
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
                         .thenRight(lblDays);
@@ -218,6 +227,7 @@ public class ReportingPeriodDialog extends Dialog
         //
 
         presetFromTemplate();
+        updateReportingPeriod();
 
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
                         radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD,
@@ -229,6 +239,13 @@ public class ReportingPeriodDialog extends Dialog
         activateRadioOnChange(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
         activateRadioOnChange(radioSinceX, dateSince.getControl());
         activateRadioOnChange(radioYearX, year);
+
+        // hook listeners to update result
+        radioBtnList.stream().forEach(btn -> btn.addListener(SWT.Selection, event -> updateReportingPeriod()));
+
+        Arrays.asList(years, months, days, tradingDays, dateFrom.getControl(), dateTo.getControl(),
+                        dateSince.getControl(), year).stream()
+                        .forEach(ctrl -> ctrl.addListener(SWT.Selection, event -> updateReportingPeriod()));
 
         return composite;
     }
@@ -252,7 +269,7 @@ public class ReportingPeriodDialog extends Dialog
         }
     }
 
-    private void presetFromTemplate()
+    private void presetFromTemplate() // NOSONAR
     {
         if (template instanceof ReportingPeriod.LastX)
             radioLast.setSelection(true);
@@ -307,8 +324,7 @@ public class ReportingPeriodDialog extends Dialog
         year.setSelection(interval.getEnd().getYear());
     }
 
-    @Override
-    protected void okPressed()
+    protected void updateReportingPeriod() // NOSONAR
     {
         if (radioLast.getSelection())
         {
@@ -384,15 +400,17 @@ public class ReportingPeriodDialog extends Dialog
         }
         else
         {
-            throw new IllegalArgumentException();
+            result = null;
         }
 
-        super.okPressed();
+        if (message != null)
+        {
+            message.setText(result == null ? "" : result.toInterval(LocalDate.now()).toString()); //$NON-NLS-1$
+        }
     }
 
     public ReportingPeriod getReportingPeriod()
     {
         return result;
     }
-
 }

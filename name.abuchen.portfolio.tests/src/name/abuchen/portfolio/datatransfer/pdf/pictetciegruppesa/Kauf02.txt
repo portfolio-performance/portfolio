@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Client: MR XXXX XXXX
+Account no.: O-XXXXXX.001
+Transaction no.: 761800293 | Publication date: 02.03.2022
+STOCK EXCHANGE
+PURCHASE
+Purchase 4'834 GOLD(ISHARES PH.MET.)-ETC-11/PERP S at GBP 28.2679
+IN portfolio O-XXXXXX.001 ADDITIONAL INFORMATION
+GOLD(ISHARES PH.MET.)-ETC-11/PERP S 4'834 GeneralTrade date 02.03.2022
+ISIN: IE00B4ND3602    Telekurs ID: 12881542          Value date 04.03.2022Booking date 02.03.2022
+Instruction
+Order date 02.03.2022 at 02:40:10 pm
+CASH EFFECT Order type At Marketin portfolio O-XXXXXX.001 Execution
+Gross amount GBP -136'647.03 Operation type PurchaseMarket place London Stock Exchange (LSE)
+Swiss stamp duty GBP -204.97 (XLON)Execution date 02.03.2022 at 02:41:02 pm
+Brokerage GBP -136.65 Executed quantity 4'834Execution price GBP 28.2679
+Execution fees GBP -95.65 Gross amount GBP -136'647.03
+Third party settlement fees GBP -3.20 OtherCustodian EUROCLEAR BANK S.A / N.V.
+Transaction taxes GBP -1.04
+Net amount GBP -137'088.54
+Current account O-XXXXXX.001.00.GBP/Ordinary IBAN CH0111111011111111111
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet

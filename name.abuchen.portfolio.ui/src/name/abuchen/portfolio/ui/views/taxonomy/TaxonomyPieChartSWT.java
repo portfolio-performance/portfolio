@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,6 @@ import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -24,6 +23,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
+import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsAlongAngle;
 import name.abuchen.portfolio.ui.util.chart.PieChartToolTip;
 import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.util.ColorConversion;
@@ -95,12 +95,10 @@ public class TaxonomyPieChartSWT implements IPieChart
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent, chartType, Node::getId);
+        chart.addLabelPainter(new RenderLabelsAlongAngle(chart));
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder(new TaxonomyTooltipBuilder(this.nodeDataMap));
-
-        chart.getTitle().setVisible(false);
-        chart.getLegend().setVisible(false);
 
         // Listen on mouse clicks to update information pane
         ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
