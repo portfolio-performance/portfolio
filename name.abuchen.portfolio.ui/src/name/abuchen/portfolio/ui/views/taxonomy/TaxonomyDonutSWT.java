@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
+import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsCenteredInPie;
 import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.util.ColorConversion;
 
@@ -44,6 +45,7 @@ public class TaxonomyDonutSWT implements IPieChart
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent, chartType);
+        chart.addLabelPainter(new RenderLabelsCenteredInPie(chart));
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder(new TaxonomyPieChartSWT.TaxonomyTooltipBuilder(this.nodeDataMap));

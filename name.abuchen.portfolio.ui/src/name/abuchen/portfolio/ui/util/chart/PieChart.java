@@ -10,10 +10,13 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.ICircularSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.model.Node;
 
@@ -24,6 +27,179 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 
 public class PieChart extends Chart
 {
+    public interface ILabelProvider
+    {
+        public String getLabel(Node node);
+    }
+
+    public abstract static class LabelPainter implements ICustomPaintListener
+    {
+        protected final PieChart pieChart;
+        protected Font labelFont;
+
+        protected LabelPainter(PieChart pieChart)
+        {
+            this.pieChart = pieChart;
+        }
+
+        @Override
+        public final void paintControl(PaintEvent e)
+        {
+            if (labelFont == null)
+            {
+                // lazily create font _after_ CSS has been applied
+
+                FontDescriptor fd = FontDescriptor.createFrom(e.gc.getFont());
+                labelFont = fd.increaseHeight(-1).createFont(e.gc.getDevice());
+
+                pieChart.addDisposeListener(de -> labelFont.dispose());
+            }
+
+            for (ISeries<?> series : pieChart.getSeriesSet().getSeries())
+            {
+                if (series instanceof ICircularSeries)
+                {
+                    IAxis xAxis = pieChart.getAxisSet().getXAxis(series.getXAxisId());
+                    IAxis yAxis = pieChart.getAxisSet().getYAxis(series.getYAxisId());
+
+                    List<Node> nodes = ((ICircularSeries<?>) series).getRootNode().getChildren();
+                    if (!nodes.isEmpty())
+                    {
+                        for (Node node : nodes)
+                            renderLabel(node, (ICircularSeries<?>) series, e.gc, xAxis, yAxis);
+                    }
+                }
+            }
+        }
+
+        protected abstract void renderLabel(Node node, ICircularSeries<?> series, GC gc, IAxis xAxis, IAxis yAxis);
+
+        protected final Point getPixelCoordinate(IAxis xAxis, IAxis yAxis, double pieLevel, int angle)
+        {
+            double xCoordinate = pieLevel * Math.cos(Math.toRadians(angle));
+            double yCoordinate = pieLevel * Math.sin(Math.toRadians(angle));
+            return new Point(xAxis.getPixelCoordinate(xCoordinate), yAxis.getPixelCoordinate(yCoordinate));
+        }
+    }
+
+    public static class RenderLabelsAlongAngle extends LabelPainter
+    {
+        public RenderLabelsAlongAngle(PieChart pieChart)
+        {
+            super(pieChart);
+        }
+
+        @Override
+        protected void renderLabel(Node node, ICircularSeries<?> series, GC gc, IAxis xAxis, IAxis yAxis)
+        {
+            for (Node childNode : node.getChildren())
+                renderLabel(childNode, series, gc, xAxis, yAxis);
+
+            String label = pieChart.labelProvider.getLabel(node);
+            if (!node.isVisible() || label == null)
+                return;
+
+            int level = node.getLevel() - series.getRootNode().getLevel()
+                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+
+            Point angleBounds = node.getAngleBounds();
+
+            // check if pie chart (inner bound) is big enough to draw label
+
+            gc.setFont(labelFont);
+            Point textSize = gc.textExtent(label);
+
+            Point start = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x);
+            Point end = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x + angleBounds.y);
+            int size = (int) Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+            if (size < textSize.y - 4)
+                return;
+
+            // calculate text angle
+
+            int angle = angleBounds.x + angleBounds.y / 2;
+            Point innerBound = getPixelCoordinate(xAxis, yAxis, (level - 1), angle);
+            Point outerBound = getPixelCoordinate(xAxis, yAxis, level, angle);
+
+            Transform t = new Transform(gc.getDevice());
+
+            Point textPosition;
+
+            if (angle >= 90 && angle <= 270)
+            {
+                textPosition = outerBound;
+                t.translate(textPosition.x, textPosition.y);
+                t.rotate((-angle + 180));
+            }
+            else
+            {
+                textPosition = innerBound;
+                t.translate(textPosition.x, textPosition.y);
+                t.rotate(-angle);
+            }
+
+            gc.setTransform(t);
+            gc.setForeground(Colors.getTextColor(node.getColor()));
+
+            int length = (int) Math
+                            .sqrt(Math.pow((outerBound.x - innerBound.x), 2)
+                                            + Math.pow((outerBound.y - innerBound.y), 2));
+            gc.setClipping(0, 0 - (textSize.y / 2), length - 3, textSize.y);
+
+            gc.drawString(label, 2, 0 - (textSize.y / 2), true);
+
+            gc.setClipping((Rectangle) null);
+            gc.setTransform(null);
+        }
+
+    }
+
+    public static class RenderLabelsCenteredInPie extends LabelPainter
+    {
+        public RenderLabelsCenteredInPie(PieChart pieChart)
+        {
+            super(pieChart);
+        }
+
+        @Override
+        protected void renderLabel(Node node, ICircularSeries<?> series, GC gc, IAxis xAxis, IAxis yAxis)
+        {
+            for (Node childNode : node.getChildren())
+                renderLabel(childNode, series, gc, xAxis, yAxis);
+
+            String label = pieChart.labelProvider.getLabel(node);
+            if (!node.isVisible() || label == null)
+                return;
+
+            int level = node.getLevel() - series.getRootNode().getLevel()
+                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+
+            Point angleBounds = node.getAngleBounds();
+
+            // check if pie chart (inner bound) is big enough to draw label
+
+            Point textSize = gc.textExtent(label);
+
+            Point start = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x);
+            Point end = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x + angleBounds.y);
+            int size = (int) Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+            if (size < textSize.y - 6)
+                return;
+
+            Font oldFont = gc.getFont();
+            gc.setForeground(Colors.getTextColor(node.getColor()));
+            gc.setFont(labelFont);
+
+            int angleStart = node.getAngleBounds().x;
+            int angleWidth = (int) (node.getAngleBounds().y * 0.5);
+
+            Point outerEnd = getPixelCoordinate(xAxis, yAxis, level * 0.85, angleStart + angleWidth);
+            gc.drawString(label, outerEnd.x - (textSize.x / 2), outerEnd.y - (textSize.y / 2), true);
+
+            gc.setFont(oldFont);
+        }
+    }
+
     private enum Orientation
     {
         X_AXIS, Y_AXIS
@@ -36,11 +212,9 @@ public class PieChart extends Chart
     private IPieChart.ChartType chartType;
     private ILabelProvider labelProvider;
 
-    private Font labelFont;
-
     public PieChart(Composite parent, IPieChart.ChartType chartType)
     {
-        this(parent, chartType, new DefaultLabelProvider());
+        this(parent, chartType, node -> Values.Percent2.format(node.getValue() / node.getParent().getValue()));
     }
 
     public PieChart(Composite parent, IPieChart.ChartType chartType, ILabelProvider labelProvider)
@@ -63,24 +237,20 @@ public class PieChart extends Chart
             });
         }
 
-        getPlotArea().addCustomPaintListener(this::renderLabels);
+        getLegend().setVisible(false);
+        getTitle().setVisible(false);
 
-        getLegend().setVisible(true);
         tooltip = new PieChartToolTip(this);
+    }
+
+    public void addLabelPainter(LabelPainter labelPainter)
+    {
+        getPlotArea().addCustomPaintListener(labelPainter);
     }
 
     public PieChartToolTip getToolTip()
     {
         return tooltip;
-    }
-
-    /**
-     * Allow to override pie slide label
-     */
-    public void setLabelProvider(ILabelProvider labelProvider)
-    {
-        if (labelProvider != null)
-            this.labelProvider = labelProvider;
     }
 
     /**
@@ -152,98 +322,6 @@ public class PieChart extends Chart
             primaryValue = start + delta * percentage;
         }
         return primaryValue;
-    }
-
-    protected void renderLabels(PaintEvent e)
-    {
-        if (labelFont == null)
-        {
-            // lazily create font _after_ CSS has been applied
-
-            FontDescriptor fd = FontDescriptor.createFrom(e.gc.getFont());
-            labelFont = fd.increaseHeight(-2).createFont(getDisplay());
-        }
-
-        for (ISeries<?> series : getSeriesSet().getSeries())
-        {
-            if (series instanceof ICircularSeries)
-            {
-                IAxis xAxis = getAxisSet().getXAxis(series.getXAxisId());
-                IAxis yAxis = getAxisSet().getYAxis(series.getYAxisId());
-
-                List<Node> nodes = ((ICircularSeries<?>) series).getRootNode().getChildren();
-                if (!nodes.isEmpty())
-                {
-                    for (Node node : nodes)
-                    {
-                        renderNodeLabel(node, (ICircularSeries<?>) series, e.gc, xAxis, yAxis);
-                    }
-                }
-            }
-        }
-
-    }
-
-    protected void renderNodeLabel(Node node, ICircularSeries<?> series, GC gc, IAxis xAxis, IAxis yAxis)
-    {
-        // children drawn first as parent overrides it's section of drawing
-        if (!node.getChildren().isEmpty())
-        {
-            for (Node childNode : node.getChildren())
-            {
-                renderNodeLabel(childNode, series, gc, xAxis, yAxis);
-            }
-        }
-        if (!node.isVisible())
-            return;
-
-        int level = node.getLevel() - series.getRootNode().getLevel() + (chartType == IPieChart.ChartType.PIE ? 0 : 1);
-
-        Font oldFont = gc.getFont();
-        gc.setForeground(Colors.getTextColor(node.getColor()));
-        gc.setFont(labelFont);
-
-        int angleStart = node.getAngleBounds().x;
-        int angleWidth = (int) (node.getAngleBounds().y * 0.5);
-
-        Point outerEnd = calcPixelCoord(xAxis, yAxis, level * 0.85, angleStart + angleWidth);
-
-        String label = labelProvider.getLabel(node);
-        if (label != null)
-        {
-            Point textSize = gc.textExtent(label);
-            gc.drawString(label, outerEnd.x - (textSize.x / 2), outerEnd.y - (textSize.y / 2), true);
-        }
-        gc.setFont(oldFont);
-    }
-
-    private Point calcPixelCoord(IAxis xAxis, IAxis yAxis, double level, int angle)
-    {
-        double xCoordinate = level * Math.cos(Math.toRadians(angle));
-        double yCoordinate = level * Math.sin(Math.toRadians(angle));
-        int xPixelCoordinate = xAxis.getPixelCoordinate(xCoordinate);
-        int yPixelCoordinate = yAxis.getPixelCoordinate(yCoordinate);
-        return new Point(xPixelCoordinate, yPixelCoordinate);
-    }
-
-    public interface ILabelProvider
-    {
-        public String getLabel(Node node);
-    }
-
-    private static class DefaultLabelProvider implements ILabelProvider
-    {
-        @Override
-        public String getLabel(Node node)
-        {
-            String percentString = null;
-            double percent = ((double) node.getAngleBounds().y / 360);
-            if (percent > 0.025)
-            {
-                percentString = Values.Percent2.format(percent);
-            }
-            return percentString;
-        }
     }
 
     public static final class PieColors
