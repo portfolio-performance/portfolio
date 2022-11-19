@@ -30,8 +30,10 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
         store.setDefault(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, false);
-        store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, Platform.getOS().equals(Platform.OS_MACOSX)
-                        && Platform.getOSArch().equals(Platform.ARCH_X86_64) && compareOSVersion("13.0") >= 0); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS,
+                        Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)
+                                        && Platform.getOSArch().equals(Platform.ARCH_X86_64)
+                                        && compareOSVersion("13.0") >= 0)); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT, 5);
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
