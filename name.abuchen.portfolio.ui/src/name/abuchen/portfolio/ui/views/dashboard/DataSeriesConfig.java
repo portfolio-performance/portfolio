@@ -106,6 +106,8 @@ public class DataSeriesConfig implements WidgetConfig
         delegate.getWidget().setLabel(WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
                         + dataSeries.getLabel());
 
+        delegate.onWidgetConfigEdited(this.getClass());
+
         delegate.update();
         delegate.getClient().touch();
     }

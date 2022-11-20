@@ -515,6 +515,7 @@ public class Messages extends NLS
     public static String LabelBackupModeAbsoluteDirectory;
     public static String LabelBackupModeNextToFile;
     public static String LabelBackupModeRelativeDirectory;
+    public static String LabelBaseDataSeries;
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
@@ -691,6 +692,7 @@ public class Messages extends NLS
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
+    public static String LabelRatio;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
     public static String LabelRemoveLogo;

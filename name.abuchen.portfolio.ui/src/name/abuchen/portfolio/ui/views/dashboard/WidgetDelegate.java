@@ -22,7 +22,7 @@ public abstract class WidgetDelegate<D>
     private final DashboardData data;
     private final List<WidgetConfig> config = new ArrayList<>();
 
-    public WidgetDelegate(Dashboard.Widget widget, DashboardData data)
+    protected WidgetDelegate(Dashboard.Widget widget, DashboardData data)
     {
         this.widget = widget;
         this.data = data;
@@ -32,6 +32,20 @@ public abstract class WidgetDelegate<D>
 
     public final void addConfig(WidgetConfig config)
     {
+        this.config.add(config);
+    }
+
+    public final void addConfigAfter(Class<? extends WidgetConfig> type, WidgetConfig config)
+    {
+        for (int ii = 0; ii < this.config.size(); ii++)
+        {
+            if (this.config.get(ii).getClass().isAssignableFrom(type))
+            {
+                this.config.add(ii + 1, config);
+                return;
+            }
+        }
+
         this.config.add(config);
     }
 
@@ -64,6 +78,17 @@ public abstract class WidgetDelegate<D>
     public Stream<WidgetConfig> getWidgetConfigs()
     {
         return config.stream();
+    }
+
+    public void onWidgetConfigEdited(Class<? extends WidgetConfig> type)
+    {
+        if (type == DataSeriesConfig.class)
+        {
+            // construct label to indicate the data series (user can manually
+            // change the label later)
+            getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
+                            + get(DataSeriesConfig.class).getDataSeries().getLabel());
+        }
     }
 
     public abstract Composite createControl(Composite parent, DashboardResources resources);
