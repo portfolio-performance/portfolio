@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -11,7 +13,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.model.Node;
 
-public class PieChartToolTip extends AbstractSWTChartToolTip
+public class PieChartToolTip extends AbstractChartToolTip
 {
     private DecimalFormat defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
     private IToolTipBuilder tooltipBuilder;
@@ -52,24 +54,17 @@ public class PieChartToolTip extends AbstractSWTChartToolTip
     @Override
     protected Object getFocusObjectAt(Event event)
     {
-        return ((PieChart) getChart()).getNodeAt(event.x, event.y);
+        Optional<Node> node = ((PieChart) getSWTChart()).getNodeAt(event.x, event.y);
+        return node.isPresent() ? node.get() : null;
     }
 
     @Override
-    protected void createComposite(Composite parent, Object focus)
+    protected void createComposite(Composite parent)
     {
-        if (focus == null)
-            return;
-
-        Node currentNode = (Node) focus;
+        Node currentNode = (Node) getFocusedObject();
         final Composite container = new Composite(parent, SWT.NONE);
+        container.setBackgroundMode(SWT.INHERIT_FORCE);
+        container.setLayout(new FillLayout());
         tooltipBuilder.build(container, currentNode);
-    }
-
-    @Override
-    void onFocusChanged(Object newFocus)
-    {
-        // Update highlighted node
-        getChart().redraw();
     }
 }

@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -24,6 +23,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
@@ -62,37 +62,34 @@ public class HoldingsPieChartSWT implements IPieChart
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder((container, currentNode) -> {
-            RowLayout layout = new RowLayout(SWT.VERTICAL);
-            layout.center = true;
-            container.setLayout(layout);
-            Composite data = new Composite(container, SWT.NONE);
+
+            final Composite data = new Composite(container, SWT.NONE);
             GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+
             Label assetLabel = new Label(data, SWT.NONE);
-            FontDescriptor boldDescriptor = FontDescriptor.createFrom(assetLabel.getFont()).setStyle(SWT.BOLD);
-            assetLabel.setFont(boldDescriptor.createFont(assetLabel.getDisplay()));
+            assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
             assetLabel.setText(currentNode.getId());
+
             NodeData nodeData = nodeDataMap.get(currentNode.getId());
             if (nodeData != null)
             {
                 Label right = new Label(data, SWT.NONE);
-                right.setText("(" + nodeData.percentageString + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-                Label info = new Label(container, SWT.NONE);
+                right.setText(nodeData.percentageString);
+
+                Label info = new Label(data, SWT.NONE);
+                GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
                 info.setText(String.format("%s x %s = %s", //$NON-NLS-1$
                                 nodeData.shares, nodeData.valueSingle, nodeData.value));
             }
         });
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
-            Node node = chart.getNodeAt(event.x, event.y);
-            if (node == null)
-                return;
-            NodeData nodeData = nodeDataMap.get(node.getId());
-            if (nodeData != null)
-            {
-                financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
-            }
-        });
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
+                        event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
+                            NodeData nodeData = nodeDataMap.get(node.getId());
+                            if (nodeData != null)
+                                financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
+                        }));
 
         updateChart();
 
@@ -179,7 +176,6 @@ public class HoldingsPieChartSWT implements IPieChart
         circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
                         Messages.LabelStatementOfAssetsHoldings);
         circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
-        circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
         lastLabels = new ArrayList<>(labels);
         Collections.sort(lastLabels, String.CASE_INSENSITIVE_ORDER);

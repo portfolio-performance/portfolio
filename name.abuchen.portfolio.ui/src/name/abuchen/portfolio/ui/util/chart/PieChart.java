@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -256,25 +257,24 @@ public class PieChart extends Chart
     /**
      * Find the node at position
      */
-    public Node getNodeAt(int x, int y)
+    public Optional<Node> getNodeAt(int x, int y)
     {
         Node node = null;
         for (ISeries<?> series : getSeriesSet().getSeries())
         {
             if (!(series instanceof ICircularSeries))
-            {
                 continue;
-            }
+
             ICircularSeries<?> circularSeries = (ICircularSeries<?>) series;
 
             double primaryValueX = getSelectedPrimaryAxisValue(x, PieChart.Orientation.X_AXIS);
             double primaryValueY = getSelectedPrimaryAxisValue(y, PieChart.Orientation.Y_AXIS);
 
             node = circularSeries.getPieSliceFromPosition(primaryValueX, primaryValueY);
-            circularSeries.setHighlightedNode(node);
-
+            return Optional.ofNullable(node);
         }
-        return node;
+
+        return Optional.empty();
     }
 
     private double getSelectedPrimaryAxisValue(int position, Orientation orientation)

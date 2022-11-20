@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.RowLayout;
@@ -20,6 +19,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
@@ -49,26 +49,28 @@ public class TaxonomyPieChartSWT implements IPieChart
         @Override
         public void build(Composite container, Node currentNode)
         {
-            RowLayout layout = new RowLayout(SWT.VERTICAL);
-            layout.center = true;
-            container.setLayout(layout);
-            NodeData nodeData = nodeDataMap.get(currentNode.getId());
-            Label assetLabel = new Label(container, SWT.NONE);
-            FontDescriptor boldDescriptor = FontDescriptor.createFrom(assetLabel.getFont()).setStyle(SWT.BOLD);
-            assetLabel.setFont(boldDescriptor.createFont(assetLabel.getDisplay()));
+            final Composite area = new Composite(container, SWT.NONE);
+            area.setLayout(new RowLayout(SWT.VERTICAL));
+
+            Label assetLabel = new Label(area, SWT.NONE);
+            assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
             assetLabel.setText(currentNode.getId());
+
+            NodeData nodeData = nodeDataMap.get(currentNode.getId());
             if (nodeData != null)
             {
-                Label info = new Label(container, SWT.NONE);
+                Label info = new Label(area, SWT.NONE);
                 info.setText(nodeData.value);
+
                 if (nodeData.percentage != null)
                 {
-                    info = new Label(container, SWT.NONE);
+                    info = new Label(area, SWT.NONE);
                     info.setText(nodeData.percentage);
                 }
+
                 if (nodeData.totalPercentage != null)
                 {
-                    info = new Label(container, SWT.NONE);
+                    info = new Label(area, SWT.NONE);
                     info.setText(nodeData.totalPercentage);
                 }
             }
@@ -101,14 +103,12 @@ public class TaxonomyPieChartSWT implements IPieChart
         chart.getToolTip().setToolTipBuilder(new TaxonomyTooltipBuilder(this.nodeDataMap));
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
-            Node node = chart.getNodeAt(event.x, event.y);
-            if (node == null)
-                return;
-            NodeData nodeData = nodeDataMap.get(node.getId());
-            if (nodeData != null)
-                financeView.setInformationPaneInput(nodeData.position);
-        });
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
+                        event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
+                            NodeData nodeData = nodeDataMap.get(node.getId());
+                            if (nodeData != null)
+                                financeView.setInformationPaneInput(nodeData.position);
+                        }));
 
         updateChart();
         return chart;
@@ -133,7 +133,6 @@ public class TaxonomyPieChartSWT implements IPieChart
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(
                         ChartType.DONUT == chartType ? SeriesType.DOUGHNUT : SeriesType.PIE, taxRoot.getName());
 
-        circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
 
         Node rootNode = circularSeries.getRootNode();

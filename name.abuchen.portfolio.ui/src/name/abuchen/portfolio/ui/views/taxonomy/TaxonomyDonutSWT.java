@@ -54,14 +54,12 @@ public class TaxonomyDonutSWT implements IPieChart
         chart.getLegend().setPosition(SWT.RIGHT);
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp, event -> {
-            Node node = chart.getNodeAt(event.x, event.y);
-            if (node == null)
-                return;
-            TaxonomyPieChartSWT.NodeData nodeData = nodeDataMap.get(node.getId());
-            if (nodeData != null)
-                financeView.setInformationPaneInput(nodeData.position);
-        });
+        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
+                        event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
+                            TaxonomyPieChartSWT.NodeData nodeData = nodeDataMap.get(node.getId());
+                            if (nodeData != null)
+                                financeView.setInformationPaneInput(nodeData.position);
+                        }));
 
         updateChart();
         return chart;
@@ -81,7 +79,6 @@ public class TaxonomyDonutSWT implements IPieChart
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(
                         ChartType.DONUT == chartType ? SeriesType.DOUGHNUT : SeriesType.PIE, node.getName());
 
-        circularSeries.setHighlightColor(Colors.GREEN);
         circularSeries.setBorderColor(Colors.WHITE);
 
         Money total = getModel().getChartRenderingRootNode().getActual();
