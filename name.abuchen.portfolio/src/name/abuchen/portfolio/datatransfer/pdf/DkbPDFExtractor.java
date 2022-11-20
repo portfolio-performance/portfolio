@@ -538,7 +538,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 m = pYear.matcher(line);
                 if (m.matches())
                 {
-                    context.put("nr", m.group("nr"));
+                    // Remove all leading zeros
+                    context.put("nr", m.group("nr").replaceFirst("^0+(?!$)", ""));
+
                     context.put("year", m.group("year"));
                 }
 
@@ -673,7 +675,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
                     // necessary in first receipt of year
-                    if (context.get("nr").compareTo("001") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
+                    if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
                     {
                         Integer year = Integer.parseInt(context.get("year")) - 1;
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year.toString()));
@@ -737,7 +739,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
                     // necessary in first receipt of year
-                    if (context.get("nr").compareTo("001") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
+                    if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
                     {
                         Integer year = Integer.parseInt(context.get("year")) - 1;
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year.toString()));
@@ -780,7 +782,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
                     // necessary in first receipt of year
-                    if (context.get("nr").compareTo("001") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
+                    if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
                     {
                         Integer year = Integer.parseInt(context.get("year")) - 1;
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year.toString()));
@@ -797,7 +799,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Rechnung [\\.,\\d]+$");
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (?i)(Rechnung|Buchung) [\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -809,14 +811,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .section("month1", "day", "month2", "note1", "amount", "note2")
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. "
-                                + "(?<note1>Rechnung) "
+                                + "(?i)(?<note1>Rechnung|Buchung) "
                                 + "(?<amount>[\\.,\\d]+)$")
-                .match("^.*(?<note2>(Bargeldeinzahlung|R.ckruf\\/Nachforschung)).*$")
+                .match("^(.*)?(?i)(?<note2>(Bargeldeinzahlung|R.ckruf\\/Nachforschung|Identifikationscode)).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
                     // necessary in first receipt of year
-                    if (context.get("nr").compareTo("001") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
+                    if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
                     {
                         Integer year = Integer.parseInt(context.get("year")) - 1;
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year.toString()));
@@ -829,6 +831,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(v.get("note1") + " " + v.get("note2"));
+
+                    // Formatting some notes
+                    if (t.getNote().equals("BUCHUNG IDENTIFIKATIONSCODE"))
+                        t.setNote("Buchung Identifikationscode");
                 })
 
                 .wrap(TransactionItem::new));
