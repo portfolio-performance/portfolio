@@ -547,6 +547,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|FUSION"
                         + "|KAPITALERH.HUNG GEGEN BAR"
                         + "|VERGLEICHSVERFAHREN"
+                        + "|DEPOTÜBERTRAG EINGEHEND"
                         + "|TITELUMTAUSCH)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSkipTransaction = Pattern.compile("^ABRECHNUNG$");
@@ -585,6 +586,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|Ausbuchung"
                         + "|Kapitalerh.hung gegen Bar"
                         + "|VERGLEICHSVERFAHREN"
+                        + "|Depotübertrag eingehend"
                         + "|TITELUMTAUSCH) .* "
                         + "([\\.,\\d]+ Stk\\.|am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.)$");
         type.addBlock(firstRelevantLine);
@@ -599,10 +601,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 + "|Ausbuchung"
                                 + "|Kapitalerh.hung gegen Bar"
                                 + "|VERGLEICHSVERFAHREN"
+                                + "|Depotübertrag eingehend"
                                 + "|TITELUMTAUSCH)"
                                 + ") .* ([\\.,\\d]+ Stk\\.|am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.)$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Einbuchung") || v.get("type").equals("Kapitalerhöhung gegen Bar"))
+                    if (v.get("type").equals("Einbuchung") || v.get("type").equals("Kapitalerhöhung gegen Bar") || v.get("type").equals("Depotübertrag eingehend"))
                         t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 })
 
@@ -610,7 +613,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Inhaber-Aktien o.N.
                 // DE000A0D6554
                 .section("position", "name", "shares", "nameContinued", "isin").optional()
-                .match("^(?<position>[\\d]) (Umtausch\\/Bezug|Einbuchung|Ausbuchung) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
+                .match("^(?<position>[\\d]) (Umtausch\\/Bezug|Einbuchung|Ausbuchung|Depotübertrag eingehend) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?<isin>[\\w]{12})$")
                 .assign((t, v) -> {
