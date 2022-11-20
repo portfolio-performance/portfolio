@@ -34,7 +34,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
     private static final String EUROSTAT_HOST = "ec.europa.eu"; //$NON-NLS-1$
 
-    private static final String EUROSTAT_PAGE = "/eurostat/wdds/rest/data/v2.1/json/en/prc_hicp_midx"; //$NON-NLS-1$
+    private static final String EUROSTAT_PAGE = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"; //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -84,14 +84,10 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                     throws IOException, URISyntaxException
     {
         WebAccess webaccess = new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
-                        .withScheme("http") //
-                        .addParameter("filterNonGeo", "1") //
-                        .addParameter("precision", "1") //
-                        .addParameter("geo", security.getTickerSymbol().toUpperCase()).addParameter("unit", "I15") //
-                        .addParameter("unitLabel", "code") //
+                        .addParameter("format", "JSON") //
                         .addParameter("coicop", "CP00") //
-                        .addParameter("groupedIndicators", "1") //
-                        .addParameter("shortLabel", "1");
+                        .addParameter("geo", security.getTickerSymbol().toUpperCase()).addParameter("unit", "I15") //
+                        .addParameter("unit", "I15");
 
         String text = webaccess.get();
 
@@ -112,6 +108,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             // the periods are 4th JSON hierarchy level @ dimensions > time >
             // category > index
             JSONObject eurostatValue = (JSONObject) responseData.get("value"); //$NON-NLS-1$
+
             JSONObject eurostatDimension = (JSONObject) responseData.get("dimension"); //$NON-NLS-1$
             JSONObject eurostatTime = (JSONObject) eurostatDimension.get("time"); //$NON-NLS-1$
             JSONObject eurostatCategory = (JSONObject) eurostatTime.get("category"); //$NON-NLS-1$
