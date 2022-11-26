@@ -24,6 +24,6 @@ public class TestUtilities
     {
         return Arrays.asList(new String[] { "de" }, new String[] { "en" }, new String[] { "es" }, new String[] { "pt" },
                         new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" }, new String[] { "cs" },
-                        new String[] { "ru" }, new String[] { "sk" });
+                        new String[] { "ru" }, new String[] { "sk" }, new String[] { "pl" });
     }
 }
