@@ -46,7 +46,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): (Kauf|Verkauf|Purchase|Sale)|Zeichnung|Spitzenregulierung( .*)?)");
+        DocumentType type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): (Kauf|Verkauf|Purchase|Sale)|Zeichnung|Spitzenregulierung).*");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -71,7 +71,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Spitzenregulierung" change from BUY to SELL
                 .section("type").optional()
-                .match("^(?<type>Spitzenregulierung)( .*)?$")
+                .match("^(?<type>Spitzenregulierung).*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Spitzenregulierung"))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -82,7 +82,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Registered Shares o.N.
                 // Kurswert EUR 208,74
                 .section("isin", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^(Nominale|Quantity) ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>.*) (Kurs|Bezugspreis|Barabfindung|Price).*$")
+                .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$")
                 .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
@@ -109,15 +109,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .find("Handelsdatum Handelsuhrzeit")
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Handels- Handels- 
                                 // STK   70 EUR 14,045 GETTEX - MM Munich 24.02.2021 14:49:46:04
                                 section -> section
                                         .attributes("date", "time")
-                                        .find("Handels- Handels- ")
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*$")
+                                        .find("Handels\\- Handels\\- ")
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Details zur Ausführung: Handels- Handels- 
+                                // STK   6 EUR 146,34 GETTEX - MM Munich 27.01.2022 16:25:24:39
+                                section -> section
+                                        .attributes("date", "time")
+                                        .find(".* Handels\\- Handels\\- ")
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Einbuchung in Depot yyyyyyyyyy per 09.03.2021
@@ -137,15 +145,15 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("date", "time")
                                         .find("Trade Date Trade Time")
-                                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
-                                // Order Date: 2022-04-29 Execution Venue: GETTEX - MM Munich
-                                // Order Time: 09:32:39:19
+                                // Quantity Price Execution Venue Trade Date Trade Time
+                                // Units   11 EUR 8.55 GETTEX - MM Munich 2022-04-29 09:32:39:47
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^Order Date: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .*$")
-                                        .match("^Order Time: (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
+                                        .find(".* Trade Date Trade Time")
+                                        .match("^.* (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):[\\d]{2}$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                         )
 
@@ -191,7 +199,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                 // Spitzenregulierung KOPIE
                 .section("note").optional()
-                .match("^(?<note>Spitzenregulierung)( .*)?$")
+                .match("^(?<note>Spitzenregulierung).*$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
@@ -245,7 +253,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
                 // Zahlungszeitraum: 17.06.2021 - 30.06.2021 
                 .section("isin", "wkn", "name", "name1", "currency")
-                .match("^(Nominale|Quantity) ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>[\\w]{6}) .*$")
+                .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) .*$")
                 .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
@@ -356,7 +364,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Nominale ISIN: IE00BWBXM385 WKN: A14QBZ
                 // STK 112 SPDR S+P US Con.Sta.Sel.S.UETF
                 .section("isin", "wkn", "name", "name1")
-                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>.*)$")
+                .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6})$")
                 .match("^STK [\\.,\\d]+ (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
@@ -645,7 +653,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // Inhaber-Bezugsrechte
                 .section("isin", "wkn", "name", "nameContinued").optional()
                 .find("^Ausbuchung aus Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>[\\w]{6})( .*)?$")
+                .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$")
                 .match("^STK [\\.,\\d]+ (?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
@@ -660,7 +668,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // junge Inhaber-Aktien o.N.
                 .section("isin", "wkn", "name", "currency", "nameContinued").optional()
                 .find("^Einbuchung in Depot .* per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>[\\w]{6})( .*)?$")
+                .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$")
                 .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+ .*$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -714,7 +722,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 6 UniCredit Bank AG EUR 10,00 p.STK
                 // HVB Inline 18.05.22 BASF 45-70
                 .section("isin", "wkn", "name", "nameContinued", "currency").optional()
-                .match("^Nominale ISIN: (?<isin>[\\w]{12}) WKN: (?<wkn>.*) Barabfindung$")
+                .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) Barabfindung$")
                 .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<nameContinued>.*)$")
                 .assign((t, v) -> {
