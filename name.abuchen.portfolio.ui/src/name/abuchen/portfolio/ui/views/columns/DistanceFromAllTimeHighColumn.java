@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 
-import name.abuchen.portfolio.math.AllTimeHigh;
+import name.abuchen.portfolio.math.AllTimeHighPrice;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -51,7 +51,7 @@ public class DistanceFromAllTimeHighColumn extends Column
             if (security == null)
                 return null;
 
-            return new AllTimeHigh(security, interval).getDistance();
+            return new AllTimeHighPrice(security, interval).getDistance();
         };
 
         this.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteDistanceFromAthPercent_Option, options));
