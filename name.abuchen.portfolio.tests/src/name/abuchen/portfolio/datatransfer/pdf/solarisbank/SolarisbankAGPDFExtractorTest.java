@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.vividmoney;
+package name.abuchen.portfolio.datatransfer.pdf.solarisbank;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,21 +16,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.VividMoneyPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SolarisbankAGPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class VividMoneyPDFExtractorTest
+public class SolarisbankAGPDFExtractorTest
 {
     @Test
-    public void testKontoauszug1()
+    public void testGiroKontoauszug01()
     {
-        VividMoneyPDFExtractor extractor = new VividMoneyPDFExtractor(new Client());
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("vividmoneyKontoauszug1.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("GiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -77,11 +77,11 @@ public class VividMoneyPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug2()
+    public void testGiroKontoauszug02()
     {
-        VividMoneyPDFExtractor extractor = new VividMoneyPDFExtractor(new Client());
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("vividmoneyKontoauszug2.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
 

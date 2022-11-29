@@ -1,9 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Arrays;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -13,46 +10,35 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class VividMoneyPDFExtractor extends AbstractPDFExtractor
+public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
     
-    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d+) (?<valuta>\\d+.\\d+.\\d+) (SEPA\\-.berweisung|.berweisung).* (?<amount>\\d*[,.]\\d{2}) (?<currency>.{3})$";
-    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d+) (?<valuta>\\d+.\\d+.\\d+) (Kartenzahlung|Überweisung) (?<note>.*) (?<amount>\\-\\d*[,.]\\d{2}) (?<currency>.{3})$";
+    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung).* (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
+    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung) (?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
     
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
     private static final String CONTEXT_KEY_NOTE = "note";
 
-    public VividMoneyPDFExtractor(Client client)
+    public SolarisbankAGPDFExtractor(Client client)
     {
         super(client);
         
-        addBankIdentifier("SOBKDEB2XXX"); //$NON-NLS-1$
-        addBankIdentifier("Vivid"); //$NON-NLS-1$
+        addBankIdentifier("Solarisbank"); //$NON-NLS-1$
 
-        addAccountStatement();
+        addAccountStatementTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Vivid"; //$NON-NLS-1$
+        return "Solarisbank AG"; //$NON-NLS-1$
     }
     
-    private void addAccountStatement()
+    private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Rechnungsabschluss", (context, lines) -> {
-            Pattern accountDetailPattern = Pattern.compile("^.*IBAN: (?<iban>.*)\\W+BIC: (?<bic>.*)$");
-            Arrays.stream(lines).forEach(line -> {
-                Matcher m = accountDetailPattern.matcher(line);
-                if (m.matches())
-                {
-                    context.put("account", m.group("iban"));
-                    context.put("bic", m.group("bic"));
-                }
-            });
-        });
+        DocumentType type = new DocumentType("Rechnungsabschluss");
         this.addDocumentTyp(type);
 
         Block depositBlock = new Block(DEPOSIT);
