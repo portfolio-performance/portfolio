@@ -6,6 +6,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -89,6 +90,14 @@ public class OpenPreferenceDialogHandler
             {
                 super.configureShell(newShell);
                 newShell.setText(Messages.LabelSettings);
+            }
+
+            @Override
+            protected void createButtonsForButtonBar(Composite parent)
+            {
+                super.createButtonsForButtonBar(parent);
+
+                getButton(IDialogConstants.OK_ID).setText(Messages.BtnLabelApplyAndClose);
             }
         };
 
