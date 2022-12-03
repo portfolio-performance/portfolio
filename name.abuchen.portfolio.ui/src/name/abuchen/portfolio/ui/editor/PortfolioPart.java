@@ -42,7 +42,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -58,6 +57,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -244,7 +244,7 @@ public class PortfolioPart implements ClientInputListener
         ProgressBar bar = null;
 
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
         container.setLayout(new FormLayout());
 
         Label image = new Label(container, SWT.NONE);
@@ -286,8 +286,8 @@ public class PortfolioPart implements ClientInputListener
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);
-        data.left = new FormAttachment(50, -100);
-        data.width = 200;
+        data.left = new FormAttachment(0, 10);
+        data.right = new FormAttachment(100, -10);
         label.setLayoutData(data);
 
         return bar;
