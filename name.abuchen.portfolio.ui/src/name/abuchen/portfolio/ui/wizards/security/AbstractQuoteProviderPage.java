@@ -191,6 +191,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     // used to identify if the ticker has been changed on another page
     private String tickerSymbol;
+    // used to identify if the currency has been changed on another page
+    private String currencyCode;
 
     private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<>();
 
@@ -262,6 +264,13 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 showSampleQuotes(feed, null);
         }
 
+        if (CoinGeckoQuoteFeed.ID.equals(getFeed()) && !Objects.equals(currencyCode, model.getCurrencyCode()))
+        {
+            // coin gecko additionally uses the currency to retrieve quotes
+            this.currencyCode = model.getCurrencyCode();
+            showSampleQuotes(feed, null);
+        }
+
         if (textQuandlCode != null && !textQuandlCode.getText()
                         .equals(model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME)))
         {
@@ -331,6 +340,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         setFeed(feed.getId());
+
+        currencyCode = getModel().getCurrencyCode();
 
         if (comboExchange != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)

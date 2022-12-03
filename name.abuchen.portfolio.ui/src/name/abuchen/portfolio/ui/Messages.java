@@ -1119,6 +1119,8 @@ public class Messages extends NLS
     public static String SecurityMenuExportCSV;
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
+    public static String SecurityMenuNewCryptocurrency;
+    public static String SecurityMenuNewCryptocurrencyMessage;
     public static String SecurityMenuNewExchangeRate;
     public static String SecurityMenuNewHICP;
     public static String SecurityMenuNewSecurity;
