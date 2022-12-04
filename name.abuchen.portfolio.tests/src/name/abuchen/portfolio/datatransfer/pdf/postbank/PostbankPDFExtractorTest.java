@@ -1051,14 +1051,14 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.76))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.92))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.20))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63 / 0.8728))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.44))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(19.13))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(19.38))));
     }
 
     @Test
@@ -1094,9 +1094,9 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.76))));
         assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.92))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.20))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63 / 0.8728))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.44))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
