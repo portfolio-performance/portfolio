@@ -28,6 +28,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PieChart;
 import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsCenteredInPie;
+import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsOutsidePie;
 import name.abuchen.portfolio.ui.views.IPieChart;
 
 public class HoldingsPieChartSWT implements IPieChart
@@ -58,7 +59,8 @@ public class HoldingsPieChartSWT implements IPieChart
     public Control createControl(Composite parent)
     {
         chart = new PieChart(parent, IPieChart.ChartType.DONUT, this::getNodeLabel);
-        chart.addLabelPainter(new RenderLabelsCenteredInPie(chart));
+        chart.addLabelPainter(new RenderLabelsCenteredInPie(chart, this::getNodeLabel));
+        chart.addLabelPainter(new RenderLabelsOutsidePie(chart, Node::getId));
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder((container, currentNode) -> {

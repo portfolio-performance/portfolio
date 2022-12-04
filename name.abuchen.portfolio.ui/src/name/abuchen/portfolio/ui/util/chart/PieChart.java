@@ -142,9 +142,8 @@ public class PieChart extends Chart
             gc.setTransform(t);
             gc.setForeground(Colors.getTextColor(node.getColor()));
 
-            int length = (int) Math
-                            .sqrt(Math.pow((outerBound.x - innerBound.x), 2)
-                                            + Math.pow((outerBound.y - innerBound.y), 2));
+            int length = (int) Math.sqrt(
+                            Math.pow((outerBound.x - innerBound.x), 2) + Math.pow((outerBound.y - innerBound.y), 2));
             gc.setClipping(0, 0 - (textSize.y / 2), length - 3, textSize.y);
 
             gc.drawString(label, 2, 0 - (textSize.y / 2), true);
@@ -157,9 +156,17 @@ public class PieChart extends Chart
 
     public static class RenderLabelsCenteredInPie extends LabelPainter
     {
+        private final ILabelProvider labelProvider;
+
         public RenderLabelsCenteredInPie(PieChart pieChart)
         {
+            this(pieChart, pieChart.labelProvider);
+        }
+
+        public RenderLabelsCenteredInPie(PieChart pieChart, ILabelProvider labelProvider)
+        {
             super(pieChart);
+            this.labelProvider = labelProvider;
         }
 
         @Override
@@ -168,7 +175,7 @@ public class PieChart extends Chart
             for (Node childNode : node.getChildren())
                 renderLabel(childNode, series, gc, xAxis, yAxis);
 
-            String label = pieChart.labelProvider.getLabel(node);
+            String label = labelProvider.getLabel(node);
             if (!node.isVisible() || label == null)
                 return;
 
@@ -199,6 +206,56 @@ public class PieChart extends Chart
 
             gc.setFont(oldFont);
         }
+    }
+
+    public static class RenderLabelsOutsidePie extends LabelPainter
+    {
+        private final ILabelProvider labelProvider;
+
+        public RenderLabelsOutsidePie(PieChart pieChart, ILabelProvider labelProvider)
+        {
+            super(pieChart);
+            this.labelProvider = labelProvider;
+        }
+
+        @Override
+        protected void renderLabel(Node node, ICircularSeries<?> series, GC gc, IAxis xAxis, IAxis yAxis)
+        {
+            for (Node childNode : node.getChildren())
+                renderLabel(childNode, series, gc, xAxis, yAxis);
+
+            String label = labelProvider.getLabel(node);
+            if (!node.isVisible() || label == null)
+                return;
+
+            int level = node.getLevel() - series.getRootNode().getLevel()
+                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+
+            Point angleBounds = node.getAngleBounds();
+            int angle = angleBounds.x + angleBounds.y / 2;
+
+            Point textSize = gc.textExtent(label);
+
+            // some heuristic to check if there is enough space to render a
+            // label
+
+            Point start = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x);
+            Point end = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x + angleBounds.y);
+            if (Math.abs(start.y - end.y) < 4)
+                return;
+
+            Point point = getPixelCoordinate(xAxis, yAxis, level * 1.03, angle);
+            int x = angle >= 90 && angle <= 270 ? point.x - textSize.x : point.x;
+
+            Font oldFont = gc.getFont();
+            gc.setForeground(Colors.theme().defaultForeground());
+            gc.setFont(labelFont);
+
+            gc.drawString(label, x, point.y - (textSize.y / 2), true);
+
+            gc.setFont(oldFont);
+        }
+
     }
 
     private enum Orientation
