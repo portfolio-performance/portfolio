@@ -301,7 +301,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
                 .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltende Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR

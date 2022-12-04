@@ -187,7 +187,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
 
                 // Einbehaltene Quellensteuer 15 % auf 87,74 USD 11,11- EUR
                 .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ % .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Einbehaltene Quellensteuer [\\.,\\d]+ % .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 74,05 EUR 11,11 EUR

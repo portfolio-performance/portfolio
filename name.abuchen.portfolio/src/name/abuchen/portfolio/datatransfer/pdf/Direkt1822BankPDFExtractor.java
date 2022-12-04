@@ -218,10 +218,9 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag [\\.,\\d]+ .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66-
-                // EUR
+                // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
                 .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltende Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
