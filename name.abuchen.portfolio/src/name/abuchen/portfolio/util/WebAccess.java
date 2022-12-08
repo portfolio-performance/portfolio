@@ -215,7 +215,11 @@ public class WebAccess
             HttpUriRequestBase request = function.create(uri);
             response = client.execute(request);
 
-            if (response.getCode() != HttpStatus.SC_OK)
+
+            if (response.getCode()(response.getCode() == HttpStatus.SC_MOVED_PERMANENTLY || //
+               response.getCode() == HttpStatus.SC_MOVED_TEMPORARILY)
+                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode());
+            else if (response.getCode() != HttpStatus.SC_OK)
                 throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode());
 
             return response;
