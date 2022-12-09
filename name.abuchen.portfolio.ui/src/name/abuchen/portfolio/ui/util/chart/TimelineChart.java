@@ -178,19 +178,21 @@ public class TimelineChart extends Chart // NOSONAR
         this.nonTradingDayMarkers.clear();
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
+    public ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        return addDateSeries(dates, values, Colors.BLACK, false, label);
+        return addDateSeries(id, dates, values, Colors.BLACK, false, label);
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
+    public ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, Color color, String label)
     {
-        return addDateSeries(dates, values, color, false, label);
+        return addDateSeries(id, dates, values, color, false, label);
     }
 
-    private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)
+    private ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, Color color, boolean showArea,
+                    String label)
     {
-        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
+        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, id);
+        lineSeries.setDescription(label);
         lineSeries.setXDateSeries(toJavaUtilDate(dates));
         lineSeries.enableArea(showArea);
         lineSeries.setLineWidth(2);
@@ -201,9 +203,10 @@ public class TimelineChart extends Chart // NOSONAR
         return lineSeries;
     }
 
-    public IBarSeries addDateBarSeries(LocalDate[] dates, double[] values, String label)
+    public IBarSeries addDateBarSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
+        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, id);
+        barSeries.setDescription(label);
         barSeries.setXDateSeries(toJavaUtilDate(dates));
         barSeries.setYSeries(values);
         barSeries.setBarColor(Colors.DARK_GRAY);

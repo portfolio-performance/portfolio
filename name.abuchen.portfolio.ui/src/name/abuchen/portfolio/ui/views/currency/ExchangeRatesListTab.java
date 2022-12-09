@@ -201,7 +201,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
                             provider.isPresent() ? provider.get().getName() : "-"); //$NON-NLS-1$
 
             chart.getTitle().setText(title);
-            chart.addDateSeries(dates, values, Colors.ICON_BLUE, title);
+            chart.addDateSeries(title, dates, values, Colors.ICON_BLUE, title);
 
             chart.adjustRange();
         }

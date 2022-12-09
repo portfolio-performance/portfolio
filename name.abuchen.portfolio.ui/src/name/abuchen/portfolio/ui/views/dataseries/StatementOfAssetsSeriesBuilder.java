@@ -29,7 +29,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
         }
         else
         {
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(),
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), series.getLabel());
             configure(series, lineSeries);
         }
@@ -99,12 +99,14 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         if (series.isLineChart())
         {
-            ILineSeries lineSeries = getChart().addDateSeries(clientIndex.getDates(), values, series.getLabel());
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, lineSeries);
         }
         else
         {
-            IBarSeries barSeries = getChart().addDateBarSeries(clientIndex.getDates(), values, series.getLabel());
+            IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, barSeries);
         }
     }

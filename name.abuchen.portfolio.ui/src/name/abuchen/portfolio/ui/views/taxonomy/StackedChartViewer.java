@@ -303,7 +303,8 @@ public class StackedChartViewer extends AbstractChartPage
 
             for (SeriesBuilder serie : series)
             {
-                chart.addSeries(serie.node.getClassification().getPathName(false), //
+                chart.addSeries(serie.node.getId(), //
+                                serie.node.getClassification().getPathName(false), //
                                 serie.getValues(totals), //
                                 getRenderer().getColorFor(serie.node));
             }

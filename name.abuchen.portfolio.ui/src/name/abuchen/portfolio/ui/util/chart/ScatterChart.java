@@ -80,9 +80,10 @@ public class ScatterChart extends Chart // NOSONAR
         this.highlightColor = color;
     }
 
-    public ILineSeries addScatterSeries(double[] xSeries, double[] ySeries, String label)
+    public ILineSeries addScatterSeries(String id, double[] xSeries, double[] ySeries, String label)
     {
-        ILineSeries scatterSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
+        ILineSeries scatterSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, id);
+        scatterSeries.setDescription(label);
         scatterSeries.setLineStyle(LineStyle.NONE);
         scatterSeries.setXSeries(xSeries);
         scatterSeries.setYSeries(ySeries);

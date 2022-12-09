@@ -33,8 +33,8 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             if (aggregationPeriod != null)
                 index = Aggregation.aggregate(index, aggregationPeriod);
 
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
-                            series.getLabel());
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+                            index.getAccumulatedPercentage(), series.getLabel());
             configure(series, lineSeries);
         }
 
@@ -48,15 +48,15 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         switch ((ClientDataSeries) series.getInstance())
         {
             case TOTALS:
-                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
-                                series.getLabel());
+                ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+                                index.getAccumulatedPercentage(), series.getLabel());
                 configure(series, lineSeries);
                 break;
             case DELTA_PERCENTAGE:
                 String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
                                 : Messages.LabelAggregationDaily;
-                IBarSeries barSeries = getChart().addDateBarSeries(index.getDates(), index.getDeltaPercentage(),
-                                aggreagtionPeriodLabel);
+                IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), index.getDates(),
+                                index.getDeltaPercentage(), aggreagtionPeriodLabel);
                 // update label, e.g. 'daily' to 'weekly'
                 series.setLabel(aggreagtionPeriodLabel);
                 configure(series, barSeries);
