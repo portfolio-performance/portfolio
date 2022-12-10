@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -24,10 +22,10 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 public class TaxonomyDonutBrowser implements IPieChart
 {
     private EmbeddedBrowser browser;
-    private AbstractChartPage chartPage;
+    private DonutViewer chartPage;
     private AbstractFinanceView view;
 
-    public TaxonomyDonutBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
+    public TaxonomyDonutBrowser(EmbeddedBrowser browser, DonutViewer page, AbstractFinanceView view)
     {
         this.browser = browser;
         this.chartPage = page;
@@ -38,9 +36,8 @@ public class TaxonomyDonutBrowser implements IPieChart
     public Control createControl(Composite parent)
     {
         browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
-        return browser.createControl(parent, LoadDataFunction::new,
-                    b -> new ItemSelectedFunction(b, uuid -> getModel().getVirtualRootNode().getNodeById(uuid)
-                        .ifPresent(n -> view.setInformationPaneInput(n))));
+        return browser.createControl(parent, LoadDataFunction::new, b -> new ItemSelectedFunction(b, uuid -> getModel()
+                        .getVirtualRootNode().getNodeById(uuid).ifPresent(n -> view.setInformationPaneInput(n))));
 
     }
 
@@ -77,16 +74,9 @@ public class TaxonomyDonutBrowser implements IPieChart
 
                 long total = getModel().getChartRenderingRootNode().getActual().getAmount();
 
-                // classified nodes
-                TaxonomyNode node = getModel().getClassificationRootNode();
-                addChildren(joiner, node, total);
-
-                // add unclassified if included
-                if (!getModel().isUnassignedCategoryInChartsExcluded())
-                {
-                    TaxonomyNode unassigned = getModel().getUnassignedNode();
-                    addChildren(joiner, unassigned, total);
-                }
+                chartPage.computeNodeList().forEach(pair -> {
+                    addAssignment(joiner, pair.getRight(), pair.getLeft().getColor(), total);
+                });
 
                 return joiner.toString();
             }
@@ -94,33 +84,6 @@ public class TaxonomyDonutBrowser implements IPieChart
             {
                 PortfolioPlugin.log(e);
                 return "{}"; //$NON-NLS-1$
-            }
-        }
-
-        private void addChildren(StringJoiner joiner, TaxonomyNode node, long total)
-        {
-            for (TaxonomyNode child : node.getChildren())
-            {
-                if (child.getActual().isZero())
-                    continue;
-
-                if (child.isAssignment())
-                {
-                    addAssignment(joiner, child, node.getColor(), total);
-                }
-                else if (child.isClassification())
-                {
-                    List<TaxonomyNode> grandchildren = new ArrayList<>();
-                    child.accept(n -> {
-                        if (n.isAssignment())
-                            grandchildren.add(n);
-                    });
-                    grandchildren.stream() //
-                                    .filter(n -> !n.getActual().isZero()) //
-                                    .sorted((l, r) -> Long.compare(r.getActual().getAmount(),
-                                                    l.getActual().getAmount())) //
-                                    .forEach(n -> addAssignment(joiner, n, child.getColor(), total));
-                }
             }
         }
 
