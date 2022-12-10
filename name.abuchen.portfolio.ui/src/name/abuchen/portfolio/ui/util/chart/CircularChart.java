@@ -376,7 +376,7 @@ public class CircularChart extends Chart
         }
 
         // if diff < 0 then we assigned more than the available arc length
-        while (diff < 0 && diff >= -5)
+        while (diff < 0 && diff >= -10)
         {
             double delta = 0d;
             int candidate = 0;
@@ -396,7 +396,7 @@ public class CircularChart extends Chart
         }
 
         // if diff > 0 then we assigned less than the available arc length
-        while (diff > 0 && diff < 5)
+        while (diff > 0 && diff < 10)
         {
             double delta = 0d;
             int candidate = 0;
@@ -451,7 +451,7 @@ public class CircularChart extends Chart
                 }
             }
 
-            while (gapsNeeded > 0 && gapsNeeded < 5)
+            while (gapsNeeded > 0 && gapsNeeded < 50)
             {
                 double delta = 0d;
                 int candidate = 0;

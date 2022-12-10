@@ -61,12 +61,6 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
     @Override
     public void nodeChange(TaxonomyNode node)
     {
-        onConfigChanged();
-    }
-
-    @Override
-    public void onConfigChanged()
-    {
         treeMap.setTreeModel(new Model(getModel()));
         legend.setRootItem(getModel().getVirtualRootNode());
     }

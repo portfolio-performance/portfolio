@@ -128,10 +128,4 @@ import name.abuchen.portfolio.util.Pair;
     {
         chart.refresh(null);
     }
-
-    @Override
-    public void onConfigChanged()
-    {
-        chart.refresh(null);
-    }
 }

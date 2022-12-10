@@ -39,7 +39,7 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 
         Action action = new SimpleAction(Messages.LabelIncludeSecuritiesInPieChart, a -> {
             getModel().setExcludeSecuritiesInPieChart(!getModel().isSecuritiesInPieChartExcluded());
-            onConfigChanged();
+            chart.refresh(null);
         });
         action.setChecked(!getModel().isSecuritiesInPieChartExcluded());
         manager.add(action);
@@ -76,11 +76,4 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     {
         chart.refresh(null);
     }
-
-    @Override
-    public void onConfigChanged()
-    {
-        chart.refresh(null);
-    }
-
 }
