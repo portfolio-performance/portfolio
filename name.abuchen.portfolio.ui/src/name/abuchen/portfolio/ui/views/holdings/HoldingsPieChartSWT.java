@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
-import org.json.simple.JSONObject;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -26,18 +25,18 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.chart.PieChart;
-import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsCenteredInPie;
-import name.abuchen.portfolio.ui.util.chart.PieChart.RenderLabelsOutsidePie;
+import name.abuchen.portfolio.ui.util.chart.CircularChart;
+import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsCenteredInPie;
+import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsOutsidePie;
 import name.abuchen.portfolio.ui.views.IPieChart;
 
 public class HoldingsPieChartSWT implements IPieChart
 {
-    private PieChart chart;
+    private CircularChart chart;
     private ClientSnapshot snapshot;
     private AbstractFinanceView financeView;
     private List<String> lastLabels;
-    private Map<String, NodeData> nodeDataMap;
+    private Map<String, NodeData> id2nodeData;
 
     private class NodeData
     {
@@ -52,15 +51,16 @@ public class HoldingsPieChartSWT implements IPieChart
     {
         this.snapshot = snapshot;
         this.financeView = view;
-        nodeDataMap = new HashMap<>();
+        id2nodeData = new HashMap<>();
     }
 
     @Override
     public Control createControl(Composite parent)
     {
-        chart = new PieChart(parent, IPieChart.ChartType.DONUT, this::getNodeLabel);
+        chart = new CircularChart(parent, SeriesType.DOUGHNUT, this::getNodeLabel);
         chart.addLabelPainter(new RenderLabelsCenteredInPie(chart, this::getNodeLabel));
-        chart.addLabelPainter(new RenderLabelsOutsidePie(chart, Node::getId));
+        chart.addLabelPainter(
+                        new RenderLabelsOutsidePie(chart, n -> id2nodeData.get(n.getId()).position.getDescription()));
 
         // set customized tooltip builder
         chart.getToolTip().setToolTipBuilder((container, currentNode) -> {
@@ -68,13 +68,20 @@ public class HoldingsPieChartSWT implements IPieChart
             final Composite data = new Composite(container, SWT.NONE);
             GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
 
-            Label assetLabel = new Label(data, SWT.NONE);
-            assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-            assetLabel.setText(currentNode.getId());
+            NodeData nodeData = id2nodeData.get(currentNode.getId());
 
-            NodeData nodeData = nodeDataMap.get(currentNode.getId());
-            if (nodeData != null)
+            if (nodeData == null)
             {
+                Label assetLabel = new Label(data, SWT.NONE);
+                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                assetLabel.setText(currentNode.getId());
+            }
+            else
+            {
+                Label assetLabel = new Label(data, SWT.NONE);
+                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                assetLabel.setText(nodeData.position.getDescription());
+
                 Label right = new Label(data, SWT.NONE);
                 right.setText(nodeData.percentageString);
 
@@ -88,7 +95,7 @@ public class HoldingsPieChartSWT implements IPieChart
         // Listen on mouse clicks to update information pane
         ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
                         event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
-                            NodeData nodeData = nodeDataMap.get(node.getId());
+                            NodeData nodeData = id2nodeData.get(node.getId());
                             if (nodeData != null)
                                 financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
                         }));
@@ -109,15 +116,16 @@ public class HoldingsPieChartSWT implements IPieChart
     {
         List<Double> values = new ArrayList<>();
         List<String> labels = new ArrayList<>();
-        nodeDataMap.clear();
+        id2nodeData.clear();
 
         snapshot.getAssetPositions() //
                         .filter(p -> p.getValuation().getAmount() > 0) //
                         .sorted((l, r) -> Long.compare(r.getValuation().getAmount(), l.getValuation().getAmount())) //
                         .forEach(p -> {
-                            String nodeId = JSONObject.escape(p.getDescription());
+                            String nodeId = p.getInvestmentVehicle().getUUID();
                             labels.add(nodeId);
                             values.add(p.getValuation().getAmount() / Values.Amount.divider());
+
                             NodeData data = new NodeData();
                             data.position = p;
                             data.percentageString = Values.Percent2.format(p.getShare());
@@ -126,7 +134,7 @@ public class HoldingsPieChartSWT implements IPieChart
                             data.valueSingle = Values.Money
                                             .format(p.getValuation().multiply((long) Values.Share.divider())
                                                             .divide(p.getPosition().getShares()));
-                            nodeDataMap.put(nodeId, data);
+                            id2nodeData.put(nodeId, data);
                         });
 
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet()
@@ -186,7 +194,7 @@ public class HoldingsPieChartSWT implements IPieChart
 
     private void setColors(ICircularSeries<?> circularSeries, int colorCount)
     {
-        PieChart.PieColors wheel = new PieChart.PieColors();
+        CircularChart.PieColors wheel = new CircularChart.PieColors();
         Color[] colors = new Color[colorCount];
         for (int ii = 0; ii < colors.length; ii++)
             colors[ii] = wheel.next();
@@ -195,7 +203,7 @@ public class HoldingsPieChartSWT implements IPieChart
 
     private String getNodeLabel(Node node)
     {
-        NodeData nodeData = nodeDataMap.get(node.getId());
+        NodeData nodeData = id2nodeData.get(node.getId());
         return nodeData != null ? nodeData.percentageString : null;
     }
 }

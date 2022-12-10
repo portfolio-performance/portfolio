@@ -19,14 +19,14 @@ import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.views.IPieChart;
 
-public class PieChart extends Chart
+public class CircularChart extends Chart
 {
     public interface ILabelProvider
     {
@@ -35,10 +35,10 @@ public class PieChart extends Chart
 
     public abstract static class LabelPainter implements ICustomPaintListener
     {
-        protected final PieChart pieChart;
+        protected final CircularChart pieChart;
         protected Font labelFont;
 
-        protected LabelPainter(PieChart pieChart)
+        protected LabelPainter(CircularChart pieChart)
         {
             this.pieChart = pieChart;
         }
@@ -85,7 +85,7 @@ public class PieChart extends Chart
 
     public static class RenderLabelsAlongAngle extends LabelPainter
     {
-        public RenderLabelsAlongAngle(PieChart pieChart)
+        public RenderLabelsAlongAngle(CircularChart pieChart)
         {
             super(pieChart);
         }
@@ -101,7 +101,7 @@ public class PieChart extends Chart
                 return;
 
             int level = node.getLevel() - series.getRootNode().getLevel()
-                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+                            + (pieChart.chartType == SeriesType.PIE ? 0 : 1);
 
             Point angleBounds = node.getAngleBounds();
 
@@ -158,12 +158,12 @@ public class PieChart extends Chart
     {
         private final ILabelProvider labelProvider;
 
-        public RenderLabelsCenteredInPie(PieChart pieChart)
+        public RenderLabelsCenteredInPie(CircularChart pieChart)
         {
             this(pieChart, pieChart.labelProvider);
         }
 
-        public RenderLabelsCenteredInPie(PieChart pieChart, ILabelProvider labelProvider)
+        public RenderLabelsCenteredInPie(CircularChart pieChart, ILabelProvider labelProvider)
         {
             super(pieChart);
             this.labelProvider = labelProvider;
@@ -180,7 +180,7 @@ public class PieChart extends Chart
                 return;
 
             int level = node.getLevel() - series.getRootNode().getLevel()
-                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+                            + (pieChart.chartType == SeriesType.PIE ? 0 : 1);
 
             Point angleBounds = node.getAngleBounds();
 
@@ -212,7 +212,7 @@ public class PieChart extends Chart
     {
         private final ILabelProvider labelProvider;
 
-        public RenderLabelsOutsidePie(PieChart pieChart, ILabelProvider labelProvider)
+        public RenderLabelsOutsidePie(CircularChart pieChart, ILabelProvider labelProvider)
         {
             super(pieChart);
             this.labelProvider = labelProvider;
@@ -229,7 +229,7 @@ public class PieChart extends Chart
                 return;
 
             int level = node.getLevel() - series.getRootNode().getLevel()
-                            + (pieChart.chartType == IPieChart.ChartType.PIE ? 0 : 1);
+                            + (pieChart.chartType == SeriesType.PIE ? 0 : 1);
 
             Point angleBounds = node.getAngleBounds();
             int angle = angleBounds.x + angleBounds.y / 2;
@@ -258,24 +258,16 @@ public class PieChart extends Chart
 
     }
 
-    private enum Orientation
-    {
-        X_AXIS, Y_AXIS
-    }
-
-    private static final int ID_PRIMARY_X_AXIS = 0;
-    private static final int ID_PRIMARY_Y_AXIS = 0;
-
-    private PieChartToolTip tooltip;
-    private IPieChart.ChartType chartType;
+    private CircularChartToolTip tooltip;
+    private SeriesType chartType;
     private ILabelProvider labelProvider;
 
-    public PieChart(Composite parent, IPieChart.ChartType chartType)
+    public CircularChart(Composite parent, SeriesType chartType)
     {
         this(parent, chartType, node -> Values.Percent2.format(node.getValue() / node.getParent().getValue()));
     }
 
-    public PieChart(Composite parent, IPieChart.ChartType chartType, ILabelProvider labelProvider)
+    public CircularChart(Composite parent, SeriesType chartType, ILabelProvider labelProvider)
     {
         super(parent, SWT.NONE);
         this.chartType = chartType;
@@ -283,7 +275,7 @@ public class PieChart extends Chart
 
         setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 
-        if (IPieChart.ChartType.DONUT == chartType)
+        if (SeriesType.DOUGHNUT == chartType)
         {
             addListener(SWT.Paint, event -> {
                 // Set color in root node to background color
@@ -298,7 +290,7 @@ public class PieChart extends Chart
         getLegend().setVisible(false);
         getTitle().setVisible(false);
 
-        tooltip = new PieChartToolTip(this);
+        tooltip = new CircularChartToolTip(this);
     }
 
     public void addLabelPainter(LabelPainter labelPainter)
@@ -306,7 +298,7 @@ public class PieChart extends Chart
         getPlotArea().addCustomPaintListener(labelPainter);
     }
 
-    public PieChartToolTip getToolTip()
+    public CircularChartToolTip getToolTip()
     {
         return tooltip;
     }
@@ -316,69 +308,16 @@ public class PieChart extends Chart
      */
     public Optional<Node> getNodeAt(int x, int y)
     {
-        Node node = null;
         for (ISeries<?> series : getSeriesSet().getSeries())
         {
             if (!(series instanceof ICircularSeries))
                 continue;
 
             ICircularSeries<?> circularSeries = (ICircularSeries<?>) series;
-
-            double primaryValueX = getSelectedPrimaryAxisValue(x, PieChart.Orientation.X_AXIS);
-            double primaryValueY = getSelectedPrimaryAxisValue(y, PieChart.Orientation.Y_AXIS);
-
-            node = circularSeries.getPieSliceFromPosition(primaryValueX, primaryValueY);
-            return Optional.ofNullable(node);
+            return Optional.ofNullable(circularSeries.getPieSliceFromPosition(x, y));
         }
 
         return Optional.empty();
-    }
-
-    private double getSelectedPrimaryAxisValue(int position, Orientation orientation)
-    {
-        double primaryValue;
-        double start;
-        double stop;
-        int length;
-
-        if (Orientation.X_AXIS == orientation)
-        {
-            IAxis axis = getAxisSet().getXAxis(ID_PRIMARY_X_AXIS);
-            start = axis.getRange().lower;
-            stop = axis.getRange().upper;
-            length = getPlotArea().getSize().x;
-        }
-        else
-        {
-            IAxis axis = getAxisSet().getYAxis(ID_PRIMARY_Y_AXIS);
-            start = axis.getRange().lower;
-            stop = axis.getRange().upper;
-            length = getPlotArea().getSize().y;
-        }
-
-        if (position <= 0)
-        {
-            primaryValue = start;
-        }
-        else if (position > length)
-        {
-            primaryValue = stop;
-        }
-        else
-        {
-            double delta = stop - start;
-            double percentage;
-            if (Orientation.X_AXIS == orientation)
-            {
-                percentage = ((100.0d / length) * position) / 100.0d;
-            }
-            else
-            {
-                percentage = (100.0d - ((100.0d / length) * position)) / 100.0d;
-            }
-            primaryValue = start + delta * percentage;
-        }
-        return primaryValue;
     }
 
     public static final class PieColors

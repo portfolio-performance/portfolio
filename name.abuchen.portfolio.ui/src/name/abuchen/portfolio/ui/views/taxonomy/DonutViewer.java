@@ -33,7 +33,7 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     {
         if (this.useSWTCharts)
         {
-            chart = new TaxonomyDonutSWT(this, view, IPieChart.ChartType.DONUT);
+            chart = new TaxonomyDonutSWT(this, view);
         }
         else
         {
@@ -43,12 +43,12 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     }
 
     @Override
-    public void beforePage()
+    public void beforePage() // NOSONAR
     {
     }
 
     @Override
-    public void afterPage()
+    public void afterPage() // NOSONAR
     {
     }
 

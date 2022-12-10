@@ -50,7 +50,7 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     {
         if (this.useSWTCharts)
         {
-            chart = new TaxonomyPieChartSWT(this, view, IPieChart.ChartType.DONUT);
+            chart = new TaxonomyPieChartSWT(this, view);
         }
         else
         {

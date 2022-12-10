@@ -10,10 +10,9 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.model.Node;
 
-public class PieChartToolTip extends AbstractChartToolTip
+public class CircularChartToolTip extends AbstractChartToolTip
 {
     private DecimalFormat defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
     private IToolTipBuilder tooltipBuilder;
@@ -40,7 +39,7 @@ public class PieChartToolTip extends AbstractChartToolTip
         }
     }
 
-    public PieChartToolTip(Chart chart)
+    public CircularChartToolTip(CircularChart chart)
     {
         super(chart);
         setToolTipBuilder(new ToolTipBuilder());
@@ -54,7 +53,7 @@ public class PieChartToolTip extends AbstractChartToolTip
     @Override
     protected Object getFocusObjectAt(Event event)
     {
-        Optional<Node> node = ((PieChart) getSWTChart()).getNodeAt(event.x, event.y);
+        Optional<Node> node = ((CircularChart) getSWTChart()).getNodeAt(event.x, event.y);
         return node.isPresent() ? node.get() : null;
     }
 
