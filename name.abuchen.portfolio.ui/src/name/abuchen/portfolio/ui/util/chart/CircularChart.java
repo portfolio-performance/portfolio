@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -336,6 +337,151 @@ public class CircularChart extends Chart
             float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / (float) SIZE)));
             return Colors.getColor(new RGB((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness));
 
+        }
+    }
+
+    public void updateAngleBounds()
+    {
+        for (ISeries<?> series : getSeriesSet().getSeries())
+        {
+            if (series instanceof ICircularSeries<?>)
+                updateAngleBounds(((ICircularSeries<?>) series).getRootNode());
+        }
+    }
+
+    private void updateAngleBounds(Node parent) // NOSONAR
+    {
+        if (parent.getChildren() == null || parent.getChildren().isEmpty())
+            return;
+
+        Point angleBounds = parent.getAngleBounds();
+
+        List<Node> children = parent.getChildren();
+        int size = children.size();
+
+        // exact length of the arc of one slice
+        double[] arcs = new double[size];
+        // length of an arc rounded to int
+        int[] intArcs = new int[size];
+        // diff checks for rounding errors
+        int diff = angleBounds.y;
+
+        for (int ii = 0; ii < size; ii++)
+        {
+            Node child = children.get(ii);
+            double fraction = child.getValue() / parent.getValue();
+            arcs[ii] = fraction * angleBounds.y;
+            intArcs[ii] = (int) (arcs[ii] + 0.5);
+            diff -= intArcs[ii];
+        }
+
+        // if diff < 0 then we assigned more than the available arc length
+        while (diff < 0 && diff >= -5)
+        {
+            double delta = 0d;
+            int candidate = 0;
+            for (int ii = 0; ii < size; ii++)
+            {
+                double d = intArcs[ii] - arcs[ii];
+
+                // skip nodes which would be reduced to zero
+                if (d > delta && intArcs[ii] > 1)
+                {
+                    delta = d;
+                    candidate = ii;
+                }
+            }
+            intArcs[candidate]--;
+            diff++;
+        }
+
+        // if diff > 0 then we assigned less than the available arc length
+        while (diff > 0 && diff < 5)
+        {
+            double delta = 0d;
+            int candidate = 0;
+            for (int ii = 0; ii < size; ii++)
+            {
+                double d = intArcs[ii] - arcs[ii];
+
+                // prefer slices with zero
+                if (intArcs[ii] == 0)
+                    d -= 1;
+
+                if (d < delta)
+                {
+                    delta = d;
+                    candidate = ii;
+                }
+            }
+            intArcs[candidate]++;
+            diff--;
+        }
+
+        long zeros = Arrays.stream(intArcs).filter(i -> i == 0).count();
+        boolean[] gaps = new boolean[size];
+        if (zeros > 0)
+        {
+            // if available, assign available degrees from the gap to the zero
+            while (diff > 0 && zeros > 0)
+            {
+                for (int ii = 0; ii < size; ii++)
+                {
+                    if (intArcs[ii] == 0)
+                    {
+                        intArcs[ii] = 1;
+                        zeros--;
+                        diff--;
+                        break;
+                    }
+                }
+            }
+
+            // now insert gaps into the pie to indicate that there is at
+            // least one slice which cannot be shown
+
+            int gapsNeeded = 0;
+
+            for (int ii = 0; ii < size; ii++)
+            {
+                if (intArcs[ii] == 0 && (ii + 1 == size || intArcs[ii + 1] > 0))
+                {
+                    gaps[ii] = true;
+                    gapsNeeded++;
+                }
+            }
+
+            while (gapsNeeded > 0 && gapsNeeded < 5)
+            {
+                double delta = 0d;
+                int candidate = 0;
+                for (int ii = 0; ii < size; ii++)
+                {
+                    double d = intArcs[ii] - arcs[ii];
+                    if (d > delta && intArcs[ii] > 1)
+                    {
+                        delta = d;
+                        candidate = ii;
+                    }
+                }
+                intArcs[candidate]--;
+                gapsNeeded--;
+            }
+        }
+
+        // assign calculated angles to nodes
+        int nextAngle = angleBounds.x;
+        for (int ii = 0; ii < children.size(); ii++)
+        {
+            Node child = children.get(ii);
+            child.setAngleBounds(new Point(nextAngle, intArcs[ii]));
+
+            if (gaps[ii])
+                nextAngle++; // add the gap
+
+            updateAngleBounds(child);
+
+            nextAngle += intArcs[ii];
         }
     }
 }

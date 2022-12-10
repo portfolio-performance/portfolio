@@ -83,6 +83,8 @@ public class TaxonomyDonutSWT implements IPieChart
 
         id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
 
+        chart.updateAngleBounds();
+
         chart.redraw();
     }
 

@@ -167,6 +167,7 @@ public class HoldingsPieChartSWT implements IPieChart
 
         }
         setColors(circularSeries, values.size());
+        chart.updateAngleBounds();
         chart.redraw();
     }
 
