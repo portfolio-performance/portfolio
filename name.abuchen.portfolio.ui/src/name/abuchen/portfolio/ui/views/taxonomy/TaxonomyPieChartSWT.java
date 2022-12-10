@@ -146,12 +146,17 @@ public class TaxonomyPieChartSWT implements IPieChart
 
             if (!(excludeSecurities && child.isAssignment()))
             {
-                Node childNode = node.addChild(child.getId(), child.getActual().getAmount() / Values.Amount.divider());
+                // aggregated id b/c vehicle can be assigned to multiple
+                // classifications
+
+                String id = parentNode.getId() + child.getId();
+
+                Node childNode = node.addChild(id, child.getActual().getAmount() / Values.Amount.divider());
                 childNode.setData(child);
 
                 Color color = Colors.getColor(ColorConversion.hex2RGB(
                                 child.isAssignment() ? ColorConversion.brighter(parentColor) : child.getColor()));
-                id2color.put(child.getId(), color);
+                id2color.put(id, color);
 
                 if (!child.getChildren().isEmpty())
                     addNodes(id2color, childNode, child, child.getChildren(), total, excludeSecurities);
