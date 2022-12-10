@@ -1,0 +1,36 @@
+Abrechnung Ereignis
+easybank Service Center 36308772-28.9.2022
+BAWAG P.S.K. AG Depot-Nr.: 23456789012
+Wiedner Gürtel 11 Max Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Max Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 28.9.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+374,95 Stk
+Titel: IE0032523478  i S h s - E O  C o r p Bd Lar.Cap U.ETF      
+Registered Shares o.N.             
+Fondsgesellschaft: iShares PLC
+Ertrag: 0,3149 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 118,07 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 116,93 EUR 
+Valuta 28.9.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 15.9.2022
+Record-Tag: 16.9.2022
+Bemessungsgrundlage USt: -0,95 EUR
+KESt auf inl. Dividende pro Fondsanteil (verlusttopfrelevant): 0,00 EUR
+KESt auf intransparente Grundstücksgesellschaften (verlusttopfrelevant): 0,00 EUR
+3.10.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+12996 Doknr.: ON00-036-0000000001
+

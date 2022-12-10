@@ -48,7 +48,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag).*$");
+        Block firstRelevantLine = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} unten angef.hrtes Gesch.ft abgerechnet:$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -87,6 +87,12 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .attributes("date", "time")
                                         .match("^Schlusstag\\/\\-zeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // Handelszeit: 11.11.2022
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                         )
 
                 .oneOf(
@@ -174,7 +180,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Gesch.ftsart: Ertrag.*$");
+        Block block = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} unten angef.hrtes Gesch.ft abgerechnet:$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -275,7 +281,11 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -315,10 +325,41 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 // 28.06 Mustermann 28.06 2.000,00
                 // IBAN: AT12 1234 1234 1234 1234
                 // REF: 38000220627-5336530-0000561
-                .section("date", "amount", "note")
+                .section("date", "amount", "note").optional()
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}) .* [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)$")
                 .match("^IBAN: .*$")
                 .match("^(?<note>REF: .*)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    t.setDateTime(asDate(v.get("date") + "." + context.get("year")));
+
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2} Abschluss [\\d]{2}\\.[\\d]{2} [\\.,\\d]+\\-$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.FEES);
+                    return t;
+                })
+
+                // 30.09 Abschluss 30.09 4,50-
+                // Kontoführungsgebühr                          4,50-
+                .section("date", "amount", "note").optional()
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}) Abschluss [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)\\-$")
+                .match("^(?<note>Kontof.hrungsgeb.hr) .* [\\.,\\d]+\\-$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
