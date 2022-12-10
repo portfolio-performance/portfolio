@@ -25,22 +25,19 @@ public class TaxonomyPieChartBrowser implements IPieChart
     private AbstractChartPage chartPage;
     private AbstractFinanceView view;
 
-
     public TaxonomyPieChartBrowser(EmbeddedBrowser browser, AbstractFinanceView view, AbstractChartPage page)
     {
         this.browser = browser;
         this.chartPage = page;
-        this.view = view
-                        ;
+        this.view = view;
     }
 
     @Override
     public Control createControl(Composite parent)
     {
         browser.setHtmlpage("/META-INF/html/flare.html"); //$NON-NLS-1$
-        return browser.createControl(parent, LoadDataFunction::new,
-                    b -> new ItemSelectedFunction(b, uuid -> getModel().getVirtualRootNode().getNodeById(uuid)
-                        .ifPresent(n -> view.setInformationPaneInput(n))));
+        return browser.createControl(parent, LoadDataFunction::new, b -> new ItemSelectedFunction(b, uuid -> getModel()
+                        .getVirtualRootNode().getNodeById(uuid).ifPresent(n -> view.setInformationPaneInput(n))));
 
     }
 
@@ -147,6 +144,7 @@ public class TaxonomyPieChartBrowser implements IPieChart
                 buffer.append("]"); //$NON-NLS-1$
         }
     }
+
     private TaxonomyModel getModel()
     {
         return chartPage.getModel();

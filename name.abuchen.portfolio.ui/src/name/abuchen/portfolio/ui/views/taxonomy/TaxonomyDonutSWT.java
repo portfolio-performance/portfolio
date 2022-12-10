@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -68,8 +71,8 @@ public class TaxonomyDonutSWT implements IPieChart
     private void updateChart()
     {
 
-        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(
-                        SeriesType.DOUGHNUT, chartPage.getModel().getTaxonomy().getName());
+        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
+                        chartPage.getModel().getTaxonomy().getName());
 
         circularSeries.setBorderColor(Colors.WHITE);
 
@@ -79,7 +82,15 @@ public class TaxonomyDonutSWT implements IPieChart
         Map<String, Color> id2color = new HashMap<>();
 
         // classified nodes
-        addNodes(id2color, rootNode, getModel().getChartRenderingRootNode());
+        TaxonomyNode node = getModel().getClassificationRootNode();
+        addChildren(id2color, rootNode, node);
+
+        // add unclassified if included
+        if (!getModel().isUnassignedCategoryInChartsExcluded())
+        {
+            TaxonomyNode unassigned = getModel().getUnassignedNode();
+            addChildren(id2color, rootNode, unassigned);
+        }
 
         id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
 
@@ -88,10 +99,21 @@ public class TaxonomyDonutSWT implements IPieChart
         chart.redraw();
     }
 
-    private void addNodes(Map<String, Color> colors, Node node,
-                    TaxonomyNode parentNode)
+    private void addChildren(Map<String, Color> colors, Node rootNode, TaxonomyNode parentNode)
     {
-        String parentColor = parentNode.getColor();
+        BiConsumer<TaxonomyNode, TaxonomyNode> addChild = (parent, child) -> {
+
+            // create a new identifier because an investment vehicle can be
+            // assigned to multiple classifications
+            String id = parent.getId() + child.getId();
+
+            Node childNode = rootNode.addChild(id, child.getActual().getAmount() / Values.Amount.divider());
+            childNode.setData(child);
+
+            Color color = Colors.getColor(ColorConversion.hex2RGB(parent.getColor()));
+            colors.put(id, color);
+        };
+
         for (TaxonomyNode child : parentNode.getChildren())
         {
             if (child.getActual().isZero())
@@ -99,15 +121,21 @@ public class TaxonomyDonutSWT implements IPieChart
 
             if (child.isAssignment())
             {
-                Node childNode = node.addChild(child.getId(), child.getActual().getAmount() / Values.Amount.divider());
-                childNode.setData(child);
-
-                Color color = Colors.getColor(ColorConversion.hex2RGB(ColorConversion.brighter(parentColor)));
-                colors.put(child.getId(), color);
+                addChild.accept(parentNode, child);
             }
+            else if (child.isClassification())
+            {
+                List<TaxonomyNode> grandchildren = new ArrayList<>();
+                child.accept(n -> {
+                    if (n.isAssignment())
+                        grandchildren.add(n);
+                });
 
-            if (!child.getChildren().isEmpty())
-                addNodes(colors, node, child);
+                grandchildren.stream() //
+                                .filter(n -> !n.getActual().isZero()) //
+                                .sorted((l, r) -> Long.compare(r.getActual().getAmount(), l.getActual().getAmount())) //
+                                .forEach(grandchild -> addChild.accept(child, grandchild));
+            }
         }
     }
 
