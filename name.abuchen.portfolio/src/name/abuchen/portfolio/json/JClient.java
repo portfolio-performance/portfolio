@@ -14,15 +14,15 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import name.abuchen.portfolio.json.impl.LocalDateSerializer;
-import name.abuchen.portfolio.json.impl.LocalTimeSerializer;
+import name.abuchen.portfolio.json.impl.LocalDateAdapter;
+import name.abuchen.portfolio.json.impl.LocalTimeAdapter;
 import name.abuchen.portfolio.model.TransactionPair;
 
 public class JClient
 {
     public static final Gson GSON = new GsonBuilder() //
-                    .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter().nullSafe())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter().nullSafe())
                     .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
     private int version = 1;
