@@ -45,28 +45,37 @@ public class TaxonomyPieChartSWT implements IPieChart
             final Composite area = new Composite(container, SWT.NONE);
             area.setLayout(new RowLayout(SWT.VERTICAL));
 
-            Label assetLabel = new Label(area, SWT.NONE);
-            assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-            assetLabel.setText(taxonomyNode.getName());
-
-            Label info = new Label(area, SWT.NONE);
-            info.setText(Values.Money.format(taxonomyNode.getActual()));
-
-            if (!taxonomyNode.isRoot())
+            if (rootNode == null || taxonomyNode == null)
             {
-                info = new Label(area, SWT.NONE);
-
-                info.setText(String.format("%s %s", //$NON-NLS-1$
-                                Values.Percent2.format(taxonomyNode.getActual().getAmount()
-                                                / (double) taxonomyNode.getParent().getActual().getAmount()),
-                                taxonomyNode.getParent().getName()));
+                Label assetLabel = new Label(area, SWT.NONE);
+                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                assetLabel.setText(chartNode.getId());
             }
-
-            if (taxonomyNode.getParent() != rootNode)
+            else
             {
-                info = new Label(area, SWT.NONE);
-                info.setText(MessageFormat.format(Messages.LabelTotalValuePercent, Values.Percent2.format(
-                                taxonomyNode.getActual().getAmount() / (double) rootNode.getActual().getAmount())));
+                Label assetLabel = new Label(area, SWT.NONE);
+                assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+                assetLabel.setText(taxonomyNode.getName());
+
+                Label info = new Label(area, SWT.NONE);
+                info.setText(Values.Money.format(taxonomyNode.getActual()));
+
+                if (!taxonomyNode.isRoot())
+                {
+                    info = new Label(area, SWT.NONE);
+
+                    info.setText(String.format("%s %s", //$NON-NLS-1$
+                                    Values.Percent2.format(taxonomyNode.getActual().getAmount()
+                                                    / (double) taxonomyNode.getParent().getActual().getAmount()),
+                                    taxonomyNode.getParent().getName()));
+                }
+
+                if (taxonomyNode.getParent() != rootNode)
+                {
+                    info = new Label(area, SWT.NONE);
+                    info.setText(MessageFormat.format(Messages.LabelTotalValuePercent, Values.Percent2.format(
+                                    taxonomyNode.getActual().getAmount() / (double) rootNode.getActual().getAmount())));
+                }
             }
         }
     }

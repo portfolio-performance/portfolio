@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
 import name.abuchen.portfolio.math.Rebalancer;
 import name.abuchen.portfolio.math.Rebalancer.FixedSumRebalancer;
 import name.abuchen.portfolio.model.Account;
@@ -113,8 +111,7 @@ public final class TaxonomyModel
 
     private Rebalancer.RebalancingSolution rebalancingSolution;
 
-    @Inject
-    /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
+    public TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
         this.taxonomy = Objects.requireNonNull(taxonomy);
         this.client = Objects.requireNonNull(client);

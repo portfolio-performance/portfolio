@@ -1,29 +1,22 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swtchart.ICircularSeries;
+import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
-import org.eclipse.swtchart.model.Node;
 
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.CircularChart;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsCenteredInPie;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsOutsidePie;
 import name.abuchen.portfolio.ui.views.IPieChart;
-import name.abuchen.portfolio.util.ColorConversion;
 
 public class TaxonomyDonutSWT implements IPieChart
 {
     private CircularChart chart;
+    private DonutChartBuilder builder = new DonutChartBuilder();
     private DonutViewer chartPage;
     private AbstractFinanceView financeView;
 
@@ -40,8 +33,7 @@ public class TaxonomyDonutSWT implements IPieChart
         chart.addLabelPainter(new RenderLabelsCenteredInPie(chart));
         chart.addLabelPainter(new RenderLabelsOutsidePie(chart, node -> ((TaxonomyNode) node.getData()).getName()));
 
-        // set customized tooltip builder
-        chart.getToolTip().setToolTipBuilder(new TaxonomyPieChartSWT.TaxonomyTooltipBuilder());
+        builder.configureToolTip(chart.getToolTip());
 
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.RIGHT);
@@ -55,7 +47,8 @@ public class TaxonomyDonutSWT implements IPieChart
                                                 financeView.setInformationPaneInput(taxonomoyNode);
                                         }));
 
-        updateChart();
+        builder.createCircularSeries(chart, chartPage.getModel());
+        chart.updateAngleBounds();
         return chart;
     }
 
@@ -67,41 +60,22 @@ public class TaxonomyDonutSWT implements IPieChart
 
     private void updateChart()
     {
+        try
+        {
+            chart.suspendUpdate(true);
 
-        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
-                        chartPage.getModel().getTaxonomy().getName());
+            for (ISeries<?> s : chart.getSeriesSet().getSeries())
+                chart.getSeriesSet().deleteSeries(s.getId());
 
-        circularSeries.setBorderColor(Colors.WHITE);
+            builder.createCircularSeries(chart, chartPage.getModel());
 
-        Node rootNode = circularSeries.getRootNode();
-        rootNode.setData(getModel().getChartRenderingRootNode());
-
-        // do not set the color on the node directly because it is reset
-        // each time a new node is added; instead save them in color map and
-        // apply after adding the last node
-        Map<String, Color> id2color = new HashMap<>();
-
-        chartPage.computeNodeList().forEach(pair -> {
-            // create a new identifier because an investment vehicle can be
-            // assigned to multiple classifications
-            String id = pair.getLeft().getId() + pair.getRight().getId();
-
-            Node childNode = rootNode.addChild(id, pair.getRight().getActual().getAmount() / Values.Amount.divider());
-            childNode.setData(pair.getRight());
-
-            Color color = Colors.getColor(ColorConversion.hex2RGB(pair.getLeft().getColor()));
-            id2color.put(id, color);
-        });
-
-        id2color.entrySet().forEach(e -> circularSeries.setColor(e.getKey(), e.getValue()));
-
-        chart.updateAngleBounds();
-
+            chart.updateAngleBounds();
+        }
+        finally
+        {
+            chart.suspendUpdate(false);
+        }
         chart.redraw();
     }
 
-    private TaxonomyModel getModel()
-    {
-        return chartPage.getModel();
-    }
 }

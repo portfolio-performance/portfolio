@@ -22,6 +22,7 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 public class TaxonomyDonutBrowser implements IPieChart
 {
     private EmbeddedBrowser browser;
+    private DonutChartBuilder builder = new DonutChartBuilder();
     private DonutViewer chartPage;
     private AbstractFinanceView view;
 
@@ -74,9 +75,8 @@ public class TaxonomyDonutBrowser implements IPieChart
 
                 long total = getModel().getChartRenderingRootNode().getActual().getAmount();
 
-                chartPage.computeNodeList().forEach(pair -> {
-                    addAssignment(joiner, pair.getRight(), pair.getLeft().getColor(), total);
-                });
+                builder.computeNodeList(getModel()).forEach(
+                                pair -> addAssignment(joiner, pair.getRight(), pair.getLeft().getColor(), total));
 
                 return joiner.toString();
             }

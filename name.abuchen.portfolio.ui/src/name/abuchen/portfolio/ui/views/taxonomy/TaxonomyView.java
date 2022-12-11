@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
@@ -182,9 +183,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     }
 
     @Inject
-    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy parameter)
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy taxonomy,
+                    ExchangeRateProviderFactory factory)
     {
-        this.taxonomy = parameter;
+        this.taxonomy = taxonomy;
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
@@ -196,7 +198,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
-        this.model = make(TaxonomyModel.class, taxonomy);
+        this.model = new TaxonomyModel(factory, getClient(), taxonomy);
 
         IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
