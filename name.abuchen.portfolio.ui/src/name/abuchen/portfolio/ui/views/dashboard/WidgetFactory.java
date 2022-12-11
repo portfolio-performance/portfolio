@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
@@ -102,7 +103,8 @@ public enum WidgetFactory
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).getTransferals();
                                         return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
-                                            // skip d[0] because it refers to the day before start
+                                        // skip d[0] because it refers to the
+                                        // day before start
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
@@ -192,6 +194,9 @@ public enum WidgetFactory
     ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
+    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets,
+                    HoldingsChartWidget::new),
+
     HEATMAP(Messages.LabelHeatmap, Messages.ClientEditorLabelPerformance, PerformanceHeatmapWidget::new),
 
     HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, Messages.ClientEditorLabelPerformance,
@@ -269,11 +274,10 @@ public enum WidgetFactory
                                             return 0L;
 
                                         Security security = (Security) ds.getInstance();
-
                                         return security.getSecurityPrice(LocalDate.now()).getValue();
                                     }) //
                                     .withBenchmarkDataSeries(false) //
-                                    .with(ds -> ds.getInstance() instanceof Security)
+                                    .with(ds -> ds.getInstance() instanceof Security) //
                                     .withColoredValues(false) //
                                     .withTooltip((ds, period) -> {
                                         if (!(ds.getInstance() instanceof Security))
@@ -282,9 +286,8 @@ public enum WidgetFactory
                                         Security security = (Security) ds.getInstance();
 
                                         return MessageFormat.format(Messages.TooltipSecurityLatestPrice,
-                                                        security.getName(),
-                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now()).getDate())
-                                                        );
+                                                        security.getName(), Values.Date.format(security
+                                                                        .getSecurityPrice(LocalDate.now()).getDate()));
                                     }) //
                                     .build()),
 
@@ -317,8 +320,8 @@ public enum WidgetFactory
                                         if (ath.getValue() == null)
                                             return null;
 
-                                        return MessageFormat.format(Messages.TooltipAllTimeHigh,
-                                                        period.getDays(), Values.Date.format(ath.getDate()),
+                                        return MessageFormat.format(Messages.TooltipAllTimeHigh, period.getDays(),
+                                                        Values.Date.format(ath.getDate()),
                                                         ath.getValue() / Values.Quote.divider(),
                                                         security.getSecurityPrice(LocalDate.now()).getValue()
                                                                         / Values.Quote.divider(),

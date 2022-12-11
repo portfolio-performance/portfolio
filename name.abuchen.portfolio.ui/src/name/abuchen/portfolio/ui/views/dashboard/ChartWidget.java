@@ -12,7 +12,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -252,17 +251,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         {
             chart.suspendUpdate(true);
 
-            GridData data = (GridData) chart.getLayoutData();
-
-            int oldHeight = data.heightHint;
-            int newHeight = get(ChartHeightConfig.class).getPixel();
-
-            if (oldHeight != newHeight)
-            {
-                data.heightHint = newHeight;
-                title.getParent().layout(true);
-                title.getParent().getParent().layout(true);
-            }
+            get(ChartHeightConfig.class).updateGridData(chart, title.getParent());
 
             chart.getTitle().setText(title.getText());
 

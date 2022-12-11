@@ -604,6 +604,7 @@ public class Messages extends NLS
     public static String LabelExpandAll;
     public static String LabelExpenses;
     public static String LabelError;
+    public static String LabelErrorNoHoldings;
     public static String LabelEurostatRegion;
     public static String LabelExcessReturnBaselineDataSeries;
     public static String LabelExcessReturnOperator;

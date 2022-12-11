@@ -143,6 +143,7 @@ public final class Colors
     public static final Color IRR = getColor(0, 0, 0);
 
     public static final Color DARK_BLUE = getColor(149, 165, 180); // 95A5B4
+    public static final Color LIGHT_GRAY = getColor(240, 240, 240);
 
     public static final Color HEADINGS = getColor(57, 62, 66); // 393E42
     public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
