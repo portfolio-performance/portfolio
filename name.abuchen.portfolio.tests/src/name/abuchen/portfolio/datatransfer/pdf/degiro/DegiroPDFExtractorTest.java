@@ -481,7 +481,7 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(176));
+        assertThat(results.size(), is(180));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -591,11 +591,37 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.44))));
 
         transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(125).getSubject();
+                        .collect(Collectors.toList()).get(118).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-24T17:20")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.27))));
+        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+        assertThat(transaction.getNote(), is("US47215P1066: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.31))));
+
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(119).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T08:34")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
+        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+        assertThat(transaction.getNote(), is("US01609W1027: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01))));
+
+        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList()).get(127).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-09-05T11:34")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
+        assertThat(transaction.getNote(), is("Einrichtung von Handelsmodalitäten 2018"));
     }
 
     @Test
@@ -608,7 +634,7 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(8));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
@@ -673,6 +699,17 @@ public class DegiroPDFExtractorTest
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getExchangeRate().doubleValue(), IsCloseTo.closeTo(1 / 1.1083, 0.000001));
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.3))));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-23T14:59")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10))));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("US9485961018: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.11))));
     }
 
     @Test
@@ -1108,7 +1145,7 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(17));
+        assertThat(results.size(), is(20));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1333,6 +1370,756 @@ public class DegiroPDFExtractorTest
 
         grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(26.25))));
+
+        // check 1st fee refund transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-29T17:34")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.77))));
+        assertThat(transaction.getSource(), is("Kontoauszug14.txt"));
+        assertThat(transaction.getNote(), is("US3682872078: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.12))));
+
+        // check 2nd fee refund transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-29T17:30")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.57))));
+        assertThat(transaction.getSource(), is("Kontoauszug14.txt"));
+        assertThat(transaction.getNote(), is("US3682872078: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.81))));
+    }
+
+    @Test
+    public void testKontoauszug15()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(55));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("US30231G1022"));
+        assertThat(security1.getName(), is("EXXON MOBIL CORPORATIO"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getIsin(), is("US5949181045"));
+        assertThat(security2.getName(), is("MICROSOFT CORPORATION"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security3.getIsin(), is("NL0000009538"));
+        assertThat(security3.getName(), is("PHILIPS KON"));
+        assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security4.getIsin(), is("DE000A1ML7J1"));
+        assertThat(security4.getName(), is("VONOVIA SE"));
+        assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security5.getIsin(), is("US4781601046"));
+        assertThat(security5.getName(), is("JOHNSON & JOHNSON COMM"));
+        assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security6.getIsin(), is("US4581401001"));
+        assertThat(security6.getName(), is("INTEL CORPORATION - CO"));
+        assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security7.getIsin(), is("DE0007164600"));
+        assertThat(security7.getName(), is("SAP SE"));
+        assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security8.getIsin(), is("DE0007664039"));
+        assertThat(security8.getName(), is("VOLKSWAGEN AG"));
+        assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security9.getIsin(), is("DE0006047004"));
+        assertThat(security9.getName(), is("HEIDELBERGCEMENT AG"));
+        assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(9).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security10.getIsin(), is("US7427181091"));
+        assertThat(security10.getName(), is("PROCTER & GAMBLE COMPA"));
+        assertThat(security10.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security11 = results.stream().filter(SecurityItem.class::isInstance).skip(10).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security11.getIsin(), is("FR0000120644"));
+        assertThat(security11.getName(), is("DANONE"));
+        assertThat(security11.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security12 = results.stream().filter(SecurityItem.class::isInstance).skip(11).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security12.getIsin(), is("US0378331005"));
+        assertThat(security12.getName(), is("APPLE INC. - COMMON ST"));
+        assertThat(security12.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security13 = results.stream().filter(SecurityItem.class::isInstance).skip(12).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security13.getIsin(), is("DE000BASF111"));
+        assertThat(security13.getName(), is("BASF SE"));
+        assertThat(security13.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security14 = results.stream().filter(SecurityItem.class::isInstance).skip(13).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security14.getIsin(), is("DE0007100000"));
+        assertThat(security14.getName(), is("MERCEDES-BENZ GROUP AG"));
+        assertThat(security14.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security15 = results.stream().filter(SecurityItem.class::isInstance).skip(14).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security15.getIsin(), is("DE000BAY0017"));
+        assertThat(security15.getName(), is("BAYER AG"));
+        assertThat(security15.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security16 = results.stream().filter(SecurityItem.class::isInstance).skip(15).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security16.getIsin(), is("DE0008430026"));
+        assertThat(security16.getName(), is("MUENCHENER RUECKVERSICHERUNGS"));
+        assertThat(security16.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security17 = results.stream().filter(SecurityItem.class::isInstance).skip(16).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security17.getIsin(), is("US2358511028"));
+        assertThat(security17.getName(), is("DANAHER CORPORATION CO"));
+        assertThat(security17.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security18 = results.stream().filter(SecurityItem.class::isInstance).skip(17).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security18.getIsin(), is("US17275R1023"));
+        assertThat(security18.getName(), is("CISCO SYSTEMS INC. -"));
+        assertThat(security18.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security19 = results.stream().filter(SecurityItem.class::isInstance).skip(18).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security19.getIsin(), is("DE0005200000"));
+        assertThat(security19.getName(), is("BEIERSDORF AG"));
+        assertThat(security19.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security20 = results.stream().filter(SecurityItem.class::isInstance).skip(19).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security20.getIsin(), is("DE0005557508"));
+        assertThat(security20.getName(), is("DEUTSCHE TELEKOM AG"));
+        assertThat(security20.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security21 = results.stream().filter(SecurityItem.class::isInstance).skip(20).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security21.getIsin(), is("DE0006048432"));
+        assertThat(security21.getName(), is("HENKEL AG & CO. KGAA VZ"));
+        assertThat(security21.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security22 = results.stream().filter(SecurityItem.class::isInstance).skip(21).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security22.getIsin(), is("US1912161007"));
+        assertThat(security22.getName(), is("COCA-COLA COMPANY (THE"));
+        assertThat(security22.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security23 = results.stream().filter(SecurityItem.class::isInstance).skip(22).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security23.getIsin(), is("US6541061031"));
+        assertThat(security23.getName(), is("NIKE INC. COMMON STOC"));
+        assertThat(security23.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security24 = results.stream().filter(SecurityItem.class::isInstance).skip(23).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security24.getIsin(), is("US92556H2067"));
+        assertThat(security24.getName(), is("PARAMOUNT GLOBAL"));
+        assertThat(security24.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-20T08:50")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("flatex Einzahlung"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T09:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("flatex Einzahlung"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-02T08:50")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("flatex Einzahlung"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-08T08:50")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("flatex Einzahlung"));
+
+        // check 1st dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-10T09:04")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.97))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.84))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.87))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.16))));
+
+        // check 2nd dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-09T09:44")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.99))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.17))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.18))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.24))));
+
+        // check 3rd dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-09T09:37")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.45))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.55))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 4th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-09T09:20")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.82))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.82))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 5th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-07T09:08")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.79))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.26))));
+
+        // check 6th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-01T08:23")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.40))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.52))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(8.03))));
+
+        // check 7th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T07:58")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.04))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.46))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 8th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T11:36")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.26))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.24))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.98))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 9th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T11:35")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.53))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.80))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.27))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 10th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T07:40")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.20))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.59))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.39))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.74))));
+
+        // check 11th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-13T16:03")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.91))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.88))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.97))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 12th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-12T10:34")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.37))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.44))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.46))));
+
+        // check 13th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(16)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-05T10:54")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.54))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.66))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 14th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(17)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-05T10:19")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.49))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.51))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 15th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(18)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-05T08:41")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(19.14))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.86))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 16th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(19)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T07:27")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.39))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.61))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 17th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(20)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-02T08:05")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.60))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.71))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.75))));
+
+        // check 18th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(21)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-28T08:10")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.62))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.72))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.76))));
+
+        // check 19th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(22)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-22T12:14")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.61))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.90))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.29))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 20th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(23)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-13T14:02")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.00))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 21th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(24)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-08T11:45")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.09))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.55))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.46))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 22th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(25)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-04T08:17")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.36))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.60))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.24))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.76))));
+
+        // check 23th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(26)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-04T07:31")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.13))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.37))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.75))));
+
+        // check 24th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(27)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-04T07:04")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.34))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.93))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.59))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.32))));
+
+        // check 1st interest charge transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(28)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-02T08:10")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.88))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("Flatex Interest"));
+
+        // check 1st fee transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(29)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-28T15:33")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
+        assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("US47759T1007: ADR/GDR Weitergabegebühr"));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.01))));
     }
 
     @Test
@@ -4819,67 +5606,59 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "EstrattoConto01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(8));
+        assertThat(results.size(), is(7));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(0).getSubject();
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-28T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("Deposito"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(1).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-29T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("Deposito"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(2).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-20T08:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("Deposito"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(3).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-01T02:44")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("Deposito"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(4).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-02T05:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(5).getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T07:41")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
-        assertThat(transaction.getNote(), is("Flatex Interest Income"));
-
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(6).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-01T14:26")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.56))));
         assertThat(transaction.getSource(), is("EstrattoConto01.txt"));
         assertThat(transaction.getNote(), is("DEGIRO Costi di connessione 2021"));
 
-        transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .collect(Collectors.toList()).get(7).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-02T10:46")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
@@ -4897,7 +5676,7 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "EstrattoConto02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(48));
+        assertThat(results.size(), is(51));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -5082,13 +5861,21 @@ public class DegiroPDFExtractorTest
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList()).get(21).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-23T18:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26600.00))));
+        assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
+        assertThat(transaction.getNote(), is("Prelievo flatex"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .collect(Collectors.toList()).get(22).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-14T13:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(22).getSubject();
+                        .collect(Collectors.toList()).get(23).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-06T15:50")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(563.94))));
@@ -5096,7 +5883,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(23).getSubject();
+                        .collect(Collectors.toList()).get(24).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-20T17:30")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1046.92))));
@@ -5104,7 +5891,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(24).getSubject();
+                        .collect(Collectors.toList()).get(25).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-06T18:30")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2100.00))));
@@ -5112,7 +5899,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(25).getSubject();
+                        .collect(Collectors.toList()).get(26).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-08T15:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
@@ -5120,7 +5907,23 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(26).getSubject();
+                        .collect(Collectors.toList()).get(27).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-20T17:01")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(650.00))));
+        assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
+        assertThat(transaction.getNote(), is("Prelievo flatex"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .collect(Collectors.toList()).get(28).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-30T12:10")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1586.30))));
+        assertThat(transaction.getSource(), is("EstrattoConto02.txt"));
+        assertThat(transaction.getNote(), is("Prelievo flatex"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .collect(Collectors.toList()).get(29).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T17:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.23))));
@@ -5128,7 +5931,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Prelievo flatex"));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(27)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(30)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5151,7 +5954,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(67.14))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(28)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(31)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5174,7 +5977,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(24.19))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(29)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(32)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5197,7 +6000,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(01.54))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(30)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(33)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5220,7 +6023,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27.19))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(31)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(34)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5243,7 +6046,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.98))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(32)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(35)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5266,7 +6069,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.98))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(33)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(36)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5289,7 +6092,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.68))));
 
         // check dividends transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(34)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(37)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5312,7 +6115,7 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.85))));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(35).getSubject();
+                        .collect(Collectors.toList()).get(38).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-01T16:02")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.63))));
@@ -5320,7 +6123,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(36).getSubject();
+                        .collect(Collectors.toList()).get(39).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-01T10:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.35))));
@@ -5328,7 +6131,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(37).getSubject();
+                        .collect(Collectors.toList()).get(40).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-02T02:40")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.53))));
@@ -5336,7 +6139,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(38).getSubject();
+                        .collect(Collectors.toList()).get(41).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-30T22:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.67))));
@@ -5344,7 +6147,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(39).getSubject();
+                        .collect(Collectors.toList()).get(42).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-01T18:30")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.39))));
@@ -5352,7 +6155,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(40).getSubject();
+                        .collect(Collectors.toList()).get(43).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T01:10")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.55))));
@@ -5360,7 +6163,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(41).getSubject();
+                        .collect(Collectors.toList()).get(44).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T20:30")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.82))));
@@ -5368,7 +6171,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(42).getSubject();
+                        .collect(Collectors.toList()).get(45).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T07:10")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.11))));
@@ -5376,7 +6179,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Flatex Interest"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(43).getSubject();
+                        .collect(Collectors.toList()).get(46).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T16:06")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
@@ -5384,7 +6187,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("Interesse"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(44).getSubject();
+                        .collect(Collectors.toList()).get(47).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T13:15")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -5392,7 +6195,7 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getNote(), is("DEGIRO Costi di connessione 2021"));
 
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .collect(Collectors.toList()).get(45).getSubject();
+                        .collect(Collectors.toList()).get(48).getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T13:15")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
@@ -5614,5 +6417,598 @@ public class DegiroPDFExtractorTest
         grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(179.84))));
+    }
+
+    @Test
+    public void testEstadoDeCuenta01()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "EstadoDeCuenta01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(52));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getName(), is("INDITEX"));
+        assertThat(security1.getIsin(), is("ES0148396007"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getName(), is("LOWES COMPANIES INC."));
+        assertThat(security2.getIsin(), is("US5486611073"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security3.getName(), is("JP MORGAN CHASE & CO."));
+        assertThat(security3.getIsin(), is("US46625H1005"));
+        assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security4.getName(), is("T. ROWE PRICE GROUP I"));
+        assertThat(security4.getIsin(), is("US74144T1088"));
+        assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security5.getName(), is("3M COMPANY COMMON STOC"));
+        assertThat(security5.getIsin(), is("US88579Y1010"));
+        assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security6.getName(), is("JOHNSON & JOHNSON COMM"));
+        assertThat(security6.getIsin(), is("US4781601046"));
+        assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security7.getName(), is("ISHARES GLOBAL WATER UCITS ETF USD"));
+        assertThat(security7.getIsin(), is("IE00B1TXK627"));
+        assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-03T02:25")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-03T02:24")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-26T07:54")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-03T02:19")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-28T10:27")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-24T07:51")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T06:39")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-19T12:12")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-16T16:10")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-15T19:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-03T02:40")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-25T08:01")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T07:38")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T03:49")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-27T11:43")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-03T02:18")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(16)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-29T07:59")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(17)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-17T10:04")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(18)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-15T08:02")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(19)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-10T16:10")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(20)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-03T02:39")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(21)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-31T22:40")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(22)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-31T22:30")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4000.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(23)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-31T22:10")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(24)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-21T16:30")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("flatex Deposit"));
+
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(25)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-20T02:53")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Ingreso"));
+
+        // check 1st dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(26)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-07T07:28")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 2nd dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(27)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-04T10:35")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 3rd dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(28)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-04T09:47")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.54))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(174.74))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 4th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(29)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T07:06")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.13))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.74))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.61))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.50))));
+
+        // check 5th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(30)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-01T07:04")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.10))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.00))));
+
+        // check 6th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(31)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T07:25")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.99))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.75))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.76))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(31.20))));
+
+        // check 7th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(32)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-13T07:20")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.33))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.45))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.45))));
+
+        // check 8th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(33)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-07T07:44")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(57.45))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(67.59))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.14))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(67.80))));
+
+        // check 9th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(34)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-04T07:23")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.68))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.22))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.54))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.50))));
+
+        // check 10th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(35)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-01T07:11")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.72))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.46))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.00))));
+
+        // check 11th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(36)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T08:06")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(22.82))));
+
+        // check 12th dividende transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(37)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-02T07:40")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0L)));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(267.05))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.69))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(62.64))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 1st interest charge transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(38)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-01T09:31")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.15))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Flatex Interest"));
+
+        // check 2nd interest charge transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(39)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-02T06:20")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.31))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Flatex Interest"));
+
+        // check 3rd interest charge transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(40)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-02T02:30")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.45))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Flatex Interest"));
+
+        // check 1st fee transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(41)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-05T08:32")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Giro Exchange Connection Fee"));
+
+        // check 2nd fee transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(42)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-05T08:32")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Giro Exchange Connection Fee"));
+
+        // check 3rd fee transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(43)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-01T23:24")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Giro Exchange Connection Fee"));
+
+        // check 4th fee transaction
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(44)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T08:42")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.50))));
+        assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
+        assertThat(transaction.getNote(), is("Giro Exchange Connection Fee"));
     }
 }
