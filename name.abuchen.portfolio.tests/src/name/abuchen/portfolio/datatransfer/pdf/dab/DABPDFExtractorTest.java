@@ -3088,4 +3088,33 @@ public class DABPDFExtractorTest
         assertThat(transaction.getSource(), is("Kontoumsaetze02.txt"));
         assertThat(transaction.getNote(), is("Managementgebühr"));
     }
+
+    @Test
+    public void testKontoumsaetze03()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoumsaetze03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-23T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getSource(), is("Kontoumsaetze03.txt"));
+        assertThat(transaction.getNote(), is("SEPA-Überweisung"));
+    }
 }
