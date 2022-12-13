@@ -1,0 +1,171 @@
+﻿PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+DAB, Landsberger Straße 300, 80687 München
+Ihr persönlicher
+Vermögensbericht
+Herr
+Name Nachname
+Straße 111
+11111 Stadt
+Stammnummer 1111111
+Zeitraum 01.07.2022 bis 30.09.2022
+Referenzwährung Euro
+Erstellt am 18.10.2022 01:54 Uhr
+Smartbroker AG Inhalt Seite
+Ritterstr. 11
+10969 Berlin Vermögensübersicht 2
+Bestandsübersicht 3
+Transaktionsübersicht 4
+Name Nachname | 1111111 | Erstellt: 18.10.2022 2
+
+Vermögensübersicht zum 30.09.2022
+Vermögensentwicklung seit Jahresbeginn
+87.231,84 79.352,05 204,72 0,20 %
+Gesamtwert* in EUR Gesamtwert* in EUR Gesamtergebnis* Portfolioperformance vor Steuern
+am 30.09.2022 am 31.12.2021 in EUR am 30.09.2022 (zeitgewichtet)
+* inkl. Stückzinsen
+Summe der Zuflüsse 2.008,00 EUR Summe der Abflüsse 0,00 EUR
+Steuern -332,93 EUR Gezahlte Gebühren -20,38 EUR
+Ausschüttungen/ 1.064,10 EUR
+Zinsen/Dividenden
+Benchmarkvergleich (zeitgewichtet) seit Jahresbeginn
+Prozent
+10,00%
+5,00%
+Benchmarkperformance -
+Benchmarkabweichung -
+0,00%
+-5,00%
+Q1 2022 Q2 Q3
+%,-01235PQacefilmnoprtPzortfolioperformance
+Portfoliostruktur
+Aktien 77.635,60 EUR
+Kasse 3.596,24 EUR
+Kasse (11 %)
+Aktien (89 %)
+,.02345679AEKRUaeiknst %()189AKaeiknst
+Name Nachname | 1111111 | Erstellt: 18.10.2022 3
+
+Bestandsübersicht zum 30.09.2022
+Name/Kontonummer Stücke/ Marktwert/ Kurs Gewinn/Verlust Devisenkurs Stückzinsen Portfolio-
+Nominale Saldo absolut anteil
+ISIN/WKN/Kupon (p.a.) Fälligkeit Einstandswert ∅ Einstandskurs relativ ∅ Devisen- Erträge Kursgewinn
+(Kaufwährung) einstand absolut
+Liquidität 3.596,24 - 11,00 %
+Kasse 3.596,24 - 11,00 %
+1111111006 (EUR) 3.596,24 3.596,24 - 11,00 %
+DE********001111111006 -
+Aktienanlagen & Zertikate 77.635,60 10.747,52 - 89,00 %
+68.591,44 15,67 % 1.703,36 9.097,57
+Aktien (001111111006 ) 77.635,60 10.747,52 - 89,00 %
+68.591,44 15,67 % 1.703,36 9.097,57
+ADLER REAL ESTATE AG 1.403,00 10.101,60 7,200 EUR 1.104,63 - 11,58 %
+DE0005008007/500800 - 8.996,97 6,413 EUR 12,28 % 0,00 1.108,37
+FLUGHAFEN WIEN AG 800,00 26.320,00 32,900 EUR 4.729,44 - 30,17 %
+AT00000VIE62/A2AMK9 - 21.590,56 26,988 EUR 21,91 % 0,00 4.760,00
+HORNBACH BAUMARKT AG O.N. 710,00 33.299,00 46,900 EUR 11.039,87 - 38,17 %
+DE0006084403/608440 - 23.537,13 33,151 EUR 46,90 % 1.278,00 9.771,60
+KONINKL. PHILIPS EO -,20 500,00 7.903,00 15,806 EUR -6.123,50 - 9,06 %
+NL0000009538/940602 - 14.451,50 28,903 EUR -42,37 % 425,00 -6.544,50
+PFERDEWETTEN.DE AG NA ON 1,00 12,00 12,000 EUR -2,92 - 0,01 %
+DE000A2YN777/A2YN77 - 15,28 15,280 EUR -19,11 % 0,36 2,10
+Gesamt 81.231,84 10.747,52 - 100,00 %
+68.591,44 15,67 % 1.703,36 9.097,57
+Legende:
+∅ Einstandskurs Berücksichtigung jeder bestandsändernden Transaktion inkl. Gebühren nach FiFo.
+Einstandswert ∅ Einstandskurs * Nominal/Stück inkl. Stückzinsen.
+Gewinn/Verlust absolut Differenz von Marktwert und Einstandswert plus den ausgeschütteten Bruttoerträgen.
+Gewinn/Verlust relativ Verhältnis von GuV (absolut) zum Einstandswert.
+Stückzinsen Ausweis der zum Bewertungstag aufgelaufenen Stückzinsansprüche.
+Erträge Summe aller Bruttoausschüttungen, Zinsen (abzüglich der gezahlten Stückzinsen) und Dividenden.
+Kursgewinn absolut Darstellung der reinen Kursentwicklung, ohne Berücksichtigung angefallener Gebühren.
+n.b. Wegen eines fehlenden oder veralteten Marktkurses nicht bewertbar.
+Name Nachname | 1111111 | Erstellt: 18.10.2022 4
+
+Transaktionsübersicht
+vom 01.07.2022 bis 30.09.2022
+Kontotransaktionen für Konto 1111111006 (IBAN: DE********001111111006)
+Buchungstag Valutatag Buchungstext Verwendungszweck Betrag
+Saldo am 01.07.2022 347,87 EUR
+12.07.2022 12.07.2022 Ertrag Dividende / Ausschüttung DE0006084403 470,46 EUR
+23.08.2022 23.08.2022 Ertrag Dividende / Ausschüttung DE000A2YN777 0,10 EUR
+23.09.2022 27.09.2022 Wertpapierverkauf DE0005008007 ADLER REAL ESTATE AG 363,69 EUR
+23.09.2022 27.09.2022 Wertpapierverkauf DE0005008007 ADLER REAL ESTATE AG 331,80 EUR
+23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
+29.09.2022 03.10.2022 Wertpapierkauf DE000PAG9113 DR.ING.H.C.F.PORSCHE VZOI -4.047,50 EUR
+29.09.2022 03.10.2022 Wertpapierverkauf DE000PAG9113 DR.ING.H.C.F.PORSCHE VZOI 4.129,82 EUR
+Saldo am 30.09.2022 3.596,24 EUR
+
+Depottransaktionen
+Buchungstag Transaktionsart Wertpapier Kurs Stückzinsen Gebühren Stücke/Nominale
+Valutatag Wertpapiertyp ISIN/WKN Devisenkurs Steuern Betrag
+11.07.2022 Ausschüttung HORNBACH BAUMARKT AG O... 0,900 EUR 0,00 EUR 0,00 EUR -710,00
+12.07.2022 Aktie DE0006084403/608440 1,00000 EUR -168,54 EUR 470,46 EUR
+22.08.2022 Ausschüttung PFERDEWETTEN.DE AG NA ON 0,100 EUR 0,00 EUR 0,00 EUR -1,00
+23.08.2022 Aktie DE000A2YN777/A2YN77 1,00000 EUR 0,00 EUR 0,10 EUR
+23.09.2022 Verkauf ADLER REAL ESTATE AG 7,500 EUR 0,00 EUR -5,69 EUR -51,00
+27.09.2022 Aktie DE0005008007/500800 1,00000 EUR -13,12 EUR -363,69 EUR
+23.09.2022 Verkauf ADLER REAL ESTATE AG 7,500 EUR 0,00 EUR 0,00 EUR -46,00
+27.09.2022 Aktie DE0005008007/500800 1,00000 EUR -13,20 EUR -331,80 EUR
+28.09.2022 Kauf DR.ING.H.C.F.PORSCHE VZOI 82,500 EUR 0,00 EUR -5,00 EUR 49,00
+03.10.2022 Aktie DE000PAG9113/PAG911 1,00000 EUR 0,00 EUR 4.047,50 EUR
+29.09.2022 Verkauf DR.ING.H.C.F.PORSCHE VZOI 85,000 EUR 0,00 EUR -5,69 EUR -49,00
+03.10.2022 Aktie DE000PAG9113/PAG911 1,00000 EUR -29,49 EUR -4.129,82 EUR
+
+Devisentermingeschäfte
+Zwischen dem 01.07.2022 und 30.09.2022 wurden keine Devisentermingeschäfte verbucht.
+Gebühren im Zeitraum 01.07.2022-30.09.2022
+Gebührenübersicht 01.07.2022-30.09.2022 seit Jahresbeginn
+Angefallene Transaktionsgebühren -16,38 EUR -20,38 EUR
+Depotgebühren 0,00 EUR 0,00 EUR
+Verwaltungsgebühren 0,00 EUR 0,00 EUR
+Verwahrentgelt 0,00 EUR 0,00 EUR
+Ausgabeaufschläge 0,00 EUR 0,00 EUR
+Bonifikationen 0,00 EUR 0,00 EUR
+Name Nachname | 1111111 | Erstellt: 18.10.2022 5
+Bitte beachtenSie, dass separateHonorarenicht indemVermögensbericht ausgewiesenwurden.Diese könnenSiegemäßseparaterAufstellung Ihres Finanzintermediärs
+entnehmen.
+Name Nachname | 1111111 | Erstellt: 18.10.2022 6
+
+Steuerliche Information und Verlustverrechnungstöpfe zum 30.09.2022
+Steuerinformation zum 29.09.2022
+Steuerstatus Privatvermögen
+Freistellungsform -
+Beantragter Freistellungsbetrag -
+Verbrauchter Freistellungsbetrag 0,00 EUR
+Verbleibender Freistellungsbetrag 0,00 EUR
+Aktienverlusttopf 0,00 EUR
+Allgemeiner Verlusttopf 0,00 EUR
+Quellensteuertopf 0,00 EUR
+
+Eigenkapitalinstrumente:
+Bei folgenden Wertpapieren handelt es sich um Eigenkapitalinstrumente:
+Depot-/Kontonummer Name ISIN / WKN
+001111111006 ADLER REAL ESTATE AG DE0005008007/500800
+001111111006 FLUGHAFEN WIEN AG AT00000VIE62/A2AMK9
+001111111006 HORNBACH BAUMARKT AG O.N. DE0006084403/608440
+001111111006 KONINKL. PHILIPS EO -,20 NL0000009538/940602
+001111111006 PFERDEWETTEN.DE AG NA ON DE000A2YN777/A2YN77
+Allgemeine Hinweise
+RECHNUNGSABSCHLUSS / SALDOMITTEILUNG
+Wichtiger Hinweis:
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie bis spätestens vor Ablauf von sechs Wochen nach dessen Zugang
+erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwen-
+dungen gilt als Genehmigung des Rechnungsabschlusses.
+Genehmigung von Belastungen aus Lastschriften
+Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht schon genehmigt, so müssen
+Sie Einwendungen gegen die im Saldo dieses Rechnungsabschlusses enthaltene Belastungsbuchung spätestens vor Ablauf von sechs Wochen nach Zugang des
+Rechnungsabschlusses erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen
+rechtzeitiger Einwendungen gilt als Genehmigung der Belastungsbuchung.
+Ihre Einwendungen richten Sie bitte an den DAB Kundenservice, Landsberger Str. 300, 80687 München.
+Unterschiedliche Salden der Geldkonten innerhalb einer Währung entstehen durch die Differenz von Buchungsdatum und Valutadatum. Der Saldo kann auch
+noch nicht wertgestellte Beträge enthalten, über die bis zur Wertstellung noch nicht ohne Abzug von Sollzinsen verfügt werden kann.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetztes entschädigungsfähig. Nähere Informationen können dem Informationsbogen für
+den Einleger entnommen werden.
+Die Darstellung der Steuerinformationen erfolgt erst nach dem ersten steuerrelevanten Ertrag im laufenden Jahr.
+Gewinn- und Verlustrechnungen sowie Kursangaben ohne Gewähr!
+BNP Paribas S.A. Niederlassung Deutschland, Standort: München, Landsberger Str. 300, 80687 München, Sitz: Nürnberg, Handelsregister: Nürnberg, HRB 31129
+USt-IdNr. DE191528929 Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662
+042 449 Président du Conseil dA`dministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

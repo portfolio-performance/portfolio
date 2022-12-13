@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class DABPDFExtractor extends AbstractPDFExtractor
 {
@@ -130,9 +132,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // Handelszeit 16:38* Provision USD 13,01-
@@ -619,9 +626,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 .oneOf(
@@ -678,21 +690,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Konto.bersicht", (context, lines) -> {
+        final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus)", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
 
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                    context.put("currency", m.group(1));
+                    context.put("currency", m.group("currency"));
             }
         });
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
-        type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>()
+        // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+        // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
+        type.addBlock(depositBlock_Format01);
+        depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction transaction = new AccountTransaction();
@@ -700,8 +714,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     return transaction;
                 })
 
-                // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
-                // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
                 .section("note", "date", "amount")
                 .match("^(?<note>(SEPA\\-Gutschrift|SEPA-Lastschrift)) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -714,8 +726,39 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
 
+        // 23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
+        Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(depositBlock_Format02);
+        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.DEPOSIT);
+                    return transaction;
+                })
+
+                .section("note", "date", "amount")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
         Block feesBlock = new Block("^SEPA-Lastschrift Lastschrift Managementgeb.hr .*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
@@ -726,7 +769,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     return transaction;
                 })
 
-                // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
                 .section("note", "date", "amount")
                 .match("^SEPA\\-Lastschrift Lastschrift (?<note>Managementgeb.hr) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -739,7 +781,11 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
     }
 
     @SuppressWarnings("nls")
