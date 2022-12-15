@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -43,7 +44,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(((Limit|Stop-Market|Market)-Order )?"
+        DocumentType type = new DocumentType("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
@@ -58,7 +59,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("(((Limit|Stop-Market|Market)-Order )?"
+        Block firstRelevantLine = new Block("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
@@ -70,7 +71,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^((Limit|Stop-Market|Market)-Order )?(?<type>(Kauf|Verkauf|Sparplanausf.hrung|Ex.cution de l.investissement programm.)) .*$")
+                .match("^((Limit|Stop\\-Market|Market)\\-Order )?(?<type>(Kauf|Verkauf|Sparplanausf.hrung|Ex.cution de l.investissement programm.)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -83,7 +84,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "currency", "isin", "nameContinued").optional()
                 .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[\\w]{12})$")
+                .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // This is for the reinvestment of dividends
@@ -99,7 +100,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d] Reinvestierung .* [\\.,\\d]+ Stk\\.$")
                 .match("^[\\d] Reinvestierung (?<name>.*) [\\.,\\d]+ Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12})$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -127,7 +128,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                        .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -307,7 +308,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "nameContinued")
                 .match("^[\\d] Tilgung (?<name>.*) [\\.,\\d]+ Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^[\\d] Kurswert [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -339,10 +340,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG)");
+        DocumentType type = new DocumentType("(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG|STORNO DIVIDENDE)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG)$");
+        Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG|STORNO DIVIDENDE)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -352,13 +353,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // Storno der Dividende mit dem Ex-Tag 29.11.2019.
+                .section("type").optional()
+                .match("^(?<type>Storno) der Dividende .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Storno"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                 // Registered Shares USD o.N.
                 // IE00B652H904
                 .section("name", "currency", "isin", "nameContinued").optional()
                 .match("^(?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -368,7 +377,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "nameContinued", "isin", "currency").optional()
                 .match("^[\\d] Reinvestierung (?<name>.*) [\\.,\\d]+ Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12})$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^[\\d] Reinvestierung .*$")
                 .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -389,7 +398,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // DExxxxxx 25.09.2019 4,18 EUR
                 .section("date")
-                .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+ [\\w]{3}$")
+                .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 .oneOf(
@@ -468,7 +477,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -497,7 +515,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "nameContinued", "isin", "currency")
                 .match("^[\\d] Kapitalmaßnahme (?<name>.*) [\\.,\\d]+ Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12})$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^[\\d] Barausgleich [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -615,7 +633,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("position", "name", "shares", "nameContinued", "isin").optional()
                 .match("^(?<position>[\\d]) (Umtausch\\/Bezug|Einbuchung|Ausbuchung|Depotübertrag eingehend) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(?<isin>[\\w]{12})$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     context.put("position", v.get("position"));
@@ -639,7 +657,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^ISIN: [\\w]{12} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\– [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\– [\\.,\\d]+ Stk\\. [\\.,\\d]+ : [\\.,\\d]+ [\\.,\\d]+ : [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .match("^Bezugsrecht: (?<isin>[\\w]{12}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                .match("^Bezugsrecht: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .match("^Anzahl eingebuchter $")
                 .match("^Bezugsrechte: (?<shares>[\\.,\\d]+) Stk\\.$")
                 .assign((t, v) -> {
@@ -825,7 +843,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "isin", "shares", "nameContinued")
                 .match("^(?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setShares(asShares(v.get("shares")));
@@ -846,7 +864,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .*$");
+        Block block = new Block("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -862,7 +880,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "currency", "nameContinued", "isin")
                 .match("^(?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
@@ -875,7 +893,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                 .section("date", "time")
-                .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                 // Kapitalertragssteuer Optimierung 20,50 EUR
@@ -930,7 +948,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "nameContinued", "isin")
                 .match("^[\\d] Tilgung (?<name>.*) [\\.,\\d]+ Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // 1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
@@ -999,7 +1017,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("name", "currency", "nameContinued", "isin")
                 .match("^(?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .match("^(?<nameContinued>.*)$")
-                .match("^(ISIN: )?(?<isin>[\\w]{12})$")
+                .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
