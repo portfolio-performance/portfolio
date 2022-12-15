@@ -397,6 +397,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^Steuerliquidität [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> t.setType(AccountTransaction.Type.TAXES))
 
+                // Storno unserer Dividendengutschrift Nr. 67390000 vom 15.05.2020.
+                .section("type").optional()
+                .match("^(?<type>Storno) unserer Dividendengutschrift .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Storno"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // Gattungsbezeichnung ISIN
                 // Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
                 // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
@@ -600,7 +608,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     // flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
-                    return new TransactionItem(t);
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
