@@ -1,0 +1,74 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Gartenstraße 67
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de 76135 Karlsruhe
+www.finanzen.net/zero
++49 89 5455 8188
+Seite 1/2
+DonauCapital Wertpapier GmbH Karlsruhe
+09.02.2022
+Passauer Str. 5
+94161 Ruderting Max Mustermann
+Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 6662228
+Referenz-Nr.: 227799922
+Fondsausschüttung KOPIE STORNO
+Ex-Tag: 29.09.2021
+Nominale ISIN: US85571B1052 WKN: A0N9JF Ausschüttung
+STK 250 Starwood Property Trust Inc. USD 0,48 p.STK
+Zahlungszeitraum: 01.10.2020 - 30.09.2021 
+Zahltag: 18.10.2021
+Umrechnungskurs: EUR/USD 1,15997
+Bruttobetrag USD 120,00
+Bruttobetrag EUR 103,45
+Kapitalertragsteuer EUR 10,11 -
+Kirchensteuer EUR 0,92 -
+Solidaritätszuschlag EUR 0,56 -
+US-Quellensteuer EUR 15,52 -
+Zu Gunsten Konto 1111111111 Valuta: 18.10.2021 EUR 76,34
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Fondsausschüttung KOPIE
+STORNO
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+bezahlte Kapitalertragsteuer EUR 345,10 EUR 25,29 EUR 370,39
+bezahlte Kapitalertragsteuer EUR 370,39 EUR 15,18 - EUR 355,21
+QST-Anrechnung auf allgemeine Gewinne
+angerechnete Quellensteuer EUR 383,24 EUR 15,52 EUR 398,76
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung brutto Sonst. Fonds EUR 103,45 EUR 103,45
+Ausschüttung netto Sonst. Fonds EUR 103,45 EUR 103,45
+Kapitalertragsteuer auf allgemeine Gewinne bei 9% Kirchensteuer EUR 103,45 EUR 103,45
+QST-Anrechnung auf allgemeine Gewinne bei 9% Kirchensteuer EUR 62,08 - EUR 62,08 -
+Kapitalertragsteuer auf allgemeine Gewinne bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 25,29 - EUR 25,29 -
+Kirchensteuer 9,00 % EUR 2,28 - EUR 2,28 -
+Solidaritätszuschlag 5,50 % EUR 1,39 - EUR 1,39 -
+Kapitalertragsteuer 24,45 % EUR 15,18 EUR 15,18
+Kirchensteuer 9,00 % EUR 1,36 EUR 1,36
+Solidaritätszuschlag 5,50 % EUR 0,83 EUR 0,83
+US-Quellensteuer 15,00 % EUR 15,52 - EUR 15,52 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

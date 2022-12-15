@@ -242,8 +242,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Dividendenabrechnung STORNO
+                //
+                // Fondsausschüttung KOPIE
+                // STORNO
                 .section("type").optional()
-                .match("^Dividendenabrechnung (?<type>STORNO)$")
+                .match("^(Dividendenabrechnung )?(?<type>STORNO)$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("STORNO"))
                         t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
