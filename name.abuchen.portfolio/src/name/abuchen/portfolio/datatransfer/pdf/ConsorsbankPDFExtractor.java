@@ -306,6 +306,14 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
+                // Storno wegen geänderten steuerrelevanten Daten. Neuabrechnung folgt.
+                .section("type").optional()
+                .match("^(?<type>Storno) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Storno"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // ST                    1.370,00000          WKN:  ETF110                 
                 //            COMS.-MSCI WORL.T.U.ETF I                                    
                 //            Namens-Aktien o.N.                                           
@@ -367,7 +375,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^Netto( in [\\w]{3})? zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Netto( in [\\w]{3})? (zugunsten|zulasten) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -446,7 +454,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
