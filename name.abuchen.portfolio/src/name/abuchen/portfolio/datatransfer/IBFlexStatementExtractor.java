@@ -323,7 +323,11 @@ public class IBFlexStatementExtractor implements Extractor
 
             transaction.setNote(element.getAttribute("description"));
 
-            return new TransactionItem(transaction);
+            // Transactions which do not have an account-id will not be imported.
+            if (!element.getAttribute("accountId").equals("-"))
+                return new TransactionItem(transaction);
+            else
+                return null;
         };
 
         /**
