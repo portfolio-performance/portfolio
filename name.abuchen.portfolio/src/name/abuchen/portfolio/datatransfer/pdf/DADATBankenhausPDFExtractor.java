@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -173,7 +174,24 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .wrap(BuySellEntryItem::new);
+                // STORNO VON 20210817  45747417
+                .section("type").optional()
+                .match("^(?<type>STORNO VON) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("STORNO VON"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
+                .wrap(t -> {
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                    {
+                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new BuySellEntryItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
