@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -108,7 +109,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Inhaber-Anteile
                 // Kurswert EUR 4.997,22
                 .section("isin", "wkn", "name", "name1", "currency")
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -223,12 +224,20 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // Sie erhalten eine neue Abrechnung.
+                .section("type").optional()
+                .match("^(?<type>Sie erhalten eine neue Abrechnung\\.)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Sie erhalten eine neue Abrechnung."))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // ISIN (WKN) US5801351017 (856958)
                 // Wertpapierbezeichnung McDonald's Corp.
                 // Registered Shares DL-,01
                 // Zins-/Dividendensatz 0,94 USD
                 .section("isin", "wkn", "name", "name1", "currency").optional()
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^(Zins\\-\\/Dividendensatz|(Ertragsaussch.ttung|Vorabpauschale) per St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -244,7 +253,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Inh.-Schv.v.2012(2015/2017)
                 // Nominale 1.000,00 EUR
                 .section("isin", "wkn", "name", "name1", "currency").optional()
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -316,7 +325,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -348,7 +366,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Nominale 378,00 Stück
                 // Vorabpauschale per Stück 0,00245279 EUR
                 .section("isin", "wkn", "name", "name1", "currency")
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Vorabpauschale per St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
