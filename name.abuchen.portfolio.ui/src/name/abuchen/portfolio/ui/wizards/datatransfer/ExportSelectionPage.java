@@ -147,7 +147,7 @@ public class ExportSelectionPage extends AbstractWizardPage
                 else if (parentElement == Security.class)
                     return new String[] { Messages.ExportWizardSecurityMasterData,
                                     Messages.ExportWizardMergedSecurityPrices,
-                                    Messages.ExportWizardAllTransactionsAktienfreundeNet,
+                                    Messages.ExportWizardAllTransactionsRentabloDE,
                                     Messages.ExportWizardVINISApp };
                 else if (parentElement == SecurityPrice.class)
                     return client.getSecurities().stream().sorted(new Security.ByName()).toArray();

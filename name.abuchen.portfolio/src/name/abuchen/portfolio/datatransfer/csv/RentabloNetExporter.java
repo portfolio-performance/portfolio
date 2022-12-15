@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -20,9 +21,10 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
 
 /**
- * Special exporter for Axtienfreunde.net
+ * Special CSV exporter for rentablo.de
+ * (formerly known as aktienfreunde.net)
  */
-public class AktienfreundeNetExporter
+public class RentabloNetExporter
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
 
@@ -62,18 +64,21 @@ public class AktienfreundeNetExporter
         if (transaction.getSecurity() == null)
             return;
         if (transaction.getType() != AccountTransaction.Type.INTEREST
+                        && transaction.getType() != AccountTransaction.Type.INTEREST_CHARGE
                         && transaction.getType() != AccountTransaction.Type.DIVIDENDS)
             return;
 
         printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
-        printer.print("Aktie");
-        printer.print("Dividende");
+        printer.print(Messages.CSVColumn_Security);
+        printer.print(AccountTransaction.Type.DIVIDENDS.toString());
         printer.print(Values.Amount.format(transaction.getAmount()));
-        printer.print("1");
-        printer.print("");
-        printer.print("");
+        printer.print(transaction.getShares() != 0 ? Values.Share.format(transaction.getShares()) : "1");
+        printer.print("0");
+        printer.print(transaction.getType() == AccountTransaction.Type.DIVIDENDS
+                        ? Values.Amount.format(transaction.getUnitSum(Unit.Type.TAX).getAmount())
+                        : "0"); //$NON-NLS-1$
         printer.println();
     }
 
@@ -86,11 +91,11 @@ public class AktienfreundeNetExporter
         {
             case BUY:
             case DELIVERY_INBOUND:
-                type = "Kauf"; //$NON-NLS-1$
+                type = PortfolioTransaction.Type.BUY.toString(); //$NON-NLS-1$
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
-                type = "Verkauf"; //$NON-NLS-1$
+                type = PortfolioTransaction.Type.SELL.toString(); //$NON-NLS-1$
                 break;
             default:
                 // ignore all other transactions
@@ -100,7 +105,7 @@ public class AktienfreundeNetExporter
         printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
-        printer.print("Aktie");
+        printer.print(Messages.CSVColumn_Security);
         printer.print(type);
         printer.print(Values.Quote.format(transaction.getGrossPricePerShare().getAmount()));
         printer.print(Values.Share.format(transaction.getShares()));
@@ -112,15 +117,15 @@ public class AktienfreundeNetExporter
     @SuppressWarnings("nls")
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        printer.print("Datum");
-        printer.print("ISIN");
-        printer.print("Name");
-        printer.print("Typ");
-        printer.print("Transaktion");
-        printer.print("Preis");
-        printer.print("Anzahl");
-        printer.print("Kommission");
-        printer.print("Steuern");
+        printer.print(Messages.CSVColumn_Date);
+        printer.print(Messages.CSVColumn_ISIN);
+        printer.print(Messages.CSVColumn_Name);
+        printer.print(Messages.CSVColumn_Security);
+        printer.print(Messages.CSVColumn_Type);
+        printer.print(Messages.CSVColumn_GrossAmount);
+        printer.print(Messages.CSVColumn_Shares);
+        printer.print(Messages.CSVColumn_Fees);
+        printer.print(Messages.CSVColumn_Taxes);
         printer.println();
     }
 }

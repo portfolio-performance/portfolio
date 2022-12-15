@@ -32,6 +32,7 @@ public class Messages extends NLS
     public static String CSVColumn_InboundTransferals;
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
+    public static String CSVColumn_Security;
     public static String CSVColumn_SecurityName;
     public static String CSVColumn_Shares;
     public static String CSVColumn_Taxes;
