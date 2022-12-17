@@ -12,8 +12,6 @@ import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
@@ -42,11 +40,11 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
     @Override
     public void createFieldEditors()
     {
-        List<TradeCalendar> calendar = TradeCalendarManager.getAvailableCalendar().sorted()
+        List<TradeCalendar> calendars = TradeCalendarManager.getAvailableCalendar().sorted()
                         .collect(Collectors.toList());
-        String[][] entryNamesAndValues = new String[calendar.size()][2];
+        String[][] entryNamesAndValues = new String[calendars.size()][2];
         int i = 0;
-        for (TradeCalendar cal : calendar)
+        for (TradeCalendar cal : calendars)
         {
             entryNamesAndValues[i] = getLabelAndValue(cal);
             i++;
@@ -72,8 +70,7 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         infoLabel.setFont(getFieldEditorParent().getFont());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(infoLabel);
 
-        new Label(composite, SWT.NONE)
-            .setText(Messages.LabelYear);
+        new Label(composite, SWT.NONE).setText(Messages.LabelYear);
 
         Spinner yearSpinner = new Spinner(composite, SWT.BORDER);
         yearSpinner.setTextLimit(5);
@@ -83,17 +80,12 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         yearSpinner.setMaximum(2150);
         yearSpinner.setMinimum(1850);
         yearSpinner.setSelection(year);
-        yearSpinner.addModifyListener(new ModifyListener()
-        {
-            @Override
-            public void modifyText(ModifyEvent e)
+        yearSpinner.addModifyListener(e -> {
+            int newYear = yearSpinner.getSelection();
+            if (newYear != year)
             {
-                int newYear = yearSpinner.getSelection();
-                if (newYear != year)
-                {
-                    year = newYear;
-                    updateInfoLabel();
-                }
+                year = newYear;
+                updateInfoLabel();
             }
         });
 
@@ -108,7 +100,7 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         if (event.getProperty().equals(FieldEditor.VALUE))
         {
             String newCode = (String) event.getNewValue();
-            if (! newCode.equals(calendar))
+            if (!newCode.equals(calendar))
             {
                 calendar = newCode;
                 updateInfoLabel();
@@ -126,20 +118,20 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
     private String createHolidayText(String calendarCode, int year)
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance(calendarCode);
+        TradeCalendar cal = TradeCalendarManager.getInstance(calendarCode);
 
-        if (calendar == null)
+        if (cal == null)
             return ""; //$NON-NLS-1$
 
-        Collection<Holiday> holidays = calendar.getHolidays(year);
+        Collection<Holiday> holidays = cal.getHolidays(year);
 
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))
                         .forEach(h -> buffer.append(Values.Date.format(h.getDate())).append(" ") //$NON-NLS-1$
                                         .append(h.getLabel())
-                                        .append(calendar.isWeekend(h.getDate()) ?
-                                            " (" + shortDayOfWeekFormatter.format(h.getDate()) + ")" //$NON-NLS-1$ //$NON-NLS-2$
-                                            : "") //$NON-NLS-1$
+                                        .append(cal.isWeekend(h.getDate())
+                                                        ? " (" + shortDayOfWeekFormatter.format(h.getDate()) + ")" //$NON-NLS-1$ //$NON-NLS-2$
+                                                        : "") //$NON-NLS-1$
                                         .append("\n")); //$NON-NLS-1$
         return buffer.toString();
     }
