@@ -64,7 +64,6 @@ public class DashboardData
     {
         return client;
     }
-
     public IPreferenceStore getPreferences()
     {
         return preferences;
@@ -144,6 +143,11 @@ public class DashboardData
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;
+    }
+
+    public String getTermCurrency()
+    {
+        return converter.getTermCurrency();
     }
 
     public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)

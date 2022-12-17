@@ -34,12 +34,12 @@ public enum WidgetFactory
     DESCRIPTION(Messages.LabelDescription, Messages.LabelCommon, DescriptionWidget::new),
 
     TOTAL_SUM(Messages.LabelTotalSum, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
-                                        return index.getTotals()[length - 1];
+                                        return Money.of(index.getCurrency(), index.getTotals()[length - 1]);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
@@ -68,64 +68,66 @@ public enum WidgetFactory
                                     .build()),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
-                                        return index.getTotals()[length - 1] - index.getTotals()[0];
+                                        return Money.of(index.getCurrency(),
+                                                        index.getTotals()[length - 1] - index.getTotals()[0]);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     DELTA(Messages.LabelDelta, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateDelta();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteDelta();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     SAVINGS(Messages.LabelPNTransfers, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).getTransferals();
-                                        return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
                                         // skip d[0] because it refers to the
                                         // day before start
+                                        return Money.of(data.getTermCurrency(),
+                                                        d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateInvestedCapital();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteInvestedCapital();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
@@ -195,8 +197,7 @@ public enum WidgetFactory
     ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
-    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets,
-                    HoldingsChartWidget::new),
+    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets, HoldingsChartWidget::new),
 
     TAXONOMY_CHART(Messages.LabelTaxonomies, Messages.LabelStatementOfAssets, TaxonomyChartWidget::new),
 
