@@ -11,7 +11,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>2.6.0</tycho-version> <!-- 2.7.1 does not work, fixed with 2.7.2 ? -->
+		<tycho-version>3.0.1</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -84,6 +84,12 @@
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
 					<executionEnvironment>JavaSE-11</executionEnvironment>
+					<exclusions>
+ 						<exclusion>
+ 							<groupId>com.google.code.findbugs</groupId>
+ 							<artifactId>jsr305</artifactId>
+ 						</exclusion>
+ 					</exclusions>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -91,15 +97,6 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
-					<dependency-resolution>
-						<extraRequirements>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>javax.annotation</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-						</extraRequirements>
-					</dependency-resolution>
 					<environments>
 						<environment>
 							<os>linux</os>

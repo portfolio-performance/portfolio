@@ -3,7 +3,6 @@ eclipse configuration PortfolioPerformance {
     product name.abuchen.portfolio.bootstrap.product;
         
     feature name.abuchen.portfolio.feature;
-    feature name.abuchen.portfolio.dependencies.feature;    
 	feature org.eclipse.e4.rcp;
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;
@@ -45,7 +44,6 @@ abstract junit-plugin configuration TestBase {
 	application org.eclipse.ant.core.antRunner;
 	
 	feature name.abuchen.portfolio.feature;
-    feature name.abuchen.portfolio.dependencies.feature;    
 	feature org.eclipse.e4.rcp;
 	feature org.eclipse.emf.ecore;
 	feature org.eclipse.emf.common;

@@ -129,7 +129,12 @@ public class StringToCurrencyConverterTest
     {
         Locale.setDefault(new Locale("fr", "BE"));
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
-        assertThat(converter.convert("12\u00A034,56"), is(123456l));
+
+        // Belgian locale has changed between Java 11 and 17
+
+        double version = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
+        String string = version <= 11.0 ? "1\u00a0234,56" : "1\u202f234,56";
+        assertThat(converter.convert(string), is(123456l));
     }
 
     @Test(expected = IllegalArgumentException.class)
