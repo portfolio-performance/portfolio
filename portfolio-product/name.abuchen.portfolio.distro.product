@@ -71,6 +71,7 @@
       <property name="osgi.instance.area.default" value="@user.home/.PortfolioPerformance/workspace" os="linux" />
       <property name="osgi.requiredJavaVersion" value="11" />
       <property name="org.eclipse.update.reconcile" value="false" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
 
 </product>
