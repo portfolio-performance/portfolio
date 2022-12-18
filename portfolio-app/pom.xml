@@ -29,6 +29,7 @@
 	<modules>
 		<module>../portfolio-target-definition</module>
 		<module>../name.abuchen.portfolio</module>
+		<module>../name.abuchen.portfolio.junit</module>
 		<module>../name.abuchen.portfolio.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
@@ -63,7 +64,7 @@
 									<version>3.5.2</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>11</version>
+									<version>17</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -83,7 +84,7 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
-					<executionEnvironment>JavaSE-11</executionEnvironment>
+					<executionEnvironment>JavaSE-17</executionEnvironment>
 					<exclusions>
  						<exclusion>
  							<groupId>com.google.code.findbugs</groupId>

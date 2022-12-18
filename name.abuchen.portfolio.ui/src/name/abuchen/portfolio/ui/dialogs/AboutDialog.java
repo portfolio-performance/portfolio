@@ -311,7 +311,7 @@ public class AboutDialog extends Dialog
         {
             try
             {
-                LdapName ldapDN = new LdapName(cert.getSubjectDN().getName());
+                LdapName ldapDN = new LdapName(cert.getSubjectX500Principal().getName());
                 for (Rdn rdn : ldapDN.getRdns())
                 {
                     if ("CN".equals(rdn.getType()))

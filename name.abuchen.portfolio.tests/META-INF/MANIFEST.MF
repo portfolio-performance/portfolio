@@ -19,7 +19,7 @@ Require-Bundle: org.junit,
  net.bytebuddy.byte-buddy,
  org.slf4j.api,
  net.minidev.accessors-smart,
- net.minidev.json-smart
+ net.minidev.json-smart,
+ name.abuchen.portfolio.junit
 Automatic-Module-Name: name.abuchen.portfolio.tests
 Import-Package: com.google.common.collect
-Export-Package: name.abuchen.portfolio
