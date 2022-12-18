@@ -635,7 +635,7 @@ public class IBFlexStatementExtractor implements Extractor
             importModelObjects("CorporateAction", buildCorporateTransaction);
 
             // TODO: Process all FxTransactions and ConversionRates
-            
+
             // Remove reversed cash transactions
             removeReversedAccountTransactionPairs();
         }
@@ -846,12 +846,12 @@ public class IBFlexStatementExtractor implements Extractor
                         transactionsToRemove.add(matchCandidate);
                         break;
                     }
-                }             
+                }
             }
-            
+
             results.removeAll(transactionsToRemove);
         }
-                
+
         public List<Exception> getErrors()
         {
             return errors;
