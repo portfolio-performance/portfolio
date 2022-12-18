@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - feature_java17
   pull_request:
       types: [opened, synchronize, reopened]
 
