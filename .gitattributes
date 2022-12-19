@@ -1,0 +1,12 @@
+# default to automatic recognition whether a file contains text:
+* text=auto
+
+# some files are definitely text:
+*.java text
+*.txt text
+*.md text
+*.csv text
+*.xml text
+
+# some files are definitely not text:
+*.png binary
