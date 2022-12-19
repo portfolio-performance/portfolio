@@ -164,7 +164,7 @@ public class IBFlexStatementExtractor implements Extractor
         private static final String ASSETKEY_STOCK = "STK";
         private static final String ASSETKEY_OPTION = "OPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
-        
+
         private Document document;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
@@ -378,18 +378,11 @@ public class IBFlexStatementExtractor implements Extractor
                 }
             }
 
+            transaction.setSecurity(this.getOrCreateSecurity(element, true));
+
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
-
-            // Set the Amount which is "netCash"
-            Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
-            setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
-            setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
-
-            // Share Quantity
-            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
+            transaction.getPortfolioTransaction().setCurrencyCode(currency);
 
             // fees
             double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
@@ -402,7 +395,15 @@ public class IBFlexStatementExtractor implements Extractor
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes, currency);
             transaction.getPortfolioTransaction().addUnit(taxUnit);
 
-            transaction.setSecurity(this.getOrCreateSecurity(element, true));
+            // Set the Amount which is "netCash"
+            Double amount = Math.abs(Double.parseDouble(element.getAttribute("netCash")));
+            setAmount(element, transaction.getPortfolioTransaction(), amount, currency);
+            setAmount(element, transaction.getAccountTransaction(), amount, currency, false);
+
+            // Share Quantity
+            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
+            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
 
             transaction.setNote(element.getAttribute("description"));
 
@@ -575,7 +576,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                     // Gross value with conversion information for the security
                     // currency.
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getMonetaryAmount(),
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, transaction.getGrossValue(),
                                     Money.of(transaction.getSecurity().getCurrencyCode(),
                                                     Math.round(securityCurrencyMoney.doubleValue())),
                                     inverseRate);
