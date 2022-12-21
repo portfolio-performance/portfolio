@@ -112,9 +112,15 @@ public class ClientIRRYield
     {
         CurrencyConverter converter = snapshotStart.getCurrencyConverter();
 
-        dates.add(interval.getStart());
-        // snapshots are always in target currency, no conversion needed
-        values.add(-snapshotStart.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        // add start day only if there is already a valuation (the interval
+        // period might start way before the first transaction)
+
+        if (!snapshotStart.getMonetaryAssets().isZero())
+        {
+            dates.add(interval.getStart());
+            // snapshots are always in target currency, no conversion needed
+            values.add(-snapshotStart.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        }
 
         for (Transaction t : transactions)
         {
@@ -143,7 +149,10 @@ public class ClientIRRYield
             }
         }
 
-        dates.add(interval.getEnd());
-        values.add(snapshotEnd.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        if (!snapshotEnd.getMonetaryAssets().isZero())
+        {
+            dates.add(interval.getEnd());
+            values.add(snapshotEnd.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        }
     }
 }
