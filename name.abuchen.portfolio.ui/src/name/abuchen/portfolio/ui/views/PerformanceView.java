@@ -515,7 +515,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
                             : ((PortfolioTransaction) t).getType().toString();
@@ -560,7 +560,8 @@ public class PerformanceView extends AbstractHistoricView
                 return ((TransactionPair<?>) element).getTransaction().getSource();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
+        column.setSorter(ColumnViewerSorter
+                        .createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -687,7 +688,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Security security = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return security != null ? security.getName() : null;
         }));
@@ -725,7 +726,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Portfolio portfolio = ((TransactionPair<?>) e).getOwner() instanceof Portfolio
                             ? (Portfolio) ((TransactionPair<?>) e).getOwner()
                             : null;
@@ -776,7 +777,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Account account = getAccount.apply(e);
             return account != null ? account.getName() : null;
         }));

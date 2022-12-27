@@ -135,7 +135,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new DateTimeLabelProvider(e -> ((AccountTransaction) e).getDateTime())
         {
-             @Override
+            @Override
             public Color getForeground(Object element)
             {
                 return colorFor((AccountTransaction) element);
@@ -361,7 +361,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);

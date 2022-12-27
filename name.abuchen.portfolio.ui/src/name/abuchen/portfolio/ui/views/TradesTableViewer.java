@@ -289,7 +289,8 @@ public class TradesTableViewer
                 return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getLastTransaction().getTransaction().getNote()));
+        column.setSorter(ColumnViewerSorter
+                        .createIgnoreCase(e -> ((Trade) e).getLastTransaction().getTransaction().getNote()));
         support.addColumn(column);
 
         column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$
@@ -302,7 +303,7 @@ public class TradesTableViewer
                 return ((Trade) e).getPortfolio().getName();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getPortfolio().getName()));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> ((Trade) e).getPortfolio().getName()));
         column.setVisible(false);
         support.addColumn(column);
 
