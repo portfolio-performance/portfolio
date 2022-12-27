@@ -44,10 +44,16 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
 
             if (taxonomy != null)
             {
-                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
                 TaxonomyModel model = new TaxonomyModel(getDashboardData().getExchangeRateProviderFactory(),
-                                filteredClient, taxonomy);
-                model.setExcludeUnassignedCategoryInCharts(!get(IncludeUnassignedCategoryConfig.class).isUnassignedCategoryIncluded());
+                                getClient(), taxonomy);
+
+                // apply filter if applicable
+                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
+                if (filteredClient != getClient())
+                    model.updateClientSnapshot(filteredClient);
+
+                model.setExcludeUnassignedCategoryInCharts(
+                                !get(IncludeUnassignedCategoryConfig.class).isUnassignedCategoryIncluded());
                 return model;
             }
             else
