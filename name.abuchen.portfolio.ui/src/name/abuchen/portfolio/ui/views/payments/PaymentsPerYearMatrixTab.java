@@ -20,7 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
+public class PaymentsPerYearMatrixTab extends PaymentsMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
@@ -48,16 +48,16 @@ public class PaymentsPerYearMatrixTab extends PaymentsPerMonthMatrixTab
             date = date.plusYears(1);
         }
 
-        createSumColumn(records, layout);
+        createSumColumn(records, layout, false);
 
-        sortColumnOrder();
+        updateColumnOrder();
     }
     
     @Override
-    protected void sortColumnOrder()
+    protected void updateColumnOrder()
     {
         // Keep first column in same position
-        sortColumnOrder(1, 0);
+        setColumnOrder(1, 0);
     }
 
     private void createYearColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
