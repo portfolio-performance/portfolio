@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views.payments;
 
-import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +50,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class PaymentsMatrixTab implements PaymentsTab
 {
@@ -213,8 +213,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             }
         });
 
-        Collator collator = Collator.getInstance();
-        createSorter((l1, l2) -> collator.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
+        createSorter((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                         .attachTo(records, column, isSorted);
 
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));

@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.util.viewers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,6 +29,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class ColumnViewerSorter
 {
@@ -108,8 +108,6 @@ public final class ColumnViewerSorter
 
     private static final class BeanComparator implements Comparator<Object>
     {
-        private Collator collator = Collator.getInstance();
-
         private final Class<?> clazz;
         private final Method method;
 
@@ -123,9 +121,9 @@ public final class ColumnViewerSorter
             Class<?> returnType = method.getReturnType();
 
             if (returnType.equals(Object.class))
-                comparator = (r, l) -> collator.compare(String.valueOf(r), String.valueOf(l));
+                comparator = (r, l) -> TextUtil.compare(String.valueOf(r), String.valueOf(l));
             else if (returnType.isAssignableFrom(String.class))
-                comparator = collator;
+                comparator = (r, l) -> TextUtil.compare((String) r, (String) l);
             else if (returnType.isAssignableFrom(Enum.class))
                 comparator = (r, l) -> ((Enum<?>) r).name().compareTo(((Enum<?>) l).name());
             else if (returnType.isAssignableFrom(Integer.class) || returnType.isAssignableFrom(int.class))
@@ -143,7 +141,7 @@ public final class ColumnViewerSorter
             else if (returnType.isAssignableFrom(Quote.class))
                 comparator = (r, l) -> ((Quote) r).compareTo((Quote) l);
             else
-                comparator = (r, l) -> collator.compare(String.valueOf(r), String.valueOf(l));
+                comparator = (r, l) -> TextUtil.compare(String.valueOf(r), String.valueOf(l));
         }
 
         private Method determineReadMethod(Class<?> clazz, String attribute)
@@ -242,7 +240,6 @@ public final class ColumnViewerSorter
 
     private static final class StringValueProviderComparator implements Comparator<Object>
     {
-        private final Collator collator = Collator.getInstance();
         private final Function<Object, String> valueProvider;
 
         public StringValueProviderComparator(Function<Object, String> valueProvider)
@@ -270,7 +267,7 @@ public final class ColumnViewerSorter
             else if (v2 == null)
                 return 1;
 
-            return collator.compare(v1, v2);
+            return TextUtil.compare(v1, v2);
         }
     }
 

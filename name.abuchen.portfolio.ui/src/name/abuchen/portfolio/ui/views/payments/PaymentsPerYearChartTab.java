@@ -58,8 +58,7 @@ public class PaymentsPerYearChartTab extends AbstractChartTab
                                         return true;
                                 return false;
                             })
-                            .sorted((l1, l2) -> l1.getVehicle().getName()
-                                            .compareToIgnoreCase(l2.getVehicle().getName()))
+                            .sorted((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                             .collect(Collectors.toList());
 
             final Composite container = new Composite(parent, SWT.NONE);

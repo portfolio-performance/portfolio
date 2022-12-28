@@ -19,6 +19,7 @@ import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TextUtil;
 
 /**
  * A <code>Security</code> is used for assets that have historical prices
@@ -38,7 +39,7 @@ public final class Security implements Attributable, InvestmentVehicle
         {
             if (s1 == null)
                 return s2 == null ? 0 : -1;
-            return s1.name.compareToIgnoreCase(s2.name);
+            return TextUtil.compare(s1.name, s2.name);
         }
     }
 

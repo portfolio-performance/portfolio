@@ -966,7 +966,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             for (Enum<?> entry : mapFormat.map().keySet())
                 elements.add(new Entry(mapFormat.map(), entry));
 
-            Collections.sort(elements, (e1, e2) -> e1.key.name().compareToIgnoreCase(e2.key.name()));
+            Collections.sort(elements, (e1, e2) -> TextUtil.compare(e1.key.name(), e2.key.name()));
 
             return elements.toArray();
         }

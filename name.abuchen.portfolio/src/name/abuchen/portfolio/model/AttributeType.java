@@ -21,6 +21,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class AttributeType implements Named
 {
@@ -628,9 +629,9 @@ public class AttributeType implements Named
             else if (type == Double.class)
                 return ((Double) o1).compareTo((Double) o2);
             else if (type == String.class)
-                return ((String) o1).compareToIgnoreCase((String) o2);
+                return TextUtil.compare((String) o1, (String) o2);
             else
-                return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
+                return ((Comparable<Object>) o1).compareTo(o2);
         };
     }
 

@@ -1005,7 +1005,7 @@ import name.abuchen.portfolio.util.TextUtil;
             if (byType && !node1.isClassification() && node2.isClassification())
                 return 1;
 
-            return node1.getName().compareToIgnoreCase(node2.getName());
+            return TextUtil.compare(node1.getName(), node2.getName());
         });
 
         int rank = 0;

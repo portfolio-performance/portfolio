@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.util;
 
+import java.text.Collator;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -9,9 +10,11 @@ public final class TextUtil
 {
     public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
 
+    public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
 
-    public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+    private static final Collator COLLATOR = Collator.getInstance();
 
     private TextUtil()
     {
@@ -221,5 +224,13 @@ public final class TextUtil
         int l = text.length();
         
         return l <= length ? text : text.substring(0, length) + "…"; //$NON-NLS-1$
+    }
+
+    /*
+     * Locale-sensitive compare of two strings using Java Text Collator.
+     */
+    public static int compare(String left, String right)
+    {
+        return COLLATOR.compare(left, right);
     }
 }

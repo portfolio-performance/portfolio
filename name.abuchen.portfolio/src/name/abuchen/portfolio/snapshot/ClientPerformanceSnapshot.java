@@ -37,6 +37,7 @@ import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ClientPerformanceSnapshot
 {
@@ -373,7 +374,7 @@ public class ClientPerformanceSnapshot
                     Function<SecurityPerformanceRecord, CapitalGainsRecord> mapper)
     {
         category.positions = securityPerformance.getRecords().stream()
-                        .sorted((p1, p2) -> p1.getSecurityName().compareToIgnoreCase(p2.getSecurityName())) //
+                        .sorted((p1, p2) -> TextUtil.compare(p1.getSecurityName(), p2.getSecurityName())) //
                         .map(mapper)
                         .filter(gains -> !gains.getCapitalGains().isZero() || !gains.getForexCaptialGains().isZero())
                         .map(gains -> new Position(gains.getSecurity(), gains.getCapitalGains(),
@@ -514,7 +515,7 @@ public class ClientPerformanceSnapshot
                                 return p2.getSecurity() == null ? 0 : 1;
                             if (p2.getSecurity() == null)
                                 return -1;
-                            return p1.getLabel().compareToIgnoreCase(p2.getLabel());
+                            return TextUtil.compare(p1.getLabel(), p2.getLabel());
                         }) //
                         .collect(Collectors.toList());
 
