@@ -117,7 +117,7 @@ public class DonutChartBuilder
                                     Assignment mergedAssignment = new Assignment(r.getBackingInvestmentVehicle(),
                                                     r.getAssignment().getWeight() + r.getAssignment().getWeight());
 
-                                    TaxonomyNode mergedNode = new AssignmentNode(null, mergedAssignment);
+                                    TaxonomyNode mergedNode = new AssignmentNode(child, mergedAssignment);
                                     mergedNode.setActual(r.getActual().add(l.getActual()));
 
                                     return mergedNode;
