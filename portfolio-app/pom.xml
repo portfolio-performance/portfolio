@@ -40,9 +40,9 @@
 
 	<repositories>
 		<repository>
-			<id>portfolio-jre11</id>
+			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>https://www.portfolio-performance.info/bundled-jre/11.0.15</url>
+			<url>https://www.portfolio-performance.info/bundled-jre/17.0.5</url>
 		</repository>
 	</repositories>
 

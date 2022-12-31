@@ -15,6 +15,7 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
 	
+	ignore name.abuchen.portfolio.junit;
 	ignore name.abuchen.portfolio.tests;
 	ignore name.abuchen.portfolio.ui.tests;
 	ignore org.eclipse.ant.core;
@@ -25,15 +26,14 @@ eclipse configuration PortfolioPerformance {
 	ignore org.hamcrest.core;
 	ignore org.hamcrest.library;
 	
-    memory min=256M max=768M;
+    memory min=512M max=1G;
     
-    execution-environment 'JavaSE-11';
+    execution-environment 'JavaSE-17';
     
     argument "-consoleLog";
     
     vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
     vm-argument "--add-modules=ALL-SYSTEM";
-    vm-argument "--illegal-access=permit";
     vm-argument "-XX:+UseG1GC";
     vm-argument "-XX:+UseStringDeduplication";
     vm-argument "-XstartOnFirstThread";

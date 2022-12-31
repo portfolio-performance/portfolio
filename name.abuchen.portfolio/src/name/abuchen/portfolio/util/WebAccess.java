@@ -90,7 +90,6 @@ import org.apache.hc.core5.util.Timeout;
  *                       .get();
  */
 //@formatter:on
-@SuppressWarnings("restriction")
 public class WebAccess
 {
     @FunctionalInterface
