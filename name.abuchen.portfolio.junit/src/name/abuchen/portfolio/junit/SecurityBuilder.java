@@ -15,6 +15,8 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class SecurityBuilder
 {
+	private static final Random RANDOM = new Random();
+
     private Security security;
 
     public SecurityBuilder()
@@ -52,8 +54,6 @@ public class SecurityBuilder
     {
         security.addPrice(new SecurityPrice(start, startPrice));
 
-        Random random = new Random();
-
         LocalDate date = start;
         long price = startPrice;
         while (date.compareTo(end) < 0)
@@ -63,7 +63,7 @@ public class SecurityBuilder
             if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)
                 continue;
 
-            price = (long) ((double) price * ((random.nextDouble() * 0.2 - 0.1d) + 1));
+            price = (long) (price * ((RANDOM.nextDouble() * 0.2 - 0.1d) + 1));
             security.addPrice(new SecurityPrice(date, price));
         }
 

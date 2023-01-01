@@ -13,4 +13,8 @@
 
 	<artifactId>name.abuchen.portfolio.junit</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
 </project>
