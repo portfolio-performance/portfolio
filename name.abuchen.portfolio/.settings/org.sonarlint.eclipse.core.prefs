@@ -1,4 +1,5 @@
 autoEnabled=true
+bindingSuggestionsDisabled=false
 eclipse.preferences.version=1
 fileExclusions=GLOB\:**/Messages.java
 idePrefixKey=
