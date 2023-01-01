@@ -78,6 +78,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.XStreamArrayListConverter;
 import name.abuchen.portfolio.util.XStreamInstantConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
@@ -1498,6 +1499,7 @@ public class ClientFactory
                             new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
 
             xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
+            xstream.registerConverter(new XStreamArrayListConverter(xstream.getMapper()));
 
             xstream.useAttributeFor(Money.class, "amount");
             xstream.useAttributeFor(Money.class, "currencyCode");
