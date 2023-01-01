@@ -1,4 +1,4 @@
-package name.abuchen.portfolio;
+package name.abuchen.portfolio.junit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

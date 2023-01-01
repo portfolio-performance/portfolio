@@ -1,4 +1,4 @@
-package name.abuchen.portfolio;
+package name.abuchen.portfolio.junit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

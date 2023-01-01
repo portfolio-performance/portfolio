@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance Bootstrap
 Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
 Bundle-Version: 0.60.2.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.emf.common,
  org.eclipse.e4.ui.workbench.addons.swt,

@@ -14,9 +14,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.checks.QuickFix;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;

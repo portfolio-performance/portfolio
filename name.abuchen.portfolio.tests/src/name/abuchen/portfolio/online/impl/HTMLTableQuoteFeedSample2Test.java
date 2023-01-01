@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestUtilities;
+import name.abuchen.portfolio.junit.TestUtilities;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;

@@ -40,4 +40,27 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          version="0.0.0"
          unpack="false"/>
 
+   <!-- xstream bundles (need javax.activation) -->
+
+   <plugin
+         id="org.apache.servicemix.bundles.xstream"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.servicemix.bundles.xpp3"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.sun.activation.javax.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

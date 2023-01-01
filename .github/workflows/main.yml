@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - feature_java17
   pull_request:
       types: [opened, synchronize, reopened]
 
@@ -25,10 +26,10 @@ jobs:
         key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-mvn-
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: 11
+        java-version: 17
         distribution: zulu
     - name: Build with Maven
       run: |
@@ -53,10 +54,10 @@ jobs:
         key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-mvn-
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: 11
+        java-version: 17
         distribution: zulu
     - name: Build with Maven
       run: |

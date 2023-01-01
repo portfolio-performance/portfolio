@@ -11,7 +11,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>2.6.0</tycho-version> <!-- 2.7.1 does not work, fixed with 2.7.2 ? -->
+		<tycho-version>3.0.1</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -22,13 +22,14 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
 	<modules>
 		<module>../portfolio-target-definition</module>
 		<module>../name.abuchen.portfolio</module>
+		<module>../name.abuchen.portfolio.junit</module>
 		<module>../name.abuchen.portfolio.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
 		<module>../name.abuchen.portfolio.ui.tests</module>
@@ -39,9 +40,9 @@
 
 	<repositories>
 		<repository>
-			<id>portfolio-jre11</id>
+			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>https://www.portfolio-performance.info/bundled-jre/11.0.15</url>
+			<url>https://www.portfolio-performance.info/bundled-jre/17.0.5</url>
 		</repository>
 	</repositories>
 
@@ -63,7 +64,7 @@
 									<version>3.5.2</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>11</version>
+									<version>17</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -83,7 +84,13 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
-					<executionEnvironment>JavaSE-11</executionEnvironment>
+					<executionEnvironment>JavaSE-17</executionEnvironment>
+					<exclusions>
+ 						<exclusion>
+ 							<groupId>com.google.code.findbugs</groupId>
+ 							<artifactId>jsr305</artifactId>
+ 						</exclusion>
+ 					</exclusions>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -91,15 +98,6 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
-					<dependency-resolution>
-						<extraRequirements>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>javax.annotation</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-						</extraRequirements>
-					</dependency-resolution>
 					<environments>
 						<environment>
 							<os>linux</os>

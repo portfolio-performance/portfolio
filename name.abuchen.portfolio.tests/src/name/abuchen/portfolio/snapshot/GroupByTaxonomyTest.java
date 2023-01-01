@@ -3,19 +3,19 @@ package name.abuchen.portfolio.snapshot;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TaxonomyBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TaxonomyBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;

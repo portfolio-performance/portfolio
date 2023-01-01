@@ -1,4 +1,4 @@
-package name.abuchen.portfolio;
+package name.abuchen.portfolio.junit;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

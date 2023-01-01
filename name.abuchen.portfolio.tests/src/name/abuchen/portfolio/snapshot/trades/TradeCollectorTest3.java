@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;

@@ -11,7 +11,7 @@ import java.time.Month;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
