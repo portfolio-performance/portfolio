@@ -209,6 +209,48 @@ public class raiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05AT()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05AT.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("AT0000A28JC3"));
+        assertThat(security.getName(), is("Raiff.-Nachh.-EmMa.-Aktien (RZ) T Miteigentumsanteile - Thesaurierend"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-05T19:06:05")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.944)));
+        assertThat(entry.getSource(), is("Kauf05AT.txt"));
+        assertNull(entry.getNote());
+		
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(118.97))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(117.12))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.85))));		
+    }
+
+    @Test
     public void testWertpapierKauf04WithSecurityInEUR()
     {
         Security security = new Security("Canadian Natural Resources Ltd Registered Shares o.N.", CurrencyUnit.EUR);

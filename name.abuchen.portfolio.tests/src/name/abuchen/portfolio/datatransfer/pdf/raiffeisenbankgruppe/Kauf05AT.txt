@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+ da
+ 
+  
+Raiffeisenbank Region Amstetten eGen   
+Raiffeisenplatz 1, 3300 Amstetten  
+   b
+BLZ: 32025 UID: ATU16336800  
+ 
+ 
+a
+a  
+Abrechnung Dauerauftrag a  
+27457152 - 07.01.2022 a  
+Depot-Nr.: 65.953.123  
+DI David Kornmüller DI Kornmüller David
+Testerstraße 12
+5000 Test 059/959
+Wallsee
+Wir haben für Sie am 07.01.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ausgabe Fonds aus Dauerauftrag Dauerauftrag-Nr.: 23373619 - 22.11.2017
+Auftragseingang: 05.01.2022 - 19:06:05
+Zugang: 0,944 Stk   
+Titel: AT0000A28JC3 Raiff.-Nachh.-EmMa.-Aktien (RZ) T
+Miteigentumsanteile - Thesaurierend
+Fondsgesellschaft: Raiffeisen Kapitalanlageges. m.b.H.
+Kurs: 124,07 EUR
+Handelsplatz: AT_F AT FONDS
+Handelszeit: 05.01.2022 
+Verwahrart: SV
+Positionsdaten: Loco: AT Österreich
+Kurswert: -117,12 EUR 
+Serviceentgelt: -1,85 EUR 
+Zu Lasten IBAN AT62 3202 5000 0591 6812 -118,97 EUR 
+Valuta 07.01.2022
+Schlusstag: 05.01.2022
+Kassatag: 07.01.2022
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 0,944 Stk
+steuerlicher Anschaffungswert: 117,12 EUR
+07.01.2022 1 / 1
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.
