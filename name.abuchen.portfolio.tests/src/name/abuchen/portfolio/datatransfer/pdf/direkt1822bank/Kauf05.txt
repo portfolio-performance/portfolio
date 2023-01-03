@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer 8123456789
+Kundennummer 12345678
+Max Mustermann
+Auftragsnummer xxxxxx/27.00
+Herrn Datum 07.12.2020
+Max Mustermann Ihr Berater 1822direkt
+Musterstr. 34 Telefon 069 94170-0
+12345 Musterstadt Rechnungsnummer W12345-0000123456/20
+Umsatzsteuer-ID DE114104095
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 05.12.2020 01:25:43 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2,0913 XTR.II EUROZONE GOV.BOND LU0290355717 (DBX0AC)
+INHABER-ANTEILE 1C O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 07.12.2020 Auftraggeber Mustermann, Max
+Ausführungskurs 258,209005 EUR Auftragserteilung/ -ort sonstige
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 540,00- EUR
+Provision 1,5000 % vom Kurswert 8,10- EUR
+Ausmachender Betrag 548,10- EUR
+Den Gegenwert buchen wir mit Valuta 09.12.2020 zu Lasten des Kontos 123456789 (IBAN DE55 5005 0201 0123 4567 89),
+BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Gegenpartei bei diesem Geschäft war Börse Tradegate
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR. 9
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2123.12232118.0000125OR07

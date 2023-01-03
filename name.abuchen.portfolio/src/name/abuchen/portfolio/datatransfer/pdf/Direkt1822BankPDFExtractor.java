@@ -65,7 +65,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Börse Außerbörslich (gemäß Weisung)
                 // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
                 .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("(?<name1>.*)$")
                 .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> {
@@ -77,15 +77,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
                 .section("shares")
-                .match("^St.ck (?<shares>[\\.,\\d]+) .* [\\w]{12} \\(.*\\)$")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
-                                // Auftrag vom 05.12.2017 00:15:28 Uhr
-                                section -> section.attributes("date", "time")
-                                        .match("^Auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Uhr$")
-                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
-                                ,
                                 // Schlusstag/-Zeit 01.12.2017 10:30:52 Auftraggeber Mustermann, Max
                                 section -> section.attributes("date", "time")
                                         .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
@@ -122,12 +117,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
-
                 // Limit 40,99 EUR AN
                 .section("note").optional()
                 .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3})( .*)?$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 
@@ -153,7 +148,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // REGISTERED SHARES USD O.N.
                 // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
                 .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("(?<name1>.*)")
                 .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -165,7 +160,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
                 .section("shares")
-                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                .match("^St.ck (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
@@ -188,11 +183,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Aussch.ttung|Dividendengutschrift) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -220,7 +214,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                 // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
                 .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
@@ -235,6 +229,11 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Provision 4,95- EUR
                 .section("fee", "currency").optional()
                 .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Provision 1,5000 % vom Kurswert 8,10- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision .* (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Eigene Spesen 1,95- EUR
@@ -261,7 +260,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 // Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
                 // Ausgabeaufschlag pro Anteil 5,00 %
                 .section("amount", "currency", "discount", "discountCurrency", "percentageFee").optional()
-                .match("^Kurswert (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .match("^Kundenbonifikation [\\.,\\d]+ % vom Ausgabeaufschlag (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$")
                 .match("^Ausgabeaufschlag pro Anteil (?<percentageFee>[\\.,\\d]+) %$")
                 .assign((t, v) -> {
