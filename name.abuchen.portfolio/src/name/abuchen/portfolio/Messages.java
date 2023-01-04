@@ -167,6 +167,7 @@ public class Messages extends NLS
     public static String LabelTradeCalendarDefault;
     public static String LabelTradeCalendarEuronext;
     public static String LabelTradeCalendarGermany;
+    public static String LabelTradeCalendarIBOV;
     public static String LabelTradeCalendarISE;
     public static String LabelTradeCalendarLSE;
     public static String LabelTradeCalendarMICEXRTS;
