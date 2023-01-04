@@ -3,13 +3,16 @@ package name.abuchen.portfolio.util;
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASSUMPTION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
+import static name.abuchen.portfolio.util.HolidayName.BLACK_AWARENESS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
+import static name.abuchen.portfolio.util.HolidayName.CARNIVAL;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
 import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CORONATION;
 import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
+import static name.abuchen.portfolio.util.HolidayName.DAY_OF_THE_DEAD;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
@@ -29,8 +32,10 @@ import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
+import static name.abuchen.portfolio.util.HolidayName.REPUBLIC_PROCLAMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
@@ -40,6 +45,7 @@ import static name.abuchen.portfolio.util.HolidayName.STATE_FUNERAL;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.TERRORIST_ATTACKS;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
+import static name.abuchen.portfolio.util.HolidayName.TIRADENTES_DAY;
 import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
 import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORIA_DAY;
@@ -190,6 +196,24 @@ public class TradeCalendarManager
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         // one-time holidays
         tc.add(fixed(EXTRA_HOLIDAY, Month.JANUARY, 3).onlyIn(2000));
+        CACHE.put(tc.getCode(), tc);
+
+        // see Brazilian Stock Exchange trading days on their official website:
+        // https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/calendario-de-negociacao/feriados/
+        tc = new TradeCalendar("ibov", Messages.LabelTradeCalendarIBOV, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(CARNIVAL, -48));
+        tc.add(easter(CARNIVAL, -47));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(fixed(TIRADENTES_DAY, Month.APRIL, 21));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(easter(CORPUS_CHRISTI, 60));
+        tc.add(fixed(INDEPENDENCE, Month.SEPTEMBER, 7));
+        tc.add(fixed(PATRON_DAY, Month.OCTOBER, 12));
+        tc.add(fixed(DAY_OF_THE_DEAD, Month.NOVEMBER, 2));
+        tc.add(fixed(BLACK_AWARENESS_DAY, Month.NOVEMBER, 20));
+        tc.add(fixed(REPUBLIC_PROCLAMATION_DAY, Month.NOVEMBER, 15));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         CACHE.put(tc.getCode(), tc);
 
         // see Italian Stock Exchange trading days on their official website:
