@@ -81,7 +81,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
                 // Registered Shares o.N.
                 // Kurswert EUR 208,74
-                .section("isin", "wkn", "name", "nameContinued", "currency").optional()
+                .section("isin", "wkn", "name", "nameContinued", "currency")
                 .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$")
                 .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<nameContinued>.*)$")
@@ -359,7 +359,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^.* Portfolio: .*$");
+        Block firstRelevantLine = new Block("^Ex\\-(Tag|Date): .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
