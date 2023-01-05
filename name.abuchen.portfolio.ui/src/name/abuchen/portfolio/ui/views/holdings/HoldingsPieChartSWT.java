@@ -187,7 +187,7 @@ public class HoldingsPieChartSWT implements IPieChart
         circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
                         Messages.LabelStatementOfAssetsHoldings);
         circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
-        circularSeries.setBorderColor(Colors.WHITE);
+        circularSeries.setSliceColor(Colors.WHITE);
         lastLabels = new ArrayList<>(labels);
         Collections.sort(lastLabels, String.CASE_INSENSITIVE_ORDER);
         return circularSeries;

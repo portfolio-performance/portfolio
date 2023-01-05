@@ -125,7 +125,7 @@ public class TaxonomyPieChartSWT implements IPieChart
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.PIE,
                         taxRoot.getName());
 
-        circularSeries.setBorderColor(Colors.WHITE);
+        circularSeries.setSliceColor(Colors.WHITE);
 
         Node rootNode = circularSeries.getRootNode();
         rootNode.setData(taxRoot);
