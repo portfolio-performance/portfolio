@@ -74,7 +74,7 @@ public class HoldingsChartWidget extends CircularChartWidget<ClientSnapshot>
 
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) getChart().getSeriesSet()
                         .createSeries(SeriesType.DOUGHNUT, Messages.ClientEditorLabelHoldings);
-        circularSeries.setBorderColor(Colors.WHITE);
+        circularSeries.setSliceColor(Colors.WHITE);
         Node rootNode = circularSeries.getRootNode();
 
         CircularChart.PieColors colorWheel = new CircularChart.PieColors();

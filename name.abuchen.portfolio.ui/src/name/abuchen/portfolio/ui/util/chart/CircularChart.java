@@ -141,7 +141,7 @@ public class CircularChart extends Chart
             }
 
             gc.setTransform(t);
-            gc.setForeground(Colors.getTextColor(node.getColor()));
+            gc.setForeground(Colors.getTextColor(node.getSliceColor()));
 
             int length = (int) Math.sqrt(
                             Math.pow((outerBound.x - innerBound.x), 2) + Math.pow((outerBound.y - innerBound.y), 2));
@@ -196,7 +196,7 @@ public class CircularChart extends Chart
                 return;
 
             Font oldFont = gc.getFont();
-            gc.setForeground(Colors.getTextColor(node.getColor()));
+            gc.setForeground(Colors.getTextColor(node.getSliceColor()));
             gc.setFont(labelFont);
 
             int angleStart = node.getAngleBounds().x;
@@ -283,7 +283,7 @@ public class CircularChart extends Chart
                 if (getSeriesSet().getSeries().length > 0)
                 {
                     ICircularSeries<?> cs = (ICircularSeries<?>) getSeriesSet().getSeries()[0];
-                    cs.getRootNode().setColor(getPlotArea().getBackground());
+                    cs.getRootNode().setSliceColor(getPlotArea().getBackground());
                 }
             });
         }
