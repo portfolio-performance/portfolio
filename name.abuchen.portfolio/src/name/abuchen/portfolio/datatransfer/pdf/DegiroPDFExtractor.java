@@ -1185,7 +1185,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} " 
                                                 + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "(?<currencyFee>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "([\\s]+)?(?<currencyAccount>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2})([\\s]+)?$")
                                 .assign((t, v) -> {
@@ -1249,7 +1249,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3}.* "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}).* "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyAccount>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1304,7 +1304,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}).* "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyAccount>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
@@ -1368,7 +1368,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "([\\s]+)?(?<currencyAccount>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1421,7 +1421,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}) "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyAccount>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1465,6 +1465,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 27-01-2021 20:54 NIKOLA CORP US6541101050 NDQ XNAS -48 28,00 USD 1.344,00 USD 1.108,34 EUR 1,2114 -0,66 EUR 1.107,68 EUR
                             // 23-02-2021 15:30 ALTO INGREDIENTS INC US0215131063 NDQ SOHO -224 6,30 USD 1 411,20 USD 1 159,26 EUR 1,2161 -0,74 EUR 1 158,52 EUR
                             // 23-02-2021 09:42 ASTON MARTIN GB00BN7CG237 LSE MESI -128 2 105,00 GBX 269 440,00 GBX 3 113,71 EUR 86,4469 -5,56 EUR 3 108,15 EUR
+                            // 26-04-2021 15:35 GOODFOOD MARKET CORP CA38217M1005 TOR NEOE 100 8,20 CAD -820,00 CAD -546,67 EUR 1,5 -2,67 EUR -549,34 EUR
                             // @formatter:on
                             section -> section
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
@@ -1476,7 +1477,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}) "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{2,4}) "
+                                                + "(?<exchangeRate>[\\.,'\\d]+[\\.|,][\\d]{1,4}) "
                                                 + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyAccount>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
