@@ -54,7 +54,7 @@ public class ScatterChartCSVExporter extends AbstractCSVExporter
             
             for (ISeries serie : series)
             {
-                printer.print(serie.getId());
+                printer.print(serie.getDescription() != null ? serie.getDescription() : serie.getId());
                 printer.print(valueFormat.format(serie.getXSeries()[0]));
                 printer.print(valueFormat.format(serie.getYSeries()[0]));
                 printer.println();
