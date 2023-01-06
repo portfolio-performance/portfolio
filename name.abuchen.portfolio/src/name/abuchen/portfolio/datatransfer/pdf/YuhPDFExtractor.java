@@ -23,7 +23,7 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Yuh Accounts"); //$NON-NLS-1$
 
         addBuySellTransaction();
-        addDepotStatementTransaction();
+        addPaymentTransaction();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDepotStatementTransaction()
+    private void addPaymentTransaction()
     {
         DocumentType type = new DocumentType("Zahlungsverkehr");
         this.addDocumentTyp(type);
@@ -97,11 +97,18 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- Gutschrift .*$");
+        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- (Gutschrift|Belastung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                .section("type").optional()
+                .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Belastung"))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+                })
+
                 // Valutadatum 27.10.2022
                 .section("date")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
