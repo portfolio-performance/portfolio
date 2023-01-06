@@ -66,7 +66,7 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
             // write header
             printer.print(Messages.ColumnDate);
             for (ISeries s : series)
-                printer.print(s.getId());
+                printer.print(s.getDescription() != null ? s.getDescription() : s.getId());
             printer.println();
 
             // write body
