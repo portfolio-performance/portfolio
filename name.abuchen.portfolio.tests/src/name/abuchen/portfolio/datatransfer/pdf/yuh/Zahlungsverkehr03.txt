@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: CH3308781000123456700
+Herrn Max Mustermann
+Muster Str. 23
+DE-12345 Musterstadt
+Gland, 05.12.2022
+Zahlungsverkehr - Belastung Unsere Referenz: 123456789 
+Gemäss Ihrem Auftrag haben wir folgende Buchung zu Lasten Ihres Kontos vorgenommen:
+Kontonummer 123456789
+Valutadatum 04.12.2022
+Auszahlung EUR 11.00
+Total EUR 11.00
+Mitteilung Text1
+Text2
+Text3
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
