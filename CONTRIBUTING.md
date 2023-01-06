@@ -28,7 +28,7 @@
 
 ### Install Eclipse
 
-* Java 11, for example from [Azul](https://www.azul.com/downloads/)
+* Java 17, for example from [Azul](https://www.azul.com/downloads/)
 
 * [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
 
@@ -77,7 +77,7 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 		- `name.abuchen.portfolio.util.TextUtil`
 		- `name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils`
 * `Java` --> `Editor` --> `Installed JREs`
-	- Add the Java 11 JDK
+	- Add the Java 17 JDK
 
 
 ## Project Setup
@@ -169,6 +169,7 @@ If you want to add an importer for a new bank or a new transaction type, check o
 ### Source Location
 
 PDF importer: `name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+
 Test cases: `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/`
 
 The naming convention is BANK**Extractor** and BANK**ExtractorTest** for extractor class and test class respectively.
@@ -222,7 +223,7 @@ The importers are structured according to the following scheme and the mapping v
   * `name` --> Security name
   * `isin` --> International Securities Identification Number
   * `wkn` --> Security code number
-  * `tickerSymbol` --> Ticker symbol ( Optional )
+  * `tickerSymbol` --> Tickersymbol ( Optional )
   * `currency` --> Security currency
 * Shares of the transaction
   * `shares` --> Shares
@@ -304,6 +305,7 @@ To test regular expression you can use [https://regex101.com/](https://regex101.
 
 Beside general good practices for regular expresions, keep in mind:
 * all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results 
+* the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
 * expression in `.match(" ... ")` is started with an anchor `^` and ended with `$`
 * with `.find(" ... ")` do not add anchors as they will be automatically added
 
@@ -315,9 +317,7 @@ Keep in mind that the regular expressions work against text that is automaticall
 |               | 1.1.1970     | `\\d+.\\d+.\\d{4}`  | `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}` |
 | Time          | 12:01        | `\\d+:\\d+`         | `[\\d]{2}\\:[\\d]{2}}` |
 | ISIN          | IE00BKM4GZ66 | `\\w+`              | `[A-Z]{2}[A-Z0-9]{9}[0-9]` |
-|               |              |                     | `[\\w]{12}` |
 | WKN           | A111X9       | `\\w+`              | `[A-Z0-9]{6}` |
-|               |              |                     | `[\\w]{6}` |
 | Amount        | 751,68       | `[\\d,.]+`          | `[\\.,\\d]+` |
 |               |              |                     | `[\\.\\d]+,[\\d]{2}` |
 |               | 74'120.00    | `[\\d.']+`          | `[\\.'\\d]+` |
