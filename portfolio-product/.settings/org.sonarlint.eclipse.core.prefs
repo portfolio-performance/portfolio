@@ -1,3 +1,7 @@
 autoEnabled=false
+bindingSuggestionsDisabled=false
 eclipse.preferences.version=1
-extraProperties=
+idePrefixKey=
+projectKey=name.abuchen.portfolio\:portfolio-app
+serverId=SonarCloud/buchen-github
+sqPrefixKey=portfolio-app
