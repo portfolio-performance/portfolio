@@ -5,11 +5,11 @@ import java.util.ResourceBundle;
 
 /* package */ enum HolidayName
 {
+    ALL_SOULS_DAY,
     ASCENSION_DAY,
     ASSUMPTION_DAY,
     BERCHTOLDSTAG,
     BOXING_DAY,
-    BLACK_AWARENESS_DAY,
     CARNIVAL,
     CHRISTMAS,
     CHRISTMAS_EVE,
@@ -18,7 +18,6 @@ import java.util.ResourceBundle;
     CORONATION,
     CORPUS_CHRISTI,
     NEW_YEARS_EVE,
-    DAY_OF_THE_DEAD,
     DEFENDER_OF_THE_FATHERLAND_DAY,
     EARLY_MAY_BANK_HOLIDAY,
     EASTER_MONDAY,
