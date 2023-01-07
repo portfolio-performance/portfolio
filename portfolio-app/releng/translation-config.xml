@@ -19,6 +19,11 @@
 			<filename>messages</filename>
 		</artifact>
 		<artifact>
+			<context>core.holiday-names</context>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/util</path>
+			<filename>holiday-names</filename>
+		</artifact>
+		<artifact>
 			<context>core.labels</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model</path>
 			<filename>labels</filename>

@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.util;
 
+import static name.abuchen.portfolio.util.HolidayName.ALL_SOULS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASSUMPTION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
-import static name.abuchen.portfolio.util.HolidayName.BLACK_AWARENESS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CARNIVAL;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
@@ -12,7 +12,6 @@ import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
 import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CORONATION;
 import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
-import static name.abuchen.portfolio.util.HolidayName.DAY_OF_THE_DEAD;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
@@ -210,8 +209,7 @@ public class TradeCalendarManager
         tc.add(easter(CORPUS_CHRISTI, 60));
         tc.add(fixed(INDEPENDENCE, Month.SEPTEMBER, 7));
         tc.add(fixed(PATRON_DAY, Month.OCTOBER, 12));
-        tc.add(fixed(DAY_OF_THE_DEAD, Month.NOVEMBER, 2));
-        tc.add(fixed(BLACK_AWARENESS_DAY, Month.NOVEMBER, 20));
+        tc.add(fixed(ALL_SOULS_DAY, Month.NOVEMBER, 2));
         tc.add(fixed(REPUBLIC_PROCLAMATION_DAY, Month.NOVEMBER, 15));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         CACHE.put(tc.getCode(), tc);
