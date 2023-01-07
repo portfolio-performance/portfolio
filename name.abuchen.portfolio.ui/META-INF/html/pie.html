@@ -186,7 +186,7 @@ var thePieChart = {
 
         this.valueLabels.enter()
             .append("text")
-            .filter(function(d) { return d.data.value / total > 0.03 })
+            .filter(function(d) { return d.data.value / total > 0.015 })
             .attr("transform", this.transformValueLabels)
             .attr("dy", ".35em")
             .attr("text-anchor", "middle")
