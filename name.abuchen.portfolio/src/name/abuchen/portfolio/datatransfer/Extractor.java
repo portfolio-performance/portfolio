@@ -64,7 +64,7 @@ public interface Extractor
         private Portfolio portfolioPrimary;
 
         private Portfolio portfolioSecondary;
-        
+
         private boolean investmentPlanItem = false;
 
         public abstract Annotated getSubject();
@@ -85,6 +85,11 @@ public interface Extractor
             return 0; // NOSONAR
         }
 
+        public String getSource()
+        {
+            return null;
+        }
+
         public abstract Status apply(ImportAction action, Context context);
 
         public Object getData()
@@ -96,7 +101,7 @@ public interface Extractor
         {
             this.data = data;
         }
-        
+
         public Account getAccountPrimary()
         {
             return accountPrimary;
@@ -152,9 +157,10 @@ public interface Extractor
         public String toString()
         {
             // debug output
-            return String.format("%s %s %s %s", getDate() != null ? Values.DateTime.format(getDate()) : "",
+            return String.format("%s %s %s %s %s", getDate() != null ? Values.DateTime.format(getDate()) : "",
                             getTypeInformation(), getAmount() != null ? Values.Money.format(getAmount()) : "",
-                            getSecurity() != null ? getSecurity().getName() : "");
+                            getSecurity() != null ? getSecurity().getName() : "",
+                            getSource() != null ? getSource() : "");
         }
     }
 
@@ -165,7 +171,7 @@ public interface Extractor
      * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
      * can be parsed, but is of no further use to PP.
      */
-    static class NonImportableItem extends Item implements Annotated
+    public static class NonImportableItem extends Item implements Annotated
     {
         private String typeInformation;
         private String note;
@@ -286,6 +292,12 @@ public interface Extractor
         }
 
         @Override
+        public String getSource()
+        {
+            return transaction.getSource();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             if (transaction instanceof AccountTransaction)
@@ -353,7 +365,13 @@ public interface Extractor
         {
             return entry.getAccountTransaction().getSecurity();
         }
-        
+
+        @Override
+        public String getSource()
+        {
+            return entry.getAccountTransaction().getSource();
+        }
+
         @Override
         public Status apply(ImportAction action, Context context)
         {
@@ -368,8 +386,8 @@ public interface Extractor
             Status status = action.process(entry, account, portfolio);
 
             // check if message was set in DetectDuplicatesAction
-            if (Messages.InvestmentPlanItemImportToolTip.equals(status.getMessage()))  
-            { 
+            if (Messages.InvestmentPlanItemImportToolTip.equals(status.getMessage()))
+            {
                 super.setInvestmentPlanItem(true);
             }
             return status;
@@ -416,6 +434,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return null;
+        }
+
+        @Override
+        public String getSource()
+        {
+            return entry.getSourceTransaction().getSource();
         }
 
         @Override
@@ -479,6 +503,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return entry.getSourceTransaction().getSecurity();
+        }
+
+        @Override
+        public String getSource()
+        {
+            return entry.getSourceTransaction().getSource();
         }
 
         @Override
