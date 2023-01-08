@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -356,6 +357,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         image = Images.ERROR;
                         break;
                     case OK:
+                        image = Images.CHECK;
+                        break;
                     default:
                 }
                 return image != null ? image.image() : null;
@@ -401,6 +404,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return date != null ? Values.DateTime.format(date) : null;
             }
         });
+        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getItem().getDate()).attachTo(viewer, column);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
