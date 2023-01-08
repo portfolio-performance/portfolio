@@ -40,15 +40,25 @@ public class PDFExtractorUtils
 
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d MMM yyyy", Locale.US) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLL yyyy", Locale.US) }; //$NON-NLS-1$
+
+    private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
+                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.CANADA) }; //$NON-NLS-1$
+
+    private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
+                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.CANADA_FRENCH) }; //$NON-NLS-1$
 
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.UK) }; //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
 
-    private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of(Locale.GERMANY, DATE_FORMATTER_GERMANY,
-                    Locale.US, DATE_FORMATTER_US, Locale.UK, DATE_FORMATTER_UK);
+    private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
+                    Locale.GERMANY, DATE_FORMATTER_GERMANY, //
+                    Locale.US, DATE_FORMATTER_US, //
+                    Locale.CANADA, DATE_FORMATTER_CANADA, //
+                    Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
+                    Locale.UK, DATE_FORMATTER_UK);
 
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
@@ -87,9 +97,7 @@ public class PDFExtractorUtils
         Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
 
         if (rate.isPresent())
-        {
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
-        }
     }
 
     public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
@@ -223,7 +231,7 @@ public class PDFExtractorUtils
 
     public static LocalDateTime asDate(String value, Locale... hints)
     {
-        Locale[] locales = hints.length > 0 ? hints : new Locale[] { Locale.GERMANY, Locale.US, Locale.UK };
+        Locale[] locales = hints.length > 0 ? hints : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
 
         for (Locale l : locales)
         {
