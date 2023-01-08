@@ -56,7 +56,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                 + "Withdrawal)) "
                                 + "(\\p{Sc})?(\\W)?"
                                 + "(?<amount>[\\.,'\\d\\s]+)"
-                                + "(\\W)?(\\p{Sc})(\\W)?[\\.,'\\d\\s]+(\\W)?(\\p{Sc})?$")
+                                + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,'\\d\\s]+(\\W)?(\\p{Sc})?$")
                 .assign((t, v) -> {
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
