@@ -186,6 +186,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         setControl(container);
         container.setLayout(new FormLayout());
 
+        List<Account> accounts = client.getActiveAccounts();
+        if (accounts.isEmpty())
+            accounts = client.getAccounts();
+
+        List<Portfolio> portfolios = client.getActivePortfolios();
+        if (portfolios.isEmpty())
+            portfolios = client.getPortfolios();
+
         Composite targetContainer = new Composite(container, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(4).applyTo(targetContainer);
 
@@ -194,7 +202,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
         primaryAccount = new ComboViewer(cmbAccount);
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        primaryAccount.setInput(client.getActiveAccounts());
+        primaryAccount.setInput(accounts);
         primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
@@ -203,7 +211,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryAccount = new ComboViewer(cmbAccountTarget);
         secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryAccount.setInput(client.getActiveAccounts());
+        secondaryAccount.setInput(accounts);
         secondaryAccount.getControl().setVisible(false);
 
         Label lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -211,7 +219,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbPortfolio = new Combo(targetContainer, SWT.READ_ONLY);
         primaryPortfolio = new ComboViewer(cmbPortfolio);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        primaryPortfolio.setInput(client.getActivePortfolios());
+        primaryPortfolio.setInput(portfolios);
         primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -220,7 +228,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbPortfolioTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryPortfolio = new ComboViewer(cmbPortfolioTarget);
         secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryPortfolio.setInput(client.getActivePortfolios());
+        secondaryPortfolio.setInput(portfolios);
         secondaryPortfolio.getControl().setVisible(false);
 
         preselectDropDowns();
@@ -285,6 +293,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // be imported into the same account
 
         List<Account> activeAccounts = client.getActiveAccounts();
+        if (activeAccounts.isEmpty())
+            activeAccounts.addAll(client.getAccounts());
         if (!activeAccounts.isEmpty())
         {
             String uuid = account != null ? account.getUUID()
@@ -297,6 +307,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
 
         List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (activePortfolios.isEmpty())
+            activePortfolios.addAll(client.getPortfolios());
         if (!activePortfolios.isEmpty())
         {
             String uuid = portfolio != null ? portfolio.getUUID()
