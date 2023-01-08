@@ -477,4 +477,78 @@ public class BondoraCapitalPDFExtractorTest
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
         assertThat(transaction.getNote(), is("Go & Grow Zinsen"));
     }
+
+    @Test
+    public void testKontoauszug09()
+    {
+        BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-29T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.86)));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Go & Grow Zinsen"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(474.35)));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Abheben"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4230.27)));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Abheben"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.84)));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Go & Grow Zinsen"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4204.97)));
+        assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
+        assertThat(transaction.getNote(), is("Überweisen"));
+    }
 }
