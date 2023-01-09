@@ -32,7 +32,12 @@ public class ClientIRRYield
         List<Double> values = new ArrayList<>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
-        double irr = IRR.calculate(dates, values);
+        double irr = 0d;
+
+        // calculate IRR only if there any transaction or valuations at all.
+        // There might be none in the selected interval.
+        if (!values.isEmpty())
+            irr = IRR.calculate(dates, values);
 
         return new ClientIRRYield(irr);
     }
