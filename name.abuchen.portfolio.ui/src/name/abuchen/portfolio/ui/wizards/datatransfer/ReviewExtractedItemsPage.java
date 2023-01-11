@@ -744,7 +744,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         // additionally add the non-importable items as extraction errors
         extractionErrors.addAll(entries.stream().filter(e -> e.getItem() instanceof NonImportableItem)
-                        .map(e -> new IOException(e.getItem().getTypeInformation())).toList());
+                        .map(e -> new IOException(e.getItem().getTypeInformation())).collect(Collectors.toList()));
 
         extractionErrors.addAll(errors);
         errorTableViewer.setInput(extractionErrors);
