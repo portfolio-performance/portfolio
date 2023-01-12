@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -248,7 +249,7 @@ public class PDFExtractorUtils
             }
         }
 
-        throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
+        throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
     }
 
     public static LocalTime asTime(String value)
@@ -265,7 +266,7 @@ public class PDFExtractorUtils
             }
         }
 
-        throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
+        throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
     }
 
     public static LocalDateTime asDate(String date, String time)
@@ -284,7 +285,7 @@ public class PDFExtractorUtils
             }
         }
 
-        throw new DateTimeParseException(Messages.MsgErrorNotAValidDate, value, 0);
+        throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
     }
 
     public static Consumer<Transaction> fixGrossValue()
