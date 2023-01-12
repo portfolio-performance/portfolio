@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -737,17 +736,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
-        checkEntries(entries);
-
-        allEntries.addAll(entries);
-        tableViewer.setInput(allEntries);
-
-        // additionally add the non-importable items as extraction errors
-        extractionErrors.addAll(entries.stream().filter(e -> e.getItem() instanceof NonImportableItem)
-                        .map(e -> new IOException(e.getItem().getTypeInformation())).toList());
-
+        // First add List of exception errors to extractionErrors
+        // then all checkEntries() extraction errors
         extractionErrors.addAll(errors);
         errorTableViewer.setInput(extractionErrors);
+
+        checkEntries(entries);
+        allEntries.addAll(entries);
+        tableViewer.setInput(allEntries);
 
         for (ExtractedEntry entry : entries)
         {
@@ -794,7 +790,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
                                     + entry.getItem().toString()));
                 }
-
             }
         }
 

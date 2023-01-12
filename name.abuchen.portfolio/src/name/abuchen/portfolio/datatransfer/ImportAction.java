@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableBuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableTransactionItem;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -93,7 +94,12 @@ public interface ImportAction
         return Status.OK_STATUS;
     }
 
-    default Status process(NonImportableItem item)
+    default Status process(NonImportableBuySellEntryItem item)
+    {
+        return Status.OK_STATUS;
+    }
+
+    default Status process(NonImportableTransactionItem item)
     {
         return Status.OK_STATUS;
     }

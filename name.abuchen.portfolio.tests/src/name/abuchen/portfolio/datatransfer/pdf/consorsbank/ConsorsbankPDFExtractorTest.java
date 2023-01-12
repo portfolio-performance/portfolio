@@ -16,7 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableTransactionItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -3083,14 +3083,25 @@ public class ConsorsbankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction cancelations = (AccountTransaction) results.stream()
+                        .filter(NonImportableTransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(UnsupportedOperationException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoDividende01.txt"));
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2020-01-27T00:00")));
+        assertThat(cancelations.getShares(), is(Values.Share.factorize(230)));
+        assertThat(cancelations.getSource(), is("StornoDividende01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(145.90))));
+        assertThat(cancelations.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(190.90))));
+        assertThat(cancelations.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(39.31 + 2.16 + 3.53))));
+        assertThat(cancelations.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test

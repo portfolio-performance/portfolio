@@ -16,7 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableTransactionItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -1138,14 +1138,28 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction cancelations = (AccountTransaction) results.stream()
+                        .filter(NonImportableTransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(UnsupportedOperationException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoDividende01.txt"));
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2020-02-26T00:00")));
+        assertThat(cancelations.getShares(), is(Values.Share.factorize(200)));
+        assertThat(cancelations.getSource(), is("StornoDividende01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.17))));
+        assertThat(cancelations.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.17))));
+        assertThat(cancelations.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = cancelations.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(33.50))));
     }
 
     @Test
@@ -1162,14 +1176,28 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction cancelations = (AccountTransaction) results.stream()
+                        .filter(NonImportableTransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(UnsupportedOperationException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoDividende02.txt"));
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2021-05-25T00:00")));
+        assertThat(cancelations.getShares(), is(Values.Share.factorize(79)));
+        assertThat(cancelations.getSource(), is("StornoDividende02.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.66))));
+        assertThat(cancelations.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.66))));
+        assertThat(cancelations.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = cancelations.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(32.22))));
     }
 
     @Test

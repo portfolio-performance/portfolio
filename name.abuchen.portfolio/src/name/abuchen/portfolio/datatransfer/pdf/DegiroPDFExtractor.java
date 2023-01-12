@@ -918,7 +918,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setDateTime(asDate(v.get("date"), v.get("time")));
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setNote(v.get("note1")+ " " + v.get("note2")+ " " + v.get("note3"));
+                                        t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
     
                                         if (" ".equalsIgnoreCase(v.get("type")))
                                             t.setType(AccountTransaction.Type.FEES_REFUND);

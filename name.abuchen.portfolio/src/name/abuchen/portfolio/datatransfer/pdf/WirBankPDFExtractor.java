@@ -30,7 +30,6 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         addInterestTransaction();
         addFeeTransaction();
         addDividendTransaction();
-//        addTaxRefundTransaction();
     }
 
     @Override
@@ -306,7 +305,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^(Dividendenart|Type of dividend): (?<note>.*)")
                 .assign((t, v) -> {
-                    if (t.getNote() == null)
+                    if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                         t.setNote(trim(v.get("note")));
                 })
 
@@ -316,7 +315,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableTransactionItem(t);
                     }
                     return null;
                 });

@@ -17,7 +17,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableTransactionItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -221,22 +221,44 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st cancellation (no exchange rate available) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransaction cancelations = (AccountTransaction) results.stream()
+                        .filter(NonImportableTransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(UnsupportedOperationException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, CurrencyUnit.USD, CurrencyUnit.EUR)));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("Depotauszug01.txt"));
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2019-06-27T00:00")));
+        assertThat(cancelations.getShares(), is(Values.Share.factorize(106.167)));
+        assertThat(cancelations.getSource(), is("Depotauszug01.txt"));
+        assertThat(cancelations.getNote(), is(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, CurrencyUnit.USD, CurrencyUnit.EUR)));
+
+        assertThat(cancelations.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.54))));
+        assertThat(cancelations.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.54))));
+        assertThat(cancelations.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 2nd cancellation (no exchange rate available) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        cancelations = (AccountTransaction) results.stream()
+                        .filter(NonImportableTransactionItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(UnsupportedOperationException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, CurrencyUnit.USD, CurrencyUnit.EUR)));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("Depotauszug01.txt"));
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2020-04-08T00:00")));
+        assertThat(cancelations.getShares(), is(Values.Share.factorize(31.633)));
+        assertThat(cancelations.getSource(), is("Depotauszug01.txt"));
+        assertThat(cancelations.getNote(), is(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, CurrencyUnit.USD, CurrencyUnit.EUR)));
+
+        assertThat(cancelations.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.94))));
+        assertThat(cancelations.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.94))));
+        assertThat(cancelations.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()

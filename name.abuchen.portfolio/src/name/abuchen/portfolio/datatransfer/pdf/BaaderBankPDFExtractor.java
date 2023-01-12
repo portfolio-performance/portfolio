@@ -336,9 +336,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableTransactionItem(t);
                     }
-                    return new TransactionItem(t);
+                    return null;
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);

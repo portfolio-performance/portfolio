@@ -16,7 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableBuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -93,69 +93,153 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
+        // check 1st cancellation (Storno) transaction
+        BuySellEntry cancelations = (BuySellEntry) results.stream()
+                        .filter(NonImportableBuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(1)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.91)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.45))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.45))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 2nd cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(1)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(2)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.57)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.16))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.16))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 3rd cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(2)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(3)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.28)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.04))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.04))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 4th cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(3)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(4)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.43)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.02))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.02))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 5th cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(4)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(5)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.55)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.82))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.82))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 6th cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(5)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(6)
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.35)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.52))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.52))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 7th cancellation (Storno) transaction
+        cancelations = (BuySellEntry) results.stream().filter(NonImportableBuySellEntryItem.class::isInstance).skip(6)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.46)));
+        assertThat(cancelations.getSource(), is("StornoKontoauszug01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.43))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.43))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test

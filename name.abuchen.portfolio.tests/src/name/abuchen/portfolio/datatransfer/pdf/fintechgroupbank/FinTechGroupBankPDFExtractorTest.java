@@ -16,7 +16,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableBuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -1277,14 +1277,26 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
+        BuySellEntry cancelations = (BuySellEntry) results.stream()
+                        .filter(NonImportableBuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("FinTechKaufStorno01.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-04T00:00")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.06733)));
+        assertThat(cancelations.getSource(), is("FinTechKaufStorno01.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test

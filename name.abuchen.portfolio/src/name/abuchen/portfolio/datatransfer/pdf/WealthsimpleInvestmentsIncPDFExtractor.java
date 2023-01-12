@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -443,17 +442,29 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("month", "day", "name")
-                .match("^(?<month>[\\w]{3,4}) (?<day>[\\d]{2}) (?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) .*$")
+                .section("month", "day", "name", "shares", "amount")
+                .match("^(?<month>[\\w]{3,4}) "
+                                + "(?<day>[\\d]{2}) "
+                                + "(?<name>[\\w]{5,}"
+                                + "[\\W]{1,3}.*): .* \\(record date\\) "
+                                + "(?<shares>[\\.,\\d]+) shares [\\s\\–]{2,3} "
+                                + "\\p{Sc}(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     DocumentContext context = type.getCurrentContext();
 
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
                     t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
-                    t.setNote(v.get("name") + " -> " + t.getDateTime());
+                    t.setShares(asShares(v.get("shares")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                    t.setNote(Messages.MsgErrorMissingTickerSymbol);
                 })
 
                 .wrap(t -> {
-                    return new NonImportableItem(MessageFormat.format(Messages.MsgMissingTickerSymbol, t.getNote()));
+                    return new NonImportableTransactionItem(t);
                 }));
 
         // Dec 31 Gross management fee to Wealthsimple – – -$4.42

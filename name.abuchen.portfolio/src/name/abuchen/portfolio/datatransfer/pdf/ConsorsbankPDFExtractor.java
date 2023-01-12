@@ -460,7 +460,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableTransactionItem(t);
                     }
                     return null;
                 });
@@ -583,7 +583,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
-
         DocumentType type = new DocumentType("Nachtr.gliche Verlustverrechnung");
         this.addDocumentTyp(type);
 
@@ -628,7 +627,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .wrap(t -> {
                     if (t.getAmount() != 0)
                         return new TransactionItem(t);
-                    return new NonImportableItem(Messages.MsgErrorTransactionTypeNotSupported);
+                    return null;
                 }));
     }
 

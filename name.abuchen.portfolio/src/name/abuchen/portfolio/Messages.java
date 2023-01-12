@@ -245,11 +245,13 @@ public class Messages extends NLS
     public static String MsgErrorInvalidURL;
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
     public static String MsgErrorMissingAPIKey;
+    public static String MsgErrorMissingCUSIP;
     public static String MsgErrorMissingDate;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
     public static String MsgErrorMissingPathToDateOrClose;
     public static String MsgErrorMissingPortfolioReportMarket;
+    public static String MsgErrorMissingTickerSymbol;
     public static String MsgErrorMissingValueMatches;
     public static String MsgErrorNoCrumbFound;
     public static String MsgErrorNoneOfSubSectionsMatched;

@@ -263,7 +263,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                 .attributes("date", "amount", "name", "shares", "time", "isin")
                                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                + "Storno Kauf Storno Kauf "
+                                                + "((Storno Kauf Storno Kauf)|(Storno Verkauf Storno Verkauf)) "
                                                 + "(?<name>.*) "
                                                 + "(\\-)?(?<shares>[\\.,\\d]+) "
                                                 + "[\\.,\\d]+ "
@@ -409,8 +409,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
                                         t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                         t.setAmount(asAmount(v.get("amount")));
-
-                                        t.setNote(v.get("note"));
+                                        
+                                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                                            t.setNote(v.get("note"));
                                     })
                             ,
                             section -> section
@@ -440,7 +441,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new BuySellEntryItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableBuySellEntryItem(t);
                     return null;
                 }));
 

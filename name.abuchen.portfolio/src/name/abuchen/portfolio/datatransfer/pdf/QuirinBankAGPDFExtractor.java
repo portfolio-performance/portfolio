@@ -343,12 +343,13 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, type.getCurrentContext().get("taxCurrency"),
+                        if (t.getNote() == null || !t.getNote().equals(MessageFormat.format( //
+                                        Messages.MsgNoExchangeRateAvailableForConversionTaxFee, //
+                                        type.getCurrentContext().get("taxCurrency"), //
                                         t.getMonetaryAmount().getCurrencyCode())))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversionTaxFee, type.getCurrentContext().get("taxCurrency"),
-                                            t.getMonetaryAmount().getCurrencyCode()));
+                            return new NonImportableTransactionItem(t);
                     }
                     return null;
                 }));

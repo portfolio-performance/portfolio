@@ -14,7 +14,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableBuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -2944,14 +2944,26 @@ public class JustTradePDFExtractorTest
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
+        BuySellEntry cancelations = (BuySellEntry) results.stream()
+                        .filter(NonImportableBuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("Depotauszug05.txt"));
+        assertThat(cancelations.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancelations.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(cancelations.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-22T13:31")));
+        assertThat(cancelations.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.9988)));
+        assertThat(cancelations.getSource(), is("Depotauszug05.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+
+        assertThat(cancelations.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(130.57))));
+        assertThat(cancelations.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(130.57))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancelations.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()

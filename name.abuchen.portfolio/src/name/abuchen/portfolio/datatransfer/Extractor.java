@@ -85,6 +85,11 @@ public interface Extractor
             return 0; // NOSONAR
         }
 
+        public String getNote()
+        {
+            return null;
+        }
+
         public String getSource()
         {
             return null;
@@ -157,34 +162,58 @@ public interface Extractor
         public String toString()
         {
             // debug output
-            return String.format("%s %s %s %s %s", getDate() != null ? Values.DateTime.format(getDate()) : "",
-                            getTypeInformation(), getAmount() != null ? Values.Money.format(getAmount()) : "",
-                            getSecurity() != null ? getSecurity().getName() : "",
-                            getSource() != null ? getSource() : "");
+            return String.format("%s %s %s %s %s", //
+                            getDate() != null ? Values.DateTime.format(getDate()) : "", //
+                            getTypeInformation(), //
+                            getSecurity() != null ? getSecurity().getName() : "", //
+                            getAmount() != null ? Values.Money.format(getAmount()) : "", //
+                            getSource() != null ? "(" + getSource() + ")" : "");
         }
     }
 
     /**
-     * Represents an item which cannot be imported because it is either not
-     * supported or not needed. It is used for documents that can be
-     * successfully parsed, but do not contain any transaction relevant to
-     * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
-     * can be parsed, but is of no further use to PP.
+     * Copy of BuySellEntryItem, but we mark (ImportAction) 
+     * it as a non-importable item. 
+     * Furthermore, we do not allow a security to be created 
+     * by this transaction.
      */
-    public static class NonImportableItem extends Item implements Annotated
+    static class NonImportableBuySellEntryItem extends Item
     {
-        private String typeInformation;
-        private String note;
+        private final BuySellEntry entry;
 
-        public NonImportableItem(String typeInformation)
+        public NonImportableBuySellEntryItem(BuySellEntry entry)
         {
-            this.typeInformation = typeInformation;
+            this.entry = entry;
         }
 
         @Override
         public Annotated getSubject()
         {
-            return this;
+            return entry;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return entry.getAccountTransaction().getType().toString();
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return entry.getAccountTransaction().getDateTime();
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return entry.getAccountTransaction().getMonetaryAmount();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return entry.getPortfolioTransaction().getShares();
         }
 
         @Override
@@ -194,15 +223,15 @@ public interface Extractor
         }
 
         @Override
-        public String getTypeInformation()
+        public String getNote()
         {
-            return typeInformation;
+            return entry.getAccountTransaction().getNote();
         }
 
         @Override
-        public LocalDateTime getDate()
+        public String getSource()
         {
-            return null;
+            return entry.getAccountTransaction().getSource();
         }
 
         @Override
@@ -210,17 +239,97 @@ public interface Extractor
         {
             return action.process(this);
         }
+    }
+
+    /**
+     * Copy of TransactionItem, but we mark (ImportAction) 
+     * it as a non-importable item. 
+     * Furthermore, we do not allow a security to be created 
+     * by this transaction.
+     */
+    static class NonImportableTransactionItem extends Item
+    {
+        private Transaction transaction;
+
+        public NonImportableTransactionItem(AccountTransaction transaction)
+        {
+            if (EnumSet.of(AccountTransaction.Type.BUY, //
+                            AccountTransaction.Type.SELL, //
+                            AccountTransaction.Type.TRANSFER_IN, //
+                            AccountTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
+            this.transaction = transaction;
+        }
+
+        public NonImportableTransactionItem(PortfolioTransaction transaction)
+        {
+            if (EnumSet.of(PortfolioTransaction.Type.BUY, //
+                            PortfolioTransaction.Type.SELL, //
+                            PortfolioTransaction.Type.TRANSFER_IN, //
+                            PortfolioTransaction.Type.TRANSFER_OUT) //
+                            .contains(transaction.getType()))
+                throw new UnsupportedOperationException();
+            this.transaction = transaction;
+        }
 
         @Override
-        public void setNote(String note)
+        public Annotated getSubject()
         {
-            this.note = note;
+            return transaction;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            if (transaction instanceof AccountTransaction)
+                return ((AccountTransaction) transaction).getType().toString();
+            else if (transaction instanceof PortfolioTransaction)
+                return ((PortfolioTransaction) transaction).getType().toString();
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return null;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return transaction.getDateTime();
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return transaction.getMonetaryAmount();
+        }
+
+        @Override
+        public long getShares()
+        {
+            return transaction.getShares();
         }
 
         @Override
         public String getNote()
         {
-            return note;
+            return transaction.getNote();
+        }
+
+        @Override
+        public String getSource()
+        {
+            return transaction.getSource();
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(this);
         }
     }
 
@@ -289,6 +398,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return transaction.getSecurity();
+        }
+
+        @Override
+        public String getNote()
+        {
+            return transaction.getNote();
         }
 
         @Override
@@ -367,6 +482,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getAccountTransaction().getNote();
+        }
+
+        @Override
         public String getSource()
         {
             return entry.getAccountTransaction().getSource();
@@ -437,6 +558,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
+        }
+
+        @Override
         public String getSource()
         {
             return entry.getSourceTransaction().getSource();
@@ -503,6 +630,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return entry.getSourceTransaction().getSecurity();
+        }
+
+        @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
         }
 
         @Override

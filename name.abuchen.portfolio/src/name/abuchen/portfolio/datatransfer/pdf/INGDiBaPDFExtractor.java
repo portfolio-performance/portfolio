@@ -309,9 +309,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                 // Brutto USD 62,04
                 // Umg. z. Dev.-Kurs (1,049623) EUR 50,24
+                //
+                // Brutto USD - 54,00
+                // Umg. z. Dev.-Kurs (1,084805) EUR - 37,33
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
-                .match("^Brutto (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)")
-                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .match("^Brutto (?<fxCurrency>[\\w]{3}) (\\-\\s)?(?<fxGross>[\\.,\\d]+)$")
+                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) (\\-\\s)?[\\.,\\d]+$")
                 .assign((t, v) -> {
                     v.put("baseCurrency", asCurrencyCode(type.getCurrentContext().get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
@@ -331,7 +334,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableTransactionItem(t);
                     }
                     return null;
                 });

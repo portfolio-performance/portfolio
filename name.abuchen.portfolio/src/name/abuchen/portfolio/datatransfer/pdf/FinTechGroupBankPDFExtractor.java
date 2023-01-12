@@ -315,7 +315,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("note")
                                         .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
                                         .assign((t, v) -> {
-                                            if (t.getNote() == null)
+                                            if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                                                 t.setNote(trim(v.get("note")));
                                         })
                                 ,
@@ -328,7 +328,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
                                         .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
                                         .assign((t, v) -> {
-                                            if (t.getNote() == null)
+                                            if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                                                 t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")));
                                         })
                         )
@@ -344,7 +344,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new BuySellEntryItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableBuySellEntryItem(t);
                     }
                     return null;
                 });

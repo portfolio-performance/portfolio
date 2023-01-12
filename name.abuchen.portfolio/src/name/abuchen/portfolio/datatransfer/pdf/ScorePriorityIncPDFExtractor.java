@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -242,13 +243,18 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() < 9)
-                                t.setAmount(0L);
+                                t.setNote(Messages.MsgErrorMissingCUSIP);
                         })
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return new NonImportableItem("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            {
+                                if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorMissingCUSIP))
+                                    return new TransactionItem(t);
+                                else
+                                    return new NonImportableTransactionItem(t);
+                            }
+                            return null;
                         }));
 
         // @formatter:off

@@ -223,7 +223,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%)).*$")
                 .assign((t, v) -> {
-                    if (t.getNote() == null)
+                    if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                         t.setNote(trim(v.get("note")));
                 })
 
@@ -233,7 +233,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new BuySellEntryItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableBuySellEntryItem(t);
                     }
                     return null;
                 });

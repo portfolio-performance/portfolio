@@ -425,7 +425,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
-                                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^GESAMT (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -445,7 +445,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
                 .section("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "currency").optional()
                 .match("^GESAMT (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     PDFExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
@@ -483,7 +483,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
                             return new TransactionItem(t);
                         else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            return new NonImportableTransactionItem(t);
                     }
                     return null;
                 });

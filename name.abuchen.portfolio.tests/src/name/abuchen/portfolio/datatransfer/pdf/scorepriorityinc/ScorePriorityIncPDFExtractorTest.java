@@ -12,10 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableTransactionItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -755,14 +756,18 @@ public class ScorePriorityIncPDFExtractorTest
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check cancellation (CUSIP is to short) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        Iterator<Extractor.Item> iter = results.stream().filter(NonImportableTransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(NonImportableTransactionItem.class::isInstance).count(), is(1L));
 
-        assertThat(Cancelations.getTypeInformation(), is("CUSIP is maybe incorrect. 2021-11-05T00:00 Tsvt"));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("AccountStatement04.txt"));
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction cancelations = (AccountTransaction) item.getSubject();
+        assertThat(cancelations.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(cancelations.getDateTime(), is(LocalDateTime.parse("2021-11-05T00:00")));
+        assertThat(cancelations.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(30.00))));
+        assertThat(cancelations.getSource(), is("AccountStatement04.txt"));
+        assertThat(cancelations.getNote(), is(Messages.MsgErrorMissingCUSIP));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
