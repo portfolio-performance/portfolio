@@ -20,6 +20,23 @@
             </systemTest>
          </not>
       </definition>
+      <definition
+            id="name.abuchen.portfolio.ui.expression.IsUpdateNotDisabled">
+         <and>
+            <not>
+               <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+               </systemTest>
+            </not>
+            <not>
+               <systemTest
+                  property="name.abuchen.portfolio.in-app-update"
+                  value="disable">
+               </systemTest>
+            </not>
+         </and>
+      </definition>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.propertyHandler">

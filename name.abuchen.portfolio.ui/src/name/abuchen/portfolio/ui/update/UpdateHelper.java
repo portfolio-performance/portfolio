@@ -54,8 +54,21 @@ public final class UpdateHelper
     private static final String HEADER = "header"; //$NON-NLS-1$
     private static final String PREVENT_UPDATE_CONDITION_PREFIX = "latest.changes.preventUpdate."; //$NON-NLS-1$
 
+    private static final boolean IS_IN_APP_UPDATE_ENABLED = !"disable" //$NON-NLS-1$
+                    .equals(System.getProperty("name.abuchen.portfolio.in-app-update")); //$NON-NLS-1$
+
     private IProvisioningAgent agent;
     private UpdateOperation operation;
+
+    /**
+     * Returns true if the installation support in-app updates. In-app updates
+     * can be disabled if a package manager such as flatpak is controlling the
+     * lifecycle.
+     */
+    public static boolean isInAppUpdateEnabled()
+    {
+        return IS_IN_APP_UPDATE_ENABLED;
+    }
 
     public void runUpdateWithUIMonitor()
     {
@@ -64,6 +77,9 @@ public final class UpdateHelper
 
     public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
     {
+        if (!isInAppUpdateEnabled())
+            return;
+
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
         checkForLetsEncryptRootCertificate(silent);

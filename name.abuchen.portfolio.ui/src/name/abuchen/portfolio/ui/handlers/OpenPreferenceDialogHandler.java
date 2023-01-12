@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 @SuppressWarnings("restriction")
 public class OpenPreferenceDialogHandler
@@ -81,7 +82,8 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
+        if (UpdateHelper.isInAppUpdateEnabled())
+            pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm)
         {

@@ -132,7 +132,7 @@ public class StartupAddon
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event, // NOSONAR
                     @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
-        if (autoUpdate)
+        if (autoUpdate && UpdateHelper.isInAppUpdateEnabled())
         {
             Job job = new Job(Messages.JobMsgCheckingForUpdates)
             {
