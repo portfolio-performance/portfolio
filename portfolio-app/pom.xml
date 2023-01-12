@@ -105,6 +105,11 @@
 							<arch>x86_64</arch>
 						</environment>
 						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>aarch64</arch>
+						</environment>
+						<environment>
 							<os>macosx</os>
 							<ws>cocoa</ws>
 							<arch>x86_64</arch>
@@ -174,6 +179,56 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_pl</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_it</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_de</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_nl</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_pt</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_cs</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_fr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_es</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_ru</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_sk</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_pl</id>
 							<removeAll />
 						</filter>
 						<filter>

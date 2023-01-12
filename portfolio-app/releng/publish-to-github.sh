@@ -19,6 +19,7 @@ BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/target/products/
 FILES=$(cat <<EOF
 PortfolioPerformance-${PCK_VERSION}-setup.exe
 PortfolioPerformance-${PCK_VERSION}-linux.gtk.x86_64.tar.gz
+PortfolioPerformance-${PCK_VERSION}-linux.gtk.aarch64.tar.gz
 PortfolioPerformance-${PCK_VERSION}-win32.win32.x86_64.zip
 PortfolioPerformance-distro-${PCK_VERSION}-win32.win32.x86_64.zip
 PortfolioPerformance-${PCK_VERSION}-x86_64.dmg
