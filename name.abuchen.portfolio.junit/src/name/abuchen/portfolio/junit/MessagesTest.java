@@ -3,6 +3,7 @@ package name.abuchen.portfolio.junit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -130,6 +131,11 @@ public class MessagesTest
 
                 String test = MessageFormat.format(value, (Object) null);
                 assertThat(test, is(notNullValue()));
+
+                assertFalse(value, value.contains("\uFFFD"));
+                assertFalse(value, value.contains("\uFFEF"));
+                assertFalse(value, value.contains("\uFFBF"));
+                assertFalse(value, value.contains("\uFFBD"));
             }
             catch (IllegalArgumentException e)
             {
