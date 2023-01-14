@@ -1,0 +1,66 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+ Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                
+Musterstr. 2-Zi 12   
+12345 Musterhausen               
+Abrechnung: November 2015
+Abrechnungsdatum: 20. November 2015
+Ihre Abrechnung vom 22.10.2015 bis 20.11.2015 DKB-VISA-Card: 1234 56XX XXXX 7890
+Service-ID 123456
+Karteninhaber: Max Mustermann 
+Seite 1 von 2
+Beleg- Eingang Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+datum Verwendungszweck EUR
+22.10.15 Saldo letzte Abrechnung 1.634,56+
+26.10.15 26.10.15 Auszahlung 1.234,00 -
+02.11.15 03.11.15 ZAHLUNG1 1,00 -
+02.11.15 04.11.15 ZAHLUNG2 4,96 -
+04.11.15 05.11.15 ZAHLUNG3 34,94 -
+05.11.15 06.11.15 ZAHLUNG4, 89,95 -
+IMMER NOCH ZAHLUNG4
+05.11.15 06.11.15 ZAHLUNG5 29,95 -
+12.11.15 13.11.15 ZAHLUNG6 8,99 -
+13.11.15 23.10.15 STORNIERUNG 1,00+
+20.11.15 21.11.15 Habenzins auf 28 Tage 1,23+
+Neuer Saldo 233,44+
+Sehr geehrter Herr Max Mustermann,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut unverzüglich
+nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden.
+ Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                
+Musterstr. 2-Zi 12   
+12345 Musterhausen               
+Abrechnung: November 2015
+Abrechnungsdatum: 20. November 2015
+Ihre Abrechnung vom 22.10.2015 bis 20.11.2015 DKB-VISA-Card: 1234 56XX XXXX 7890
+Service-ID 123456
+Karteninhaber: Max Mustermann 
+Seite 2 von 2
+Das Guthaben wird mit der weiteren Verwendung der Hinweis:
+Kreditkarte verrechnet. Über Zinsen und Gebühren informiert unser Preis- und
+Leistungsverzeichnis, das Sie online unter www.DKB.de
+Der monatliche Verfügungsrahmen (Kartenlimit) Ihrer abrufen können.
+DKB-VISA-Card beträgt 100 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
+Kreditkartenkonto ein Guthaben vorhanden ist, sind
+Kartenumsätze über den monatlichen Verfügungsrahmen
+hinaus in Höhe des jeweiligen Guthabens möglich.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den 
+Sie auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+ 
