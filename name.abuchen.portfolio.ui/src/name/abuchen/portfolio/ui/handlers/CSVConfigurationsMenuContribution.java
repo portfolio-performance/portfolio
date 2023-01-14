@@ -21,6 +21,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
@@ -87,6 +88,7 @@ public class CSVConfigurationsMenuContribution
 
         MHandledMenuItem menuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
         menuItem.setToBeRendered(true);
+        menuItem.setIconURI(Images.TEMPLATE_FILE.getImageURI());
         menuItem.setLabel(config.getLabel());
         menuItem.setTooltip(""); //$NON-NLS-1$
         menuItem.setContributorURI("platform:/plugin/" + PortfolioPlugin.PLUGIN_ID); //$NON-NLS-1$

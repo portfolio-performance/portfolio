@@ -19,6 +19,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
@@ -70,6 +71,7 @@ public class RecentFilesMenuContribution
 
             MHandledMenuItem menuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
             menuItem.setToBeRendered(true);
+            menuItem.setIconURI(Images.OPEN_FILE.getImageURI());
             menuItem.setLabel(file);
             menuItem.setTooltip(""); //$NON-NLS-1$
             menuItem.setContributorURI("platform:/plugin/" + PortfolioPlugin.PLUGIN_ID); //$NON-NLS-1$

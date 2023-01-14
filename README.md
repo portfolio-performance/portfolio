@@ -22,6 +22,7 @@
 * [Development Setup](CONTRIBUTING.md#development-setup)
 * [Project Setup](CONTRIBUTING.md#project-setup)
 * [Contribute Code](CONTRIBUTING.md#contribute-code)
+* [Images, Logo & Colors](CONTRIBUTING.md#images-logo-and-color)
 * [Translations](CONTRIBUTING.md#translations)
 * [PDF Importer](CONTRIBUTING.md#pdf-importer)
 

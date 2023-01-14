@@ -195,7 +195,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             @Override
             public Image getImage(Object element)
             {
-                return Images.TEXT.image();
+                return Images.ATTRIBUTE.image();
             }
         });
         new StringEditingSupport(AttributeType.class, "name").addListener(this).attachTo(column); //$NON-NLS-1$

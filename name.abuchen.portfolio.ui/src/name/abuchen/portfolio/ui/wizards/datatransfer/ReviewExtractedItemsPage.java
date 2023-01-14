@@ -358,7 +358,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         image = Images.ERROR;
                         break;
                     case OK:
-                        image = Images.CHECK;
+                        image = Images.OK;
                         break;
                     default:
                 }

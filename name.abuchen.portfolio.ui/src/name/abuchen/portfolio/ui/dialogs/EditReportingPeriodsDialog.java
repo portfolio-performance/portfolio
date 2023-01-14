@@ -89,7 +89,7 @@ public class EditReportingPeriodsDialog extends Dialog
             @Override
             public Image getImage(Object element)
             {
-                return Images.TEXT.image();
+                return Images.TIME.image();
             }
         });
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
