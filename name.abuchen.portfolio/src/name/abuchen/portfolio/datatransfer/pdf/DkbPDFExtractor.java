@@ -736,6 +736,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Storno Gutschrift"
                         + "|Bareinzahlung am GA"
                         + "|sonstige Buchung"
+                        + "|Eingang Inst.Paym."
                         + "|Eingang Echtzeit.berw) "
                         + "[\\.,\\d]+$");
         type.addBlock(depositBlock);
@@ -754,6 +755,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "|Storno Gutschrift"
                                 + "|Bareinzahlung am GA"
                                 + "|sonstige Buchung"
+                                + "|Eingang Inst.Paym."
                                 + "|Eingang Echtzeit.berw) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
