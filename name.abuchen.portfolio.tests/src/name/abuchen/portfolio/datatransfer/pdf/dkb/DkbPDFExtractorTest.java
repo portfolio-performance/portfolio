@@ -3531,6 +3531,46 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug21()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-22T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.97)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug21.txt"));
+        assertThat(transaction.getNote(), is("KARTENZAHLUNG"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-29T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.14)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug21.txt"));
+        assertThat(transaction.getNote(), is("KARTENZAHLUNG"));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
