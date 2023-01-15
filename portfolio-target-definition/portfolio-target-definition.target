@@ -44,6 +44,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.0.0"/>

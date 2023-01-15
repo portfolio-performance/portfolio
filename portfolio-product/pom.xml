@@ -109,7 +109,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>

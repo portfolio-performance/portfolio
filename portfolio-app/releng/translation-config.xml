@@ -1,16 +1,17 @@
 <translations>
-	<defaultLanguage>en</defaultLanguage>
+	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
-		<string>cs</string>
-		<string>de</string>
-		<string>es</string>
-		<string>nl</string>
-		<string>pt</string>
-		<string>fr</string>
-		<string>it</string>
-		<string>ru</string>
-		<string>sk</string>
-		<string>pl</string>
+		<language identifier="cs" poeditor="cs" />
+		<language identifier="de" poeditor="de" />
+		<language identifier="es" poeditor="es" />
+		<language identifier="fr" poeditor="fr" />
+		<language identifier="it" poeditor="it" />
+		<language identifier="nl" poeditor="nl" />
+		<language identifier="pl" poeditor="pl" />
+		<language identifier="pt" poeditor="pt" />
+		<language identifier="ru" poeditor="ru" />
+		<language identifier="sk" poeditor="sk" />
+		<language identifier="zh" poeditor="zh-Hans" />
 	</languages>
 	<artifacts>
 		<artifact>
