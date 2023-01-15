@@ -170,12 +170,12 @@ Please add all used images, logos and icons in the [Images](https://github.com/b
 
 | Color         | Color code (hex)	| Color code (RGB)	| Status of colors	|
 | :---------    | :----------- 		|:----------- 		|:----------- 		|
-| red         	| #D11D1D			| 209, 29, 29 		| Error, Fault		|
-| green         | #56BD37			| 86, 189, 55 		| OK	 			|
-| yellow       	| #FFD817			| 255, 216, 23 		| Warning			|
-| blue       	| #47AFDB			| 71, 175, 219 		| Information		|
-| orange       	| #F18F01			| 241, 143, 1 		| Active status 	|
-| gray          | #95A4B3   		| 149, 164, 179 	| passive status	|
+| red         	| #D11D1D		| 209, 29, 29 		| Error, Fault		|
+| green         | #56BD37		| 86, 189, 55 		| OK	 		|
+| yellow       	| #FFD817		| 255, 216, 23 		| Warning		|
+| blue       	| #47AFDB		| 71, 175, 219 		| Information		|
+| orange       	| #F18F01		| 241, 143, 1 		| Active status 	|
+| gray          | #95A4B3   		| 149, 164, 179 	| Passive status	|
 
 ## PDF Importer
 
