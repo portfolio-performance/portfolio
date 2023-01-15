@@ -169,9 +169,10 @@ Please add all used images, logos and icons in the [Images](https://github.com/b
 
 ### Format and size
 
-Images, logos and icons are to be created as Portable Network Graphic ([PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics)) format. The background must be transparent.
+Images, logos and icons are to be created as Portable Network Graphic ([PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics)) format.
 
-* The basic format is 16x16 pixel.
+* The background must be transparent.
+* The basic format is 16x16px.
 * A designation is to be chosen as name. (e.g. information.png)
 * The file name must be written in lower case letters.
 * It must be created in at least two sizes. 16x16px and 32x32px.
@@ -184,14 +185,15 @@ Designation basic format as an example:
 
 ### Color code and status
 
+
 | Color         | Color code (hex)	| Color code (RGB)	| Status of colors	|
 | :---------    | :----------- 		|:----------- 		|:----------- 		|
-| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#d11d1d`		| 209, 29, 29 		| Error, Fault		|
-| green         | ![#56bd37](https://placehold.co/15x15/56bd37/56bd37.png) `#56bd37`		| 86, 189, 55 		| OK	 		|
-| yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| 255, 216, 23 		| Warning		|
-| blue       	| ![#47afDb](https://placehold.co/15x15/47afDb/47afDb.png) `#47afDb`		| 71, 175, 219 		| Information		|
-| orange       	| ![#f18f01](https://placehold.co/15x15/f18f01/f18f01.png) `#f18f01`		| 241, 143, 1 		| Active status 	|
-| gray          | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   		| 149, 164, 179 	| Passive status	|
+| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#d11d1d`		| `rgb(209, 29, 29)` 		| Error, Fault		|
+| green         | ![#56bd37](https://placehold.co/15x15/56bd37/56bd37.png) `#56bd37`		| `rgb(86, 189, 55)` 		| OK	 		|
+| yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| `rgb(255, 216, 23)` 		| Warning		|
+| blue       	| ![#47afDb](https://placehold.co/15x15/47afDb/47afDb.png) `#47afDb`		| `rgb(71, 175, 219)` 		| Information		|
+| orange       	| ![#f18f01](https://placehold.co/15x15/f18f01/f18f01.png) `#f18f01`		| `rgb(241, 143, 1)` 		| Active status 	|
+| gray          | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   		| `rgb(149, 164, 179)` 		| Passive status	|
 
 ## PDF Importer
 
