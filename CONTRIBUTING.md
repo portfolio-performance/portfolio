@@ -13,6 +13,8 @@
 	- [Build with Maven](#build-with-maven)
 - [Contribute Code](#contribute-code)
 - [Translations](#translations)
+- [Images & Colors](#images-and-color)
+	- [Color code & status](#color-code-and-status)
 - [PDF Importer](#pdf-importer)
 	- [Source Location](#source-location)
 	- [Imported Transactions](#imported-transactions)
@@ -22,7 +24,6 @@
 	- [Formatting of PDF Importer](#formatting-of-pdf-importer)
 	- [Test Cases](#test-cases)
 	- [Regular Expressions](#regular-expressions)
-
 
 ## Development Setup
 
@@ -155,6 +156,24 @@ When adding new labels,
 * use the formatting excactly as done by the Resource Bundle Editor 
 * use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
 
+## Images and color
+
+Images and logos used must be subject to [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
+
+We only use icon from [iconmonstr.com](https://iconmonstr.com).
+
+If a color change icon is used, the passive state is gray and the active state is orange.
+
+### Color code and status
+
+| Color         | Color code (hex)	| Color code (RGB)	| Status of colors	|
+| :---------    | :----------- 		|:----------- 		|:----------- 		|
+| red         	| #D11D1D			| 209, 29, 29 		| Error, Fault		|
+| green         | #56BD37			| 86, 189, 55 		| OK	 			|
+| yellow       	| #FFD817			| 255, 216, 23 		| Warning			|
+| blue       	| #47AFDB			| 71, 175, 219 		| Information		|
+| orange       	| #F18F01			| 241, 143, 1 		| Active status 	|
+| gray          | #95A4B3   		| 149, 164, 179 	| passive status	|
 
 ## PDF Importer
 
