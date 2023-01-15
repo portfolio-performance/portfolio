@@ -164,6 +164,8 @@ We only use icon from [iconmonstr.com](https://iconmonstr.com).
 
 If a color change icon is used, the passive state is gray and the active state is orange.
 
+Please add all used images, logos and icons in the [Images](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
+
 ### Color code and status
 
 | Color         | Color code (hex)	| Color code (RGB)	| Status of colors	|
