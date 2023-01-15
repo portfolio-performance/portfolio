@@ -186,12 +186,12 @@ Designation basic format as an example:
 
 | Color         | Color code (hex)	| Color code (RGB)	| Status of colors	|
 | :---------    | :----------- 		|:----------- 		|:----------- 		|
-| red         	| #D11D1D		| 209, 29, 29 		| Error, Fault		|
-| green         | #56BD37		| 86, 189, 55 		| OK	 		|
-| yellow       	| #FFD817		| 255, 216, 23 		| Warning		|
-| blue       	| #47AFDB		| 71, 175, 219 		| Information		|
-| orange       	| #F18F01		| 241, 143, 1 		| Active status 	|
-| gray          | #95A4B3   		| 149, 164, 179 	| Passive status	|
+| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#d11d1d`		| 209, 29, 29 		| Error, Fault		|
+| green         | ![#56bd37](https://placehold.co/15x15/56bd37/56bd37.png) `#56bd37`		| 86, 189, 55 		| OK	 		|
+| yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| 255, 216, 23 		| Warning		|
+| blue       	| ![#47afDb](https://placehold.co/15x15/47afDb/47afDb.png) `#47afDb`		| 71, 175, 219 		| Information		|
+| orange       	| ![#f18f01](https://placehold.co/15x15/f18f01/f18f01.png) `#f18f01`		| 241, 143, 1 		| Active status 	|
+| gray          | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   		| 149, 164, 179 	| Passive status	|
 
 ## PDF Importer
 
