@@ -13,7 +13,7 @@
 	- [Build with Maven](#build-with-maven)
 - [Contribute Code](#contribute-code)
 - [Translations](#translations)
-- [Images & Colors](#images-and-color)
+- [Images, Logo & Colors](#images-logo-and-color)
 	- [Color code & status](#color-code-and-status)
 	- [Format and size](#format-and-size)
 - [PDF Importer](#pdf-importer)
@@ -157,7 +157,7 @@ When adding new labels,
 * use the formatting excactly as done by the Resource Bundle Editor 
 * use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
 
-## Images and color
+## Images, Logo and color
 
 Images and logos used must be subject to [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
 
