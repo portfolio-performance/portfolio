@@ -15,6 +15,7 @@
 - [Translations](#translations)
 - [Images & Colors](#images-and-color)
 	- [Color code & status](#color-code-and-status)
+	- [Format and size](#format-and-size)
 - [PDF Importer](#pdf-importer)
 	- [Source Location](#source-location)
 	- [Imported Transactions](#imported-transactions)
@@ -165,6 +166,21 @@ We only use icon from [iconmonstr.com](https://iconmonstr.com).
 If a color change icon is used, the passive state is gray and the active state is orange.
 
 Please add all used images, logos and icons in the [Images](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
+
+### Format and size
+
+Images, logos and icons are to be created as Portable Network Graphic ([PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics)) format. The background must be transparent.
+
+* The basic format is 16x16 pixel.
+* A designation is to be chosen as name. (e.g. information.png)
+* The file name must be written in lower case letters.
+* It must be created in at least two sizes. 16x16px and 32x32px.
+
+Designation basic format as an example:
+
+* `information.png` (16x16px)
+* `information@2x.png` (32x32px)
+* ...
 
 ### Color code and status
 
