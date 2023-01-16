@@ -60,8 +60,8 @@ public class LanguagePreferencePage extends PreferencePage
         CZECH("cs", "čeština"), //$NON-NLS-1$ //$NON-NLS-2$
         RUSSIAN("ru", "русский"), //$NON-NLS-1$ //$NON-NLS-2$
         SLOVAK("sk", "Slovenská"), //$NON-NLS-1$ //$NON-NLS-2$
-        POLISH("pl", "Polskie"); //$NON-NLS-1$ //$NON-NLS-2$
-
+        POLISH("pl", "Polskie"), //$NON-NLS-1$ //$NON-NLS-2$
+        CHINESE_SIMPLIFIED("zh", "中文 (简体)"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
         private String label;

@@ -8,8 +8,7 @@ import java.util.Scanner;
 public class TestUtilities
 {
     private TestUtilities()
-    {
-    }
+    {}
 
     public static String read(Class<?> clazz, String resource)
     {
@@ -24,6 +23,6 @@ public class TestUtilities
     {
         return Arrays.asList(new String[] { "de" }, new String[] { "en" }, new String[] { "es" }, new String[] { "pt" },
                         new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" }, new String[] { "cs" },
-                        new String[] { "ru" }, new String[] { "sk" }, new String[] { "pl" });
+                        new String[] { "ru" }, new String[] { "sk" }, new String[] { "pl" }, new String[] { "zh" });
     }
 }
