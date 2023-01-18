@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Verkauf
+Referenz O:000409887:1
+Herrn
+Vorname Nachname Datum 23.11.2009Depot Depot-Nr.
+Straße Nachname, Vorname
+92224 Amberg
+Betreuer Betreuer-Nachname, Betreuer-Vorname
+Abteilung Vermögensberater
+ 
+Telefon +49 (0) 911 249 299 10
+ E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+ 
+Nominal/Stück Bayer.Hypo- und Vereinsbank AG DAX Indexzert(2006/unlim.)
+ST 22 ISIN DE0007873200
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  57,5000 EUR Kurswert  1.265,00 EUR
+Ausführungsplatz Stuttgart Courtage * -3,39 EUR
+Handelstag/-zeit 23.11.2009   11:00:15 Bank-Provision  0,00 EUR
+Verwahrart Girosammel-Verwahrung Spesen *  0,00 EUR
+Lagerland CBL-Deutschland Abwickl.Gebühr *  0,00 EUR
+Zahlungstag 25.11.2009
+Devisenkurs  1,000000
+Poolfaktor  1,000000000
+Ursprüngl. Handelstag 23.11.2009   11:00:15
+* Fremde Gebühren und Kosten
+Keine Steuerbescheinigung! Ausmachender Betrag  vor Steuern  1.261,61 EUR
+Kapitalertragsteuerpflichtiger Betrag  0,00 EUR Kapitalertragsteuer  0,00 EUR
+Solidaritätszuschlag
+ 0,00 EUR
+Verrechnete sonstige negative Kapitalerträge Kirchensteuer  0,00 EUR
+Verrechnungstopf Aktien  0,00 EUR
+Verrechnungstopf Sonstige  175,61 EUR Steuerbetrag  0,00 EUR
+Verrechneter Sparer-Pauschalbetrag  0,00 EUR
+Anrechenbare ausländ. Quellensteuer  0,00 EUR
+Bemessungsgrundlage KESt  0,00 EUR Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden wir mit
+Valuta 25.11.2009 über Konto Konto/Depot-Nr. EUR buchen.
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+O10ABR_WPR_E  0000#6767669580#0000026624  VJ1659724   (10)  V 1.28

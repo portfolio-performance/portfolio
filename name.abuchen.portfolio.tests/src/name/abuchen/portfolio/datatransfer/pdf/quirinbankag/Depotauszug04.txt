@@ -1,0 +1,396 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  1 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Zins-/Dividendenzahlung, Ref: DZ-0140164042 02.07.2010 01.07.2010 36,76EUR
+GRS104003009 COCA COLA HELL.BOTT.EO-50
+DZ:361444
+Erträgniszahlung
+Steuerbuchung Abgeltungsteuer, Ref: H-0140164043 02.07.2010 01.07.2010 -6,82 EUR
+GRS104003009 COCA COLA HELL.BOTT.EO-50
+KEST: 6,01 SOLI: 0,33
+KIST: 0,48
+DZ:361444
+Wertpapiere, Ref: AB-0142377663 16.07.2010 20.07.2010 5.791,31EUR
+DE000A0N62G0 ETFS MET.SEC.DZ07/UN.XAU
+O:000640382:1 Nom:64 Whg:EUR  
+Verkauf  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0142377670 16.07.2010 20.07.2010  -234,13 EUR
+DE000A0N62G0 ETFS MET.SEC.DZ07/UN.XAU  
+KEST: 206,28 SOLI: 11,35  
+KIST: 16,5  
+ 
+O:000640382:1
+ 
+ 
+Zins-/Dividendenzahlung, Ref: DZ-0144670477 30.07.2010 27.07.2010 99,60EUR
+ 
+US8740391003 TAIWAN SEMICON.MANU. ADR5
+ 
+DZ:368384
+ 
+Erträgniszahlung  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144670498  30.07.2010 27.07.2010 -6,93 EUR
+US8740391003 TAIWAN SEMICON.MANU. ADR5  
+KEST: 6,1 SOLI: 0,34  
+KIST: 0,49  
+DZ:368384  
+ 
+Rückvergütung Bestandsprovision, Ref: KA -0144680022 30.07.2010 30.07.2010 2,63EUR
+Bestand LU0140363002  
+ 
+Kickback für Monat 04/2010
+ 
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144683460 30.07.2010 30.07.2010 2,03EUR
+ 
+Bestand LU0303756539
+Kickback für Monat 04/2010
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  2 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Rückvergütung Bestandsprovision, Ref: KA-0144689194 30.07.2010 30.07.2010 1,02EUR
+Bestand LU0075056555
+Kickback für Monat 04/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144691722 30.07.2010 30.07.2010 0,85EUR
+Bestand LU0066902890
+Kickback für Monat 04/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144692430 30.07.2010 30.07.2010 0,90EUR
+Bestand LU0121747215
+Kickback für Monat 04/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144692886 30.07.2010 30.07.2010 3,12EUR
+Bestand DE0008490822  
+Kickback für Monat 04/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144693436 30.07.2010 30.07.2010  4,78EUR
+Bestand LU0052750758  
+Kickback für Monat 04/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144700356 30.07.2010 30.07.2 010 2,10EUR
+Bestand LU0303756539  
+ 
+Kickback für Monat 05/2010
+ 
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144701132 30.07.2010 30.07.2010 2,59EUR
+ 
+Bestand LU0140363002
+ 
+Kickback für Monat 05/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144701836  30.07.2010 30.07.2010 0,88EUR
+Bestand LU0121747215  
+Kickback für Monat 05/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-01 44703846 30.07.2010 30.07.2010 4,93EUR
+Bestand LU0052750758  
+Kickback für Monat 05/2010  
+ 
+Rückvergütung Bestandsprovisio n, Ref: KA-0144703918 30.07.2010 30.07.2010 0,98EUR
+ 
+Bestand LU0075056555
+ 
+Kickback für Monat 05/2010
+Flatrate, Ref: KA-0144715444 30.07.2010 30.07.2010 -75,00 EUR
+Gebühren 01.07.2010 - 30.07.2010
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  3 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Rückvergütung Bestandsprovision, Ref: KA-0144717889 30.07.2010 30.07.2010 0,89EUR
+Bestand LU0066902890
+Kickback für Monat 05/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144723419 30.07.2010 30.07.2010 2,94EUR
+Bestand DE0008490822
+Kickback für Monat 05/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144724147 30.07.2010 30.07.2010 4,83EUR
+Bestand LU0052750758
+Kickback für Monat 06/2010
+Rückvergütung Bestandsprovision, Ref: KA-0144726719 30.07.2010 30.07.2010 0,85EUR
+Bestand LU0121747215  
+Kickback für Monat 06/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144732844 30.07.2010 30.07.2010  2,05EUR
+Bestand LU0303756539  
+Kickback für Monat 06/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144735471 30.07.2010 30.07.2 010 2,61EUR
+Bestand DE0008490822  
+ 
+Kickback für Monat 06/2010
+ 
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144736296 30.07.2010 30.07.2010 0,86EUR
+ 
+Bestand LU0066902890
+ 
+Kickback für Monat 06/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-0144736391  30.07.2010 30.07.2010 0,94EUR
+Bestand LU0075056555  
+Kickback für Monat 06/2010  
+ 
+Rückvergütung Bestandsprovision, Ref: KA-01 44738244 30.07.2010 30.07.2010 2,58EUR
+Bestand LU0140363002  
+Kickback für Monat 06/2010  
+ 
+Steuerbuchung Abgeltungsteuer,  Ref: H-0144748177 30.07.2010 30.07.2010 -0,73 EUR
+Steuern auf Kontoabschluss  
+ 
+KEST: 0,65 SOLI: 0,03
+KIST: 0,05
+K:0008721508
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  4 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steuerbuchung Abgeltungsteuer, Ref: H-0144754954 30.07.2010 30.07.2010 -3,77 EUR
+Steuern auf Kontoabschluss
+KEST: 3,32 SOLI: 0,18
+KIST: 0,27
+K:0008723009
+Steuerbuchung Abgeltungsteuer, Ref: H-0144767171 30.07.2010 30.07.2010 -1,59 EUR
+Steuern auf Kontoabschluss
+KEST: 1,4 SOLI: 0,08
+KIST: 0,11
+K:0008725367
+Steuerbuchung Abgeltungsteuer, Ref: H-0144772794 30.07.2010 30.07.2010 -0,28 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,25 SOLI: 0,01  
+KIST: 0,02  
+K:0008726631  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144774420 30.07.2010 30.07.2010  -0,24 EUR
+Steuern auf Kontoabschluss  
+ 
+KEST: 0,2 SOLI: 0,02
+ 
+KIST: 0,02
+ 
+K:0008726985
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144775628 30.07.2010 30.07.2010 -1,33 EUR
+ 
+Steuern auf Kontoabschluss  
+KEST: 1,18 SOLI: 0,06  
+KIST: 0,09  
+K:0008727213  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144776788 30.07.2010 30.07.2010 -0,19 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,16 SOLI: 0,01  
+KIST: 0,02  
+ 
+K:0008727488
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144794566 30.07.2010 30.07.2010 -0,65 EUR
+ 
+Steuern auf Kontoabschluss
+ 
+KEST: 0,58 SOLI: 0,03
+KIST: 0,04
+K:0008730932
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  5 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steuerbuchung Abgeltungsteuer, Ref: H-0144796585 30.07.2010 30.07.2010 -0,52 EUR
+Steuern auf Kontoabschluss
+KEST: 0,45 SOLI: 0,03
+KIST: 0,04
+K:0008731320
+Steuerbuchung Abgeltungsteuer, Ref: H-0144798144 30.07.2010 30.07.2010 -1,39 EUR
+Steuern auf Kontoabschluss
+KEST: 1,23 SOLI: 0,06
+KIST: 0,1
+K:0008731672
+Steuerbuchung Abgeltungsteuer, Ref: H-0144802453 30.07.2010 30.07.2010 -0,19 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,17 SOLI: 0,01  
+KIST: 0,01  
+K:0008732676  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144802618 30.07.2010 30.07.2010  -1,20 EUR
+Steuern auf Kontoabschluss  
+ 
+KEST: 1,06 SOLI: 0,06
+ 
+KIST: 0,08
+ 
+K:0008732712
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144827860 30.07.2010 30.07.2010 -10,57 EUR
+ 
+Steuern auf Kontoabschluss  
+KEST: 9,31 SOLI: 0,51  
+KIST: 0,75  
+K:0008739896  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144835278 30.07.2010 30.07.2010 -0,07 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,06 SOLI: 0,01  
+K:0008743488  
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144836892 30.07.2010 30.07.2010 -2,52 EUR
+ 
+Steuern auf Kontoabschluss
+ 
+KEST: 2,22 SOLI: 0,12
+ 
+KIST: 0,18
+K:0008743852
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 31.07.2010
+PLZ Ort Auszug-Nr  7Blatt-Nr  6 von  6
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steuerbuchung Abgeltungsteuer, Ref: H-0144976464 30.07.2010 30.07.2010 -0,35 EUR
+Steuern auf Kontoabschluss
+KEST: 0,3 SOLI: 0,02
+KIST: 0,03
+K:0008745076
+Steuerbuchung Abgeltungsteuer, Ref: H-0144989517 30.07.2010 30.07.2010 -0,56 EUR
+Steuern auf Kontoabschluss
+KEST: 0,5 SOLI: 0,02
+KIST: 0,04
+K:0008748135
+Steuerbuchung Abgeltungsteuer, Ref: H-0144994720 30.07.2010 30.07.2010 -0,73 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,64 SOLI: 0,04  
+KIST: 0,05  
+K:0008749346  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144996297 30.07.2010 30.07.2010  -0,24 EUR
+Steuern auf Kontoabschluss  
+ 
+KEST: 0,22 SOLI: 0,01
+ 
+KIST: 0,01
+ 
+K:0008749704
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144996479 30.07.2010 30.07.2010 -0,26 EUR
+ 
+Steuern auf Kontoabschluss  
+KEST: 0,23 SOLI: 0,01  
+KIST: 0,02  
+K:0008749744  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0144999672 30.07.2010 30.07.2010 -0,72 EUR
+Steuern auf Kontoabschluss  
+KEST: 0,63 SOLI: 0,04  
+KIST: 0,05  
+ 
+K:0008750484
+ 
+letzter Auszug: 01 .07.2010 alter Saldo:  6.687,56EUR
+ 
+Umsatz:  5.622,05EUR
+ 
+Limit:  0,00 Saldo:  12.309,61EUR
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2425428   (10) V 1.19.1.0

@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Dividendenabrechnung
+Referenz DZ:255990
+Herrn
+Vorname Nachname Datum 27.01.2010Depot Depot-Nr.
+Straße Nachname, Vorname
+92224 Amberg
+Betreuer Betreuer-Nachname, Betreuer-Vorname
+Abteilung Vermögensberater
+ 
+Telefon +49 (0) 911 249 299 10
+ E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+ 
+Für aus Ihrem Depot fällig gewordene Erträgnisse erteilen wir nachstehende Abrechnung. 
+Nominal/Stück Siemens AG Namens-Aktien o.N.
+ST 52 ISIN DE0007236101
+Abrechnungskonditionen: Abrechnungswerte:
+Dividenden für 01.10.2008-30.09.2009 Bruttobetrag  83,20 EUR
+Dividenden pro Stück  1,60000 EUR
+ 
+ 
+ 
+Extag 27.01.2010  
+Zahlungstag 27.01.2010  
+ 
+ 
+Devisenkurs  1,000000  
+ 
+Keine Steuerbescheinigung! Ausmachender Betrag vor Steuern  83,20 EUR
+ 
+ 
+ 
+Kapitalertragsteuerpflichtiger Betrag  83,20 EUR Ka pitalertragsteuer  0,00 EUR
+ 
+Solidaritätszuschlag
+ 0,00 EUR
+Verrechnete sonstige negative Kapitalerträge  Kirchensteuer  0,00 EUR
+Verrechnungstopf Aktien  0,00  EUR
+Verrechnungstopf Sonstige  0, 00 EUR Steuerbetrag  0,00 EUR
+ 
+Verrechneter Sparer-Pauschalbetrag -83,20 EUR
+ 
+Anrechenbare ausländ. Quellensteuer  0,00 EUR
+ Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden wir
+Bemessungsgrundlage KESt  0,00 EUR mit Valuta 27.01.2010 über Konto Konto/Depot-Nr. EUR buchen.
+ 
+ 
+ 
+ 
+ 
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+O10ABR_DIVTH_E  0000#6767669580#0000026624  VJ1847632   (10) V.1.27
