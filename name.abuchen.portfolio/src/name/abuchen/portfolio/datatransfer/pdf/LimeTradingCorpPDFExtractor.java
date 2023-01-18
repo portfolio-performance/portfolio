@@ -296,9 +296,9 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         // Formatting:
         // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
         // -------------------------------------
-        // Dec 29 Incoming Wire Abccdd Doe Journal 71,000.00
+        // Mar 01 Wire In Ref #: Mm-00003314 Journal 9,000.00
         // @formatter:on
-        Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Incoming Wire .* [\\.,\\d]+$");
+        Block blockDeposit = new Block("^[\\w]{3} [\\d]{2} Wire .* [\\.,\\d]+$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
@@ -309,7 +309,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$")
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Wire .* (?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
