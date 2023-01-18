@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Verkauf
+Referenz O:000409894:1
+Herrn
+Vorname Nachname Datum 25.11.2009Depot 6017439440
+Straße Nachname, Vorname
+PLZ Ort
+Betreuer Betreuer-Nachname, Betreuer-Vorname
+Abteilung Vermögensberater
+ 
+Telefon +49 (0) 911 249 299 10
+ E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+ 
+Nominal/Stück F.Temp.Inv.Fds-T.Growth (EUR) Namens-Anteile A (acc.)DL o.N.
+ST 378,362 ISIN LU0327757729
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  12,1500 USD Kurswert  4.597,10 USD  3.052,93 EUR
+Ausführungsplatz Fondshandel außerbörslich(FFF) Courtage *  0,00 EUR
+Handelstag/-zeit 23.11.2009 Bank-Provision  0,00 EUR
+Verwahrart Wertpapierrechnung / Drittverw. Spesen * -6,50 EUR
+Lagerland CBL-Deutschland Abwickl.Gebühr *  0,00 EUR
+Zahlungstag 26.11.2009
+Devisenkurs  1,505800
+Akkum. Ertrag  37,34 EUR
+Poolfaktor  1,000000000
+Ursprüngl. Handelstag 23.11.2009
+* Fremde Gebühren und Kosten
+Keine Steuerbescheinigung! Ausmachender Betrag  vor Steuern  3.046,43 EUR
+Ausmachender Betrag vor Steuern  4.587,31 USD
+Kapitalertragsteuerpflichtiger Betrag  37,34 EUR Kapitalertragsteuer  0,00 USD  0,00 EUR
+Solidaritätszuschlag
+ 0,00 USD  0,00 EUR
+Verrechnete sonstige negative Kapitalerträge Kirchensteuer  0,00 USD  0,00 EUR
+Verrechnungstopf Aktien  0,00 EUR
+Verrechnungstopf Sonstige -37,34 EUR Steuerbetrag  0,00 USD  0,00 EUR
+Verrechneter Sparer-Pauschalbetrag  0,00 EUR
+Anrechenbare ausländ. Quellensteuer  0,00 EUR
+Bemessungsgrundlage KESt  0,00 EUR Den Bruttoabrechnungsbetrag und die separate Steuerbuchung werden wir mit
+Valuta 26.11.2009 über Konto Konto/Depot-Nr. EUR buchen.
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+O10ABR_WPR_E  0000#6767669580#0000026624  VJ1665461   (10)  V 1.28
