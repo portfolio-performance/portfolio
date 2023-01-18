@@ -20,10 +20,11 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Yuh Accounts"); //$NON-NLS-1$
+        addBankIdentifier("Yuh"); //$NON-NLS-1$^
 
         addBuySellTransaction();
         addPaymentTransaction();
+        addInterestTransaction();
     }
 
     @Override
@@ -126,6 +127,48 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^.* (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(TransactionItem::new);
+    }
+
+    private void addInterestTransaction()
+    {
+        DocumentType type = new DocumentType("Zinsabrechnung");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.INTEREST);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^IBAN : .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // 30.12.2022 1.36 0.00 1.36 0.00 1.36
+                .section("date")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // IBAN : CH3308781000123456700 - Währung : CHF
+                // Total 1.36 0.00 1.36 0.00 1.36
+                .section("currency", "amount")
+                .match("^IBAN : .* W.hrung : (?<currency>[\\w]{3})$")
+                .match("^Total .* (?<amount>[\\.'\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                // Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+                .section("note1", "note2", "note3").optional()
+                .match("^(?<note1>Zinsabrechnung) vom (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<note3>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    t.setNote(v.get("note1") + " " + v.get("note2") + " - " + v.get("note3"));
+                })
 
                 .wrap(TransactionItem::new);
     }
