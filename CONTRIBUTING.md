@@ -56,7 +56,10 @@ Optionally, install via the Eclipse Marketplace (drag and drop the *Install* but
 * [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
 * [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
 * [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
+
+Install from the Simulatenous Release Update site:
 * Eclipse e4 Tools Developer Resources
+* M2E PDE Integration
 	- `Menu` --> `Help` --> `Install New Software`
 	- Pick *Latest Eclipse Simultaneous Release* from the dropdown menu 
 	- Under *General Purpose Tools* select the *Eclipse e4 Tools Developer Resources*
