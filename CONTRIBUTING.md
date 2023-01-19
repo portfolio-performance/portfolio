@@ -68,7 +68,7 @@ Pick `Latest Eclipse Simultaneous Release` from the dropdown menu.
 	- Under `General Purpose Tools` select the `M2E PDE Integration`
 * Eclipse e4 Tools Developer Resources
 	- Under `General Purpose Tools` select the `Eclipse e4 Tools Developer Resources`
-
+  
 
 ### Configure Eclipse
 
