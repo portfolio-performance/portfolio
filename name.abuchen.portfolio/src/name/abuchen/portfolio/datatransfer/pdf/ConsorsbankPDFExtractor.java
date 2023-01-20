@@ -264,11 +264,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate exchangeRate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(exchangeRate);
+                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = exchangeRate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
+                                            Money gross = rate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
