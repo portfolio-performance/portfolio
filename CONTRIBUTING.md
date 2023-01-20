@@ -84,7 +84,7 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
 		- `name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils`
-* `Java` --> `Editor` --> `Installed JREs`
+* `Java` --> `Installed JREs`
 	- Add the Java 17 JDK
 
 
