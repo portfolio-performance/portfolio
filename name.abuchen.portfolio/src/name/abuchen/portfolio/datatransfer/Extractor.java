@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;

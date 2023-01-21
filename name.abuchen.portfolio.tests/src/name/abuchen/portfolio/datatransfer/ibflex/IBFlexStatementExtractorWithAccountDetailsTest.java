@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.ibflex;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -166,7 +167,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/Dividende05.txt");
+        InputStream otherFile = getClass().getResourceAsStream("../pdf/comdirect/Dividende05.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
