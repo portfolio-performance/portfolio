@@ -40,8 +40,8 @@ import org.swtchart.IAxis;
 import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
-import org.swtchart.IPlotArea;
 import org.swtchart.ILineSeries.PlotSymbolType;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
@@ -1730,14 +1730,18 @@ public class SecuritiesChart
                             p2 = temp;
                         }
 
+                        // System.out.println("(" + p1.x + "," + p1.y + ")" +
+                        // "(" + p2.x + "," + p2.y + ")");
+
+                        e.gc.setLineWidth(1);
                         e.gc.setLineStyle(SWT.LINE_SOLID);
                         e.gc.setForeground(Colors.ICON_ORANGE);
                         e.gc.setBackground(Colors.ICON_ORANGE);
                         e.gc.setAntialias(SWT.ON);
                         e.gc.drawLine(p1.x, p1.y, p2.x, p2.y);
 
-                        e.gc.fillOval(p1.x - 2, p1.y - 2, 4, 4);
-                        e.gc.fillOval(p2.x - 2, p2.y - 2, 4, 4);
+                        e.gc.fillOval(p1.x - 2, p1.y - 2, 5, 5);
+                        e.gc.fillOval(p2.x - 2, p2.y - 2, 5, 5);
 
                         double yValP1 = getYValue(p1);
                         double yValP2 = getYValue(p2);
@@ -1763,8 +1767,17 @@ public class SecuritiesChart
                         e.gc.setBackground(Colors.theme().defaultBackground());
                         e.gc.setAlpha(220);
 
-                        int rectX = (p1.x + p2.x) / 2 - 5;
-                        int rectY = (p1.y + p2.y) / 2 - 5;
+                        int offsetX = 10;
+                        int offsetY = 10;
+                        
+                        if ((p1.x < p2.x && p1.y < p2.y) || (p1.x > p2.x && p1.y > p2.y))
+                        {
+                            // offsetX = -txtExtend.x;
+                            offsetY = -txtExtend.y - 20;
+                        }
+
+                        int rectX = (p1.x + p2.x) / 2 + offsetX;
+                        int rectY = (p1.y + p2.y) / 2 + offsetY;
                         e.gc.fillRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
                         e.gc.drawRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
                         e.gc.drawText(text, rectX + 5, rectY + 5, true);
