@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.ibflex;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,6 +32,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;

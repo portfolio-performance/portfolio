@@ -1,10 +1,9 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.ibflex;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -30,18 +30,30 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class IBFlexStatementExtractorWithForeignDividendTest
+public class IBFlexStatementExtractorWithForeignDividendNoAccountInfoTest
 {
 
     private List<Item> runExtractor(List<Exception> errors) throws IOException
     {
-        InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatementWithForeignDividend.xml");
         Client client = new Client();
+        // We add two securities to the client with EUR as currency, both will
+        // receive dividends in USD.
+        Security security = new Security("3M CO. already defined", CurrencyUnit.EUR);
+        security.setIsin("US88579Y1010");
+        client.addSecurity(security);
+
+        security = new Security("CDW CORP/DE already defined", CurrencyUnit.EUR);
+        security.setIsin("US12514G1085");
+        client.addSecurity(security);
+
+        InputStream activityStatement = getClass()
+                        .getResourceAsStream("IBActivityStatementWithForeignDividendNoAccountInfo.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
 
@@ -51,60 +63,49 @@ public class IBFlexStatementExtractorWithForeignDividendTest
     @Test
     public void testIBAcitvityStatement() throws IOException
     {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = runExtractor(errors);
-        assertTrue(errors.isEmpty());
-        int numSecurity = 2;
+        assertThat(errors.isEmpty(), is(true));
+        int numSecurity = 0; // The two securities are already present in the
+                             // client.
         int numBuySell = 2;
         int numTransactions = 2;
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
 
-        List<Extractor.Item> securityItems = results.stream().filter(i -> i instanceof SecurityItem)
+        List<Extractor.Item> securityItems = results.stream().filter(SecurityItem.class::isInstance)
                         .collect(Collectors.toList());
 
         assertThat(securityItems.size(), is(numSecurity));
 
-        List<Extractor.Item> buySellTransactions = results.stream().filter(i -> i instanceof BuySellEntryItem)
+        List<Extractor.Item> buySellTransactions = results.stream().filter(BuySellEntryItem.class::isInstance)
                         .collect(Collectors.toList());
 
         assertThat(buySellTransactions.size(), is(numBuySell));
 
-        List<Extractor.Item> accountTransactions = results.stream().filter(i -> i instanceof TransactionItem)
+        List<Extractor.Item> accountTransactions = results.stream().filter(TransactionItem.class::isInstance)
                         .collect(Collectors.toList());
 
         assertThat(accountTransactions.size(), is(numTransactions));
 
         assertThat(results.size(), is(numSecurity + numBuySell + numTransactions));
 
-        assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
-        assertFirstBuySell(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
-        assertFirstTransaction(results.stream().filter(i -> i instanceof TransactionItem).findFirst());
-        assertSecondTransaction(results.stream().filter(i -> i instanceof TransactionItem).skip(1).findFirst());
-    }
-
-    private void assertFirstSecurity(Optional<Item> item)
-    {
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getIsin(), is("US88579Y1010"));
-        assertThat(security.getWkn(), is("13098504"));
-        assertThat(security.getName(), is("3M CO."));
-        assertThat(security.getTickerSymbol(), is("MMM.DE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertFirstBuySell(results.stream().filter(BuySellEntryItem.class::isInstance).findFirst());
+        assertFirstTransaction(results.stream().filter(TransactionItem.class::isInstance).findFirst());
+        assertSecondTransaction(results.stream().filter(TransactionItem.class::isInstance).skip(1).findFirst());
     }
 
     private void assertFirstBuySell(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        assertThat(item.orElseThrow().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow().getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("3M CO."));
+        assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("3M CO. already defined"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("EUR", 1275_25L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-02-09T11:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
@@ -117,33 +118,37 @@ public class IBFlexStatementExtractorWithForeignDividendTest
     private void assertFirstTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+        assertThat(item.orElseThrow().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.orElseThrow().getSubject();
 
         assertThat(entry.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(entry.getSecurity().getName(), is("3M CO."));
+        assertThat(entry.getSecurity().getName(), is("3M CO. already defined"));
         assertThat(entry.getSecurity().getIsin(), is("US88579Y1010"));
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", 7_74L)));
-        assertThat(entry.getCurrencyCode(), is("EUR"));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_52L)));
+        assertThat(entry.getCurrencyCode(), is("USD"));
         assertThat(entry.getSecurity().getCurrencyCode(), is("EUR"));
-        assertTrue(!entry.getUnit(Unit.Type.GROSS_VALUE).isPresent());
+        Unit grossValue = entry.getUnit(Unit.Type.GROSS_VALUE).orElseThrow();
+        assertThat(grossValue.getForex(), is(Money.of("EUR", 7_74L)));
+        assertThat(grossValue.getAmount(), is(Money.of("USD", 9_52L)));
     }
 
     private void assertSecondTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+        assertThat(item.orElseThrow().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.orElseThrow().getSubject();
 
         assertThat(entry.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(entry.getSecurity().getName(), is("CDW CORP/DE"));
+        assertThat(entry.getSecurity().getName(), is("CDW CORP/DE already defined"));
         assertThat(entry.getSecurity().getIsin(), is("US12514G1085"));
-        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", 8_04L)));
-        assertThat(entry.getCurrencyCode(), is("EUR"));
-        assertThat(entry.getSecurity().getCurrencyCode(), is("USD"));
-        assertTrue(entry.getUnit(Unit.Type.GROSS_VALUE).isPresent());
+        assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_50L)));
+        assertThat(entry.getCurrencyCode(), is("USD"));
+        assertThat(entry.getSecurity().getCurrencyCode(), is("EUR"));
+        Unit grossValue = entry.getUnit(Unit.Type.GROSS_VALUE).orElseThrow();
+        assertThat(grossValue.getForex(), is(Money.of("EUR", 8_04L)));
+        assertThat(grossValue.getAmount(), is(Money.of("USD", 9_50L)));
     }
 
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
