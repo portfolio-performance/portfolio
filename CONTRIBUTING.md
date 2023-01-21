@@ -125,19 +125,20 @@ First, add the *Launch Configuration* view to your workspace:
 
 It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
 
-The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 11 installation.
+The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 17 installation.
 
 Linux/macOS
 ```
-export MAVEN_OPTS="-Xmx2g"
+export MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml clean verify
 ```
 
 ```
-set MAVEN_OPTS="-Xmx2g"
+set MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app\pom.xml -Denforcer.skip=true clean verify
 ````
 
+Hint: if you run into resolution problems, try deleting the ```~/.m2/repository/p2``` directory. Apparently, when switching to Maven Tycho 3, there are some layout changes.
 
 ## Contribute Code
 
