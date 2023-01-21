@@ -1,13 +1,6 @@
-package name.abuchen.portfolio.junit;
+package name.abuchen.portfolio;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertFalse;
-
-import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -15,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import name.abuchen.portfolio.junit.TestUtilities;
 
 @RunWith(Parameterized.class)
 public class MessagesTest
@@ -116,31 +111,9 @@ public class MessagesTest
         test("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
     }
 
-    private void test(String bundleName)
+    private void test(String bundleName, String... skip)
     {
         ResourceBundle resources = ResourceBundle.getBundle(bundleName, new Locale(language));
-
-        Enumeration<String> keys = resources.getKeys();
-        while (keys.hasMoreElements())
-        {
-            String key = keys.nextElement();
-
-            try
-            {
-                String value = resources.getString(key);
-
-                String test = MessageFormat.format(value, (Object) null);
-                assertThat(test, is(notNullValue()));
-
-                assertFalse(value, value.contains("\uFFFD"));
-                assertFalse(value, value.contains("\uFFEF"));
-                assertFalse(value, value.contains("\uFFBF"));
-                assertFalse(value, value.contains("\uFFBD"));
-            }
-            catch (IllegalArgumentException e)
-            {
-                throw new IllegalArgumentException(bundleName + " # " + key + " : " + e.getMessage(), e); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
+        TestUtilities.testBundleStrings(resources, skip);
     }
 }
