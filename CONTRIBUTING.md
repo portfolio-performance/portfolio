@@ -13,6 +13,9 @@
 	- [Build with Maven](#build-with-maven)
 - [Contribute Code](#contribute-code)
 - [Translations](#translations)
+- [Images, Logo & Colors](#images-logo-and-color)
+	- [Color code & status](#color-code-and-status)
+	- [Format and size](#format-and-size)
 - [PDF Importer](#pdf-importer)
 	- [Source Location](#source-location)
 	- [Imported Transactions](#imported-transactions)
@@ -164,6 +167,42 @@ When adding new labels,
 * use the formatting excactly as done by the Resource Bundle Editor 
 * use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
 
+## Images, Logo and color
+
+Images and logos used must be subject to [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
+
+We only use icon from [iconmonstr.com](https://iconmonstr.com).
+
+If a color change icon is used, the passive state is gray and the active state is orange.
+
+Please add all used images, logos and icons in the [Images](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
+
+### Format and size
+
+Images, logos and icons are to be created as Portable Network Graphic ([PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics)) format.
+
+* The background must be transparent.
+* The basic format is 16x16px.
+* A designation is to be chosen as name. (e.g. information.png)
+* The file name must be written in lower case letters.
+* It must be created in at least two sizes. 16x16px and 32x32px.
+
+Designation basic format as an example:
+
+* `information.png` (16x16px)
+* `information@2x.png` (32x32px)
+* ...
+
+### Color code and status
+
+| Color         | Color code (hex)	| Color code (RGB)	| Used for	|
+| :---------    | :----------- 		| :----------- 		| :----------- 		|
+| orange (logo) | ![#f18f01](https://placehold.co/15x15/f18f01/f18f01.png) `#f18f01`		| `rgb(241, 143, 1)`    | Activated (ex: filter)  |
+| blue (logo)   | ![#0e6e8e](https://placehold.co/15x15/0e6e8e/0e6e8e.png) `#0e6e8e`		| `rgb(14, 110, 142)`   |  	|
+| green (logo)  | ![#9ac155](https://placehold.co/15x15/9ac155/9ac155.png) `#9ac155`		| `rgb(154, 193, 85)`   |  	|
+| dark blue     | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   	| `rgb(149, 164, 179)`  | Default color for icons |
+| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#f00000`		| `rgb(255, 0, 0)`      | Error, Fault            |
+| yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| `rgb(255, 216, 23)`   | Warning                 |
 
 ## PDF Importer
 
