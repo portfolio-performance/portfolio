@@ -557,6 +557,11 @@ public class Messages extends NLS
     public static String LabelChartDetailSettingsShowMarkerLines;
     public static String LabelChartDetailSettingsShowDataLabel;
     public static String LabelChartDetailSettingsShowMissingTradingDays;
+    public static String LabelChartMeasureToolAbsoluteDeviation;
+    public static String LabelChartMeasureToolPercentageDeviation;
+    public static String LabelChartMeasureToolPoint1;
+    public static String LabelChartMeasureToolPoint2;
+    public static String LabelChartMeasureToolRelativeDeviation;
     public static String LabelChartShowLabels;
     public static String LabelChartType;
     public static String LabelCleanHTML;

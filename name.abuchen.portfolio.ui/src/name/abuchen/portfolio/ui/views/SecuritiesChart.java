@@ -1651,22 +1651,27 @@ public class SecuritiesChart
                 {
                     LocalDate date = getDateTime(p);
                     String xText = Values.Date.format(date);
+
+                    // Add margin to text
                     Point txtXExtend = e.gc.textExtent(xText);
-                    txtXExtend.x += 5; // add margin to text
-                    txtXExtend.y += 5; // add margin to text
+                    txtXExtend.x += 5;
+                    txtXExtend.y += 5;
 
                     Point rectPoint = new Point(0, e.height - txtXExtend.y - 2);
                     Point textPoint = new Point(0, e.height - txtXExtend.y + 1);
+
+                    // Visual shift vertical of the container
                     if (p.x <= e.width / 2)
-                    { // draw box on right side of vertical line
+                    {
                         rectPoint.x = p.x + 5;
                         textPoint.x = p.x + 8;
                     }
                     else
-                    { // draw box on left side of vertical line
+                    {
                         rectPoint.x = p.x - txtXExtend.x - 5;
                         textPoint.x = p.x - txtXExtend.x - 1;
                     }
+
                     e.gc.fillRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
                     e.gc.drawRectangle(rectPoint.x, rectPoint.y, txtXExtend.x, txtXExtend.y);
                     e.gc.drawText(xText, textPoint.x, textPoint.y, true);
@@ -1674,22 +1679,26 @@ public class SecuritiesChart
 
                 private void drawCrosshairValueTextbox(PaintEvent e, Point p)
                 {
-                    // e.gc.drawText(String.valueOf(chart.getAxisSet().getYAxis(0).getDataCoordinate(y)),
                     double value = getYValue(p);
+
                     String yText = new DecimalFormat(Values.Quote.pattern()).format(value);
+
+                    // Add margin to text
                     Point txtYExtend = e.gc.textExtent(yText);
-                    txtYExtend.x += 5; // add margin to text
-                    txtYExtend.y += 5; // add margin to text
+                    txtYExtend.x += 5;
+                    txtYExtend.y += 5;
 
                     Point rectPoint = new Point(e.width - txtYExtend.x - 2, 0);
                     Point textPoint = new Point(e.width - txtYExtend.x + 1, 0);
+
+                    // Visual shift horizontally of the container
                     if (p.y <= e.height / 2)
-                    { // draw box below horizontal line
+                    {
                         rectPoint.y = p.y + 4;
                         textPoint.y = p.y + 7;
                     }
                     else
-                    { // draw box above horizontal line
+                    {
                         rectPoint.y = p.y - txtYExtend.y - 4;
                         textPoint.y = p.y - txtYExtend.y - 1;
                     }
@@ -1721,17 +1730,14 @@ public class SecuritiesChart
                     int antiAlias = e.gc.getAntialias();
                     try
                     {
+                        // in Date Correct Measure mode, p1 should be always
+                        // the point with lower x
                         if (isDateCorrectMeasuring && p1.x > p2.x)
                         {
-                            // in Date Correct Measure mode, p1 should be always
-                            // the point with lower x
                             Point temp = p1;
                             p1 = p2;
                             p2 = temp;
                         }
-
-                        // System.out.println("(" + p1.x + "," + p1.y + ")" +
-                        // "(" + p2.x + "," + p2.y + ")");
 
                         e.gc.setLineWidth(1);
                         e.gc.setLineStyle(SWT.LINE_SOLID);
@@ -1746,20 +1752,22 @@ public class SecuritiesChart
                         double yValP1 = getYValue(p1);
                         double yValP2 = getYValue(p2);
 
-                        String text = "P1: " + new DecimalFormat(Values.Quote.pattern()).format(yValP1) + " (" //$NON-NLS-1$//$NON-NLS-2$
-                                        + getDateTime(p1) + ")" ////$NON-NLS-1$
+                        // @formatter:off
+                        String text = Messages.LabelChartMeasureToolPoint1 + ": " + new DecimalFormat(Values.Quote.pattern()).format(yValP1) + " (" //$NON-NLS-1$//$NON-NLS-2$
+                                        + getDateTime(p1) + ")" //$NON-NLS-1$
                                         + System.lineSeparator() //
-                                        + "P2: " + new DecimalFormat(Values.Quote.pattern()).format(yValP2) + " (" //$NON-NLS-1$ //$NON-NLS-2$
-                                        + getDateTime(p2) + ")" // //$NON-NLS-1$
+                                        + Messages.LabelChartMeasureToolPoint2 + ": " + new DecimalFormat(Values.Quote.pattern()).format(yValP2) + " (" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + getDateTime(p2) + ")" //$NON-NLS-1$
                                         + System.lineSeparator() //
-                                        + "absolute Abweichung: " // //$NON-NLS-1$
+                                        + Messages.LabelChartMeasureToolAbsoluteDeviation + ": " //$NON-NLS-1$
                                         + new DecimalFormat(Values.Quote.pattern()).format(yValP2 - yValP1)
                                         + System.lineSeparator() //
-                                        + "relative Abweichung: " // //$NON-NLS-1$
+                                        + Messages.LabelChartMeasureToolRelativeDeviation + ": "//$NON-NLS-1$
                                         + new DecimalFormat(Values.Percent.pattern()).format(yValP2 / yValP1)
                                         + System.lineSeparator() //
-                                        + "prozentuale Abweichung: " // //$NON-NLS-1$
-                                        + new DecimalFormat("+#.##%;-#.##%").format((yValP2 / yValP1) - 1); //$NON-NLS-1$
+                                        + Messages.LabelChartMeasureToolPercentageDeviation + ": "//$NON-NLS-1$
+                                        + new DecimalFormat(Values.PercentWithSign.pattern()).format((yValP2 / yValP1 - 1));
+                        // @formatter:on
 
                         Point txtExtend = e.gc.textExtent(text);
 
@@ -1769,12 +1777,10 @@ public class SecuritiesChart
 
                         int offsetX = 10;
                         int offsetY = 10;
-                        
+
+                        // offsetX = -txtExtend.x;
                         if ((p1.x < p2.x && p1.y < p2.y) || (p1.x > p2.x && p1.y > p2.y))
-                        {
-                            // offsetX = -txtExtend.x;
                             offsetY = -txtExtend.y - 20;
-                        }
 
                         int rectX = (p1.x + p2.x) / 2 + offsetX;
                         int rectY = (p1.y + p2.y) / 2 + offsetY;
