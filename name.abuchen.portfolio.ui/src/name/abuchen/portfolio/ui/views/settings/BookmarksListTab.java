@@ -81,7 +81,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
             menuListener.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
 
             List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
-            Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
+            Collections.sort(templates, (r, l) -> r.getLabel().compareToIgnoreCase(l.getLabel()));
 
             templates.forEach(bm -> menuListener.add(new SimpleAction(bm.getLabel(), a -> {
                 client.getSettings().getBookmarks().add(bm);
