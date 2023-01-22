@@ -1778,12 +1778,25 @@ public class SecuritiesChart
                         int offsetX = 10;
                         int offsetY = 10;
 
-                        // offsetX = -txtExtend.x;
                         if ((p1.x < p2.x && p1.y < p2.y) || (p1.x > p2.x && p1.y > p2.y))
                             offsetY = -txtExtend.y - 20;
 
                         int rectX = (p1.x + p2.x) / 2 + offsetX;
                         int rectY = (p1.y + p2.y) / 2 + offsetY;
+
+                        // check plot area borders
+                        if (rectY < 0)
+                            rectY = 0;
+
+                        if (rectY + txtExtend.y + 15 > chart.getPlotArea().getSize().y)
+                            rectY = chart.getPlotArea().getSize().y - txtExtend.y - 12;
+
+                        if (rectX < 0)
+                            rectX = 0;
+
+                        if (rectX + txtExtend.x + 15 > chart.getPlotArea().getSize().x)
+                            rectX = chart.getPlotArea().getSize().x - txtExtend.x - 12;
+
                         e.gc.fillRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
                         e.gc.drawRectangle(rectX, rectY, txtExtend.x + 10, txtExtend.y + 10);
                         e.gc.drawText(text, rectX + 5, rectY + 5, true);
