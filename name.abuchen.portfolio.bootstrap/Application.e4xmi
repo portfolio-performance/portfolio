@@ -134,6 +134,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_mRCKILOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="Forum" tooltip="%command.openbrowser.forum.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
           <parameters xmi:id="_pMDJwLOiEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YUNIsJPVEe2-04kloZOp3A" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="%command.openbrowser.translationTeams.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/poeditor-logo.png" tooltip="%command.openbrowser.translationTeams.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <parameters xmi:id="_wzFSYJPVEe2-04kloZOp3A" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://poeditor.com/join/project?hash=4lYKLpEWOY"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_a9IwYJ54EeafbcEa_s_MDw" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="How-Tos" tooltip="%command.openbrowser.how-tos.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
           <parameters xmi:id="_a9JXcJ54EeafbcEa_s_MDw" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/c/how-to"/>
         </children>
