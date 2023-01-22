@@ -70,6 +70,8 @@ public enum Images
     INTERVAL("interval.png"), //$NON-NLS-1$
     NEW_TRANSACTION("new_transaction.png"), //$NON-NLS-1$
     INVERT_EXCHANGE_RATE("invert_exchange_rate.png"), //$NON-NLS-1$
+    IMPORT_FILE("import_file.png"), //$NON-NLS-1$
+    EXPORT_FILE("export_file.png"), //$NON-NLS-1$
 
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$
