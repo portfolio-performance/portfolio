@@ -627,6 +627,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Handelsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // Börsenentgelt EUR 0,39
+                .section("currency", "fee").optional()
+                .match("^B.rsenentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
                 // Kurswert EUR 52,63
                 // Rabatt EUR - 2,63
                 // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
