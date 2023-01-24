@@ -737,26 +737,52 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format02);
         depositBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.DEPOSIT);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // 23.09.2022 23.09.2022 SEPA-Überweisung Entsparen -2.000,00 EUR
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* -[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.REMOVAL);
+                            return transaction;
+                        })
+
+                        .section("note", "date", "amount")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
         Block feesBlock = new Block("^SEPA-Lastschrift Lastschrift Managementgeb.hr .*$");
