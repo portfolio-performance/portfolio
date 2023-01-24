@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Postbank
+24/7-Kundenservice (0228) 5500-5500
+Xxxxxxxxx MMMMM
+Yyyyyyyyy MMMMM
+Hauptstr. 100b
+57072 Siegen
+16. Januar 2023
+Ihr Depot Nr. 111 2222222 00
+Kupongutschrift
+Nominal Währung WKN ISIN
+16.000,000000 EUR A0JCCZ XS1014610254
+2,625% VOLKSWAGEN LEASING MTN.V.14 15.1. 24
+Zinsen in % 2,6250000000 Zahlbar 16.01.2023
+Ursprungsland DEUTSCHLAND Ex-Tag 16.01.2023
+Bruttoertrag 420,00 EUR
+Kapitalertragsteuer (KESt) - 105,00 EUR
+Solidaritätszuschlag auf KESt - 5,77 EUR
+Gutschrift mit Wert 16.01.2023 309,23 EUR
+Wir überweisen den Betrag von 309,23 EUR auf Ihr Konto 2222222 00.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Karl von Rohr, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Christiana Riley, Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TRINCM0001 KUPO 20230114 48119803
