@@ -61,6 +61,16 @@ public class PortfolioClientFilter implements ClientFilter
         else
             throw new IllegalArgumentException();
     }
+    
+    public boolean hasElement(Object element)
+    {
+        if (element instanceof Portfolio)
+             return portfolios.contains((Portfolio) element);
+        else if (element instanceof Account)
+            return accounts.contains((Account) element);
+        else
+            throw new IllegalArgumentException();
+    }
 
     public Object[] getAllElements()
     {

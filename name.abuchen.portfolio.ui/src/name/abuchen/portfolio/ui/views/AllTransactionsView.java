@@ -8,12 +8,19 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -28,12 +35,18 @@ import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -45,9 +58,296 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AllTransactionsView extends AbstractFinanceView
 {
+    private static enum TransactionFilter
+    {
+        NONE(Messages.TransactionFilterNone, tx -> true),
+        SECURITY_TRANSACTIONS(Messages.TransactionFilterSecurityRelated, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+                return true;
+            else if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.DIVIDENDS
+                                || atx.getType() == AccountTransaction.Type.BUY
+                                || atx.getType() == AccountTransaction.Type.SELL;
+            }
+            return false;
+        }),
+        BUY_AND_SELL(Messages.TransactionFilterBuyAndSell, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction atx = (PortfolioTransaction) tx;
+                return atx.getType() == PortfolioTransaction.Type.BUY
+                                || atx.getType() == PortfolioTransaction.Type.SELL;
+            }
+            else if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.BUY
+                                || atx.getType() == AccountTransaction.Type.SELL;
+            }
+            return false;
+        }),
+        BUY(Messages.TransactionFilterBuy, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction atx = (PortfolioTransaction) tx;
+                return atx.getType() == PortfolioTransaction.Type.BUY;
+            }
+            else if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.BUY;
+            }
+            return false;
+        }),
+        SELL(Messages.TransactionFilterSell, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction atx = (PortfolioTransaction) tx;
+                return atx.getType() == PortfolioTransaction.Type.SELL;
+            }
+            else if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.SELL;
+            }
+            return false;
+        }),
+        DIVIDEND(Messages.TransactionFilterDividend, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.DIVIDENDS;
+            }
+            return false;
+        }),
+        DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.DEPOSIT
+                                || atx.getType() == AccountTransaction.Type.REMOVAL;
+            }
+            return false;
+        }),
+        DEPOSIT(Messages.TransactionFilterDeposit, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.DEPOSIT;
+            }
+            return false;
+        }),
+        REMOVAL(Messages.TransactionFilterRemoval, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.REMOVAL;
+            }
+            return false;
+        }),
+        INTEREST(Messages.TransactionFilterInterest, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.INTEREST
+                                || atx.getType() == AccountTransaction.Type.INTEREST_CHARGE;
+            }
+            return false;
+        }),
+        WITH_TAX(Messages.TransactionFilterTaxes, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                if (atx.getType() == AccountTransaction.Type.TAXES
+                                || atx.getType() == AccountTransaction.Type.TAX_REFUND)
+                    return true;
+            }
+            return tx.getUnitSum(Transaction.Unit.Type.TAX).isPositive();
+        }),
+        WITH_FEES(Messages.TransactionFilterFees, tx -> 
+        {
+            if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                if (atx.getType() == AccountTransaction.Type.FEES
+                                || atx.getType() == AccountTransaction.Type.FEES_REFUND)
+                    return true;
+            }
+            return tx.getUnitSum(Transaction.Unit.Type.FEE).isPositive();
+        }),
+        TRANSFERS(Messages.TransactionFilterTransfers, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction atx = (PortfolioTransaction) tx;
+                return atx.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                || atx.getType() == PortfolioTransaction.Type.TRANSFER_OUT;
+            }
+            else if (tx instanceof AccountTransaction)
+            {
+                AccountTransaction atx = (AccountTransaction) tx;
+                return atx.getType() == AccountTransaction.Type.TRANSFER_IN
+                                || atx.getType() == AccountTransaction.Type.TRANSFER_OUT;
+            }
+            return false;
+        }),
+        DELIVERIES(Messages.TransactionFilterDeliveries, tx -> 
+        {
+            if(tx instanceof PortfolioTransaction)
+            {
+                PortfolioTransaction atx = (PortfolioTransaction) tx;
+                return atx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || atx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            }
+            return false;
+        })
+        ;
+        
+        String name;
+        Predicate<Transaction> predicate;
+        
+        TransactionFilter(String name, Predicate<Transaction> predicate)
+        {
+            this.name =name;
+            this.predicate = predicate;
+        }
+        
+        boolean matches(Transaction tx)
+        {
+            return predicate.test(tx);
+        }
+        
+        String getName()
+        {
+            return name;
+        }
+    }
+    
+    private static final String TRANSACTION_FILTER_PREFERENCE_NAME = AllTransactionsView.class.getSimpleName() + "-transaction-type-filter"; //$NON-NLS-1$
+    private static final TransactionFilter DEFAULT_TYPE_FILTER = TransactionFilter.NONE;
+    
+    private class FilterDropDown extends DropDown implements IMenuListener
+    {
+        private ClientFilterMenu clientFilterMenu;
+
+        public FilterDropDown(IPreferenceStore preferenceStore)
+        {
+            super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
+
+            preferenceStore.setDefault(TRANSACTION_FILTER_PREFERENCE_NAME, DEFAULT_TYPE_FILTER.name());
+            TransactionFilter transactionFilter = TransactionFilter.valueOf(
+                            preferenceStore.getString(TRANSACTION_FILTER_PREFERENCE_NAME));
+            typeFilter = transactionFilter;
+            
+            setMenuListener(this);
+
+            this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
+
+            Consumer<ClientFilter> listener = filter -> {
+                setInformationPaneInput(null);
+                if(filter instanceof PortfolioClientFilter)
+                    AllTransactionsView.this.clientFilter = (PortfolioClientFilter) filter;
+                else
+                    AllTransactionsView.this.clientFilter = null;
+                notifyModelUpdated();
+            };
+
+            clientFilterMenu.addListener(listener);
+            clientFilterMenu.addListener(filter -> updateIcon());
+
+            loadPreselectedFilter(preferenceStore);
+
+            updateIcon();
+
+            addDisposeListener(e -> {
+                preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name());
+            });
+        }
+
+        private void loadPreselectedFilter(IPreferenceStore preferenceStore)
+        {
+            String prefix = AllTransactionsView.class.getSimpleName();
+
+            // client filter
+            String key = prefix + ClientFilterMenu.PREF_KEY_POSTFIX;
+
+            String selection = preferenceStore.getString(key);
+            if (selection != null)
+            {
+                Optional<Item> optionalItem = clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny();
+                if(optionalItem.isPresent())
+                {
+                    clientFilterMenu.select(optionalItem.get());
+                    ClientFilter filter = optionalItem.get().getFilter();
+                    if(filter instanceof PortfolioClientFilter)
+                        AllTransactionsView.this.clientFilter = (PortfolioClientFilter) filter;
+                }
+            }
+
+            clientFilterMenu.addListener(
+                            filter -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
+        }
+
+        private void updateIcon()
+        {
+            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || typeFilter != DEFAULT_TYPE_FILTER;
+            setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new LabelOnly(Messages.TransactionFilter));
+            for(TransactionFilter filter : TransactionFilter.values())
+                manager.add(addTypeFilter(filter));
+            
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            clientFilterMenu.menuAboutToShow(manager);
+        }
+
+        
+        private Action addTypeFilter(TransactionFilter filter)
+        {
+            Action action = new Action(filter.getName(), Action.AS_CHECK_BOX)
+            {
+                @Override
+                public void run()
+                {
+                    boolean isChecked = typeFilter == filter;
+
+                    // only one TransactionFilter can be selected at a time
+                    if (isChecked)
+                        typeFilter = DEFAULT_TYPE_FILTER;
+                    else
+                        typeFilter = filter;
+
+                    updateIcon();
+                    notifyModelUpdated();
+                }
+            };
+            action.setChecked(typeFilter == filter);
+            return action;
+        }
+    }
+    
     private TransactionsViewer table;
 
     private String filter;
+    private PortfolioClientFilter clientFilter;
+    private TransactionFilter typeFilter;
 
     @Override
     public void notifyModelUpdated()
@@ -68,6 +368,8 @@ public class AllTransactionsView extends AbstractFinanceView
         addSearchButton(toolBar);
 
         toolBar.add(new Separator());
+
+        toolBar.add(new FilterDropDown(getPreferenceStore()));
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
             manager.add(new SimpleAction(Messages.LabelAllTransactions + " (CSV)", //$NON-NLS-1$
@@ -174,6 +476,37 @@ public class AllTransactionsView extends AbstractFinanceView
                 }
 
                 return false;
+            }
+        });
+
+        table.addFilter(new ViewerFilter()
+        {
+            
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                TransactionPair<?> tx = (TransactionPair<?>) element;
+                return typeFilter.matches(tx.getTransaction());
+            }
+        });
+        
+        /*
+         * We filter the table like this and not by using the clientFilter#filter(Client) method, because that modifies
+         * some transactions (e.g. removes the cross entry for purchases/sells and adds fictitious removals for dividend
+         * payments when only the portfolio without the account passes the filter)
+         */
+        table.addFilter(new ViewerFilter()
+        {
+            
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                if(clientFilter == null)
+                    return true;
+                TransactionPair<?> tx = (TransactionPair<?>) element;
+                return clientFilter.hasElement(tx.getOwner())
+                                || (tx.getTransaction().getCrossEntry() != null
+                                && clientFilter.hasElement(tx.getTransaction().getCrossEntry().getOwner(tx.getTransaction())));
             }
         });
 
