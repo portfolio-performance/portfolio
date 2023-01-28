@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -35,6 +36,15 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
         super(widget, dashboardData);
 
         addConfig(new DataSeriesConfig(this, supportsBenchmarks, predicate));
+        addConfig(new ReportingPeriodConfig(this));
+    }
+
+    protected AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks,
+                    boolean supportsEmptyDataSeries, Predicate<DataSeries> predicate, String label)
+    {
+        super(widget, dashboardData);
+
+        addConfig(new DataSeriesConfig(this, supportsBenchmarks, supportsEmptyDataSeries, predicate, label, Dashboard.Config.DATA_SERIES));
         addConfig(new ReportingPeriodConfig(this));
     }
 

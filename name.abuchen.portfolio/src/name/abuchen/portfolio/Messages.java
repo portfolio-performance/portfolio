@@ -232,6 +232,8 @@ public class Messages extends NLS
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
+    public static String MsgErrorCorrelationNotEnoughData;
+    public static String MsgErrorCorrelationNoVariance;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;

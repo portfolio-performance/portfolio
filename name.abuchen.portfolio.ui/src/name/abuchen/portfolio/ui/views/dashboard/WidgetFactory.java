@@ -188,6 +188,8 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
+    CORRELATION(Messages.LabelCorrelation, Messages.LabelRiskIndicators, CorrelationWidget::new),
+
     CALCULATION(Messages.LabelPerformanceCalculation, Messages.ClientEditorLabelPerformance,
                     PerformanceCalculationWidget::new),
 
