@@ -314,7 +314,10 @@ public class PDFExtractorUtils
                     // check if it a rounding difference that is acceptable
                     try
                     {
-                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
+                        Money expectedGrossForex = Money.of(grossUnit.getForex().getCurrencyCode(), 
+                                        BigDecimal.ONE.divide(grossUnit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
+                                        .multiply(BigDecimal.valueOf(expectedGross.getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
+                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, expectedGrossForex,
                                         grossUnit.getExchangeRate());
 
                         t.removeUnit(grossUnit);

@@ -108,7 +108,7 @@ public class IBFlexStatementExtractorWithFixGrossValueBuySellTest
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(844.95))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(844.62))));
     }
 
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
