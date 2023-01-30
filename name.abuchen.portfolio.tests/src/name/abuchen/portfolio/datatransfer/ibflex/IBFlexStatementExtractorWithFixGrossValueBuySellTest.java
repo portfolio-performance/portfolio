@@ -6,6 +6,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 
+import static name.abuchen.portfolio.testutil.TestUtil.assertMoneyApproximateEqual;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,6 +39,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorWithFixGrossValueBuySellTest
 {
+    public static final long EPS = 2; // Error tolerance for monetary amount.
+    // Unfortunately, it has to be that high because of rounding errors in currency conversion
+    
     @Test
     public void testIBAcitvityStatement() throws IOException
     {
@@ -108,7 +113,7 @@ public class IBFlexStatementExtractorWithFixGrossValueBuySellTest
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(844.62))));
+        assertMoneyApproximateEqual(grossValueUnit.getForex(), Money.of(CurrencyUnit.USD, Values.Amount.factorize(844.62)), EPS);
     }
 
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
