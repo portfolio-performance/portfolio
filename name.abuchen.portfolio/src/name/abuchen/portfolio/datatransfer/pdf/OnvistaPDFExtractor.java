@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -256,7 +257,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([-\\s])?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -558,7 +559,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
@@ -573,7 +574,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .match("^Ertrag f.r [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -1224,7 +1225,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (!t.getMonetaryAmount().isZero())
                     {
-                        PDFExchangeRate rate = asExchangeRate(v);
+                        ExchangeRate rate = asExchangeRate(v);
                         type.getCurrentContext().putType(rate);
 
                         Money gross = t.getMonetaryAmount();
@@ -1346,7 +1347,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));

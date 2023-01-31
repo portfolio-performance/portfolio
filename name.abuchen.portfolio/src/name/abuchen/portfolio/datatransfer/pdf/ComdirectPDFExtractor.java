@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -193,13 +194,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+).* : (?<baseCurrency>[\\w]{3}).*$")
                 .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
-                    
+                    ExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-
-                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -213,13 +212,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (Umrechn\\. zum Dev\\. kurs|Umrechnung zum Devisenkurs) (?<exchangeRate>[\\.,\\d]+).* : (?<baseCurrency>[\\w]{3}).*$")
                 .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
-                    
+                    ExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-
-                    type.getCurrentContext().putType(asExchangeRate(v));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
@@ -343,8 +340,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .match("^Bruttobetrag(:)? ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                 .match("^.*zum Devisenkurs(:)? (?<baseCurrency>[\\w]{3})(\\/)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
@@ -364,7 +361,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
-                    Optional<PDFExchangeRate> exchangeRate = type.getCurrentContext().getType(PDFExchangeRate.class);
+                    Optional<ExchangeRate> exchangeRate = type.getCurrentContext().getType(ExchangeRate.class);
 
                     if (!t.getCurrencyCode().equals(gross.getCurrencyCode()) && exchangeRate.isPresent())
                         gross = exchangeRate.get().convert(t.getCurrencyCode(), gross);
@@ -508,7 +505,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                     if (!grossValueBeforeTaxes.getCurrencyCode().equals(taxAssessmentBasis.getCurrencyCode()))
                     {
-                        PDFExchangeRate exchangeRate = new PDFExchangeRate(
+                        ExchangeRate exchangeRate = new ExchangeRate(
                                         asExchangeRate(stripBlanks(v.get("exchangeRate"))),
                                         taxAssessmentBasis.getCurrencyCode(),
                                         grossValueBeforeTaxes.getCurrencyCode());
@@ -790,8 +787,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
-                        PDFExchangeRate rate = asExchangeRate(v);
-                        type.getCurrentContext().putType(asExchangeRate(v));
+                        ExchangeRate rate = asExchangeRate(v);
+                        type.getCurrentContext().putType(rate);
 
                         Money gross = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))), asAmount(stripBlanksAndUnderscores(v.get("gross"))));
                         Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
@@ -814,7 +811,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                     if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                     {
-                        type.getCurrentContext().putType(asExchangeRate(v));
+                        ExchangeRate rate = asExchangeRate(v);
+                        type.getCurrentContext().putType(rate);
 
                         Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                         Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));

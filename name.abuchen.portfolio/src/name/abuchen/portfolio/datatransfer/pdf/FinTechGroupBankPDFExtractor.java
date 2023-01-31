@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -191,8 +192,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
@@ -715,7 +716,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -736,7 +737,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -868,7 +869,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
@@ -893,7 +894,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));

@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -516,8 +517,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     v.put("baseCurrency", asCurrencyCode(item.get().baseCurrency));
                                     v.put("termCurrency", asCurrencyCode(item.get().termCurrency));
 
-                                    PDFExchangeRate rate = asExchangeRate(v);
-                                    type.getCurrentContext().putType(asExchangeRate(v));
+                                    ExchangeRate rate = asExchangeRate(v);
+                                    type.getCurrentContext().putType(rate);
 
                                     Money fxGross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                     Money gross = rate.convert(asCurrencyCode(item.get().baseCurrency), fxGross);

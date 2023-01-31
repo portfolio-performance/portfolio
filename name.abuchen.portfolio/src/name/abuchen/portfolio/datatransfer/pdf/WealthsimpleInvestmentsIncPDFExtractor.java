@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -275,7 +276,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                                 checkAndSetTax(tax, t, type);
                                             }
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
@@ -313,7 +314,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);
@@ -360,7 +361,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);

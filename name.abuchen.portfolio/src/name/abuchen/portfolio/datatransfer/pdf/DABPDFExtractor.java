@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -192,9 +193,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Kurswert ([\\s]+)?(?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([\\-\\s]+)?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
-                    
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
@@ -332,12 +333,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^ausl.ndische Dividende (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                                         .match("^Devisenkurs: (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-                                            
+
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                                 ,
@@ -348,12 +349,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                                         .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
-                                            
+
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                                 ,
@@ -364,12 +365,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                                         .match("^Ertrag f.r [\\d]{4} (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-                                            
+
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                                 ,
@@ -384,7 +385,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Netto in [\\w]{3} zugunsten .*$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -403,7 +405,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .match("^Netto zugunsten .*$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -419,12 +422,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Ertrag f.r [\\d]{4}\\/[\\d]{2} (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                                         .match("^Devisenkurs: (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("baseCurrency")), gross);
-                                            
+
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                         )
@@ -671,7 +674,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^zu versteuern \\(negativ\\) .*$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
