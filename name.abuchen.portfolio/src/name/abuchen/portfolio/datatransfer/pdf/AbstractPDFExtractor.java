@@ -17,6 +17,7 @@ import java.util.Map;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
@@ -237,9 +238,9 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected PDFExchangeRate asExchangeRate(Map<String, String> data)
+    protected ExtrExchangeRate asExchangeRate(Map<String, String> data)
     {
-        return new PDFExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
+        return new ExtrExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
                         asCurrencyCode(data.get("baseCurrency")), //$NON-NLS-1$
                         asCurrencyCode(data.get("termCurrency"))); //$NON-NLS-1$
     }

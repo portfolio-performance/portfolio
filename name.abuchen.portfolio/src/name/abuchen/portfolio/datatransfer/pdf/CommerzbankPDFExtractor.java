@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -237,9 +238,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
-                    
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(stripBlanks(v.get("fxGross"))));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 

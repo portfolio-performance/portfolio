@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf;
+package name.abuchen.portfolio.datatransfer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,19 +10,19 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
- * Helper class to handle exchange rates when parsing PDF documents.
+ * Helper class to handle exchange rates.
  * 
  * <pre>
  * amount in base currency x exchange rate = amount in term currency
  * </pre>
  */
-/* package */ class PDFExchangeRate
+public class ExtrExchangeRate
 {
     private final BigDecimal rate;
     private final String baseCurrency;
     private final String termCurrency;
 
-    public PDFExchangeRate(BigDecimal rate, String baseCurrency, String termCurrency)
+    public ExtrExchangeRate(BigDecimal rate, String baseCurrency, String termCurrency)
     {
         this.rate = Objects.requireNonNull(rate);
         this.baseCurrency = Objects.requireNonNull(baseCurrency);

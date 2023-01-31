@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -95,7 +96,7 @@ public class PDFExtractorUtils
         if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
             return;
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = type.getCurrentContext().getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
@@ -119,7 +120,7 @@ public class PDFExtractorUtils
             return;
         }
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = type.getCurrentContext().getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
         {
@@ -151,7 +152,7 @@ public class PDFExtractorUtils
             return;
         }
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = type.getCurrentContext().getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
         {
