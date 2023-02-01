@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -19,15 +21,20 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -42,15 +49,21 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -85,6 +98,70 @@ public class SecurityListView extends AbstractFinanceView
                                 SecurityListView.this.watchlist, getClient());
                 if (dialog.open() == Window.OK)
                     openEditDialog(dialog.getSecurity());
+            }));
+
+            manager.add(new SimpleAction(Messages.SecurityMenuNewCryptocurrency, a -> {
+                try
+                {
+                    @SuppressWarnings("nls")
+                    final Set<String> popularCoins = Set.of("bitcoin", "ethereum", "aave", "algorand", "bitcoin-cash",
+                                    "cardano", "chainlink", "decentraland", "dogecoin", "litecoin", "polkadot",
+                                    "matic-network", "shiba-inu", "solana", "the-sandbox", "uniswap", "ripple");
+
+                    ILabelProvider labelProvider = new ColumnLabelProvider()
+                    {
+                        @Override
+                        public String getText(Object element)
+                        {
+                            SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
+                            return String.format("%s (%s)", item.getSymbol(), item.getName()); //$NON-NLS-1$
+                        }
+
+                        @Override
+                        public Color getBackground(Object element)
+                        {
+                            SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
+                            return popularCoins.contains(item.getExchange()) ? Colors.theme().warningBackground()
+                                            : null;
+                        }
+                    };
+
+                    ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(),
+                                    labelProvider);
+
+                    dialog.setTitle(Messages.SecurityMenuNewCryptocurrency);
+                    dialog.setMessage(Messages.SecurityMenuNewCryptocurrencyMessage);
+                    dialog.setMultiSelection(false);
+                    dialog.setViewerComparator(new ViewerComparator()
+                    {
+                        @Override
+                        public int category(Object element)
+                        {
+                            SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
+                            return popularCoins.contains(item.getExchange()) ? 0 : 1;
+                        }
+                    });
+                    dialog.setElements(Factory.getSearchProvider(CoinGeckoSearchProvider.class) //
+                                    .search("", SecuritySearchProvider.Type.ALL)); //$NON-NLS-1$
+
+                    if (dialog.open() == Window.OK)
+                    {
+                        Object[] result = dialog.getResult();
+
+                        for (Object object : result)
+                        {
+                            ResultItem item = (ResultItem) object;
+                            Security newSecurity = item.create(getClient().getSettings());
+                            openEditDialog(newSecurity);
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    PortfolioPlugin.log(e);
+                    MessageDialog.openError(getActiveShell(), Messages.LabelError, e.getMessage());
+                }
+
             }));
 
             manager.add(new SimpleAction(Messages.SecurityMenuNewExchangeRate, a -> {

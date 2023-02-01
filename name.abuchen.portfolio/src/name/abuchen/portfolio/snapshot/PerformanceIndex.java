@@ -129,6 +129,11 @@ public class PerformanceIndex
         return reportInterval;
     }
 
+    public String getCurrency()
+    {
+        return converter.getTermCurrency();
+    }
+
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;

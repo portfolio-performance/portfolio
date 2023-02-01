@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+~$~|OR07|142198||||||||ORDER.D226905.AFP||||20230905||35431|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg
+Depotnummer 123456
+Max Mustermann
+Auftragsnummer 12345/14.00
+Datum 05.09.2022
+Herrn Rechnungsnummer W05500-0004444782/22
+Max Mustermann Umsatzsteuer-ID DE1234567
+Innenstadt
+strasse. 1
+00000 Stadt
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,6304 COLGATE-PALMOLIVE CO. SHARES US1941621039 (850667)
+REGISTERED SHARES DL 1
+Handels-/Ausführungsplatz Auûerbörslich
+Schlusstag/-Zeit 05.09.2022 12:07:49
+Ausführungskurs 79,31 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 50,00- EUR
+Provision 2,5015 % vom Kurswert 1,25- EUR
+Ausmachender Betrag 51,25- EUR
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Ausführungsplatz gemäû Ausführungsgrundsätzen (Best Execution): Börse Tradegate
+Ihr Aktiensparplan Nr. 7
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.09992054.0037283OR07
+SBRO_OR07_v2.8P.ORDER.D2999905.AFP_35631

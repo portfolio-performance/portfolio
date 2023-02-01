@@ -3,6 +3,8 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import name.abuchen.portfolio.util.TextUtil;
+
 /**
  * An Named object has an editable name and note.
  */
@@ -17,7 +19,7 @@ public interface Named extends Annotated
         {
             if (n1 == null)
                 return n2 == null ? 0 : -1;
-            return n1.getName().compareToIgnoreCase(n2.getName());
+            return TextUtil.compare(n1.getName(), n2.getName());
         }
     }
 

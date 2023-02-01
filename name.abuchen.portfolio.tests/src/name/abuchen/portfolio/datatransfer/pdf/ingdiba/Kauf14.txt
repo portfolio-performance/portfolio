@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: Maximus Mustermannus
+Herrn Direkt-Depot Nr.: 0123456789
+Maximus Mustermannus Datum: 28.07.2015
+1-2-3 Seite: 1 von 1
+Straße 0
+12345 Musteria
+Wertpapierabrechnung Kauf
+Ordernummer 93626494.001
+ISIN (WKN) DE000TUAG000 (TUAG00)
+Wertpapierbezeichnung Wertpapier AG
+Wertpapier XXXXXXXXXX
+Kündigungsrecht des Emittenten ab 30.12.2015
+Nominale Stück 1,00
+Kurs EUR 350,97
+Handelsplatz Stuttgart
+Ausführungstag / -zeit 28.07.2015 um 09:00:08 Uhr
+Kurswert EUR 350,97
+Provision EUR 9,90
+Börsenentgelt EUR 0,39
+Endbetrag zu Ihren Lasten EUR 361,26
+Abrechnungs-IBAN DE00 0000 0000 0000 0000 00
+Valuta 30.07.2015
+Wertpapiere zugunsten Girosammelverwahrung.
+Börsenentgelt inkl. 19,00% MwSt.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 350,00 EUR / start buy / Folge-Limit 351,00 EUR
+                                                                               
+                                                                               
+                                                                               
+                                                                               
+Über 5.000 Fonds & ETFs gebührenfrei kaufen - ohne Orderprovision, Ausgabeaufschlag oder sonstige Kosten.
+Mehr Infos www.ing-diba.de/handeln
+Sie haben weitere Fragen? Auf www.ing-diba.de/wertpapiere haben wir alles Wissenswerte für Sie
+zusammengefasst. Oder senden Sie uns eine E-Mail an info@ing-diba.de .
+ING-DiBa AG Vorsitzender des Aufsichtsrates: Ben Tellings Sitz: Frankfurt am Main Internet www.ing-diba.de
+Theodor-Heuss-Allee 2 Vorstand: Roland Boekhout (Vorsitzender), AG Frankfurt am Main HRB 7727 E-Mail info@ing-diba.de
+60486 Frankfurt am Main Bernd Geilen, Katharina Herrmann, Steuernummer 047 220 2800 4 BIC: INGDDEFFXXX / BLZ: 500 105 17
+Martin Krebs, Remco Nieland USt-IdNr. DE 114 103 475 Mitglied im Einlagensicherungsfonds
+34WAAD8003921679_T

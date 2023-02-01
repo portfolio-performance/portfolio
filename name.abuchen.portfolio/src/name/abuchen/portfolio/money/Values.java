@@ -36,7 +36,7 @@ public abstract class Values<E>
 
         public String format(Money amount, String skipCurrencyCode)
         {
-            if (skipCurrencyCode.equals(amount.getCurrencyCode()))
+            if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
                 return DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
                                 : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
             else
@@ -88,7 +88,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -177,7 +177,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -397,6 +397,18 @@ public abstract class Values<E>
         public String format(Double percent)
         {
             return String.format("%,.2f%%", percent * 100); //$NON-NLS-1$
+        }
+    };
+
+    public static final Values<Double> AnnualizedPercent2 = new Values<Double>("0.00% 'p.a.'", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            if (FormatHelper.isDisplayPerAnnum())
+                return Values.Percent2.format(percent) + " p.a."; //$NON-NLS-1$
+            else
+                return Percent2.format(percent);
         }
     };
 

@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationListener
 {
@@ -81,7 +82,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
             menuListener.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
 
             List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
-            Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
+            Collections.sort(templates, (r, l) -> TextUtil.compare(r.getLabel(), l.getLabel()));
 
             templates.forEach(bm -> menuListener.add(new SimpleAction(bm.getLabel(), a -> {
                 client.getSettings().getBookmarks().add(bm);

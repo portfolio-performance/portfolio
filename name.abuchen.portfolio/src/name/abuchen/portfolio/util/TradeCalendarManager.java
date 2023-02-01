@@ -1,25 +1,27 @@
 package name.abuchen.portfolio.util;
 
+import static name.abuchen.portfolio.util.HolidayName.ALL_SOULS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASSUMPTION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
+import static name.abuchen.portfolio.util.HolidayName.CARNIVAL;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
 import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
+import static name.abuchen.portfolio.util.HolidayName.CORONATION;
 import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
 import static name.abuchen.portfolio.util.HolidayName.EARLY_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
+import static name.abuchen.portfolio.util.HolidayName.EXTRA_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.FAMILY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
-import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_NIXON;
-import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
-import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
+import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
@@ -29,17 +31,20 @@ import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
-import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
+import static name.abuchen.portfolio.util.HolidayName.REPUBLIC_PROCLAMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.STATE_FUNERAL;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.TERRORIST_ATTACKS;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
+import static name.abuchen.portfolio.util.HolidayName.TIRADENTES_DAY;
 import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
 import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORIA_DAY;
@@ -123,13 +128,14 @@ public class TradeCalendarManager
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, -1).moveIf(DayOfWeek.SUNDAY, 1));
         // one-time closings since 1990; see https://www.bcm-news.de/wp-content/uploads/closings-nyse.pdf
         // for a complete list from 1885 to 2011
-        tc.add(fixed(FUNERAL_OF_PRESIDENT_NIXON, Month.APRIL, 27).onlyIn(1994));
+        tc.add(fixed(STATE_FUNERAL, Month.APRIL, 27).onlyIn(1994)); // funeral of former president Nixon
         for (int d = 11; d <= 14; d++)
             tc.add(fixed(TERRORIST_ATTACKS, Month.SEPTEMBER, d).onlyIn(2001));
-        tc.add(fixed(FUNERAL_OF_PRESIDENT_REAGAN, Month.JUNE, 11).onlyIn(2004));
-        tc.add(fixed(REMEMBERANCE_OF_PRESIDENT_FORD, Month.JANUARY, 2).onlyIn(2007));
+        tc.add(fixed(STATE_FUNERAL, Month.JUNE, 11).onlyIn(2004)); // funeral of former president Reagan
+        tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 2).onlyIn(2007)); // funeral of former president Ford
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
+        tc.add(fixed(STATE_FUNERAL, Month.DECEMBER, 5).onlyIn(2018)); // funeral of former president Bush Sr.
         CACHE.put(tc.getCode(), tc);
 
         // see https://www.gov.uk/bank-holidays
@@ -158,6 +164,8 @@ public class TradeCalendarManager
         tc.add(fixed(EARLY_MAY_BANK_HOLIDAY, Month.MAY, 8).onlyIn(2020)); // moved for VE Day 75th anniversary
         tc.add(fixed(SPRING_MAY_BANK_HOLIDAY, Month.JUNE, 2).onlyIn(2022)); // moved for four-day weekend
         tc.add(fixed(ROYAL_JUBILEE, Month.JUNE, 3).onlyIn(2022)); // Platinum Jubilee of Elizabeth II
+        tc.add(fixed(STATE_FUNERAL, Month.SEPTEMBER, 19).onlyIn(2022)); // state funeral of Elizabeth II
+        tc.add(fixed(CORONATION, Month.MAY, 8).onlyIn(2023)); // coronation of Charles III
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("euronext", Messages.LabelTradeCalendarEuronext, STANDARD_WEEKEND); //$NON-NLS-1$
@@ -173,17 +181,37 @@ public class TradeCalendarManager
         // https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
         tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
-        tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2));
+        tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2).exceptIn(2002));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
-        tc.add(easter(ASCENSION_DAY, 39));
-        tc.add(easter(WHIT_MONDAY, 50));
-        tc.add(fixed(NATION_DAY, Month.AUGUST, 1));
+        tc.add(easter(ASCENSION_DAY, 39).exceptIn(2002));
+        tc.add(easter(WHIT_MONDAY, 50).exceptIn(2002));
+        tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validTo(2000));
+        tc.add(fixed(NATION_DAY, Month.AUGUST, 1).validFrom(2006));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
-        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
-        tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25));
+        tc.add(fixed(SAINT_STEPHEN, Month.DECEMBER, 26));
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
+        // one-time holidays
+        tc.add(fixed(EXTRA_HOLIDAY, Month.JANUARY, 3).onlyIn(2000));
+        CACHE.put(tc.getCode(), tc);
+
+        // see Brazilian Stock Exchange trading days on their official website:
+        // https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/calendario-de-negociacao/feriados/
+        tc = new TradeCalendar("ibov", Messages.LabelTradeCalendarIBOV, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(CARNIVAL, -48));
+        tc.add(easter(CARNIVAL, -47));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(fixed(TIRADENTES_DAY, Month.APRIL, 21));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(easter(CORPUS_CHRISTI, 60));
+        tc.add(fixed(INDEPENDENCE, Month.SEPTEMBER, 7));
+        tc.add(fixed(PATRON_DAY, Month.OCTOBER, 12));
+        tc.add(fixed(ALL_SOULS_DAY, Month.NOVEMBER, 2));
+        tc.add(fixed(REPUBLIC_PROCLAMATION_DAY, Month.NOVEMBER, 15));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         CACHE.put(tc.getCode(), tc);
 
         // see Italian Stock Exchange trading days on their official website:
@@ -207,7 +235,7 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
-        tc.add(easter(WHIT_MONDAY, 50));
+        tc.add(easter(WHIT_MONDAY, 50).validTo(2022));
         tc.add(fixed(NATION_DAY, Month.OCTOBER, 26));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25));

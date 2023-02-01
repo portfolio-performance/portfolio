@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+                                     INVESTMENTGESELLSCH.
+           
+TRANSAKTIONSABRECHNUNG
+                                                                            A N G E G E B EN  IN :      EUR
+ D A T U M :    29-09-2022    BNP ENERGY TRANSITION P                             W E C H S E LK U R S :        1,00
+ I SI N :      LU0823415285
+       INHABER        XXXXXXXX  XXXXXX                                            ID      XXXXXXXXX
+IBAN
+       V  E  R   T R A  G  S N  U   M M  E  R   :         0 0  7  3   0  1 00 840 XXXXXXX MIT DER TRANSAKTION                           V  E R K N Ü  P T E S         ES77 0073 0100 5884 XXXX XXXX
+     T R A  N S A K T I O N S N U  M M E R  :   0  0  0  0 1  1  0  3 0  0    PERSÖNLICHES KONTO
+Sehr geehrter Anteilseigner: Gemäß Ihren Anweisungen haben wir folgende Transaktion durchgeführt:
+    TRANSAKTION                ZEICHNUNG
+    DATUM NETTOINVENTARWERT    27.09.2022
+    BETEILIGUNGEN                       0,0060000
+    NETTOINVENTARWERT                   151,46000 EUR
+    BETRAG                                    ,91 EUR
+    GESAMTKOSTEN                                  EUR
+    GESAMTANREIZE                                 EUR
+    NETTOBETRAG                               ,91 EUR
+       Verwaltungsgesellsc : ALLFUNDS BANK S.A. CL/ NURIA Nº 57 ,28034 MADRID,MADRID,ESPAÑA
+       VERTRIEBSGESELLSCH. : OPEN BANK, S.A. AV DE CANTABRIA S/N 28660 - BOADILLA DEL MONTE MADRID
+       H A NDELSREG. ST STEUERIDENA28021079 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, D0033
+       G E SELLSCHAFT : STEUERIDEN V- 999999 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, F0112GRÜNDUNGSDATUM 17.05.2013

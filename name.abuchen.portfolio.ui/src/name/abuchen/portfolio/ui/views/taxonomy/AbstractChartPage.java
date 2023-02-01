@@ -11,7 +11,7 @@ public abstract class AbstractChartPage extends Page
 {
     private Menu configMenu;
 
-    public AbstractChartPage(TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    protected AbstractChartPage(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
     }
@@ -21,13 +21,11 @@ public abstract class AbstractChartPage extends Page
     {
         Action action = new SimpleAction(Messages.LabelIncludeUnassignedCategoryInCharts, a -> {
             getModel().setExcludeUnassignedCategoryInCharts(!getModel().isUnassignedCategoryInChartsExcluded());
-            onConfigChanged();
+            getModel().fireTaxonomyModelChange(getModel().getVirtualRootNode());
         });
         action.setChecked(!getModel().isUnassignedCategoryInChartsExcluded());
         manager.add(action);
     }
-
-    public abstract void onConfigChanged();
 
     @Override
     public void dispose()

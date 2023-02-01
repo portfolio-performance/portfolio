@@ -1,0 +1,19 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Musterstr. 1 IHR DISPOKREDIT EUR 0,00
+12345 Musterstadt
+DKB-Cash
+Kontoauszug Nummer 007 / 2018 vom 02.06.2018 bis 04.07.2018
+Kontonummer 1234567890 / IBAN DE21 1203 0000 1234 5678 90
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+12.06. 12.06. BUCHUNG 0,01
+KREDITKARTENABRECHNUNG
+IDENTIFIKATIONSCODE 123456 - KARTENENDNUMMER
+1234. SCH LIEßEN SIE DIE REGISTRIERUN G AB UNTER
+WWW.DKB.DE/SECUR E-VISA
+ALTER KONTOSTAND 0,00 H EUR
+NEUER KONTOSTAND 0,01 H EUR
+[...]

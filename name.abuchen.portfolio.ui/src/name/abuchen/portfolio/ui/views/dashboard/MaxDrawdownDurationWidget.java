@@ -58,11 +58,13 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
 
         Drawdown drawdown = index.getDrawdown();
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
-        indicator.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
 
         boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEnd());
         String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                         : Messages.TooltipMaxDrawdownDurationFromXtoY;
+
+        indicator.setText(MessageFormat.format(Messages.LabelXDays,
+                        maxDDDuration.getDays() + (isUntilEndOfPeriod ? "+" : ""))); //$NON-NLS-1$ //$NON-NLS-2$
 
         // recovery time
         Interval recoveryTime = drawdown.getLongestRecoveryTime();
@@ -74,7 +76,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
                         + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
                                         formatter.format(maxDDDuration.getEnd()))
                         + "\n\n" //$NON-NLS-1$
-                        + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
+                        + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays()) //
                         + "\n" //$NON-NLS-1$
                         + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
                                         formatter.format(recoveryTime.getEnd()));

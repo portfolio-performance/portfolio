@@ -1,0 +1,84 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=30000000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Muster
+ADRESSZEILE3=Musterstr. 1
+ADRESSZEILE4=98765 Musterstadt
+Dividende für
+Herr ADRESSZEILE5=01.01.2020 - 31.12.2020
+Max Muster ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 1 BELEGNUMMER=4198
+98765 Musterstadt 300000000 31510000 / 01.06.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Muster
+Frankfurt am Main, 01.06.2021
+Storno - Dividendengutschrift
+Gattungsbezeichnung ISIN
+EPR Properties Registered Shares DL -,01 US26884U1097
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 46,000 29.04.2020 15.05.2020 USD 0,382500
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+01.06.2021 30000000 EUR/USD 1,08985 EUR 13,73
+Storno unserer Dividendengutschrift Nr. 67390000 vom 15.05.2020.
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Steuerpflichtiger Ausschüttungsbetrag EUR 16,14
+US-Quellensteuer 15% USD 2,64
+davon anrechenbare US-Quellensteuer 15% EUR 2,42
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 719,84 735,98
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 9,68
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 2,42-
+Solidaritätszuschlag EUR 0,13-
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Lasten
+01.06.2021 336451044 40488975 EUR 2,55 
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 2,42
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,13
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt am Main V Steuernummer: 047/220/06016.
+Es folgt Seite 2
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Manfred Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Helmut Gottschalk
+3.20/ABREEREIERTR/GDBSTERT/004198/020621/011116
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=330000000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Muster
+330000000 31510575 2 ADRESSZEILE3=Musterstr. 1
+ADRESSZEILE4=98765 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=4198
+SEITENNUMMER=2
+Korrektur gem. § 43a Abs. 3 Satz 7 EStG STEUERERSTATTUNG=N
+Steuerlicher Stichtag: 01.06.2021
+Stornierung und Neuabrechnung aufgrund einer seitens der Gesellschaft durchgeführten Reklassifizierung. Bei einer
+Reklassifizierung wird die Dividende oder ein Teil der Dividende in eine Kapitalreduktion und / oder einen
+Veräußerungsgewinn umgewandelt.
+Verwahrart: Wertpapierrechnung Lagerland: USA
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Manfred Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Helmut Gottschalk
+3.20/ABREEREIERTR/GDBSTERT/004198/020621/011116

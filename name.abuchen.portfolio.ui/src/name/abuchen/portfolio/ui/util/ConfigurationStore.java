@@ -220,6 +220,11 @@ public class ConfigurationStore
         listeners.forEach(l -> l.onConfigurationPicked(config.getData()));
     }
 
+    public void activate(String uuid)
+    {
+        configSet.lookup(uuid).ifPresent(this::activate);
+    }
+
     public void updateActive(String data)
     {
         if (!Objects.equals(data, active.getData()))

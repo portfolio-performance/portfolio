@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -28,8 +29,8 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addInterestTransaction();
         addFeeTransaction();
-        addDividendsTransaction();
-        addTaxRefundTransaction();
+        addDividendTransaction();
+//        addTaxRefundTransaction();
     }
 
     @Override
@@ -99,7 +100,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 .section("isin", "name", "currency")
                 .find("Order: (Kauf|Verkauf|Buy|Sell)")
                 .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
-                .match("^ISIN: (?<isin>[\\w]{12})$")
+                .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^(Kurs|Price): (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -203,12 +204,19 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new));
     }
 
-    private void addDividendsTransaction()
+    private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung|Dividend Payment)");
+        DocumentType type = new DocumentType("(Dividendenaussch.ttung|"
+                        + "Dividend Payment|"
+                        + "R.ckerstattung Quellensteuer|"
+                        + "Refund withholding tax)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendenart|Type of dividend): (Ordentliche Dividende|Ordinary dividend)$");
+        Block block = new Block("^(Dividendenaussch.ttung|"
+                        + "Dividend Payment|"
+                        + "Cancelation Dividend Payment|"
+                        + "R.ckerstattung Quellensteuer|"
+                        + "Refund withholding tax)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -217,12 +225,27 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                .section("type").optional()
+                .match("^(Dividendenart|Type of dividend): (?<type>(R.ckerstattung Quellensteuer|Refund withholding tax))$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Rückerstattung Quellensteuer") || v.get("type").equals("Refund withholding tax"))
+                        t.setType(AccountTransaction.Type.TAX_REFUND);
+                })
+
+                // Cancelation Dividend Payment
+                .section("type").optional()
+                .match("^(?<type>Cancelation Dividend Payment)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Cancelation Dividend Payment"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // 47.817 Ant UBS ETF MSCI USA SRI
                 // ISIN: LU0629460089
                 // Ausschüttung: USD 0.72
                 .section("name", "isin", "currency")
                 .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
-                .match("^ISIN: (?<isin>[\\w]{12})$")
+                .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -233,99 +256,72 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
                 // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
                 .section("date")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
                 .section("currency", "amount")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
+                .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Betrag CAD 0.20
-                // Umrechnungskurs CHF/CAD 0.7466 CHF 0.15
-                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                .optionalOneOf(
+                                // Betrag CAD 0.20
+                                // Umrechnungskurs CHF/CAD 0.7466 CHF 0.15
+                                section -> section
+                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
+                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Betrag USD 34.26
+                                // Umrechnungskurs CHF/USD 
+                                // 0.91759 CHF 31.44
+                                section -> section
+                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
+                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}).*$")
+                                        .match("^(?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
-                // Betrag USD 34.26
-                // Umrechnungskurs CHF/USD 
-                // 0.91759 CHF 31.44
-                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}).*$")
-                .match("^(?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
-                })
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                        )
 
                 // Dividendenart: Ordentliche Dividende
+                // Type of dividend: Ordinary dividend
                 .section("note").optional()
-                .match("^Dividendenart: (?<note>.*)")
-                .assign((t, v) -> t.setNote(v.get("note")))
-
-                .wrap(TransactionItem::new);
-
-        block.set(pdfTransaction);
-    }
-
-    private void addTaxRefundTransaction()
-    {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung|Dividend Payment|R.ckerstattung Quellensteuer)");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("^(Dividendenart|Type of dividend): (R.ckerstattung Quellensteuer|Refund withholding tax)$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.TAX_REFUND);
-            return transaction;
-        })
-
-                .section("name", "isin", "currency")
-                .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
-                .match("^ISIN: (?<isin>[\\w]{12})$")
-                .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                .section("shares")
-                .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                .section("date")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                .section("currency", "amount")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount credited: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
+                .match("^(Dividendenart|Type of dividend): (?<note>.*)")
                 .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                    if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                    {
-                        t.setNote(t.getSecurity().getName());
-                        t.setSecurity(null);
-                        t.setShares(0L);
-                    }
+                    if (t.getNote() == null)
+                        t.setNote(trim(v.get("note")));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
+
+        block.set(pdfTransaction);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

@@ -15,10 +15,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -185,7 +185,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         {
         }.getType();
 
-        List<MarketInfo> marketInfos = new Gson().fromJson(markets.get(), collectionType);
+        List<MarketInfo> marketInfos = JClient.GSON.fromJson(markets.get(), collectionType);
 
         return marketInfos
                         .stream().map(

@@ -286,8 +286,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             double risk = this.riskMetric.getRisk(index);
             double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
 
-            ILineSeries lineSeries = chart.addScatterSeries(new double[] { risk }, new double[] { retrn },
-                            series.getLabel());
+            ILineSeries lineSeries = chart.addScatterSeries(series.getUUID(), new double[] { risk },
+                            new double[] { retrn }, series.getLabel());
 
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);

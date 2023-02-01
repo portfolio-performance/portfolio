@@ -39,7 +39,7 @@ import com.google.gson.stream.JsonWriter;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.util.WebAccess;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings({ "nls" })
 public class PRApiClient
 {
     private String endpoint;

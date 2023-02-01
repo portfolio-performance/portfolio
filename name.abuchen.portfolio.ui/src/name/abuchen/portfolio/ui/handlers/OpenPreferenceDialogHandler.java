@@ -6,6 +6,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -34,6 +35,7 @@ import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 @SuppressWarnings("restriction")
 public class OpenPreferenceDialogHandler
@@ -80,7 +82,8 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
+        if (UpdateHelper.isInAppUpdateEnabled())
+            pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm)
         {
@@ -89,6 +92,14 @@ public class OpenPreferenceDialogHandler
             {
                 super.configureShell(newShell);
                 newShell.setText(Messages.LabelSettings);
+            }
+
+            @Override
+            protected void createButtonsForButtonBar(Composite parent)
+            {
+                super.createButtonsForButtonBar(parent);
+
+                getButton(IDialogConstants.OK_ID).setText(Messages.BtnLabelApplyAndClose);
             }
         };
 

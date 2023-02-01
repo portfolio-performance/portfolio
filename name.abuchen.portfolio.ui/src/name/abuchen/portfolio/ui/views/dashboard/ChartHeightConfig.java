@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Messages;
@@ -95,5 +97,18 @@ public class ChartHeightConfig implements WidgetConfig
     public int getPixel()
     {
         return height.pixel;
+    }
+
+    public void updateGridData(Composite chart, Composite container)
+    {
+        GridData data = (GridData) chart.getLayoutData();
+
+        int oldHeight = data.heightHint;
+        if (oldHeight != height.pixel)
+        {
+            data.heightHint = height.pixel;
+            container.layout(true);
+            container.getParent().layout(true);
+        }
     }
 }

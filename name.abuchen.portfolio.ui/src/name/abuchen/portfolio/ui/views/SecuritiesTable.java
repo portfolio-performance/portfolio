@@ -282,7 +282,7 @@ public final class SecuritiesTable implements ModificationListener
                 return ((Security) element).getCurrencyCode();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getCurrencyCode()));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(element -> ((Security) element).getCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -296,7 +296,7 @@ public final class SecuritiesTable implements ModificationListener
                 return ((Security) element).getTargetCurrencyCode();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getTargetCurrencyCode()));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(element -> ((Security) element).getTargetCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -631,7 +631,7 @@ public final class SecuritiesTable implements ModificationListener
                 return quoteFeed.apply(e);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(quoteFeed::apply));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(quoteFeed::apply));
         support.addColumn(column);
 
         Function<Object, String> latestQuoteFeed = e -> {
@@ -655,7 +655,7 @@ public final class SecuritiesTable implements ModificationListener
                 return latestQuoteFeed.apply(e);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(latestQuoteFeed::apply));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(latestQuoteFeed::apply));
         support.addColumn(column);
 
         column = new Column("url-history", Messages.ColumnFeedURLHistoric, SWT.LEFT, 200); //$NON-NLS-1$
@@ -670,7 +670,7 @@ public final class SecuritiesTable implements ModificationListener
                 return security.getFeedURL();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "feedURL")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(s -> ((Security) s).getFeedURL()));
         support.addColumn(column);
 
         column = new Column("url-latest", Messages.ColumnFeedURLLatest, SWT.LEFT, 200); //$NON-NLS-1$
@@ -685,7 +685,7 @@ public final class SecuritiesTable implements ModificationListener
                 return security.getLatestFeedURL();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "latestFeedURL")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(s -> ((Security) s).getLatestFeedURL()));
         support.addColumn(column);
     }
 
@@ -925,9 +925,10 @@ public final class SecuritiesTable implements ModificationListener
         // update quotes for multiple securities
         if (selection.size() > 1)
         {
-            manager.add(new SimpleAction(MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()), a  ->            
-                new UpdateQuotesJob(getClient(), Arrays.stream(selection.toArray()).map(Security.class::cast).collect(Collectors.toList())).schedule()
-            ));
+            manager.add(new SimpleAction(
+                            MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
+                            a -> new UpdateQuotesJob(getClient(), Arrays.stream(selection.toArray())
+                                            .map(Security.class::cast).collect(Collectors.toList())).schedule()));
         }
 
         // if any retired security in selection, add "unretire/activate all"

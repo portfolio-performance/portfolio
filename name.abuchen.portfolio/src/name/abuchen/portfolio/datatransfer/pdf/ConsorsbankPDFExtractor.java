@@ -105,7 +105,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Kurs 37,650000 EUR P.ST. NETTO  
                 // Preis pro Anteil 25,640000 EUR  
                 .section("name", "wkn", "isin", "currency").optional()
-                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})([\\s]+)?$")
+                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                 .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -115,7 +115,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // KURS 4,877300 P.ST. NETTO
                 // KURSWERT EUR 76,83
                 .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN:(?<wkn>.*)$")
+                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^KURS [\\.,\\d]+ .*$")
@@ -127,7 +127,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Kurs 9,890000 EUR P.ST. FRANCO COURTAGE
                 // Kurswert EUR 3.303,26
                 .section("wkn", "name", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN:(?<wkn>.*)$")
+                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
                 .match("^(?<name>.*)$")
                 .match("^Kurs [\\.,\\d]+ .*$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -138,17 +138,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 //                 SHARES DL -,06
                 //       KURSWERT                                      EUR               1.917,50
                 .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^[\\s]+ ST [\\s]+[\\.,\\d]+ [\\s]+WKN:(?<wkn>.*)$")
-                .match("^[\\s]+(?<name>.*)$")
-                .match("^[\\s]+(?<nameContinued>.*)$")
-                .match("^[\\s]+KURSWERT [\\s]+(?<currency>[\\w]{3}) [\\s]+[\\.,\\d]+$")
+                .match("^[\\s]+ ST [\\s]+[\\.,\\d]+ [\\s]+WKN: (?<wkn>[A-Z0-9]{6}).*$")
+                .match("^[\\s]+ (?<name>.*)$")
+                .match("^[\\s]+ (?<nameContinued>.*)$")
+                .match("^[\\s]+ KURSWERT [\\s]+(?<currency>[\\w]{3}) [\\s]+[\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // ST 11,87891 WKN: 625952
                 // GARTMORE-CONT. EUROP. A
                 // Preis pro Anteil 6,467700 EUR
                 .section("wkn", "name", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN:(?<wkn>.*)$")
+                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
                 .match("^(?<name>.*)$")
                 .match("^Preis pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -264,11 +264,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate exchangeRate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(exchangeRate);
+                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = exchangeRate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
+                                            Money gross = rate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
@@ -306,11 +306,20 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
             });
 
         pdfTransaction
+                // Storno wegen geänderten steuerrelevanten Daten. Neuabrechnung folgt.
+                .section("type").optional()
+                .match("^(?<type>Storno) .*$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Storno"))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // ST                    1.370,00000          WKN:  ETF110                 
                 //            COMS.-MSCI WORL.T.U.ETF I                                    
                 //            Namens-Aktien o.N.                                           
+                // ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015 
                 .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>.*).*$")
+                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>[A-Z0-9]{6}).*$")
                 .match("^(?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
@@ -320,7 +329,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // 25 Stück
                 // Dividende pro Stück 0,60 USD Schlusstag 17.12.2017
                 .section("name", "wkn", "isin", "currency").optional()
-                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^(Steuerfreie )?(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}) Schlusstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -366,7 +375,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^Netto( in [\\w]{3})? zugunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Netto( in [\\w]{3})? (zugunsten|zulasten) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -385,60 +394,76 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .optionalOneOf(
                                 // BRUTTO                                        USD                180,00 
                                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55 
-                                // KAPST-PFLICHTIGER KAPITALERTRAG               EUR                64,08  
                                 section -> section
-                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency", "gross")
-                                        .match("^BRUTTO ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
-                                        .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?[\\.,\\d]+.*$")
-                                        .match("^KAPST\\-PFLICHTIGER KAPITALERTRAG ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
+                                        .attributes("fxCurrency", "fxGross", "exchangeRate", "baseCurrency")
+                                        .match("^BRUTTO ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
+                                        .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
                                         .assign((t, v) -> {
+                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+                                            v.put("currency", asCurrencyCode(v.get("baseCurrency")));
+
+                                            PDFExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(asExchangeRate(v));
+                                            
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
-
-                                            // flip gross and forex gross amounts if necessary.
-                                            // Apparently the tax calculations are always in the
-                                            // currency of the customer even if the dividend is
-                                            // paid in foreign currency and credited to an
-                                            // account in foreign currency
-
-                                            if (gross.getCurrencyCode().equals(t.getCurrencyCode()))
-                                                checkAndSetGrossUnit(gross, fxGross, t, type);
-                                            else
-                                                checkAndSetGrossUnit(fxGross, gross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                                 ,
                                 // Brutto in USD 15,00 USD
                                 // Devisenkurs 1,195900 USD / EUR
                                 // Brutto in EUR 12,54 EUR
+                                // Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
                                 section -> section
                                         .attributes("fxGross", "fxCurrency", "exchangeRate", "gross", "currency", "baseCurrency", "termCurrency")
                                         .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3})$")
                                         .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("Netto zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().putType(asExchangeRate(v));
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                                            // flip gross and forex gross amounts if necessary.
-                                            // Apparently the tax calculations are always in the
-                                            // currency of the customer even if the dividend is
-                                            // paid in foreign currency and credited to an
-                                            // account in foreign currency
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                        })
+                                ,
+                                // Brutto in USD 10,00 USD
+                                // Devisenkurs 1,12000 USD / EUR
+                                // Brutto in EUR 8,93 EUR
+                                // Netto in EUR 5,77 EUR
+                                // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
+                                section -> section
+                                        .attributes("gross", "currency", "exchangeRate", "fxGross", "fxCurrency", "termCurrency", "baseCurrency")
+                                        .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) [\\w]{3} \\/ [\\w]{3}$")
+                                        .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .match("Netto in (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
+                                        .match("Netto in (?<termCurrency>[\\w]{3}) zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putType(asExchangeRate(v));
 
-                                            if (gross.getCurrencyCode().equals(t.getCurrencyCode()))
-                                                checkAndSetGrossUnit(gross, fxGross, t, type);
-                                            else
-                                                checkAndSetGrossUnit(fxGross, gross, t, type);
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type);
                                         })
                         )
 
                 .conclude(PDFExtractorUtils.fixGrossValueA())
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -468,7 +493,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Lang & Schwarz AG LS846N DE000LS846N5
                 .section("wkn", "isin", "name", "name1")
                 .find("Wertpapierbezeichnung WKN ISIN")
-                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Einheit"))
@@ -524,7 +549,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // L&G-L&G R.Gbl Robot.Autom.UETF Bearer Shares (Dt. Zert.) o.N. A12GJD DE000A12GJD2
                 .section("wkn", "isin", "name")
                 .match("^Wertpapierbezeichnung WKN ISIN$")
-                .match("^(?<name>.*) (?<wkn>.*) (?<isin>[\\w]{12})$")
+                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // Bestand

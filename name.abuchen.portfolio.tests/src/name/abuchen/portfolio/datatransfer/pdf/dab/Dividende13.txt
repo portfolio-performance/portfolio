@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Postfach 12 02  90002 Nürnberg
+Depotnummer: 0123456789
+1500225645/00
+Vermerk der Bank: 5104
+2
+Max Mustermann
+Musterstr. 3 Datum: 22.09.2022
+01234 Musterhausen Seite: 1 von 2
+Ertragsgutschrift
+Wertpapierbezeichnung WKN ISIN
+Prospect Capital Corp. Registered Shares DL -,001 A0B746 US74348T1025
+Bestand
+10.000 Stück
+Ertragsausschüttung je Anteil 0,06 USD Schlusstag 25.08.2022
+Brutto in USD 600,00 USD
+abzgl. Quellensteuer 15,00 % von 600,00 USD 89,99 USD
+Zwischensumme in USD 510,01 USD
+Devisenkurs 0,990800 USD / EUR
+Brutto in EUR 605,56 EUR
+Quellensteuer in EUR 90,82 EUR
+Zwischensumme in EUR 514,74 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 242,27 EUR 60,57 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 60,57 EUR 3,33 EUR
+Netto zugunsten IBAN DE90 1234 5678 1234 5678 90 450,84 EUR
+Valuta 21.09.2022 BIC DABBDEMMXXX
+Anrechenbare Quellensteuer 0,009 USD pro Stück 90,82 EUR
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+BNP Paribas Wealth Management ist ein Geschäftsbereich der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Frankfurt: Senckenberganlage 19, 60325 Frankfurt am Main, HRB Frankfurt am Main 40950, Fon +49 (0) 69 / 56 00 41-200
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, Fon +49 (0) 911 / 369-20 00, Fax +49 (0) 911 / 369-10 00
+wealthmanagement-de@bnpparibas.com, www.wealthmanagement.bnpparibas.de, USt-IdNr. DE191528929
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 0123456789
+1500225645/00
+Vermerk der Bank: 5104
+2
+Datum: 22.09.2022
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 605,56 EUR
+abzgl. Teilfreistellung 0,00 % von 605,56 EUR 0,00 EUR
+Ertragsausschüttung mit Teilfreistellung 605,56 EUR
+Steuerpflichtiger Gesamtertrag 605,56 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet -363,30 EUR
+somit verrechnete Quellensteuer -90,82 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 242,27 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

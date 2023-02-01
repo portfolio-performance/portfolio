@@ -29,7 +29,11 @@ public class NewTransactionHandler
             if (Enum.class.isAssignableFrom(transaction.getClass()))
                 action.parameters(transaction);
 
-            selectionService.getSelection(part.getClient()).ifPresent(s -> action.with(s.getSecurity()));
+            // select security but only if can be part of a transaction
+
+            selectionService.getSelection(part.getClient()) //
+                            .filter(s -> s.getSecurity().getCurrencyCode() != null)
+                            .ifPresent(s -> action.with(s.getSecurity()));
 
             action.run();
         });

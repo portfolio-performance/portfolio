@@ -20,7 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
+public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
@@ -43,16 +43,16 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsPerMonthMatrixTab
 
         createQuarterColumns(records, layout);
 
-        createSumColumn(records, layout);
+        createSumColumn(records, layout, false);
 
-        sortColumnOrder();
+        updateColumnOrder();
     }
 
     @Override
-    protected void sortColumnOrder()
+    protected void updateColumnOrder()
     {
         // Keep first column in same position
-        sortColumnOrder(1, 0);
+        setColumnOrder(1, 0);
     }
 
     private void createQuarterColumns(TableViewer records, TableColumnLayout layout)

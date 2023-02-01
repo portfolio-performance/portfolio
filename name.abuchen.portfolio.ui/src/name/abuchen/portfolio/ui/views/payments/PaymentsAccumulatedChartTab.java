@@ -34,6 +34,7 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
 
             ILineSeries lineSeries = (ILineSeries) getChart().getSeriesSet().createSeries(SeriesType.LINE,
                             String.valueOf(year));
+            lineSeries.setDescription(lineSeries.getId());
 
             double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
 

@@ -279,7 +279,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (ENTGELT|EINZUGSERMAECHTIGUNG) .* [S|H]$");
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (ENTGELT|EINZUGSERMAECHTIGUNG|GUTSCHRIFT) .* [S|H]$");
         type.addBlock(feeblock);
         feeblock.set(new Transaction<AccountTransaction>()
 
@@ -291,9 +291,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                                 section -> section
-                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
-                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) [\\d]+ (?<note3>[\\w]{2}\\/[\\d]{4}) .*$")
+                                        .attributes("day", "month", "amount", "sign", "note1", "note2")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note1>(DEPOTPREIS|DEPOTENTGELT|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) [\\d]+ (?<note2>[\\w]{2}\\/[\\d]{4}) .*$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
@@ -308,28 +308,25 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("ENTGELT"))
-                                                v.put("note1", "Entgeld");
+                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                                v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
-                                                v.put("note1", "Einzugsermächtigung");
+                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                                v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note2").equals("DEPOTPREIS"))
-                                                v.put("note2", "Depotpreis");
+                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
-                                                v.put("note2", "Verwaltungsentgeld");
+                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                                v.put("note1", "Vermögensdepot");
 
-                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
-                                                v.put("note2", "Vermögensdepot");
-
-                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
+                                            t.setNote(v.get("note1") + " " + v.get("note2"));
                                         })
                                 ,
                                 section -> section
-                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3", "note4")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
-                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) VERW\\.G\\. (?<note3>[\\d]{4}) (?<note4>QUARTAL .*)$")
+                                        .attributes("day", "month", "amount", "sign", "note1", "note2", "note3")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note1>(DEPOTPREIS|DEPOTENTGELT|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) VERW\\.G\\. (?<note2>[\\d]{4}) (?<note3>QUARTAL .*)$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
@@ -344,40 +341,37 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("ENTGELT"))
-                                                v.put("note1", "Entgeld");
+                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                                v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
-                                                v.put("note1", "Einzugsermächtigung");
+                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                                v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note2").equals("DEPOTPREIS"))
-                                                v.put("note2", "Depotpreis");
+                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
-                                                v.put("note2", "Verwaltungsentgeld");
+                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                                v.put("note1", "Vermögensdepot");
 
-                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
-                                                v.put("note2", "Vermögensdepot");
+                                            if (v.get("note3").equals("QUARTAL I"))
+                                                v.put("note3", "Q1/");
 
-                                            if (v.get("note4").equals("QUARTAL I"))
-                                                v.put("note4", "Q1/");
+                                            if (v.get("note3").equals("QUARTAL II"))
+                                                v.put("note3", "Q2/");
 
-                                            if (v.get("note4").equals("QUARTAL II"))
-                                                v.put("note4", "Q2/");
+                                            if (v.get("note3").equals("QUARTAL III"))
+                                                v.put("note3", "Q3/");
 
-                                            if (v.get("note4").equals("QUARTAL III"))
-                                                v.put("note4", "Q3/");
+                                            if (v.get("note3").equals("QUARTAL IV"))
+                                                v.put("note3", "Q4/");
 
-                                            if (v.get("note4").equals("QUARTAL IV"))
-                                                v.put("note4", "Q4/");
-
-                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note4") + v.get("note3"));
+                                            t.setNote(v.get("note1") + " " + v.get("note3") + v.get("note2"));
                                         })
                                 ,
                                 section -> section
-                                        .attributes("day", "month", "note1", "amount", "sign", "note2", "note3", "note4")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note1>ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
-                                        .match("^.* (?<note2>(DEPOTPREIS|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) (?<note3>[\\d]{4}) (?<note4>QUARTAL .*)$")
+                                        .attributes("day", "month", "amount", "sign", "note1", "note2", "note3")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (ENTGELT|EINZUGSERMAECHTIGUNG) .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note1>(DEPOTPREIS|DEPOTENTGELT|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) (?<note2>[\\d]{4}) (?<note3>QUARTAL .*)$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
@@ -392,34 +386,56 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("ENTGELT"))
-                                                v.put("note1", "Entgeld");
+                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                                v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("EINZUGSERMAECHTIGUNG"))
-                                                v.put("note1", "Einzugsermächtigung");
+                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                                v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note2").equals("DEPOTPREIS"))
-                                                v.put("note2", "Depotpreis");
+                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                                v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note2").equals("VERWALTUNGSENTGELT"))
-                                                v.put("note2", "Verwaltungsentgeld");
+                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                                v.put("note1", "Vermögensdepot");
 
-                                            if (v.get("note2").equals("VERMOEGENSDEPOT"))
-                                                v.put("note2", "Vermögensdepot");
+                                            if (v.get("note3").equals("QUARTAL I"))
+                                                v.put("note3", "Q1/");
 
-                                            if (v.get("note4").equals("QUARTAL I"))
-                                                v.put("note4", "Q1/");
+                                            if (v.get("note3").equals("QUARTAL II"))
+                                                v.put("note3", "Q2/");
 
-                                            if (v.get("note4").equals("QUARTAL II"))
-                                                v.put("note4", "Q2/");
+                                            if (v.get("note3").equals("QUARTAL III"))
+                                                v.put("note3", "Q3/");
 
-                                            if (v.get("note4").equals("QUARTAL III"))
-                                                v.put("note4", "Q3/");
+                                            if (v.get("note3").equals("QUARTAL IV"))
+                                                v.put("note3", "Q4/");
 
-                                            if (v.get("note4").equals("QUARTAL IV"))
-                                                v.put("note4", "Q4/");
+                                            t.setNote(v.get("note1") + " " + v.get("note3") + v.get("note2"));
+                                        })
+                                ,
+                                section -> section
+                                        .attributes("day", "month", "amount", "sign", "note1", "note2")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. GUTSCHRIFT .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$")
+                                        .match("^.* (?<note1>ERSTATTUNG VERTRIEBSFOLGEPROVISION).*$")
+                                        .match("^.* (?<note2>Q[\\d]\\/[\\d]{4}) .*$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
 
-                                            t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note4") + v.get("note3"));
+                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                            if (v.get("sign").equals("S"))
+                                                t.setType(AccountTransaction.Type.FEES);
+                                            
+                                            // create a long date from the year in the context
+                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                                            // Formatting some notes
+                                            if (v.get("note1").equals("ERSTATTUNG VERTRIEBSFOLGEPROVISION"))
+                                                v.put("note1", "Erstattung Vertriebsfolgeprovision");
+
+                                            t.setNote(v.get("note1") + " " + v.get("note2"));
                                         })
                         )
 

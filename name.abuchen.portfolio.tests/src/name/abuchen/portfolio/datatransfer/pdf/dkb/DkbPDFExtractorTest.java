@@ -12,9 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -848,6 +850,30 @@ public class DkbPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierStornoVerkauf01()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoVerkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check cancellation (Storno) transaction
+        NonImportableItem Cancelations = (NonImportableItem) results.stream()
+                        .filter(NonImportableItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertNull(Cancelations.getSecurity());
+        assertNull(Cancelations.getDate());
+        assertThat(Cancelations.getNote(), is("StornoVerkauf01.txt"));
     }
 
     @Test
@@ -2584,7 +2610,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-21T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3450.00)));
         assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Bareinzahlung am GA"));
+        assertThat(transaction.getNote(), is("Bareinzahlung am Geldautomat"));
 
         item = iter.next();
 
@@ -3261,7 +3287,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-21T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(161.65)));
         assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
-        assertThat(transaction.getNote(), is("Verfüg. Geldautom. FW"));
+        assertThat(transaction.getNote(), is("Geldautomat (Fremdwährung)"));
 
         item = iter.next();
 
@@ -3272,7 +3298,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-22T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(69)));
         assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung onl"));
+        assertThat(transaction.getNote(), is("Kartenzahlung online"));
 
         item = iter.next();
 
@@ -3306,6 +3332,242 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(100.00)));
         assertThat(transaction.getSource(), is("GiroKontoauszug14.txt"));
         assertThat(transaction.getNote(), is("Geldautomat"));
+    }
+
+    @Test
+    public void testGiroKontoauszug15()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-18T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(13.74)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug15.txt"));
+        assertThat(transaction.getNote(), is("Kartenzahlung online"));
+    }
+
+    @Test
+    public void testGiroKontoauszug16()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug16.txt"));
+        assertThat(transaction.getNote(), is("Überweisung entgeltfrei"));
+    }
+
+    @Test
+    public void testGiroKontoauszug17()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-01T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug17.txt"));
+        assertThat(transaction.getNote(), is("Zahlungseingang"));
+    }
+
+    @Test
+    public void testGiroKontoauszug18()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(26.91)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug18.txt"));
+        assertThat(transaction.getNote(), is("Storno Gutschrift"));
+    }
+
+    @Test
+    public void testGiroKontoauszug19()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-12T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug19.txt"));
+        assertThat(transaction.getNote(), is("Buchung Identifikationscode"));
+    }
+
+    @Test
+    public void testGiroKontoauszug20()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug20.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.80)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug20.txt"));
+        assertThat(transaction.getNote(), is("Basislastschrift"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(24.65)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug20.txt"));
+        assertThat(transaction.getNote(), is("Basislastschrift"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-24T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234.56)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug20.txt"));
+        assertThat(transaction.getNote(), is("Eingang Inst.Paym."));
+    }
+
+    @Test
+    public void testGiroKontoauszug21()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-22T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.97)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug21.txt"));
+        assertThat(transaction.getNote(), is("KARTENZAHLUNG"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-29T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.14)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug21.txt"));
+        assertThat(transaction.getNote(), is("KARTENZAHLUNG"));
     }
 
     @Test
@@ -3624,5 +3886,153 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.49)));
         assertThat(transaction.getSource(), is("KreditKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenpreis"));
+    }
+
+    @Test
+    public void testKreditKontoauszug05()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug05.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-17T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.00)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug05.txt"));
+        assertThat(transaction.getNote(), is("PIN-Gebühr"));
+    }
+
+    @Test
+    public void testKreditKontoauszug06()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(9));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-23T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("STORNIERUNG"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-21T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.23)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("Habenzins auf 28 Tage"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-26T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1234)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("Auszahlung"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-03T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG1"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-04T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.96)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG2"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(34.94)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG3"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(89.95)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG4,"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(29.95)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG5"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-13T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.99)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
+        assertThat(transaction.getNote(), is("ZAHLUNG6"));
     }
 }

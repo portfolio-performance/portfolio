@@ -19,7 +19,7 @@ import name.abuchen.portfolio.money.Values;
 public class SimpelPDFExtractor extends AbstractPDFExtractor
 {
     /***
-     * Information: 
+     * Information:
      * The currency of Simpel S.A. is always EUR.
      */
 
@@ -157,8 +157,9 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Zur Wiederveranlagung zur Verfügung stehend: 13.30
+                // Zur Wiederanlage/Auszahlung zur Verfügung stehend: 173.37
                 .section("amount")
-                .match("^Zur Wiederveranlagung zur Verf.gung stehend: (?<amount>['\\.\\d]+)$")
+                .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>['\\.\\d]+)$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));

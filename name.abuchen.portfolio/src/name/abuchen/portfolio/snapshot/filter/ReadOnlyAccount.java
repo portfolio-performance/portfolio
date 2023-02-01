@@ -49,4 +49,28 @@ public class ReadOnlyAccount extends Account
     {
         return account instanceof ReadOnlyAccount ? unwrap(((ReadOnlyAccount) account).source) : account;
     }
+
+    @Override
+    public String getName()
+    {
+        return source.getName();
+    }
+
+    @Override
+    public void setName(String name)
+    {
+        source.setName(name);
+    }
+
+    @Override
+    public String getNote()
+    {
+        return source.getNote();
+    }
+
+    @Override
+    public void setNote(String note)
+    {
+        source.setNote(note);
+    }
 }

@@ -9,8 +9,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -55,7 +55,8 @@ public class ListSelectionDialog extends Dialog
         }
     }
 
-    private LabelProvider labelProvider;
+    private ILabelProvider labelProvider;
+    private ViewerComparator viewerComparator;
 
     private String title;
     private String message = ""; //$NON-NLS-1$
@@ -71,7 +72,7 @@ public class ListSelectionDialog extends Dialog
     private ElementFilter elementFilter;
     private Text searchText;
 
-    public ListSelectionDialog(Shell parentShell, LabelProvider labelProvider)
+    public ListSelectionDialog(Shell parentShell, ILabelProvider labelProvider)
     {
         super(parentShell);
         this.labelProvider = labelProvider;
@@ -90,6 +91,11 @@ public class ListSelectionDialog extends Dialog
     public void setMultiSelection(boolean isMultiSelection)
     {
         this.isMultiSelection = isMultiSelection;
+    }
+
+    public void setViewerComparator(ViewerComparator viewerComparator)
+    {
+        this.viewerComparator = viewerComparator;
     }
 
     public void setElements(List<?> elements)
@@ -148,7 +154,7 @@ public class ListSelectionDialog extends Dialog
             input.setFocus(); // when text input visible, set focus
         }
 
-        Label label = new Label(container, SWT.None);
+        Label label = new Label(container, SWT.NONE | SWT.WRAP);
         label.setText(this.message);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
 
@@ -183,7 +189,7 @@ public class ListSelectionDialog extends Dialog
         tableViewer.addFilter(elementFilter);
         tableViewer.setInput(elements);
 
-        tableViewer.setComparator(new ViewerComparator());
+        tableViewer.setComparator(viewerComparator != null ? viewerComparator : new ViewerComparator());
 
         hookListener();
 

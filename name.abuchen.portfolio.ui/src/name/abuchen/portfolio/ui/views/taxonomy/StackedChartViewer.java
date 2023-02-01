@@ -166,7 +166,7 @@ public class StackedChartViewer extends AbstractChartPage
         super.configMenuAboutToShow(manager);
         Action action = new SimpleAction(Messages.LabelOrderByTaxonomy, a -> {
             getModel().setOrderByTaxonomyInStackChart(!getModel().isOrderByTaxonomyInStackChart());
-            onConfigChanged();
+            nodeChange(null);
         });
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
@@ -174,12 +174,6 @@ public class StackedChartViewer extends AbstractChartPage
 
     @Override
     public void nodeChange(TaxonomyNode node)
-    {
-        onConfigChanged();
-    }
-
-    @Override
-    public void onConfigChanged()
     {
         isDirty = true;
 
@@ -303,7 +297,8 @@ public class StackedChartViewer extends AbstractChartPage
 
             for (SeriesBuilder serie : series)
             {
-                chart.addSeries(serie.node.getClassification().getPathName(false), //
+                chart.addSeries(serie.node.getId(), //
+                                serie.node.getClassification().getPathName(false), //
                                 serie.getValues(totals), //
                                 getRenderer().getColorFor(serie.node));
             }

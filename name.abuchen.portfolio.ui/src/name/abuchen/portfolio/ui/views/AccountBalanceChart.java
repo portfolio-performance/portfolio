@@ -74,7 +74,7 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
                 start = start.plusDays(1);
             }
 
-            addDateSeries(dates, values, Colors.CASH, account.getName());
+            addDateSeries(account.getUUID(), dates, values, Colors.CASH, account.getName());
         }
         finally
         {

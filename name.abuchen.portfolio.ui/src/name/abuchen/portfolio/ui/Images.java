@@ -25,6 +25,7 @@ public enum Images
     BANNER("banner.png"), //$NON-NLS-1$
 
     // model items
+    POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
 
     SECURITY("security.png"), //$NON-NLS-1$
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
@@ -69,6 +70,8 @@ public enum Images
     INTERVAL("interval.png"), //$NON-NLS-1$
     NEW_TRANSACTION("new_transaction.png"), //$NON-NLS-1$
     INVERT_EXCHANGE_RATE("invert_exchange_rate.png"), //$NON-NLS-1$
+    IMPORT_FILE("import_file.png"), //$NON-NLS-1$
+    EXPORT_FILE("export_file.png"), //$NON-NLS-1$
 
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$

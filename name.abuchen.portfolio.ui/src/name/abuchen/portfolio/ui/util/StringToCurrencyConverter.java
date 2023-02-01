@@ -11,7 +11,8 @@ import name.abuchen.portfolio.ui.Messages;
 
 public class StringToCurrencyConverter implements IValidatingConverter<String, Long>
 {
-    private static final char NBSP = '\u00A0';
+    private static final char NBSP = '\u00A0'; // No-Break Space
+    private static final char NNBS = '\u202f'; // Narrow No-Break Space
 
     private final DecimalFormat defaultPlattern;
     private final DecimalFormat withSpacePattern;
@@ -34,7 +35,8 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         defaultPlattern.setParseBigDecimal(true);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        if (symbols.getGroupingSeparator() == NBSP)
+
+        if (symbols.getGroupingSeparator() == NBSP || symbols.getGroupingSeparator() == NNBS)
         {
             // some (European) locales use the non-breaking space as grouping
             // separator. Support both: space and non-breaking space

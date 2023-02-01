@@ -8,8 +8,10 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -402,10 +404,66 @@ public class PerformanceView extends AbstractHistoricView
     {
         Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
         if (!(selection instanceof ClientPerformanceSnapshot.Position))
+        {
+            addTreeActionsContextMenu(manager, selection);
             return;
+        }
 
         Security security = ((ClientPerformanceSnapshot.Position) selection).getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
+    }
+
+    private void addTreeActionsContextMenu(IMenuManager manager, Object obj)
+    {
+        manager.add(new Action(Messages.LabelExpand)
+        {
+            @Override
+            public void run()
+            {
+                calculation.setExpandedState(obj, true);
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return calculation.isExpandable(obj) && !calculation.getExpandedState(obj);
+            }
+        });
+
+        manager.add(new Action(Messages.LabelCollapse)
+        {
+            @Override
+            public void run()
+            {
+                calculation.setExpandedState(obj, false);
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return calculation.getExpandedState(obj);
+            }
+        });
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.LabelExpandAll)
+        {
+            @Override
+            public void run()
+            {
+                calculation.expandAll();
+            }
+        });
+
+        manager.add(new Action(Messages.LabelCollapseAll)
+        {
+            @Override
+            public void run()
+            {
+                calculation.collapseAll();
+            }
+        });
     }
 
     private TableViewer createTransactionViewer(CTabFolder folder, String title)
@@ -429,15 +487,14 @@ public class PerformanceView extends AbstractHistoricView
                         getPreferenceStore(), transactionViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 100);
-        column.setLabelProvider(
-                        new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
-                        {
-                            @Override
-                            public Color getForeground(Object element)
-                            {
-                                return colorFor(element);
-                            }
-                        });
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
+        {
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
+        });
         column.setSorter(ColumnViewerSorter.create(TransactionPair.BY_DATE), SWT.DOWN);
         support.addColumn(column);
 
@@ -458,7 +515,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
                             : ((PortfolioTransaction) t).getType().toString();
@@ -503,7 +560,8 @@ public class PerformanceView extends AbstractHistoricView
                 return ((TransactionPair<?>) element).getTransaction().getSource();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
+        column.setSorter(ColumnViewerSorter
+                        .createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -630,7 +688,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Security security = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return security != null ? security.getName() : null;
         }));
@@ -668,7 +726,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Portfolio portfolio = ((TransactionPair<?>) e).getOwner() instanceof Portfolio
                             ? (Portfolio) ((TransactionPair<?>) e).getOwner()
                             : null;
@@ -719,7 +777,7 @@ public class PerformanceView extends AbstractHistoricView
                 return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Account account = getAccount.apply(e);
             return account != null ? account.getName() : null;
         }));

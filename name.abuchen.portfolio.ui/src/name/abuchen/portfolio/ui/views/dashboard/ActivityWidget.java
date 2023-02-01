@@ -346,6 +346,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                     PortfolioTransaction.Type type, Color color)
     {
         IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
+        barSeries.setDescription(type.toString());
         List<Year> years = interval.getYears();
         List<YearMonth> yearMonths = interval.getYearMonths();
 

@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Musterstr. 1 DATUM 25.05.2021
+98765 Musterstadt DEPOT 0123456789
+STORNO DIVIDENDE
+ÜBERSICHT
+Storno der Dividende mit dem Ex-Tag 16.04.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+GEO Group Inc., The 79 Stk. 0,48 USD 37,92 USD
+Registered Shares DL -,01
+ISIN: US36162J1060
+GESAMT 37,92 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittent 5,69 USD
+Zwischensumme -32,23 USD
+Zwischensumme 1,0864 EUR/USD -29,66 EUR
+GESAMT -29,66 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE401101010088800000 25.05.2021 -29,66 EUR
+GEO Group Inc., The Registered Shares DL -,01 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigte Staaten
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 25.05.2021 / 36800334 / a9a1-1700

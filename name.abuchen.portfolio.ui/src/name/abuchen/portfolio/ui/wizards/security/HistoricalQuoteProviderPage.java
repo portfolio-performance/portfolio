@@ -215,8 +215,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         else if (KrakenQuoteFeed.ID.equals(getFeed()))
             return KrakenQuoteFeed.ID + getModel().getTickerSymbol();
         else if (CoinGeckoQuoteFeed.ID.equals(getFeed()))
-            return CoinGeckoQuoteFeed.ID
-                            + getModel().getTickerSymbol()
+            return CoinGeckoQuoteFeed.ID //
+                            + getModel().getTickerSymbol() //
+                            + getModel().getCurrencyCode()
                             + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
         else if (EODHistoricalDataQuoteFeed.ID.equals(getFeed()))
             return EODHistoricalDataQuoteFeed.ID + getModel().getTickerSymbol();

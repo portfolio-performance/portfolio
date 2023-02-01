@@ -71,6 +71,7 @@ Section
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "InstallLocation" "$\"$INSTDIR$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "DisplayIcon" "$\"$INSTDIR\${APPEXE}$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "DisplayVersion" "${SOFTWARE_VERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "Publisher" "${PUBLISHER}"
   # there is no option for modifying or repairing the install
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$APPNAMEFULL" "NoModify" 1

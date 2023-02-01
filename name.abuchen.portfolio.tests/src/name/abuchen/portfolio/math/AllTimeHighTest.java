@@ -12,7 +12,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.util.Interval;
 
-@SuppressWarnings("nls")
 public class AllTimeHighTest
 {
     private Security securityOnePrice;
@@ -41,13 +40,14 @@ public class AllTimeHighTest
         int i = 1;
         for (Long price : prices)
         {
+            i++;
             if (price == null)
             {
                 continue;
             }
 
             // start on 2022-06-02
-            LocalDate date = LocalDate.of(2022, 06, ++i);
+            LocalDate date = LocalDate.of(2022, 06, i);
             security.addPrice(new SecurityPrice(date, price));
         }
     }
@@ -60,6 +60,7 @@ public class AllTimeHighTest
 
         assertNull(ath.getDistance());
         assertNull(ath.getValue());
+        assertNull(ath.getDate());
     }
 
     @Test
@@ -70,6 +71,7 @@ public class AllTimeHighTest
 
         assertNull(ath.getValue());
         assertNull(ath.getDistance());
+        assertNull(ath.getDate());
     }
 
     @Test
@@ -80,6 +82,7 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(2133L), ath.getValue());
         assertEquals(-0.47444, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 5), ath.getDate());
     }
 
     @Test
@@ -90,6 +93,7 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(2062L), ath.getValue());
         assertEquals(-0.24005, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 4), ath.getDate());
     }
 
     @Test
@@ -100,6 +104,7 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(2133L), ath.getValue());
         assertEquals(-0.47444, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 5), ath.getDate());
     }
 
     @Test
@@ -110,6 +115,7 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(1121L), ath.getValue());
         assertEquals(0, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 11), ath.getDate());
     }
 
     @Test
@@ -120,6 +126,7 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(1500L), ath.getValue());
         assertEquals(-0.4, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 8), ath.getDate());
     }
 
     @Test
@@ -130,5 +137,6 @@ public class AllTimeHighTest
 
         assertEquals(Long.valueOf(699L), ath.getValue());
         assertEquals(0, ath.getDistance(), 0.00001);
+        assertEquals(LocalDate.of(2022, 6, 3), ath.getDate());
     }
 }

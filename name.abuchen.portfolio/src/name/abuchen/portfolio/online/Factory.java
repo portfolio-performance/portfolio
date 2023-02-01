@@ -42,6 +42,19 @@ public class Factory
     }
 
     /**
+     * Returns the {@link QuoteFeed} for the given feedType. This makes it
+     * possible to get one specific QuoteFeed provider from those classes
+     * declared in
+     * <code>META-INF/services/name.abuchen.portfolio.online.QuoteFeed</code>.
+     */
+
+    public static <F extends QuoteFeed> F getQuoteFeed(Class<F> feedType)
+    {
+        return feedType.cast(FEEDS.stream().filter(c -> feedType.equals(c.getClass())).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
+    }
+
+    /**
      * Returns the {@link DividendFeed} for the given feedType. This makes it possible to
      * get one specific provider from those classes declared in
      * <code>META-INF/services/name.abuchen.portfolio.online.DividendFeed</code>.

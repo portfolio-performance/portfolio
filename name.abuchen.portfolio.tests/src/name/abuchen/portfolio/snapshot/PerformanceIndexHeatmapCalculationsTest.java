@@ -10,9 +10,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;

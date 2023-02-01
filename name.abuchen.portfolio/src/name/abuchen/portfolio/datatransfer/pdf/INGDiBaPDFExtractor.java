@@ -5,10 +5,12 @@ import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAnd
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -52,6 +54,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -62,7 +65,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk\\. Teil\\-\\/Bezugsr\\.)|R.ckzahlung)", jointAccount);
+        DocumentType type = new DocumentType("(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk\\. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung|"
+                        + "Einl.sung)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -72,18 +82,32 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapierabrechnung (Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$");
+        Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
+                        + "(Kauf|"
+                        + "Kauf aus Sparplan|"
+                        + "Bezug|"
+                        + "Verkauf|"
+                        + "Verk. Teil\\-\\/Bezugsr\\.)|"
+                        + "R.ckzahlung|"
+                        + "Einl.sung)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|Bezug|Verkauf|Verk. Teil\\-\\/Bezugsr\\.)|R.ckzahlung).*$")
+                .match("^(Wertpapierabrechnung )?(?<type>(Kauf|"
+                                + "Kauf aus Sparplan|"
+                                + "Bezug|"
+                                + "Verkauf|"
+                                + "Verk. Teil\\-\\/Bezugsr\\.)|"
+                                + "R.ckzahlung|"
+                                + "Einl.sung)$")
                 .assign((t, v) -> {                    
                     if (v.get("type").equals("Verkauf")
                             || v.get("type").equals("Verk. Teil-/Bezugsr.")
-                            || v.get("type").equals("Rückzahlung"))
+                            || v.get("type").equals("Rückzahlung")
+                            || v.get("type").equals("Einlösung"))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -94,7 +118,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Inhaber-Anteile
                 // Kurswert EUR 4.997,22
                 .section("isin", "wkn", "name", "name1", "currency")
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
@@ -105,11 +129,29 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Nominale Stück 14,00
-                // Nominale 11,00 Stück
-                .section("shares")
-                .match("^Nominale( St.ck)? (?<shares>[\\.,\\d]+)( St.ck)?$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // Nominale Stück 14,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale St.ck (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale 11,00 Stück
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale (?<shares>[\\.,\\d]+) St.ck$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // Nominale EUR 1.000,00
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^Nominale [\\w]{3} (?<shares>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                        )
 
                 // Ausführungstag / -zeit 17.11.2015 um 16:17:32 Uhr
                 // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
@@ -139,11 +181,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Kurswert USD 1.503,75
+                // Zwischensumme USD 1.503,75
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
                 // Endbetrag zu Ihren Lasten EUR 1.335,07
                 .section("fxCurrency", "fxGross", "currency", "baseCurrency", "gross", "termCurrency", "exchangeRate").optional()
-                .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .match("^Zwischensumme (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
                 .match("^.* Devisenkurs (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
@@ -166,6 +208,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>R.ckzahlung)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
+                .section("note").optional()
+                .match("^(?<note>St.ckzinsen .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -186,12 +233,20 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // Sie erhalten eine neue Abrechnung.
+                .section("type").optional()
+                .match("^(?<type>Sie erhalten eine neue Abrechnung\\.)$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Sie erhalten eine neue Abrechnung."))
+                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                })
+
                 // ISIN (WKN) US5801351017 (856958)
                 // Wertpapierbezeichnung McDonald's Corp.
                 // Registered Shares DL-,01
                 // Zins-/Dividendensatz 0,94 USD
                 .section("isin", "wkn", "name", "name1", "currency").optional()
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^(Zins\\-\\/Dividendensatz|(Ertragsaussch.ttung|Vorabpauschale) per St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -207,7 +262,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Inh.-Schv.v.2012(2015/2017)
                 // Nominale 1.000,00 EUR
                 .section("isin", "wkn", "name", "name1", "currency").optional()
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -223,11 +278,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "notation")
                 .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$")
                 .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        // Percentage quotation, workaround for bonds
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));   
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // Valuta 15.12.2016
@@ -274,7 +334,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type);
                 })
 
-                .wrap(TransactionItem::new);
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                            return new TransactionItem(t);
+                        else
+                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    }
+                    return null;
+                });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -306,7 +375,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Nominale 378,00 Stück
                 // Vorabpauschale per Stück 0,00245279 EUR
                 .section("isin", "wkn", "name", "name1", "currency")
-                .match("^ISIN \\(WKN\\) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
+                .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^Vorabpauschale per St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
@@ -344,6 +413,88 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 });
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug .* [\\d]{4}", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                    context.put("currency", m.group("currency"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Ueberweisung"
+                        + "|Dauerauftrag\\/Terminueberw\\."
+                        + "|Lastschrift) "
+                        + ".* \\-[\\.,\\d]+$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "note", "amount")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                        + "(?<note>Ueberweisung"
+                                        + "|Dauerauftrag\\/Terminueberw\\."
+                                        + "|Lastschrift) "
+                                        + ".* \\-(?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                            // Formatting some notes
+                            if (v.get("note").equals("Ueberweisung"))
+                                v.put("note", "Überweisung");
+
+                            if (v.get("note").equals("Dauerauftrag/Terminueberw."))
+                                v.put("note", "Dauerauftrag/Terminüberweisung");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                        + "(Gutschrift" + "|Gutschrift\\/Dauerauftrag) "
+                        + ".* [\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "note", "amount")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                        + "(?<note>Gutschrift"
+                                        + "|Gutschrift\\/Dauerauftrag) "
+                                        + ".* (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -450,7 +601,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // QuSt 30,00 % EUR 16,50
                 .section("currency", "withHoldingTax").optional()
                 .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                // Franz. Transaktionssteuer 0,30% EUR 2,52
+                .section("currency", "tax").optional()
+                .match("^Franz\\. Transaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -469,6 +625,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Handelsentgelt EUR 3,00
                 .section("currency", "fee").optional()
                 .match("^Handelsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Börsenentgelt EUR 0,39
+                .section("currency", "fee").optional()
+                .match("^B.rsenentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kurswert EUR 52,63

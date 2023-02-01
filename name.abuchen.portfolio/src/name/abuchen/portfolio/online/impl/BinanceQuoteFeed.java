@@ -62,10 +62,13 @@ public final class BinanceQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        LocalDate quoteStartDate = LocalDate.of(1970, 01, 01);
+        LocalDate quoteStartDate;
 
         if (!security.getPrices().isEmpty())
             quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
+        else
+            // API has a limit of 1000. Therefore read only the most recent days
+            quoteStartDate = LocalDate.now().minusDays(999);
 
         return getHistoricalQuotes(security, collectRawResponse, quoteStartDate);
     }
@@ -150,7 +153,8 @@ public final class BinanceQuoteFeed implements QuoteFeed
                             // Ticker: BTCEUR, BTCUSDT, ...
                             .addParameter("symbol", security.getTickerSymbol()) //$NON-NLS-1$
                             .addParameter("interval", "1d") //$NON-NLS-1$ //$NON-NLS-2$
-                            .addParameter("startTime", tickerStartEpochMilliSeconds.toString()); //$NON-NLS-1$
+                            .addParameter("startTime", tickerStartEpochMilliSeconds.toString()) //$NON-NLS-1$
+                            .addParameter("limit", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
             String html = webaccess.get();
 
             if (collectRawResponse)

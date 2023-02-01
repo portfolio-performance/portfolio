@@ -32,13 +32,13 @@ public class DashboardData
     private final IPreferenceStore preferences;
     private final IStylingEngine stylingEngine;
     private final ExchangeRateProviderFactory factory;
-    private final CurrencyConverter converter;
 
     private final Map<Object, Object> cache = Collections.synchronizedMap(new HashMap<>());
 
     private List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
     private ReportingPeriod defaultReportingPeriod;
 
+    private CurrencyConverter converter;
     private DataSeriesSet dataSeriesSet;
     private DataSeriesCache dataSeriesCache;
 
@@ -64,7 +64,6 @@ public class DashboardData
     {
         return client;
     }
-
     public IPreferenceStore getPreferences()
     {
         return preferences;
@@ -121,6 +120,8 @@ public class DashboardData
         dataSeriesCache.clear();
 
         clearResultCache();
+
+        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
     /**
@@ -144,6 +145,11 @@ public class DashboardData
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;
+    }
+
+    public String getTermCurrency()
+    {
+        return converter.getTermCurrency();
     }
 
     public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)

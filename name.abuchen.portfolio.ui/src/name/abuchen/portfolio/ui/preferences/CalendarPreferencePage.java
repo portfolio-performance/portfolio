@@ -14,6 +14,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -25,6 +26,8 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 public class CalendarPreferencePage extends FieldEditorPreferencePage
 {
     private Label infoLabel;
+    private int year;
+    private String calendar;
 
     public CalendarPreferencePage()
     {
@@ -37,11 +40,11 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
     @Override
     public void createFieldEditors()
     {
-        List<TradeCalendar> calendar = TradeCalendarManager.getAvailableCalendar().sorted()
+        List<TradeCalendar> calendars = TradeCalendarManager.getAvailableCalendar().sorted()
                         .collect(Collectors.toList());
-        String[][] entryNamesAndValues = new String[calendar.size()][2];
+        String[][] entryNamesAndValues = new String[calendars.size()][2];
         int i = 0;
-        for (TradeCalendar cal : calendar)
+        for (TradeCalendar cal : calendars)
         {
             entryNamesAndValues[i] = getLabelAndValue(cal);
             i++;
@@ -60,12 +63,33 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
     protected void createInfo(Composite composite)
     {
-        int year = LocalDate.now().getYear();
-        infoLabel = new Label(composite, SWT.WRAP);
-        infoLabel.setText(createHolidayText(TradeCalendarManager.getDefaultInstance().getCode(), year));
-        infoLabel.setFont(getFieldEditorParent().getFont());
+        year = LocalDate.now().getYear();
+        calendar = TradeCalendarManager.getDefaultInstance().getCode();
 
+        infoLabel = new Label(composite, SWT.WRAP);
+        infoLabel.setFont(getFieldEditorParent().getFont());
         GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(infoLabel);
+
+        new Label(composite, SWT.NONE).setText(Messages.LabelYear);
+
+        Spinner yearSpinner = new Spinner(composite, SWT.BORDER);
+        yearSpinner.setTextLimit(5);
+        yearSpinner.setIncrement(1);
+        yearSpinner.setPageIncrement(10);
+        // Maximum, minimum, and selection (value) must be set in that order:
+        yearSpinner.setMaximum(2150);
+        yearSpinner.setMinimum(1850);
+        yearSpinner.setSelection(year);
+        yearSpinner.addModifyListener(e -> {
+            int newYear = yearSpinner.getSelection();
+            if (newYear != year)
+            {
+                year = newYear;
+                updateInfoLabel();
+            }
+        });
+
+        updateInfoLabel();
     }
 
     @Override
@@ -75,31 +99,39 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
 
         if (event.getProperty().equals(FieldEditor.VALUE))
         {
-            int year = LocalDate.now().getYear();
             String newCode = (String) event.getNewValue();
-            infoLabel.setText(createHolidayText(newCode, year));
-            infoLabel.getParent().getParent().layout(true);
+            if (!newCode.equals(calendar))
+            {
+                calendar = newCode;
+                updateInfoLabel();
+            }
         }
+    }
+
+    private void updateInfoLabel()
+    {
+        infoLabel.setText(createHolidayText(calendar, year));
+        infoLabel.getParent().getParent().layout(true);
     }
 
     private static final DateTimeFormatter shortDayOfWeekFormatter = DateTimeFormatter.ofPattern("E"); //$NON-NLS-1$
 
     private String createHolidayText(String calendarCode, int year)
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance(calendarCode);
+        TradeCalendar cal = TradeCalendarManager.getInstance(calendarCode);
 
-        if (calendar == null)
+        if (cal == null)
             return ""; //$NON-NLS-1$
 
-        Collection<Holiday> holidays = calendar.getHolidays(year);
+        Collection<Holiday> holidays = cal.getHolidays(year);
 
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))
                         .forEach(h -> buffer.append(Values.Date.format(h.getDate())).append(" ") //$NON-NLS-1$
                                         .append(h.getLabel())
-                                        .append(calendar.isWeekend(h.getDate()) ?
-                                            " (" + shortDayOfWeekFormatter.format(h.getDate()) + ")" //$NON-NLS-1$ //$NON-NLS-2$
-                                            : "") //$NON-NLS-1$
+                                        .append(cal.isWeekend(h.getDate())
+                                                        ? " (" + shortDayOfWeekFormatter.format(h.getDate()) + ")" //$NON-NLS-1$ //$NON-NLS-2$
+                                                        : "") //$NON-NLS-1$
                                         .append("\n")); //$NON-NLS-1$
         return buffer.toString();
     }

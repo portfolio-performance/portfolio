@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.addons;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 public class OSXStartupAddon
 {
@@ -43,31 +45,37 @@ public class OSXStartupAddon
             {
                 int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
 
-                MenuItem updatesMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 1);
-                updatesMenuItem.setText(Messages.SystemMenuCheckForUpdates);
-                updatesMenuItem.addSelectionListener(new SelectionAdapter()
+                if (UpdateHelper.isInAppUpdateEnabled())
                 {
-                    @Override
-                    public void widgetSelected(SelectionEvent event)
+                    MenuItem updatesMenuItem = new MenuItem(systemMenu, SWT.CASCADE, ++prefsIndex);
+                    updatesMenuItem.setText(Messages.SystemMenuCheckForUpdates);
+                    updatesMenuItem.addSelectionListener(new SelectionAdapter()
                     {
-                        executeCommand("name.abuchen.portfolio.ui.command.updateproduct"); //$NON-NLS-1$
-                    }
-                });
+                        @Override
+                        public void widgetSelected(SelectionEvent event)
+                        {
+                            executeCommand("name.abuchen.portfolio.ui.command.updateproduct"); //$NON-NLS-1$
+                        }
+                    });
+                }
 
-                MenuItem noteworthyMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                MenuItem noteworthyMenuItem = new MenuItem(systemMenu, SWT.CASCADE, ++prefsIndex);
                 noteworthyMenuItem.setText(Messages.SystemMenuNewAndNoteworthy);
                 noteworthyMenuItem.addSelectionListener(new SelectionAdapter()
                 {
                     @Override
                     public void widgetSelected(SelectionEvent event)
                     {
+                        String url = "de".equals(Locale.getDefault().getLanguage()) //$NON-NLS-1$
+                                        ? "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last" //$NON-NLS-1$
+                                        : "https://forum.portfolio-performance.info/t/new-noteworthy/17945/last"; //$NON-NLS-1$
+
                         executeCommand("name.abuchen.portfolio.ui.command.openBrowser", //$NON-NLS-1$
-                                        UIConstants.Parameter.URL,
-                                        "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last"); //$NON-NLS-1$
+                                        UIConstants.Parameter.URL, url);
                     }
                 });
 
-                MenuItem changelogMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 3);
+                MenuItem changelogMenuItem = new MenuItem(systemMenu, SWT.CASCADE, ++prefsIndex);
                 changelogMenuItem.setText(Messages.SystemMenuChangelog);
                 changelogMenuItem.addSelectionListener(new SelectionAdapter()
                 {
@@ -75,8 +83,7 @@ public class OSXStartupAddon
                     public void widgetSelected(SelectionEvent event)
                     {
                         executeCommand("name.abuchen.portfolio.ui.command.openBrowser", //$NON-NLS-1$
-                                        UIConstants.Parameter.URL,
-                                        "https://www.portfolio-performance.info/portfolio/versions.html"); //$NON-NLS-1$
+                                        UIConstants.Parameter.URL, "https://github.com/buchen/portfolio/releases"); //$NON-NLS-1$
                     }
                 });
 

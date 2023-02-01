@@ -27,5 +27,5 @@ EOF
 git init
 git add -A
 git commit -m "Version ${PCK_VERSION}"
-git branch -m master gh-pages
+git branch -m main gh-pages
 git remote add origin https://github.com/buchen/portfolio-updatesite.git

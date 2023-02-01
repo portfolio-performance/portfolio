@@ -7,11 +7,6 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 
 public interface IPieChart
 {
-    enum ChartType
-    {
-        PIE, DONUT;
-    }
-
     Control createControl(Composite parent);
 
     void refresh(ClientSnapshot snapshot);

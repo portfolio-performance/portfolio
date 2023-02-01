@@ -33,33 +33,27 @@ import name.abuchen.portfolio.ui.views.IPieChart;
     {
         if (this.useSWTCharts)
         {
-            chart = new TaxonomyDonutSWT(this, view, IPieChart.ChartType.DONUT);
+            chart = new TaxonomyDonutSWT(this, view);
         }
         else
         {
-            chart = new TaxonomyDonutBrowser(make(EmbeddedBrowser.class), this.view, this);
+            chart = new TaxonomyDonutBrowser(make(EmbeddedBrowser.class), this, view);
         }
         return chart.createControl(container);
     }
 
     @Override
-    public void beforePage()
+    public void beforePage() // NOSONAR
     {
     }
 
     @Override
-    public void afterPage()
+    public void afterPage() // NOSONAR
     {
     }
 
     @Override
     public void nodeChange(TaxonomyNode node)
-    {
-        chart.refresh(null);
-    }
-
-    @Override
-    public void onConfigChanged()
     {
         chart.refresh(null);
     }

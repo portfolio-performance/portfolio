@@ -19,6 +19,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
@@ -32,12 +34,12 @@ public enum WidgetFactory
     DESCRIPTION(Messages.LabelDescription, Messages.LabelCommon, DescriptionWidget::new),
 
     TOTAL_SUM(Messages.LabelTotalSum, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
-                                        return index.getTotals()[length - 1];
+                                        return Money.of(index.getCurrency(), index.getTotals()[length - 1]);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
@@ -52,7 +54,7 @@ public enum WidgetFactory
 
     TTWROR_ANNUALIZED(Messages.LabelTTWROR_Annualized, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
+                                    .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         return index.getFinalAccumulatedAnnualizedPercentage();
@@ -60,72 +62,77 @@ public enum WidgetFactory
 
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
-                                    .with(Values.Percent2) //
+                                    .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         int length = index.getTotals().length;
-                                        return index.getTotals()[length - 1] - index.getTotals()[0];
+                                        return Money.of(index.getCurrency(),
+                                                        index.getTotals()[length - 1] - index.getTotals()[0]);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     DELTA(Messages.LabelDelta, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateDelta();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteDelta();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     SAVINGS(Messages.LabelPNTransfers, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).getTransferals();
-                                        return d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L;
-                                            // skip d[0] because it refers to the day before start
+                                        // skip d[0] because it refers to the
+                                        // day before start
+                                        return Money.of(data.getTermCurrency(),
+                                                        d.length > 1 ? LongStream.of(d).skip(1).sum() : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateInvestedCapital();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital, Messages.LabelStatementOfAssets, //
-                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
-                                    .with(Values.Amount) //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
                                     .with((ds, period) -> {
                                         long[] d = data.calculate(ds, period).calculateAbsoluteInvestedCapital();
-                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                        return Money.of(data.getTermCurrency(), d.length > 0 ? d[d.length - 1] : 0L);
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+
+    RATIO(Messages.LabelRatio, Messages.LabelStatementOfAssets, RatioWidget::new),
 
     MAXDRAWDOWN(Messages.LabelMaxDrawdown, Messages.LabelRiskIndicators, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -189,6 +196,10 @@ public enum WidgetFactory
 
     ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
+
+    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets, HoldingsChartWidget::new),
+
+    TAXONOMY_CHART(Messages.LabelTaxonomies, Messages.LabelStatementOfAssets, TaxonomyChartWidget::new),
 
     HEATMAP(Messages.LabelHeatmap, Messages.ClientEditorLabelPerformance, PerformanceHeatmapWidget::new),
 
@@ -267,11 +278,10 @@ public enum WidgetFactory
                                             return 0L;
 
                                         Security security = (Security) ds.getInstance();
-
                                         return security.getSecurityPrice(LocalDate.now()).getValue();
                                     }) //
                                     .withBenchmarkDataSeries(false) //
-                                    .with(ds -> ds.getInstance() instanceof Security)
+                                    .with(ds -> ds.getInstance() instanceof Security) //
                                     .withColoredValues(false) //
                                     .withTooltip((ds, period) -> {
                                         if (!(ds.getInstance() instanceof Security))
@@ -280,9 +290,8 @@ public enum WidgetFactory
                                         Security security = (Security) ds.getInstance();
 
                                         return MessageFormat.format(Messages.TooltipSecurityLatestPrice,
-                                                        security.getName(),
-                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now()).getDate())
-                                                        );
+                                                        security.getName(), Values.Date.format(security
+                                                                        .getSecurityPrice(LocalDate.now()).getDate()));
                                     }) //
                                     .build()),
 
@@ -306,6 +315,23 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .with(ds -> ds.getInstance() instanceof Security) //
                                     .withColoredValues(false) //
+                                    .withTooltip((ds, period) -> {
+                                        if (!(ds.getInstance() instanceof Security))
+                                            return null;
+
+                                        Security security = (Security) ds.getInstance();
+                                        AllTimeHigh ath = new AllTimeHigh(security, period);
+                                        if (ath.getValue() == null)
+                                            return null;
+
+                                        return MessageFormat.format(Messages.TooltipAllTimeHigh, period.getDays(),
+                                                        Values.Date.format(ath.getDate()),
+                                                        ath.getValue() / Values.Quote.divider(),
+                                                        security.getSecurityPrice(LocalDate.now()).getValue()
+                                                                        / Values.Quote.divider(),
+                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now())
+                                                                        .getDate()));
+                                    }) //
                                     .build()),
 
     // typo is API now!!

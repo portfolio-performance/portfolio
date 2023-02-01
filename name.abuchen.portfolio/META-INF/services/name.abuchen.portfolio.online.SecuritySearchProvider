@@ -1,4 +1,5 @@
 name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider
+name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider
 name.abuchen.portfolio.online.impl.YahooSearchProvider
 name.abuchen.portfolio.online.impl.FinnhubSearchProvider
 name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider

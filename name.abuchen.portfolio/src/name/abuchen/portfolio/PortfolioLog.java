@@ -25,7 +25,7 @@ public class PortfolioLog
         {
             Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class)).log(status);
         }
-        catch (NullPointerException e)
+        catch (NullPointerException | IllegalArgumentException e)
         {
             // when running unit tests via Infinitest, the platform log is not
             // available

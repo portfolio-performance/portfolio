@@ -123,6 +123,17 @@ public interface UIConstants
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
 
         /**
+         * Preference key to display the currency code also for the reporting
+         * currency.
+         */
+        String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
+
+        /**
+         * Add "p.a." to annualized return rates 
+         */
+        String DISPLAY_PER_ANNUM = "DISPLAY_PER_ANNUM"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */

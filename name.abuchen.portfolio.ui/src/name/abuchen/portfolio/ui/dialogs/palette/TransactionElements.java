@@ -49,13 +49,13 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
         @Override
         public String getSubtitle()
         {
-            return selection.isPresent() && hasSecurity()
+            return isTransactionWithSecurity() && isSelectionWithTransactionableSecurity()
                             ? MessageFormat.format(Messages.LabelNewTransactionForSecurity,
                                             selection.get().getSecurity().getName())
                             : Messages.LabelNewTransaction;
         }
 
-        private boolean hasSecurity()
+        private boolean isTransactionWithSecurity()
         {
             if (transaction instanceof PortfolioTransaction.Type)
                 return true;
@@ -63,6 +63,11 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
             return EnumSet.of(AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.TAXES,
                             AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
                             AccountTransaction.Type.FEES_REFUND).contains(transaction);
+        }
+
+        private boolean isSelectionWithTransactionableSecurity()
+        {
+            return selection.isPresent() && selection.get().getSecurity().getCurrencyCode() != null;
         }
 
         @Override
@@ -81,7 +86,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
                 if (Enum.class.isAssignableFrom(transaction.getClass()))
                     action.parameters(transaction);
 
-                if (selection.isPresent())
+                if (isSelectionWithTransactionableSecurity())
                     action.with(selection.get().getSecurity());
 
                 action.run();

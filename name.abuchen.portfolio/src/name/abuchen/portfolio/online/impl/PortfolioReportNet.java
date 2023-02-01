@@ -17,8 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
-import com.google.gson.Gson;
-
+import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
@@ -226,7 +225,7 @@ public class PortfolioReportNet
                             symbolInfo.getExchange(), symbolInfo.getSymbol())));
 
             security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : new Gson().toJson(markets));
+                            markets.isEmpty() ? null : JClient.GSON.toJson(markets));
 
             if (!markets.isEmpty())
             {
@@ -282,7 +281,7 @@ public class PortfolioReportNet
             remote.forEach((k, v) -> security.addProperty(new SecurityProperty(Type.MARKET, k, v)));
 
             if (security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : new Gson().toJson(markets)))
+                            markets.isEmpty() ? null : JClient.GSON.toJson(markets)))
                 isDirty = true;
 
             return isDirty || !remote.isEmpty();

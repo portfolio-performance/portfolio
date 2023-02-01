@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Signor X
+X
+X X
+X
+Nome Utente: ***oto
+Estratto conto da 01-03-2019 a 16-01-2023
+Data Ora Data Valore Prodotto ISIN Descrizione Borsa Variazioni Saldo
+30-09-2022 17:50 30-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -68,23 EUR 693,91
+30-09-2022 07:52 29-09-2022 Credito FX EUR 68,23 EUR 762,14
+30-09-2022 07:52 29-09-2022 Prelievo FX 0,9840 USD -67,14 USD 0,00
+29-09-2022 07:55 28-09-2022 ISHARES GLOB HIG YLD CORP BOND UCITS IE00B74DQ490 Dividendo USD 67,14 USD 67,14
+ETF
+
+flatex DEGIRO Bank Dutch Branch, che opera come DEGIRO, e' la www.degiro.it Estratto conto
+branca olandese della flatexDEGIRO Bank AG. flatexDEGIRO Bank clienti@degiro.it 2023-01-16
+AG opera innanzi tutto sotto la supervisione dell'Ente Tedesco di
+Vigilanza dei Servizi Finanziari (BaFin) e, In Olanda, e' registrata Amstelplein 1 1096 HA Pagina 23 /23
+presso la DNB.

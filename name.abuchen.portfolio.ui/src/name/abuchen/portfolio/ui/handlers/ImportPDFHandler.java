@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,10 +156,9 @@ public class ImportPDFHandler
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
                     Portfolio portfolio, List<File> files)
     {
-        files.sort((File lhs, File rhs) -> {
-            int modDiff = (int) (lhs.lastModified() - rhs.lastModified());
-            return modDiff == 0 ? lhs.getPath().compareTo(rhs.getPath()) : modDiff;
-        });
+        // sort files to import purchase documents first (that typically create
+        // securities with better names)
+        files.sort(Comparator.comparing(File::lastModified).thenComparing(File::getPath));
 
         IPreferenceStore preferences = part.getPreferenceStore();
 

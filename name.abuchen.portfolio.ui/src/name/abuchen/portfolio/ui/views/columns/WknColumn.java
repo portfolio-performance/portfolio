@@ -30,8 +30,8 @@ public class WknColumn extends Column
             }
         });
 
-        setSorter(ColumnViewerSorter
-                        .create(e -> Adaptor.optionally(Security.class, e).map(Security::getWkn).orElse(null)));
+        setSorter(ColumnViewerSorter.createIgnoreCase(
+                        e -> Adaptor.optionally(Security.class, e).map(Security::getWkn).orElse(null)));
 
         new StringEditingSupport(Security.class, "wkn") //$NON-NLS-1$
                         .setCanEditCheck(e -> Adaptor.optionally(Security.class, e)

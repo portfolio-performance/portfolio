@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
 import name.abuchen.portfolio.math.Rebalancer;
 import name.abuchen.portfolio.math.Rebalancer.FixedSumRebalancer;
 import name.abuchen.portfolio.model.Account;
@@ -38,6 +36,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class TaxonomyModel
 {
@@ -115,8 +114,7 @@ public final class TaxonomyModel
     private Rebalancer.RebalancingSolution zeroSumRebalancingSolution;
     private Map<Money, Rebalancer.RebalancingSolution> rebalancingSolutions;
 
-    @Inject
-    /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
+    public TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
         this.taxonomy = Objects.requireNonNull(taxonomy);
         this.client = Objects.requireNonNull(client);
@@ -216,8 +214,8 @@ public final class TaxonomyModel
             assignment.setWeight(Classification.ONE_HUNDRED_PERCENT);
         }
 
-        Collections.sort(unassigned, (o1, o2) -> o1.getInvestmentVehicle().toString()
-                        .compareToIgnoreCase(o2.getInvestmentVehicle().toString()));
+        Collections.sort(unassigned, (o1, o2) -> TextUtil.compare(o1.getInvestmentVehicle().toString(),
+                        o2.getInvestmentVehicle().toString()));
 
         for (Assignment assignment : unassigned)
             unassignedNode.addChild(assignment);

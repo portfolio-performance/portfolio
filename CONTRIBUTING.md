@@ -13,6 +13,9 @@
 	- [Build with Maven](#build-with-maven)
 - [Contribute Code](#contribute-code)
 - [Translations](#translations)
+- [Images, Logo & Colors](#images-logo-and-color)
+	- [Color code & status](#color-code-and-status)
+	- [Format and size](#format-and-size)
 - [PDF Importer](#pdf-importer)
 	- [Source Location](#source-location)
 	- [Imported Transactions](#imported-transactions)
@@ -28,7 +31,7 @@
 
 ### Install Eclipse
 
-* Java 11, for example from [Azul](https://www.azul.com/downloads/)
+* Java 17, for example from [Azul](https://www.azul.com/downloads/)
 
 * [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
 
@@ -56,11 +59,19 @@ Optionally, install via the Eclipse Marketplace (drag and drop the *Install* but
 * [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
 * [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
 * [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
-* Eclipse e4 Tools Developer Resources
-	- `Menu` --> `Help` --> `Install New Software`
-	- Pick *Latest Eclipse Simultaneous Release* from the dropdown menu 
-	- Under *General Purpose Tools* select the *Eclipse e4 Tools Developer Resources*
 
+
+#### Install from the Simulatenous Release Update site:
+
+`Menu` --> `Help` --> `Install New Software`
+
+Pick `Latest Eclipse Simultaneous Release` from the dropdown menu.
+
+* M2E PDE Integration (skip if you installed the *Eclipse IDE for RCP and RAP Developers*)
+	- Under `General Purpose Tools` select the `M2E PDE Integration`
+* Eclipse e4 Tools Developer Resources
+	- Under `General Purpose Tools` select the `Eclipse e4 Tools Developer Resources`
+  
 
 ### Configure Eclipse
 
@@ -76,8 +87,8 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
 		- `name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils`
-* `Java` --> `Editor` --> `Installed JREs`
-	- Add the Java 11 JDK
+* `Java` --> `Installed JREs`
+	- Add the Java 17 JDK
 
 
 ## Project Setup
@@ -117,19 +128,20 @@ First, add the *Launch Configuration* view to your workspace:
 
 It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
 
-The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 11 installation.
+The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 17 installation.
 
 Linux/macOS
 ```
-export MAVEN_OPTS="-Xmx2g"
+export MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml clean verify
 ```
 
 ```
-set MAVEN_OPTS="-Xmx2g"
+set MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app\pom.xml -Denforcer.skip=true clean verify
 ````
 
+Hint: if you run into resolution problems, try deleting the ```~/.m2/repository/p2``` directory. Apparently, when switching to Maven Tycho 3, there are some layout changes.
 
 ## Contribute Code
 
@@ -155,6 +167,42 @@ When adding new labels,
 * use the formatting excactly as done by the Resource Bundle Editor 
 * use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
 
+## Images, Logo and color
+
+Images and logos used must be subject to [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
+
+We only use icon from [iconmonstr.com](https://iconmonstr.com).
+
+If a color change icon is used, the passive state is gray and the active state is orange.
+
+Please add all used images, logos and icons in the [Images](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
+
+### Format and size
+
+Images, logos and icons are to be created as Portable Network Graphic ([PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics)) format.
+
+* The background must be transparent.
+* The basic format is 16x16px.
+* A designation is to be chosen as name. (e.g. information.png)
+* The file name must be written in lower case letters.
+* It must be created in at least two sizes. 16x16px and 32x32px.
+
+Designation basic format as an example:
+
+* `information.png` (16x16px)
+* `information@2x.png` (32x32px)
+* ...
+
+### Color code and status
+
+| Color         | Color code (hex)	| Color code (RGB)	| Used for	|
+| :---------    | :----------- 		| :----------- 		| :----------- 		|
+| orange (logo) | ![#f18f01](https://placehold.co/15x15/f18f01/f18f01.png) `#f18f01`		| `rgb(241, 143, 1)`    | Activated (ex: filter)  |
+| blue (logo)   | ![#0e6e8e](https://placehold.co/15x15/0e6e8e/0e6e8e.png) `#0e6e8e`		| `rgb(14, 110, 142)`   |  	|
+| green (logo)  | ![#9ac155](https://placehold.co/15x15/9ac155/9ac155.png) `#9ac155`		| `rgb(154, 193, 85)`   |  	|
+| dark blue     | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   	| `rgb(149, 164, 179)`  | Default color for icons |
+| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#f00000`		| `rgb(255, 0, 0)`      | Error, Fault            |
+| yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| `rgb(255, 216, 23)`   | Warning                 |
 
 ## PDF Importer
 
@@ -169,6 +217,7 @@ If you want to add an importer for a new bank or a new transaction type, check o
 ### Source Location
 
 PDF importer: `name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+
 Test cases: `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/`
 
 The naming convention is BANK**Extractor** and BANK**ExtractorTest** for extractor class and test class respectively.
@@ -222,7 +271,7 @@ The importers are structured according to the following scheme and the mapping v
   * `name` --> Security name
   * `isin` --> International Securities Identification Number
   * `wkn` --> Security code number
-  * `tickerSymbol` --> Ticker symbol ( Optional )
+  * `tickerSymbol` --> Tickersymbol ( Optional )
   * `currency` --> Security currency
 * Shares of the transaction
   * `shares` --> Shares
@@ -304,6 +353,7 @@ To test regular expression you can use [https://regex101.com/](https://regex101.
 
 Beside general good practices for regular expresions, keep in mind:
 * all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results 
+* the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
 * expression in `.match(" ... ")` is started with an anchor `^` and ended with `$`
 * with `.find(" ... ")` do not add anchors as they will be automatically added
 
@@ -315,9 +365,7 @@ Keep in mind that the regular expressions work against text that is automaticall
 |               | 1.1.1970     | `\\d+.\\d+.\\d{4}`  | `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}` |
 | Time          | 12:01        | `\\d+:\\d+`         | `[\\d]{2}\\:[\\d]{2}}` |
 | ISIN          | IE00BKM4GZ66 | `\\w+`              | `[A-Z]{2}[A-Z0-9]{9}[0-9]` |
-|               |              |                     | `[\\w]{12}` |
 | WKN           | A111X9       | `\\w+`              | `[A-Z0-9]{6}` |
-|               |              |                     | `[\\w]{6}` |
 | Amount        | 751,68       | `[\\d,.]+`          | `[\\.,\\d]+` |
 |               |              |                     | `[\\.\\d]+,[\\d]{2}` |
 |               | 74'120.00    | `[\\d.']+`          | `[\\.'\\d]+` |

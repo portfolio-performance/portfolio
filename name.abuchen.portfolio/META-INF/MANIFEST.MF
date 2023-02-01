@@ -2,18 +2,20 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.59.2.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-Version: 0.60.3.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
  name.abuchen.portfolio.datatransfer.actions,
  name.abuchen.portfolio.datatransfer.csv,
+ name.abuchen.portfolio.datatransfer.ibflex,
  name.abuchen.portfolio.datatransfer.pdf,
  name.abuchen.portfolio.events,
  name.abuchen.portfolio.json,
  name.abuchen.portfolio.math,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.money,
+ name.abuchen.portfolio.money.impl;x-friends:="name.abuchen.portfolio.junit",
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
  name.abuchen.portfolio.online.portfolioreport,
@@ -69,4 +71,3 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
-Eclipse-ExtensibleAPI: true

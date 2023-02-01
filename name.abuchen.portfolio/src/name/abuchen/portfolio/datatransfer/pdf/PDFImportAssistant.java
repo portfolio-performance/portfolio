@@ -56,18 +56,22 @@ public class PDFImportAssistant
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
+        extractors.add(new HargreavesLansdownPlcExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaPDFExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new KBCGroupNVPDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
+        extractors.add(new OpenBankSAPDFExtractor(client));
+        extractors.add(new PictetCieGruppeSAPDFExtractor(client));
         extractors.add(new PostbankPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
-        extractors.add(new QuirionPDFExtractor(client));
+        extractors.add(new QuirinBankAGPDFExtractor(client));
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new RevolutLtdPDFExtractor(client));
@@ -76,6 +80,7 @@ public class PDFImportAssistant
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
+        extractors.add(new SolarisbankAGPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
@@ -83,8 +88,10 @@ public class PDFImportAssistant
         extractors.add(new UBSAGBankingAGPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
+        extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
+        extractors.add(new YuhPDFExtractor(client));
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

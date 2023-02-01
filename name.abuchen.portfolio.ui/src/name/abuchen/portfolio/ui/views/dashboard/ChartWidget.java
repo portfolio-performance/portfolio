@@ -6,16 +6,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
@@ -24,18 +28,22 @@ import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.Aggregation;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
+import name.abuchen.portfolio.ui.views.ChartViewConfig;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
+import name.abuchen.portfolio.ui.views.dataseries.BasicDataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
@@ -56,7 +64,8 @@ public class ChartWidget extends WidgetDelegate<Object>
             this.delegate = delegate;
 
             String configName = (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS ? StatementOfAssetsHistoryView.class
-                            : PerformanceChartView.class).getSimpleName() + DataSeriesConfigurator.IDENTIFIER_POSTFIX;
+                            : PerformanceChartView.class).getSimpleName()
+                            + BasicDataSeriesConfigurator.IDENTIFIER_POSTFIX;
             configSet = delegate.getClient().getSettings().getConfigurationSet(configName);
             String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CONFIG_UUID.name());
             config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst()
@@ -91,6 +100,11 @@ public class ChartWidget extends WidgetDelegate<Object>
         public String getData()
         {
             return config != null ? config.getData() : null;
+        }
+
+        public String getUUID()
+        {
+            return config != null ? config.getUUID() : null;
         }
 
         @Override
@@ -174,6 +188,9 @@ public class ChartWidget extends WidgetDelegate<Object>
     private Label title;
     private TimelineChart chart;
 
+    @Inject
+    private PortfolioPart part;
+
     public ChartWidget(Widget widget, DashboardData dashboardData, DataSeries.UseCase useCase)
     {
         super(widget, dashboardData);
@@ -192,11 +209,29 @@ public class ChartWidget extends WidgetDelegate<Object>
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
+
+        ImageHyperlink button = new ImageHyperlink(container, SWT.NONE);
+        button.setImage(Images.VIEW_SHARE.image());
+        button.addHyperlinkListener(new HyperlinkAdapter()
+        {
+            @Override
+            public void linkActivated(HyperlinkEvent e)
+            {
+                Class<? extends AbstractFinanceView> view = useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS //
+                                ? StatementOfAssetsHistoryView.class
+                                : PerformanceChartView.class;
+
+                ChartViewConfig config = new ChartViewConfig(get(ChartConfig.class).getUUID(),
+                                get(ReportingPeriodConfig.class).getReportingPeriod());
+
+                part.activateView(view, config);
+            }
+        });
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
@@ -209,7 +244,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getToolTip().reverseLabels(true);
 
         int yHint = get(ChartHeightConfig.class).getPixel();
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).span(2, 1).applyTo(chart);
 
         getDashboardData().getStylingEngine().style(chart);
 
@@ -252,17 +287,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         {
             chart.suspendUpdate(true);
 
-            GridData data = (GridData) chart.getLayoutData();
-
-            int oldHeight = data.heightHint;
-            int newHeight = get(ChartHeightConfig.class).getPixel();
-
-            if (oldHeight != newHeight)
-            {
-                data.heightHint = newHeight;
-                title.getParent().layout(true);
-                title.getParent().getParent().layout(true);
-            }
+            get(ChartHeightConfig.class).updateGridData(chart, title.getParent());
 
             chart.getTitle().setText(title.getText());
 

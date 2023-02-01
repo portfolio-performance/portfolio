@@ -46,9 +46,9 @@ public class PaymentsPerQuarterChartTab extends AbstractChartTab
                                         return true;
                                 }
                                 return false;
-                            }).sorted((l1, l2) -> l1.getVehicle().getName() // sort
-                                                                            // alphabetically
-                                            .compareToIgnoreCase(l2.getVehicle().getName()))
+                            })
+                            // sort alphabetically
+                            .sorted((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                             .collect(Collectors.toList());
 
             int noOfYears = (totalNoOfMonths / 12) + (totalNoOfMonths % 12 > quarter * 3 ? 1 : 0);

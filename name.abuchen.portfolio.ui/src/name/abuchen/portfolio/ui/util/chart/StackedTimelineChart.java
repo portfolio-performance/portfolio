@@ -78,9 +78,10 @@ public class StackedTimelineChart extends Chart // NOSONAR
         new ChartContextMenu(this);
     }
 
-    public ILineSeries addSeries(String label, double[] values, Color color)
+    public ILineSeries addSeries(String id, String label, double[] values, Color color)
     {
-        ILineSeries series = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
+        ILineSeries series = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, id);
+        series.setDescription(label);
         series.setYSeries(values);
 
         series.setLineWidth(2);

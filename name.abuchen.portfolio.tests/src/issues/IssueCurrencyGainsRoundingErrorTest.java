@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyConverter;
