@@ -1040,6 +1040,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         + "(Geb.hren\\/Spesen"
                         + "|Geb.hr Barauszahlung"
                         + "|Entgelte"
+                        + "|Kontof.hrungse"
                         + "|Auslandsentgelt).* "
                         + "\\-[\\.,\\d]+$");
         type.addBlock(feesBlock);
@@ -1056,6 +1057,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Geb.hren\\/Spesen"
                                         + "|Geb.hr Barauszahlung"
                                         + "|Entgelte"
+                                        + "|Kontof.hrungse"
                                         + "|Auslandsentgelt).* "
                                         + "\\-(?<amount>[\\.,\\d]+)$")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")

@@ -5025,4 +5025,44 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getSource(), is("Finanzreport06.txt"));
         assertThat(transaction.getNote(), is("Visa-Kartenabrechnung"));
     }
+
+    @Test
+    public void testFinanzreport07()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+
+        Item item = iter.next();
+
+        // assert transaction1
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.90)));
+        assertThat(transaction.getSource(), is("Finanzreport07.txt"));
+        assertThat(transaction.getNote(), is("Kontoführungse"));
+
+        item = iter.next();
+
+        // assert transaction2
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.90)));
+        assertThat(transaction.getSource(), is("Finanzreport07.txt"));
+        assertThat(transaction.getNote(), is("Entgelte"));
+    }
 }
