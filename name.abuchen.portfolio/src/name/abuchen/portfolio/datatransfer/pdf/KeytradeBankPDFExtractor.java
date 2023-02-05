@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -157,7 +158,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Auftragstyp : Limit (16 EUR)
@@ -291,7 +292,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 .wrap(TransactionItem::new);
@@ -377,7 +378,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             country = "US"; //$NON-NLS-1$
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
     @Override
@@ -396,7 +397,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             country = "US"; //$NON-NLS-1$
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
@@ -415,6 +416,6 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             country = "US"; //$NON-NLS-1$
         }
 
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

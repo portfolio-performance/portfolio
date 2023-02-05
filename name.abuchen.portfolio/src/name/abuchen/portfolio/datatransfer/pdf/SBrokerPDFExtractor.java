@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -151,7 +152,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Limit 189,40 EUR
@@ -159,7 +160,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .match("(?<note>Limit .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+                .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document,
@@ -281,7 +282,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // 15.12.2014 12/3456/789 EUR/USD 1,24495 EUR 52,36
@@ -299,7 +300,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -544,7 +545,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // fee = fee - discount
                         fee = fee.subtract(discount);
 
-                        checkAndSetFee(fee, t, type);
+                        checkAndSetFee(fee, t, type.getCurrentContext());
                     }
                 })
 

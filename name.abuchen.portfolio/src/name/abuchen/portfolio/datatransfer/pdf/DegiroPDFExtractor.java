@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,9 +13,10 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -525,7 +526,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                     t.setMonetaryAmount(gross);
 
-                                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
 
                                     context.putType(item.get());
                                 }
@@ -662,7 +663,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             type.getCurrentContext().removeType(CurrencyExchangeItem.class);
 
-                            PDFExtractorUtils.fixGrossValueA().accept(t);
+                            ExtractorUtils.fixGrossValueA().accept(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0L)
                                 return new TransactionItem(t);
@@ -1828,7 +1829,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
     @Override
@@ -1858,7 +1859,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
@@ -1888,6 +1889,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -14,9 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -273,7 +274,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
-                                                checkAndSetTax(tax, t, type);
+                                                checkAndSetTax(tax, t, type.getCurrentContext());
                                             }
 
                                             ExtrExchangeRate rate = asExchangeRate(v);
@@ -282,7 +283,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 section -> section
@@ -322,13 +323,13 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
-                                                checkAndSetTax(tax, t, type);
+                                                checkAndSetTax(tax, t, type.getCurrentContext());
                                             }
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 section -> section
@@ -369,13 +370,13 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
-                                                checkAndSetTax(tax, t, type);
+                                                checkAndSetTax(tax, t, type.getCurrentContext());
                                             }
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 section -> section
@@ -405,7 +406,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
-                                                checkAndSetTax(tax, t, type);
+                                                checkAndSetTax(tax, t, type.getCurrentContext());
                                             }
                                         })
                         )
@@ -610,18 +611,18 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "CA");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "CA");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "CA");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "CA");
     }
 }

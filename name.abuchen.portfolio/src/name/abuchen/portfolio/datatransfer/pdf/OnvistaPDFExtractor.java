@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -263,7 +264,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Zwangsabfindung gemäß Hauptversammlungsbeschluss vom 22. Juli 2015. Der Übertragungsbeschluss wurde am 15.
@@ -276,7 +277,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>St.ckzinsaufwand [\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+                .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document, with
@@ -565,7 +566,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // 05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
@@ -580,7 +581,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
@@ -597,7 +598,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Ertrag für [\\d]{4}(\\/[\\d]{2})?) [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .conclude(PDFExtractorUtils.fixGrossValueA())
+                .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document, with
@@ -1231,7 +1232,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         Money gross = t.getMonetaryAmount();
                         Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                        checkAndSetGrossUnit(gross, fxGross, t, type);
+                        checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                     }
                 })
 
@@ -1353,7 +1354,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 .wrap(t -> {

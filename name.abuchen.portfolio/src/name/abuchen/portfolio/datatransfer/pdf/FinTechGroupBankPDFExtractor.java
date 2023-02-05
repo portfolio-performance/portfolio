@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -198,7 +198,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // @formatter:off
@@ -722,7 +722,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // @formatter:off
@@ -743,7 +743,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -875,7 +875,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // @formatter:off
@@ -900,7 +900,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -2382,7 +2382,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2408,7 +2408,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2433,7 +2433,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2485,7 +2485,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetFee(fee, t, type);   
+                        checkAndSetFee(fee, t, type.getCurrentContext());   
                     }
                 })
 
@@ -2510,7 +2510,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetFee(fee, t, type);   
+                        checkAndSetFee(fee, t, type.getCurrentContext());   
                     }
                 })
 
