@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -23,10 +24,14 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class WithoutTaxesFilterTest
@@ -207,6 +212,36 @@ public class WithoutTaxesFilterTest
                         .getCrossEntry();
         assertThat(copy.getSourceAccount().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(copy.getTargetAccount().getCurrencyCode(), is(CurrencyUnit.USD));
+    }
+
+    @Test
+    public void comparePerformanceSnapshots()
+    {
+        Client filtered = new WithoutTaxesFilter().filter(client);
+
+        Interval period = Interval.of(LocalDate.of(2015, Month.DECEMBER, 31), //
+                        LocalDate.of(2016, Month.MARCH, 31));
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        ClientPerformanceSnapshot originalP = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot filteredP = new ClientPerformanceSnapshot(filtered, converter, period);
+
+        // taxes should be 0 with the filter applied, even though they were originally not
+        assertThat(filteredP.getValue(CategoryType.TAXES).isZero(), is(true));
+        assertThat(originalP.getValue(CategoryType.TAXES).isZero(), is(false));
+
+        // tax payments are treated as withdrawals, so transfers should be lower accordingly
+        assertThat(filteredP.getValue(CategoryType.TRANSFERS),
+                is(originalP.getValue(CategoryType.TRANSFERS).subtract(originalP.getValue(CategoryType.TAXES))));
+
+        // other categories should be the same with and without taxes
+        assertThat(filteredP.getValue(CategoryType.INITIAL_VALUE), is(originalP.getValue(CategoryType.INITIAL_VALUE)));
+        assertThat(filteredP.getValue(CategoryType.CAPITAL_GAINS), is(originalP.getValue(CategoryType.CAPITAL_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.REALIZED_CAPITAL_GAINS), is(originalP.getValue(CategoryType.REALIZED_CAPITAL_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.EARNINGS), is(originalP.getValue(CategoryType.EARNINGS)));
+        assertThat(filteredP.getValue(CategoryType.FEES), is(originalP.getValue(CategoryType.FEES)));
+        assertThat(filteredP.getValue(CategoryType.CURRENCY_GAINS), is(originalP.getValue(CategoryType.CURRENCY_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.FINAL_VALUE), is(originalP.getValue(CategoryType.FINAL_VALUE)));
     }
 
 }
