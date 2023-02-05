@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -30,6 +31,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
+
+import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -58,186 +61,137 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AllTransactionsView extends AbstractFinanceView
 {
-    private static enum TransactionFilter
+    private enum TransactionFilter
     {
-        NONE(Messages.TransactionFilterNone, tx -> true),
-        SECURITY_TRANSACTIONS(Messages.TransactionFilterSecurityRelated, tx -> 
-        {
-            if(tx instanceof PortfolioTransaction)
+        NONE(Messages.TransactionFilterNone, 0, tx -> true), //
+        SECURITY_TRANSACTIONS(Messages.TransactionFilterSecurityRelated, 0, tx -> {
+            if (tx instanceof PortfolioTransaction)
                 return true;
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.DIVIDENDS
                                 || atx.getType() == AccountTransaction.Type.BUY
                                 || atx.getType() == AccountTransaction.Type.SELL;
-            }
-            return false;
-        }),
-        BUY_AND_SELL(Messages.TransactionFilterBuyAndSell, tx -> 
-        {
-            if(tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction atx = (PortfolioTransaction) tx;
-                return atx.getType() == PortfolioTransaction.Type.BUY
-                                || atx.getType() == PortfolioTransaction.Type.SELL;
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
-                return atx.getType() == AccountTransaction.Type.BUY
-                                || atx.getType() == AccountTransaction.Type.SELL;
-            }
-            return false;
-        }),
-        BUY(Messages.TransactionFilterBuy, tx -> 
-        {
-            if(tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction atx = (PortfolioTransaction) tx;
-                return atx.getType() == PortfolioTransaction.Type.BUY;
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        BUY_AND_SELL(Messages.TransactionFilterBuyAndSell, 1, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.BUY
+                                || ptx.getType() == PortfolioTransaction.Type.SELL;
+            else if (tx instanceof AccountTransaction atx)
+                return atx.getType() == AccountTransaction.Type.BUY || atx.getType() == AccountTransaction.Type.SELL;
+            else
+                return false;
+        }), //
+        BUY(Messages.TransactionFilterBuy, 2, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.BUY;
+            else if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.BUY;
-            }
-            return false;
-        }),
-        SELL(Messages.TransactionFilterSell, tx -> 
-        {
-            if(tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction atx = (PortfolioTransaction) tx;
-                return atx.getType() == PortfolioTransaction.Type.SELL;
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        SELL(Messages.TransactionFilterSell, 2, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.SELL;
+            else if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.SELL;
-            }
-            return false;
-        }),
-        DIVIDEND(Messages.TransactionFilterDividend, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        DIVIDEND(Messages.TransactionFilterDividend, 1, tx -> {
+            if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.DIVIDENDS;
-            }
-            return false;
-        }),
-        DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, 0, tx -> {
+            if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.DEPOSIT
                                 || atx.getType() == AccountTransaction.Type.REMOVAL;
-            }
-            return false;
-        }),
-        DEPOSIT(Messages.TransactionFilterDeposit, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        DEPOSIT(Messages.TransactionFilterDeposit, 1, tx -> {
+            if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.DEPOSIT;
-            }
-            return false;
-        }),
-        REMOVAL(Messages.TransactionFilterRemoval, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        REMOVAL(Messages.TransactionFilterRemoval, 1, tx -> {
+            if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.REMOVAL;
-            }
-            return false;
-        }),
-        INTEREST(Messages.TransactionFilterInterest, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+            else
+                return false;
+        }), //
+        INTEREST(Messages.TransactionFilterInterest, 0, tx -> {
+            if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.INTEREST
                                 || atx.getType() == AccountTransaction.Type.INTEREST_CHARGE;
-            }
-            return false;
-        }),
-        WITH_TAX(Messages.TransactionFilterTaxes, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
-                if (atx.getType() == AccountTransaction.Type.TAXES
-                                || atx.getType() == AccountTransaction.Type.TAX_REFUND)
-                    return true;
-            }
+            else
+                return false;
+        }), //
+        WITH_TAX(Messages.TransactionFilterTaxes, 0, tx -> {
+            if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.TAXES
+                            || atx.getType() == AccountTransaction.Type.TAX_REFUND))
+                return true;
             return tx.getUnitSum(Transaction.Unit.Type.TAX).isPositive();
-        }),
-        WITH_FEES(Messages.TransactionFilterFees, tx -> 
-        {
-            if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
-                if (atx.getType() == AccountTransaction.Type.FEES
-                                || atx.getType() == AccountTransaction.Type.FEES_REFUND)
-                    return true;
-            }
+        }), //
+        WITH_FEES(Messages.TransactionFilterFees, 0, tx -> {
+            if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.FEES
+                            || atx.getType() == AccountTransaction.Type.FEES_REFUND))
+                return true;
             return tx.getUnitSum(Transaction.Unit.Type.FEE).isPositive();
-        }),
-        TRANSFERS(Messages.TransactionFilterTransfers, tx -> 
-        {
-            if(tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction atx = (PortfolioTransaction) tx;
-                return atx.getType() == PortfolioTransaction.Type.TRANSFER_IN
-                                || atx.getType() == PortfolioTransaction.Type.TRANSFER_OUT;
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction atx = (AccountTransaction) tx;
+        }), //
+        TRANSFERS(Messages.TransactionFilterTransfers, 0, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                || ptx.getType() == PortfolioTransaction.Type.TRANSFER_OUT;
+            else if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.TRANSFER_IN
                                 || atx.getType() == AccountTransaction.Type.TRANSFER_OUT;
-            }
-            return false;
-        }),
-        DELIVERIES(Messages.TransactionFilterDeliveries, tx -> 
+            else
+                return false;
+        }), //
+        DELIVERIES(Messages.TransactionFilterDeliveries, 0, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            else
+                return false;
+        });
+
+        private String name;
+        private int level;
+        private Predicate<Transaction> predicate;
+
+        TransactionFilter(String name, int level, Predicate<Transaction> predicate)
         {
-            if(tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction atx = (PortfolioTransaction) tx;
-                return atx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                                || atx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-            }
-            return false;
-        })
-        ;
-        
-        String name;
-        Predicate<Transaction> predicate;
-        
-        TransactionFilter(String name, Predicate<Transaction> predicate)
-        {
-            this.name =name;
+            this.name = name;
+            this.level = level;
             this.predicate = predicate;
         }
-        
+
         boolean matches(Transaction tx)
         {
             return predicate.test(tx);
         }
-        
+
         String getName()
         {
             return name;
         }
+
+        int getLevel()
+        {
+            return level;
+        }
     }
-    
-    private static final String TRANSACTION_FILTER_PREFERENCE_NAME = AllTransactionsView.class.getSimpleName() + "-transaction-type-filter"; //$NON-NLS-1$
+
+    private static final String TRANSACTION_FILTER_PREFERENCE_NAME = AllTransactionsView.class.getSimpleName()
+                    + "-transaction-type-filter"; //$NON-NLS-1$
     private static final TransactionFilter DEFAULT_TYPE_FILTER = TransactionFilter.NONE;
-    
+
     private class FilterDropDown extends DropDown implements IMenuListener
     {
         private ClientFilterMenu clientFilterMenu;
@@ -247,33 +201,31 @@ public class AllTransactionsView extends AbstractFinanceView
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
 
             preferenceStore.setDefault(TRANSACTION_FILTER_PREFERENCE_NAME, DEFAULT_TYPE_FILTER.name());
-            TransactionFilter transactionFilter = TransactionFilter.valueOf(
-                            preferenceStore.getString(TRANSACTION_FILTER_PREFERENCE_NAME));
+            TransactionFilter transactionFilter = TransactionFilter
+                            .valueOf(preferenceStore.getString(TRANSACTION_FILTER_PREFERENCE_NAME));
             typeFilter = transactionFilter;
-            
+
             setMenuListener(this);
 
             this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
 
-            Consumer<ClientFilter> listener = filter -> {
+            Consumer<ClientFilter> listener = f -> {
                 setInformationPaneInput(null);
-                if(filter instanceof PortfolioClientFilter)
-                    AllTransactionsView.this.clientFilter = (PortfolioClientFilter) filter;
+                if (f instanceof PortfolioClientFilter pcf)
+                    AllTransactionsView.this.clientFilter = pcf;
                 else
                     AllTransactionsView.this.clientFilter = null;
                 notifyModelUpdated();
             };
 
             clientFilterMenu.addListener(listener);
-            clientFilterMenu.addListener(filter -> updateIcon());
+            clientFilterMenu.addListener(f -> updateIcon());
 
             loadPreselectedFilter(preferenceStore);
 
             updateIcon();
 
-            addDisposeListener(e -> {
-                preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name());
-            });
+            addDisposeListener(e -> preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name()));
         }
 
         private void loadPreselectedFilter(IPreferenceStore preferenceStore)
@@ -286,18 +238,19 @@ public class AllTransactionsView extends AbstractFinanceView
             String selection = preferenceStore.getString(key);
             if (selection != null)
             {
-                Optional<Item> optionalItem = clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny();
-                if(optionalItem.isPresent())
+                Optional<Item> optionalItem = clientFilterMenu.getAllItems()
+                                .filter(item -> item.getUUIDs().equals(selection)).findAny();
+                if (optionalItem.isPresent())
                 {
                     clientFilterMenu.select(optionalItem.get());
-                    ClientFilter filter = optionalItem.get().getFilter();
-                    if(filter instanceof PortfolioClientFilter)
-                        AllTransactionsView.this.clientFilter = (PortfolioClientFilter) filter;
+                    ClientFilter f = optionalItem.get().getFilter();
+                    if (f instanceof PortfolioClientFilter pcf)
+                        AllTransactionsView.this.clientFilter = pcf;
                 }
             }
 
             clientFilterMenu.addListener(
-                            filter -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
+                            f -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
         }
 
         private void updateIcon()
@@ -310,18 +263,18 @@ public class AllTransactionsView extends AbstractFinanceView
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(new LabelOnly(Messages.TransactionFilter));
-            for(TransactionFilter filter : TransactionFilter.values())
-                manager.add(addTypeFilter(filter));
-            
+            for (TransactionFilter f : TransactionFilter.values())
+                manager.add(addTypeFilter(f));
+
             manager.add(new Separator());
             manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
             clientFilterMenu.menuAboutToShow(manager);
         }
 
-        
         private Action addTypeFilter(TransactionFilter filter)
         {
-            Action action = new Action(filter.getName(), Action.AS_CHECK_BOX)
+            Action action = new Action(Strings.repeat(" ", filter.getLevel() * 2) + filter.getName(), //$NON-NLS-1$
+                            IAction.AS_CHECK_BOX)
             {
                 @Override
                 public void run()
@@ -342,7 +295,7 @@ public class AllTransactionsView extends AbstractFinanceView
             return action;
         }
     }
-    
+
     private TransactionsViewer table;
 
     private String filter;
@@ -481,7 +434,7 @@ public class AllTransactionsView extends AbstractFinanceView
 
         table.addFilter(new ViewerFilter()
         {
-            
+
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
@@ -489,24 +442,24 @@ public class AllTransactionsView extends AbstractFinanceView
                 return typeFilter.matches(tx.getTransaction());
             }
         });
-        
-        /*
-         * We filter the table like this and not by using the clientFilter#filter(Client) method, because that modifies
-         * some transactions (e.g. removes the cross entry for purchases/sells and adds fictitious removals for dividend
-         * payments when only the portfolio without the account passes the filter)
-         */
+
+        // We filter the table like this and not by using the
+        // clientFilter#filter(Client) method, because that modifies some
+        // transactions (e.g. removes the cross entry for purchases/sells and
+        // adds fictitious removals for dividend payments when only the
+        // portfolio without the account passes the filter)
         table.addFilter(new ViewerFilter()
         {
-            
+
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
-                if(clientFilter == null)
+                if (clientFilter == null)
                     return true;
                 TransactionPair<?> tx = (TransactionPair<?>) element;
                 return clientFilter.hasElement(tx.getOwner())
-                                || (tx.getTransaction().getCrossEntry() != null
-                                && clientFilter.hasElement(tx.getTransaction().getCrossEntry().getOwner(tx.getTransaction())));
+                                || (tx.getTransaction().getCrossEntry() != null && clientFilter.hasElement(
+                                                tx.getTransaction().getCrossEntry().getOwner(tx.getTransaction())));
             }
         });
 
