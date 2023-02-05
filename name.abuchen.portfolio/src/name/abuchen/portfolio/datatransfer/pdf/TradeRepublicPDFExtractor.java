@@ -31,6 +31,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAccountStatementTransaction();
         addTaxStatementTransaction();
+        addInterestStatementTransaction();
         addAdvanceTaxTransaction();
         addCaptialReductionTransaction();
         addDeliveryInOutBoundTransaction();
@@ -818,6 +819,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(TransactionItem::new);
+    }
+
+    private void addInterestStatementTransaction()
+    {
+        DocumentType type = new DocumentType("ABRECHNUNG ZINSEN");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.INTEREST);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^ABRECHNUNG ZINSEN$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // zum 31.01.2023
+                .section("date")
+                .match("^zum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // DE10123456789123456789 01.02.2023 0,88 EUR
+                .section("currency", "amount")
+                .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAdvanceTaxTransaction()
