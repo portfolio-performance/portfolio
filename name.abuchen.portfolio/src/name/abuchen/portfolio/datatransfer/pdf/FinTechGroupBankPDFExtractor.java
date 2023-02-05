@@ -427,6 +427,24 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // Kurs          : 114,4700 USD            Kurswert      :             528,10 EUR
+                // Devisenkurs   : 1,083790                Provision     :               5,90 EUR
+                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<currency>[\\w]{3})$")
+                .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                })
+
                 // @formatter:off
                 // If the total amount is negative and the market value
                 // is less than the fees, then we post the gross value.
