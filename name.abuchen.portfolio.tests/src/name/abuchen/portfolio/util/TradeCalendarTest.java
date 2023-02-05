@@ -174,12 +174,12 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-01-17")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-16")), is(true));
 
-        // Washingtons Birthday
+        // Washington's Birthday
         assertThat(calendar.isHoliday(LocalDate.parse("2021-02-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-02-21")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-02-20")), is(true));
 
-        // Good friday
+        // Good Friday
         assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
@@ -195,7 +195,7 @@ public class TradeCalendarTest
         // Independence Day
         assertThat(calendar.isHoliday(LocalDate.parse("2020-07-03")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2021-07-05")), is(true));
-        
+
         // Labour day
         assertThat(calendar.isHoliday(LocalDate.parse("2021-09-06")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-09-05")), is(true));
@@ -206,7 +206,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-11-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-11-23")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2020-12-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2021-12-24")), is(true));
 
@@ -245,7 +245,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
 
-        // Eastern
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2019-04-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-10")), is(true));
@@ -269,7 +269,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-05-30")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-06-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-06-03")), is(true));
-        
+
         assertThat(calendar.isHoliday(LocalDate.parse("2019-04-19")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2019-04-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2019-05-06")), is(true));
@@ -317,7 +317,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
 
-        // Eastern
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2019-04-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-10")), is(true));
@@ -329,7 +329,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2019-12-25")), is(true));
 
         // Saint Stephen
@@ -353,7 +353,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-02-21")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-02-20")), is(true));
 
-        // Good friday
+        // Good Friday
         assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
@@ -434,7 +434,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2023-02-20")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-02-21")), is(true));
 
-        // Eastern
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
@@ -466,7 +466,7 @@ public class TradeCalendarTest
         // Republic Proclamation day
         assertThat(calendar.isHoliday(LocalDate.parse("2023-11-02")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-25")), is(true));
     }
 
@@ -483,7 +483,7 @@ public class TradeCalendarTest
         // Extra Holiday
         assertThat(calendar.isHoliday(LocalDate.parse("2000-01-03")), is(true));
 
-        // Eastern
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-10")), is(true));
 
@@ -495,12 +495,10 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
 
         // Ascension
-        assertThat(calendar.isHoliday(LocalDate.parse("2023-05-18")), is(true));
-        
-        // Ascension
         assertThat(calendar.isHoliday(LocalDate.parse("2001-05-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2002-05-09")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2003-05-29")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-05-18")), is(true));
 
         // Whit Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2001-06-04")), is(true));
@@ -518,7 +516,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2006-08-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2007-08-01")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-24")), is(true));
 
         // Saint Stephen
@@ -536,12 +534,12 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-12-31")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
 
-        // Good friday
+        // Good Friday
         assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
-        
-        // Eastern
+
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-10")), is(true));
 
@@ -551,11 +549,11 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2021-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
-        
+
         // Assumption day
         assertThat(calendar.isHoliday(LocalDate.parse("2023-08-15")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-26")), is(true));
@@ -572,7 +570,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2022-12-31")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
 
-        // Eastern
+        // Easter Monday
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-10")), is(true));
 
@@ -587,11 +585,11 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2021-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
-        
+
         // National day
         assertThat(calendar.isHoliday(LocalDate.parse("2023-10-26")), is(true));
 
-        // Chrismas
+        // Christmas
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-12-25")), is(true));
 
@@ -602,8 +600,6 @@ public class TradeCalendarTest
     @Test
     public void testTradeCalenderMICEXRTS()
     {
-        // See https://www.wienerborse.at/handel/handelsinformationen/handelskalender/
-
         TradeCalendar calendar = TradeCalendarManager.getInstance("MICEX-RTS");
 
         // New Year
@@ -613,7 +609,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-04")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-05")), is(true));
 
-        // Chrismas eve russia
+        // Christmas eve (Russia)
         assertThat(calendar.isHoliday(LocalDate.parse("2023-01-07")), is(true));
 
         // Defender of the fatherland day
@@ -631,7 +627,7 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2021-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
-        
+
         // Victory day
         assertThat(calendar.isHoliday(LocalDate.parse("2014-05-09")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-11")), is(true));
