@@ -180,17 +180,16 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2023-02-20")), is(true));
 
         // Good Friday
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-04-10")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true));
 
-        // Memorial
-        assertThat(calendar.isHoliday(LocalDate.parse("2020-04-10")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true));
-
-        // Juneteenth
+        // Memorial Day
         assertThat(calendar.isHoliday(LocalDate.parse("2020-05-25")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2021-05-31")), is(true));
+
+        // Juneteenth
 
         // Independence Day
         assertThat(calendar.isHoliday(LocalDate.parse("2020-07-03")), is(true));
