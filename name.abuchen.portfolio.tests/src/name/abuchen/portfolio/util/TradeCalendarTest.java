@@ -193,6 +193,12 @@ public class TradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2021-05-31")), is(true));
 
         // Juneteenth
+        assertThat(calendar.isHoliday(LocalDate.parse("2020-06-19")), is(false));
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-06-18")), is(false));
+                // federal holiday for the first time in 2021, but not observed
+                // by NYSE until 2022
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-06-19")), is(true));
 
         // Independence Day
         assertThat(calendar.isHoliday(LocalDate.parse("2020-07-03")), is(true));
