@@ -1,0 +1,69 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0303502000003045128270
+Herrn
+Max Muster
+Weg 7
+99999 Dorforf
+          Frankfurt, 31.01.2023
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 1001123456
+Depotinhaber:     Max Muster
+Nr.229026859/1    Kauf         3M CO.             DL-,01 (US88579Y1010/851745)
+Ordervolumen  : 5,00 St.                Handelsplatz  :                   NYSE
+davon ausgef. : 5,00 St.                Schlusstag    :  30.01.2023, 15:30 Uhr
+Kurs          : 114,4700 USD            Kurswert      :             528,10 EUR
+Devisenkurs   : 1,083790                Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :
+Lagerstelle   : International
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: 0,00 EUR                grundlage     :               0,00 EUR
+Valuta        : 01.02.2023            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :            -534,00 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             0,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    3157457617.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1001123456
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003045128270 0113303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003045128270
