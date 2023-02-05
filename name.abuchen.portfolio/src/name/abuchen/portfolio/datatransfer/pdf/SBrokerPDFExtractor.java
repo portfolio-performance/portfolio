@@ -177,10 +177,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung|Gutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Aussch.ttung (f.r|Investmentfonds))( [^\\.,\\d]+.*)?$");
+        Block block = new Block("^(Dividendengutschrift|Aussch.ttung (f.r|Investmentfonds)|Gutschrift)( [^\\.,\\d]+.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
@@ -206,7 +206,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("shares", "name", "isin", "wkn", "name1", "currency").optional()
                 .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[\\w]{12}) \\((?<wkn>.*)\\)$")
                 .match("^(?<name1>.*)$")
-                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Auszahlung) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -274,7 +274,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                                        .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
