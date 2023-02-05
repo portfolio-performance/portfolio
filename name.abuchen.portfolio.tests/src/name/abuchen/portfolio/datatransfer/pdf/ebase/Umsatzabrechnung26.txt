@@ -1,0 +1,16 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Kontoauszug-Nr. 13
+vom 31.12.2022
+Seite 1 von 2
+
+Kontoauszug für Ihr ebase Konto flex
+Kontostand alt: 15.11.2022 887,40 EUR
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+12.12.2022 020739500 12.12.2022 SEPA Lastschrift Einzug 200,00 EUR
+
+Gläubiger-ID: DE68ZZZ00000025032
+Mandatsreferenz: EBASEV0000007783
+Kontostand neu: 31.12.2022 1.087,40 EUR
