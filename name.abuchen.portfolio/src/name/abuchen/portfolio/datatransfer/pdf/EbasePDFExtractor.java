@@ -25,6 +25,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addFeesWithSecurityTransaction();
         addDeliveryInOutBoundTransaction();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -702,6 +703,36 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        DocumentType type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 12.12.2022 020739500 12.12.2022 SEPA Lastschrift Einzug 200,00 EUR
+        // @formatter:on
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA Lastschrift Einzug [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.REMOVAL);
+                    return t;
+                })
+
+                .section("date", "note", "amount", "currency")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>[\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA Lastschrift Einzug (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
