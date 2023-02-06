@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -635,6 +637,9 @@ public class IBFlexStatementExtractor implements Extractor
             importModelObjects("CorporateAction", buildCorporateTransaction);
 
             // TODO: Process all FxTransactions and ConversionRates
+
+            // Remove reversed cash transactions
+            removeReversedAccountTransactionPairs();
         }
 
         public void addError(Exception e)
@@ -766,6 +771,90 @@ public class IBFlexStatementExtractor implements Extractor
 
             transaction.setShares(numShares);
         }
+        
+        /**
+         * Checks if the transaction is marked as a reversal.
+         */
+        private boolean isReversedTransaction(Annotated transaction)
+        {
+            return transaction.getNote().indexOf("REVERSAL") != -1;
+        }
+
+        /**
+         * Checks if reversal and original are a matching pair of a transaction
+         * and its reversal. Currently working for reversed dividends, might
+         * need to be extended if we encounter additional problematic reversals
+         * during import.
+         */
+        private boolean isMatchForReversedTransaction(AccountTransaction original, AccountTransaction reversal)
+        {
+            // For reversed dividends one of the transactions has "REVERSAL" in
+            // its description, the reversal has negative shares but both
+            // transactions have identical amounts (no negative dividends). To
+            // be conservative we also require the reversal to happen within 5
+            // days of the original transaction.
+            return isReversedTransaction(reversal) && !isReversedTransaction(original)
+                            && reversal.getSecurity() == original.getSecurity()
+                            && reversal.getType() == original.getType() && reversal.getShares() == -original.getShares()
+                            && reversal.getAmount() != original.getAmount()
+                            && reversal.getDateTime().plusDays(5).isAfter(original.getDateTime());
+
+        }
+
+        /**
+         * Removes account transactions pairs that correspond to reversed
+         * transactions. Currently working for reversed dividends, might need to
+         * be extended if we encounter additional problematic reversals during
+         * import.
+         */
+        private void removeReversedAccountTransactionPairs()
+        {
+            HashSet<Item> transactionsToRemove = new HashSet<Item>();
+
+            for (Item reversalCandidate : results)
+            {
+                // Skip transactions that are
+                // - already marked for removal
+                // - not reversals
+                // - not an AccountTransaction
+                if (transactionsToRemove.contains(reversalCandidate)
+                                || !isReversedTransaction(reversalCandidate.getSubject())
+                                || !(reversalCandidate.getSubject() instanceof AccountTransaction))
+                {
+                    continue;
+                }
+
+                AccountTransaction reversal = (AccountTransaction) reversalCandidate.getSubject();
+
+                // Look for a matching original transaction and potentially
+                // remove it
+                for (Item matchCandidate : results)
+                {
+                    // Skip transactions that are
+                    // - already marked for removal
+                    // - not an AccountTransaction
+                    if (transactionsToRemove.contains(matchCandidate)
+                                    || !(matchCandidate.getSubject() instanceof AccountTransaction))
+                    {
+                        continue;
+                    }
+
+                    AccountTransaction matchCandidateTransaction = (AccountTransaction) matchCandidate.getSubject();
+                    if (isMatchForReversedTransaction(matchCandidateTransaction, reversal))
+                    {
+                        // Found a matching pair of reversal and original
+                        // transaction, mark both for removal.
+                        transactionsToRemove.add(reversalCandidate);
+                        transactionsToRemove.add(matchCandidate);
+                        break;
+                    }
+                }
+            }
+
+            results.removeAll(transactionsToRemove);
+        }
+
+
 
         public List<Exception> getErrors()
         {
