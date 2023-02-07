@@ -15,6 +15,8 @@ public class TestCurrencyConverter implements CurrencyConverter
 {
     private static ExchangeRateTimeSeriesImpl EUR_USD = null; // NOSONAR
     private static InverseExchangeRateTimeSeries USD_EUR = null; // NOSONAR
+    private static ExchangeRateTimeSeriesImpl EUR_CHF = null; // NOSONAR
+    private static InverseExchangeRateTimeSeries CHF_EUR = null; // NOSONAR
 
     static
     {
@@ -35,6 +37,25 @@ public class TestCurrencyConverter implements CurrencyConverter
         EUR_USD.addRate(new ExchangeRate(LocalDate.parse("2015-01-16"), BigDecimal.valueOf(1.1588).setScale(10)));
 
         USD_EUR = new InverseExchangeRateTimeSeries(EUR_USD);
+
+        EUR_CHF = new ExchangeRateTimeSeriesImpl(null, CurrencyUnit.EUR, "CHF"); //$NON-NLS-1$
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2014-12-31"), new BigDecimal("1.2024")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-02"), new BigDecimal("1.2022")));
+
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-05"), new BigDecimal("1.2016")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-06"), new BigDecimal("1.2014")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-07"), new BigDecimal("1.2011")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-08"), new BigDecimal("1.2010")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-09"), new BigDecimal("1.2010")));
+
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-12"), new BigDecimal("1.2010")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-13"), new BigDecimal("1.2010")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-14"), new BigDecimal("1.2010")));
+        // 'Francogeddon': the SNB abandons its EUR/CHF cap on 2015-01-15
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-15"), new BigDecimal("1.0280")));
+        EUR_CHF.addRate(new ExchangeRate(LocalDate.parse("2015-01-16"), new BigDecimal("1.0128")));
+
+        CHF_EUR = new InverseExchangeRateTimeSeries(EUR_CHF);
     }
 
     private final String termCurrency;
@@ -66,6 +87,10 @@ public class TestCurrencyConverter implements CurrencyConverter
             series = USD_EUR;
         else if (currencyCode.equals("EUR") && termCurrency.equals("USD"))
             series = EUR_USD;
+        else if (currencyCode.equals("CHF") && termCurrency.equals("EUR"))
+            series = CHF_EUR;
+        else if (currencyCode.equals("EUR") && termCurrency.equals("CHF"))
+            series = EUR_CHF;
         else
             // testing: any other currency will be converted 1:1
             return new ExchangeRate(date, BigDecimal.ONE);
@@ -80,7 +105,8 @@ public class TestCurrencyConverter implements CurrencyConverter
             return this;
 
         if (currencyCode.equals(CurrencyUnit.EUR)
-                || currencyCode.equals(CurrencyUnit.USD))
+                || currencyCode.equals(CurrencyUnit.USD)
+                || currencyCode.equals("CHF"))
             return new TestCurrencyConverter(currencyCode);
 
         return null;
