@@ -69,6 +69,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Wertpapierabrechnung "
                         + "(Kauf|"
                         + "Kauf aus Sparplan|"
+                        + "Kauf aus Wiederanlage Fondsaussch.ttung|"
                         + "Bezug|"
                         + "Verkauf|"
                         + "Verk\\. Teil\\-\\/Bezugsr\\.)|"
@@ -86,6 +87,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
                         + "(Kauf|"
                         + "Kauf aus Sparplan|"
+                        + "Kauf aus Wiederanlage Fondsaussch.ttung|"
                         + "Bezug|"
                         + "Verkauf|"
                         + "Verk. Teil\\-\\/Bezugsr\\.)|"
@@ -632,6 +634,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Börsenentgelt EUR 0,39
                 .section("currency", "fee").optional()
                 .match("^B.rsenentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Variables Transaktionsentgelt EUR 2,82
+                .section("currency", "fee").optional()
+                .match("^Variables Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kurswert EUR 52,63
