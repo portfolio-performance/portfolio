@@ -39,22 +39,25 @@ import name.abuchen.portfolio.util.Dates;
          */
         public final double rateOfReturn;
 
+        public final Money fifoCost;
+
         /**
          * Constructs an instance.
          *
          * @param converter
          *            currency converter
-         * @param t
+         * @param diviPayment
          *            {@link DividendTransaction}
          * @param security
          *            {@link Security}
          */
-        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t, Security security)
+        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment diviPayment, Security security)
         {
-            this.amount = t.getGrossValue().with(converter.at(t.getDateTime()));
-            LocalDateTime time = t.getDateTime();
+            this.amount = diviPayment.getGrossValue().with(converter.at(diviPayment.getDateTime()));
+            LocalDateTime time = diviPayment.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
+            fifoCost = diviPayment.getFifoCost();
 
             // try to set rate of return, default is NaN
             double rr = Double.NaN;
@@ -67,9 +70,9 @@ import name.abuchen.portfolio.util.Dates;
                 // multiple accounts). The moving average cost is always the
                 // total costs.
 
-                Money movingAverageCost = t.getMovingAverageCost();
+                Money movingAverageCost = diviPayment.getMovingAverageCost();
                 if (movingAverageCost != null && !movingAverageCost.isZero())
-                    rr = t.getGrossValueAmount() / (double) movingAverageCost.getAmount();
+                    rr = diviPayment.getGrossValueAmount() / (double) movingAverageCost.getAmount();
 
                 // check if it is valid (non 0)
                 if (rr == 0)
@@ -83,7 +86,7 @@ import name.abuchen.portfolio.util.Dates;
                     {
                         double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
                                         * Values.AmountFraction.factor();
-                        rr = t.getDividendPerShare() / sharePriceAmount;
+                        rr = diviPayment.getDividendPerShare() / sharePriceAmount;
                     }
                 }
             }
@@ -95,6 +98,7 @@ import name.abuchen.portfolio.util.Dates;
     private Periodicity periodicity;
     private MutableMoney sum;
     private double rateOfReturnPerYear;
+    public double yieldOnCostPerYear;
 
     @Override
     public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
@@ -129,7 +133,6 @@ import name.abuchen.portfolio.util.Dates;
         }
 
         int years = 0;
-
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
@@ -182,6 +185,7 @@ import name.abuchen.portfolio.util.Dates;
         }
 
         this.rateOfReturnPerYear = sumRateOfReturn / years;
+        yieldOnCostPerYear = calculateYieldOnCost(years, LocalDate.now());
 
         // determine periodicity?
         if (significantCount > 0)
@@ -238,6 +242,11 @@ import name.abuchen.portfolio.util.Dates;
         return rateOfReturnPerYear;
     }
 
+    public double getYieldOnCost()
+    {
+        return yieldOnCostPerYear;
+    }
+
     public Money getSum()
     {
         return sum.toMoney();
@@ -256,4 +265,42 @@ import name.abuchen.portfolio.util.Dates;
         // construct new payment and add it to the list
         payments.add(new Payment(converter, t, getSecurity()));
     }
+
+    /**
+     * calculates the dividend yield on cost for one year. yield is based on the
+     * last dividends and not on an average dividend payment over time for this
+     * security.
+     * 
+     * @param years
+     *            between first and last dividend payments
+     * @return
+     */
+    double calculateYieldOnCost(int years, LocalDate now)
+    {
+        long fifoCostAmount = 0L;
+        for (int i = payments.size() - 1; i >= 0; i--)
+        {
+            Payment p = payments.get(i);
+            if (p.fifoCost != null && p.fifoCost.isPositive())
+            {
+                fifoCostAmount = p.fifoCost.getAmount();
+                break;
+            }
+        }
+        if (fifoCostAmount > 0)
+        {
+            double fifoCosts = fifoCostAmount * Values.AmountFraction.factor();
+
+            LocalDate firstDividendPaymentAccepted = now.minusYears(1);
+            double diviSum = years > 1 ? payments.stream() //
+                            .filter(p -> p.date.isAfter(firstDividendPaymentAccepted)) //
+                            .mapToDouble(p -> p.amount.getAmount() * Values.AmountFraction.factor()) //
+                            .sum() //
+                            : sum.getAmount() * Values.AmountFraction.factor() / years;
+
+            return diviSum * 100.0 / fifoCosts;
+        }
+        return 0.0;
+    }
+
 }

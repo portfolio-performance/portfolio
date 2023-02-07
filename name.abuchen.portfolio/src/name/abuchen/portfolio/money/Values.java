@@ -14,6 +14,10 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.util.FormatHelper;
 
+/**
+ * @deprecated class do unexpected things
+ */
+@Deprecated
 public abstract class Values<E>
 {
     public static final MathContext MC = new MathContext(10, RoundingMode.HALF_UP);
@@ -370,6 +374,15 @@ public abstract class Values<E>
         public String format(Double percent)
         {
             return String.format("%,.2f", percent); //$NON-NLS-1$
+        }
+    };
+
+    public static final Values<Double> PercentPlain2 = new Values<Double>("0.00", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%,.2f", percent) + "%"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     };
 

@@ -886,6 +886,22 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
         recordColumns.addColumn(column);
+
+        // dividend yield on cost
+        column = new Column("yocdiv", Messages.ColumnDividendYieldOnCost, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setDescription(Messages.ColumnDividendYieldOnCost_Description);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.PercentPlain2.formatNonZero(((SecurityPerformanceRecord) r).getDividendYieldOnCost());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dividendYieldOnCost")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
     }
 
     private void createRiskColumns()

@@ -186,6 +186,8 @@ public class Messages extends NLS
     public static String ColumnDividendMovingAverageTotalRateOfReturn;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_Description;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
+    public static String ColumnDividendYieldOnCost;
+    public static String ColumnDividendYieldOnCost_Description;
     public static String ColumnEarnings;
     public static String ColumnEarnings_Description;
     public static String ColumnEndDate;

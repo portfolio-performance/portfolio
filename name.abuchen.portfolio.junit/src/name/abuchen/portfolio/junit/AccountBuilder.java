@@ -16,6 +16,11 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
+/**
+ * @deprecated this class is technical debt; please use
+ *             {@link name.abuchen.portfolio.model.AccountTransaction.AccountTransactionBuilder}
+ */
+@Deprecated
 public class AccountBuilder
 {
     private Account account;

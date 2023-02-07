@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -60,6 +61,75 @@ public class PortfolioTransaction extends Transaction
         public String toString()
         {
             return RESOURCES.getString("portfolio." + name()); //$NON-NLS-1$
+        }
+    }
+
+    public static class PortfolioTransactionBuilder
+    {
+        private Type txType;
+        private LocalDateTime datetime;
+        private String currencyCode;
+        private long amount = 0;
+        private long shares = 0;
+        private Security security;
+        private long fees = 0;
+        private long taxes = 0;
+
+        public PortfolioTransactionBuilder(Type txType)
+        {
+            this.txType = txType;
+        }
+
+        public PortfolioTransactionBuilder transactionAt(LocalDateTime dateTime)
+        {
+            datetime = dateTime;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder withCurrency(String code)
+        {
+            currencyCode = code;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder withAmountOf(long amount)
+        {
+            this.amount = amount;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder numberOfShares(long shares)
+        {
+            this.shares = shares;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder forSecurity(Security security)
+        {
+            this.security = security;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder withCostsOf(long fees)
+        {
+            this.fees = fees;
+            return this;
+        }
+
+        public PortfolioTransactionBuilder withTaxAmountOf(long taxes)
+        {
+            this.taxes = taxes;
+            return this;
+        }
+
+        public PortfolioTransaction build()
+        {
+            Objects.requireNonNull(datetime, "datetime is a required field"); //$NON-NLS-1$
+            Objects.requireNonNull(currencyCode, "currencyCode is a required field"); //$NON-NLS-1$
+            Objects.requireNonNull(amount, "amount is a required field"); //$NON-NLS-1$
+            Objects.requireNonNull(security, "security is a required field"); //$NON-NLS-1$
+            Objects.requireNonNull(shares, "shares is a required field"); //$NON-NLS-1$
+            return new PortfolioTransaction(datetime, currencyCode, amount, security, shares, txType, fees, taxes);
         }
     }
 
