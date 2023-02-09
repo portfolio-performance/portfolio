@@ -87,6 +87,15 @@ public final class Dashboard
 
             return configuration;
         }
+
+        public Widget copy()
+        {
+            Widget copy = new Widget();
+            copy.setLabel(this.getLabel());
+            copy.setType(this.getType());
+            copy.getConfiguration().putAll(this.getConfiguration());
+            return copy;
+        }
     }
 
     private String name;
@@ -133,13 +142,7 @@ public final class Dashboard
         for (Column column : columns)
         {
             Column copyColumn = new Column();
-            column.getWidgets().stream().map(w -> {
-                Widget c = new Widget();
-                c.setLabel(w.getLabel());
-                c.setType(w.getType());
-                c.getConfiguration().putAll(w.getConfiguration());
-                return c;
-            }).forEach(copyColumn.getWidgets()::add);
+            column.getWidgets().stream().map(Widget::copy).forEach(copyColumn.getWidgets()::add);
             copy.getColumns().add(copyColumn);
         }
         return copy;
