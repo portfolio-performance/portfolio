@@ -167,7 +167,6 @@ public class DashboardView extends AbstractHistoricView
 
         private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
         {
-            
             Composite elementToMoveAbove = null;
             if (dropTarget.getData() instanceof Dashboard.Widget dropTargetWidget)
             {
@@ -194,8 +193,7 @@ public class DashboardView extends AbstractHistoricView
                             .buildDelegateAndMoveAboveElement(newParent, factory, copiedWidget, elementToMoveAbove);
 
             newDelegateWithComposite.getLeft().update();
-            Composite newComposite = newDelegateWithComposite.getRight();
-            newComposite.setParent(newParent);
+            newDelegateWithComposite.getRight().setParent(newParent);
         }
 
         private void doDropMove(Composite droppedComposite, Dashboard.Widget droppedWidget, Dashboard.Column oldColumn,
@@ -601,7 +599,6 @@ public class DashboardView extends AbstractHistoricView
         Composite filler = (Composite) columnControl.getData(FILLER_KEY);
         return buildDelegateAndMoveAboveElement(columnControl, widgetType, widget, filler);
     }
-
 
     private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveElement(Composite columnControl,
                     WidgetFactory widgetType, Dashboard.Widget widget, Composite elementToMoveAbove)
