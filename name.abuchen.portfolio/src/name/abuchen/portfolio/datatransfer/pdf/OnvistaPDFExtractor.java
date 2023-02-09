@@ -380,10 +380,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift|Kupongutschrift|Reinvestierung)");
+        DocumentType type = new DocumentType("(Dividendengutschrift|"
+                        + "Ertr.gnisgutschrift|"
+                        + "Kupongutschrift|"
+                        + "Reinvestierung|"
+                        + "Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Ertr.gnisgutschrift aus Wertpapieren|Kupongutschrift|Reinvestierung) .*$");
+        Block block = new Block("^(Ertr.gnisgutschrift aus Wertpapieren|Kupongutschrift|Reinvestierung|Kapitalr.ckzahlung) .*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -431,6 +435,23 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^(?<name1>.*)$")
                 .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\.,\\d]+ %$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Nominal"))
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                // Gattungsbezeichnung ISIN
+                // Garmin Ltd. Namens-Aktien SF 0,10 CH0114405324
+                // Ausschüttungsbetrag pro Stück
+                // USD 0,730000
+                .section("name", "isin", "name1", "currency").optional()
+                .match("^Gattungsbezeichnung ISIN$")
+                .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^(?<name1>.*)$")
+                .match("^Aussch.ttungsbetrag pro St.ck$")
+                .match("^(?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Nominal"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -486,11 +507,21 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         }
                                     })
                             ,
+                            // STK 15,000
+                            section -> section
+                                    .attributes("shares")
+                                    .match("^STK (?<shares>[\\.,\\d]+)$")
+                                    .assign((t, v) -> t.setShares((asShares(v.get("shares")))))
+                            ,
                             // EUR 5.000,000 14.02.2020 5,875000 %
                             section -> section
                                     .attributes("shares")
                                     .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ %$")
-                                    .assign((t, v) -> t.setShares((asShares(v.get("shares")) / 100)))
+                                    .assign((t, v) -> {
+                                        // Percentage quotation, workaround for bonds
+                                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                    })
                         )
 
                 .oneOf(
@@ -505,6 +536,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             section -> section
                                     .attributes("date")
                                     .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ %$")
+                                    .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                            ,
+                            // 30.09.2022 111111111 EUR/USD 0,98128 EUR 8,21
+                            section -> section
+                                    .attributes("date")
+                                    .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+$")
                                     .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
@@ -545,44 +582,64 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
                         )
 
-                // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
-                // ausländische Dividende EUR 18,10
-                .section("baseCurrency", "fxCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+                .optionalOneOf(
+                                // 05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
+                                // Ertrag für 2018 USD 45,44
+                                section -> section
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "fxCurrency", "fxGross")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                                        .match("^Ertrag f.r [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
-                    ExtrExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // 15.07.2019 123456789 EUR/USD 1,1327 EUR 13,47
+                                // ausländische Dividende EUR 18,10
+                                section -> section
+                                        .attributes("baseCurrency", "fxCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                                        .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                })
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
-                // 05.02.2019 000000000 EUR/USD 1,1474 EUR 39,60
-                // Ertrag für 2018 USD 45,44
-                .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "fxCurrency", "fxGross").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .match("^Ertrag f.r [\\d]{4}(\\/[\\d]{2})? (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    ExtrExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // Barausgleich USD 10,95
+                                // 30.09.2022 111111111 EUR/USD 0,98128 EUR 8,21
+                                section -> section
+                                        .attributes("fxGross", "fxCurrency", "baseCurrency", "termCurrency", "exchangeRate", "currency")
+                                        .match("^Barausgleich (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                                        .assign((t, v) -> {
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                })
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                        )
 
                 // Die Dividende wurde wie folgt in neue Aktien reinvestiert:
                 .section("note").optional()
@@ -596,6 +653,11 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Ertrag für 2016/17 EUR 1,80
                 .section("note").optional()
                 .match("^(?<note>Ertrag für [\\d]{4}(\\/[\\d]{2})?) [\\w]{3} [\\.,\\d]+$")
+                .assign((t, v) -> t.setNote(v.get("note")))
+
+                // Kapitalrückzahlung:
+                .section("note").optional()
+                .match("^(?<note>Kapitalr.ckzahlung):.*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
                 .conclude(ExtractorUtils.fixGrossValueA())
