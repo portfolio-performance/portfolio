@@ -1,0 +1,73 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.0
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Gartenstraße 67
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de 76135 Karlsruhe
+www.finanzen.net/zero
++49 89 5455 8188
+Seite 1/2
+DonauCapital Wertpapier GmbH Karlsruhe
+04.02.2023
+Passauer Str. 5
+94161 Ruderting Max Mustermann
+Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 11111111
+Referenz-Nr.: 333333333
+Dividendenabrechnung KOPIE
+Ex-Tag: 05.01.2023
+Nominale ISIN: US1101221083 WKN: 850501 Ausschüttung
+STK 30 Bristol-Myers Squibb Co. USD 0,57 p.STK
+Zahlungszeitraum: 01.01.2022 - 31.12.2022 
+Zahltag: 01.02.2023
+Umrechnungskurs: EUR/USD 1,09095
+Bruttobetrag USD 17,10
+Bruttobetrag EUR 15,67
+Kapitalertragsteuer EUR 1,52 -
+Kirchensteuer EUR 0,14 -
+Solidaritätszuschlag EUR 0,08 -
+US-Quellensteuer EUR 2,36 -
+Zu Gunsten Konto 1111111111 Valuta: 01.02.2023 EUR 11,57
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-055.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Dividendenabrechnung KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Quellensteuer-Anrechnung
+angerechnete QueSt. allg. Erträge EUR 155,89 EUR 2,36 EUR 158,25
+Kapitalertragsteuer EUR 113,00 EUR 3,83 EUR 116,83
+Kapitalertragsteuer EUR 116,83 EUR 2,31 - EUR 114,52
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+ausländische Dividende EUR 15,67 EUR 15,67
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer EUR 15,67 EUR 15,67
+Quellensteuer-Anrechnung bei 9% Kirchensteuer EUR 9,44 - EUR 9,44 -
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 3,83 - EUR 3,83 -
+Kirchensteuer 9,00 % EUR 0,34 - EUR 0,34 -
+Solidaritätszuschlag 5,50 % EUR 0,20 - EUR 0,20 -
+Kapitalertragsteuer 24,45 % EUR 2,31 EUR 2,31
+Kirchensteuer 9,00 % EUR 0,20 EUR 0,20
+Solidaritätszuschlag 5,50 % EUR 0,12 EUR 0,12
+US-Quellensteuer 15,00 % EUR 2,36 - EUR 2,36 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-055.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
