@@ -1,0 +1,9 @@
+<FlexQueryResponse queryName="PortfolioPerformence" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="UXXXXXX" fromDate="20190826" toDate="20191231" period="LastBusinessDay" whenGenerated="20210307;043303">
+      <Trades>
+        <Trade accountId="UXXXXXX" acctAlias="" model="" currency="EUR" fxRateToBase="1" assetCategory="STK" symbol="SGN" description="SURGUTNEFTEGAS-SP ADR" conid="27346611" securityID="US8688612048" securityIDType="ISIN" cusip="" isin="US8688612048" listingExchange="SWB" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" strike="" expiry="" tradeID="2592275115" putCall="" reportDate="20191030" principalAdjustFactor="" dateTime="20191030;091642" tradeDate="20191030" settleDateTarget="20191101" transactionType="ExchTrade" exchange="TGATE" quantity="120" tradePrice="6" tradeMoney="720" proceeds="-720" taxes="0" ibCommission="-6" ibCommissionCurrency="EUR" netCash="-726" closePrice="5.965" openCloseIndicator="O" notes="" cost="726" fifoPnlRealized="0" fxPnl="0" mtmPnl="-4.2" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" transactionID="11501005" buySell="BUY" orderReference="" volatilityOrderLink="" exchOrderId="N/A" orderTime="20191030;080542" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" orderType="LMT" traderID="" isAPIOrder="N" accruedInt="0" />
+      </Trades>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>
