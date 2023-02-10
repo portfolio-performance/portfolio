@@ -8,6 +8,9 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
 
 import name.abuchen.portfolio.ui.util.Colors;
 
@@ -34,6 +37,8 @@ public class ColoredLabel extends Canvas // NOSONAR
         super(parent, SWT.NONE);
 
         this.textStyle = style;
+
+        initAccessibility();
 
         addListener(SWT.Paint, this::handlePaint);
     }
@@ -105,5 +110,17 @@ public class ColoredLabel extends Canvas // NOSONAR
         }
 
         e.type = SWT.None;
+    }
+
+    private void initAccessibility()
+    {
+        getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+            public void getRole(AccessibleControlEvent e) {
+                e.detail = ACC.ROLE_LABEL;
+            }
+            public void getValue(AccessibleControlEvent e) {
+                e.result = text;
+            }
+        });
     }
 }
