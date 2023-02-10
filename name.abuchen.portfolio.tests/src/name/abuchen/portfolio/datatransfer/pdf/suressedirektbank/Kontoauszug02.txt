@@ -1,0 +1,109 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.1.qualifier
+-----------------------------------------
+Hr. Max Mustermann
+2023-02-01
+Auszug 1 /1
+IBAN BE78 1111 1111 1111 EUR Voriger Saldo :
+
+Nr. Trans. verfu¨gbar
+1 19-12 19-12 Uberweisung zu Ihren Gunsten 1,00 EUR
+Das Auftraggebers : DE10 1203 0000 1111 1111 11
+BIC-Code : BYLADEM1001
+Auftraggeber : Max Mustermann
+Verwendungszweck :
+Zahlungsgrund :
+Kommunikation
+Einzahluing auf Verrechnungskonto fuer Tagesgeld
+Referenz des Auftraggebers :
+Referenz : C2L19XM007000066
+Neuer Saldo am 19-12-2022 : 1,00 EUR
+
+Ab dem Datum der Belastung oder Gutschrift hat der Kunde sechs Wochen Zeit, um Einspruch gegen einen Fehler oder eine Ungenauigkeit im Zusammenhang mit einer
+Transaktion zu erheben.Wird innerhalb dieser Frist kein Einspruch erhoben, gelten die elektronischen Kontoauszu¨ge als verbindlich und vom Kunden genehmigt. Diese
+Regel gilt auch fu¨r die Anha¨nge zu den elektronischen Kontoauszu¨gen.
+Der Kontostand dieses Sparkontos bei der belgischen Fililale der Santander Consumer Finance S.A. (Spanien) steht unter dem Schutz des spanischen
+Einlagensicherungsfonds fu¨r Kreditinstitute fu¨r bis zu 100.000 C je Person und je Kreditinstitut.
+,,Suresse” ist eine Marke der Santander Consumer Finance SA (Spanien), Niederlassung Belgien, die ihre Leistungen unter dem Namen Suresse Direkt Bank anbietet.
+Kontakt : info@suressedirektbank.de
+Santander Consumer Finance, Niederlassung Belgien - 85 Avenue de Nerviens, B-1040 Bru¨ssel, Belgien
+Tel. +32 2 286 54 11 - BE 0763.791.559 - RPM Bru¨ssel - VAT BE0763.791.559
+Details in Spanien: Santander Consumer Finance SA - Insc. Reg. Merc. Madrid, T.1663, Gen.1081, Secc. 3ª libro de Soc. Folio 102, Hoja nº 7.822,
+C.I.F. A28122570. Reg. Banco. Espan˜a nº 0224. Dom : Avda de Cantabria s/n 28660 - Boadilla del Monte - Madrid - Espan˜a
+Hr. Max Mustermann
+2023-02-01
+Auszug 2 /1
+IBAN BE78 1111 1111 1111 EUR Voriger Saldo : 1,00 EUR
+
+Nr. Trans. verfu¨gbar
+2 20-12 20-12 Ihre U¨berweisung -1,00 EUR
+Konto des Empf : DE10 1203 0000 1111 1111 11
+BIC : BYLADEM1001
+Empfa¨nger : Max Mustermann
+Verwendungszweck :
+Kommunikation :
+Test Auszahlung Suresse Bank auf DKB Giro Konto 1
+Referenz des :
+Referenz : C2L20CW0G00A03NA
+3 20-12 20-12 Uberweisung zu Ihren Gunsten 5.000,00 EUR
+Das Auftraggebers : DE10 1203 0000 1111 1111 11
+BIC-Code : BYLADEM1001
+Auftraggeber : Max Mustermann
+Verwendungszweck :
+Zahlungsgrund :
+Kommunikation
+Einzahluing auf Verrechnungskonto fuer Tagesgeld
+Referenz des Auftraggebers :
+Referenz : C2L20XM009000059
+Neuer Saldo am 20-12-2022 : 5.000,00 EUR
+
+Ab dem Datum der Belastung oder Gutschrift hat der Kunde sechs Wochen Zeit, um Einspruch gegen einen Fehler oder eine Ungenauigkeit im Zusammenhang mit einer
+Transaktion zu erheben.Wird innerhalb dieser Frist kein Einspruch erhoben, gelten die elektronischen Kontoauszu¨ge als verbindlich und vom Kunden genehmigt. Diese
+Regel gilt auch fu¨r die Anha¨nge zu den elektronischen Kontoauszu¨gen.
+Der Kontostand dieses Sparkontos bei der belgischen Fililale der Santander Consumer Finance S.A. (Spanien) steht unter dem Schutz des spanischen
+Einlagensicherungsfonds fu¨r Kreditinstitute fu¨r bis zu 100.000 C je Person und je Kreditinstitut.
+,,Suresse” ist eine Marke der Santander Consumer Finance SA (Spanien), Niederlassung Belgien, die ihre Leistungen unter dem Namen Suresse Direkt Bank anbietet.
+Kontakt : info@suressedirektbank.de
+Santander Consumer Finance, Niederlassung Belgien - 85 Avenue de Nerviens, B-1040 Bru¨ssel, Belgien
+Tel. +32 2 286 54 11 - BE 0763.791.559 - RPM Bru¨ssel - VAT BE0763.791.559
+Details in Spanien: Santander Consumer Finance SA - Insc. Reg. Merc. Madrid, T.1663, Gen.1081, Secc. 3ª libro de Soc. Folio 102, Hoja nº 7.822,
+C.I.F. A28122570. Reg. Banco. Espan˜a nº 0224. Dom : Avda de Cantabria s/n 28660 - Boadilla del Monte - Madrid - Espan˜a
+Hr. Max Mustermann
+2023-02-01
+Auszug 3 /1
+IBAN BE78 1111 1111 1111 EUR Voriger Saldo : 5.000,00 EUR
+Nr. Trans. verfu¨gbar
+4 30-12 01-01 Habenzinsen => 01 2,80 EUR
+Neuer Saldo am 30-12-2022 : 5.002,80 EUR
+Ab dem Datum der Belastung oder Gutschrift hat der Kunde sechs Wochen Zeit, um Einspruch gegen einen Fehler oder eine Ungenauigkeit im Zusammenhang mit einer
+Transaktion zu erheben.Wird innerhalb dieser Frist kein Einspruch erhoben, gelten die elektronischen Kontoauszu¨ge als verbindlich und vom Kunden genehmigt. Diese
+Regel gilt auch fu¨r die Anha¨nge zu den elektronischen Kontoauszu¨gen.
+Der Kontostand dieses Sparkontos bei der belgischen Fililale der Santander Consumer Finance S.A. (Spanien) steht unter dem Schutz des spanischen
+Einlagensicherungsfonds fu¨r Kreditinstitute fu¨r bis zu 100.000 C je Person und je Kreditinstitut.
+,,Suresse” ist eine Marke der Santander Consumer Finance SA (Spanien), Niederlassung Belgien, die ihre Leistungen unter dem Namen Suresse Direkt Bank anbietet.
+Kontakt : info@suressedirektbank.de
+Santander Consumer Finance, Niederlassung Belgien - 85 Avenue de Nerviens, B-1040 Bru¨ssel, Belgien
+Tel. +32 2 286 54 11 - BE 0763.791.559 - RPM Bru¨ssel - VAT BE0763.791.559
+Details in Spanien: Santander Consumer Finance SA - Insc. Reg. Merc. Madrid, T.1663, Gen.1081, Secc. 3ª libro de Soc. Folio 102, Hoja nº 7.822,
+C.I.F. A28122570. Reg. Banco. Espan˜a nº 0224. Dom : Avda de Cantabria s/n 28660 - Boadilla del Monte - Madrid - Espan˜a
+Hr. Max Mustermann
+2023-02-01
+Nicht reguliertes Sparkonto EUR BE78 1111 1111 1111 / 01
+Auszug 3 Anlage 01
+Z I N S A B S C H L U S S
+Abschlusskonto : BE78 1111 1111 1111
+Periode von: 01-12-2022 bis 31-12-2022 Referenz: C2L30IN11111111
+Habenzinsen 2,80 EUR
+Summe verschiedene Steuern 0,00 EUR
+Zu erhalten Nettozinsbetrag : 2,80 EUR
+Ab dem Datum der Belastung oder Gutschrift hat der Kunde sechs Wochen Zeit, um Einspruch gegen einen Fehler oder eine Ungenauigkeit im Zusammenhang mit einer
+Transaktion zu erheben.Wird innerhalb dieser Frist kein Einspruch erhoben, gelten die elektronischen Kontoauszu¨ge als verbindlich und vom Kunden genehmigt. Diese
+Regel gilt auch fu¨r die Anha¨nge zu den elektronischen Kontoauszu¨gen.
+Der Kontostand dieses Sparkontos bei der belgischen Fililale der Santander Consumer Finance S.A. (Spanien) steht unter dem Schutz des spanischen
+Einlagensicherungsfonds fu¨r Kreditinstitute fu¨r bis zu 100.000 C je Person und je Kreditinstitut.
+,,Suresse” ist eine Marke der Santander Consumer Finance SA (Spanien), Niederlassung Belgien, die ihre Leistungen unter dem Namen Suresse Direkt Bank anbietet.
+Kontakt : info@suressedirektbank.de
+Santander Consumer Finance, Niederlassung Belgien - 85 Avenue de Nerviens, B-1040 Bru¨ssel, Belgien
+Tel. +32 2 286 54 11 - BE 0763.791.559 - RPM Bru¨ssel - VAT BE0763.791.559
+Details in Spanien: Santander Consumer Finance SA - Insc. Reg. Merc. Madrid, T.1663, Gen.1081, Secc. 3ª libro de Soc. Folio 102, Hoja nº 7.822,
+C.I.F. A28122570. Reg. Banco. Espan˜a nº 0224. Dom : Avda de Cantabria s/n 28660 - Boadilla del Monte - Madrid - Espan˜a
