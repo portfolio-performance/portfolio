@@ -109,14 +109,16 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
         StringBuilder buffer = new StringBuilder();
         if (newVersion.requiresNewJavaVersion())
         {
+            String msg = MessageFormat.format(Messages.MsgUpdateRequiresLatestJavaVersion, newVersion.getMinimumJavaVersionRequired());
+            
             StyleRange style = new StyleRange();
             style.start = buffer.length();
-            style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
+            style.length = msg.length();
             style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_RED);
             style.fontStyle = SWT.BOLD;
             ranges.add(style);
 
-            buffer.append(Messages.MsgUpdateRequiresLatestJavaVersion);
+            buffer.append(msg);
 
         }
 
