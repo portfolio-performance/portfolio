@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -468,7 +467,7 @@ public class DashboardView extends AbstractHistoricView
         scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
 
         container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
-                        getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
+                        getClient().getDashboards().toList().indexOf(dashboard)));
 
         return scrolledComposite;
     }
