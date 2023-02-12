@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.util.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -8,9 +11,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.accessibility.ACC;
-import org.eclipse.swt.accessibility.AccessibleControlAdapter;
-import org.eclipse.swt.accessibility.AccessibleControlEvent;
 
 import name.abuchen.portfolio.ui.util.Colors;
 
@@ -114,11 +114,17 @@ public class ColoredLabel extends Canvas // NOSONAR
 
     private void initAccessibility()
     {
-        getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-            public void getRole(AccessibleControlEvent e) {
+        getAccessible().addAccessibleControlListener(new AccessibleControlAdapter()
+        {
+            @Override
+            public void getRole(AccessibleControlEvent e)
+            {
                 e.detail = ACC.ROLE_LABEL;
             }
-            public void getValue(AccessibleControlEvent e) {
+
+            @Override
+            public void getValue(AccessibleControlEvent e)
+            {
                 e.result = text;
             }
         });
