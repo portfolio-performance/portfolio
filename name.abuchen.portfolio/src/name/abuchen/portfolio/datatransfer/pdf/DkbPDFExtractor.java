@@ -679,12 +679,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 }));
 
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
-                        + "(.berweisung"
+                        + "(?i)(.berweisung"
                         + "|Dauerauftrag"
                         + "|Basislastschrift"
                         + "|Lastschrift"
                         + "|Kartenzahlung.*"
-                        + "|KARTENZAHLUNG.*"
                         + "|Kreditkartenabr\\."
                         + "|Verf.gung Geldautomat"
                         + "|Verf.g\\. Geldautom\\. FW"
@@ -701,16 +700,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .section("month1", "day", "month2", "note", "amount")
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. "
-                                + "(?<note>.berweisung"
+                                + "(?i)(?<note>(.berweisung"
                                 + "|Dauerauftrag"
                                 + "|Basislastschrift"
                                 + "|Lastschrift"
                                 + "|Kartenzahlung.*"
-                                + "|KARTENZAHLUNG.*"
                                 + "|Kreditkartenabr\\."
                                 + "|Verf.gung Geldautomat"
                                 + "|Verf.g\\. Geldautom\\. FW"
-                                + "|.berweis\\. entgeltfr\\.) "
+                                + "|.berweis\\. entgeltfr\\.)) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -745,13 +743,16 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     if (v.get("note").equals("Überweis. entgeltfr."))
                         v.put("note", "Überweisung entgeltfrei");
 
+                    if (v.get("note").equals("Kartenzahlung FW"))
+                        v.put("note", "Kartenzahlung (Fremdwährung)");
+
                     t.setNote(v.get("note"));
                 })
 
                 .wrap(TransactionItem::new));
 
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
-                        + "(Lohn, Gehalt, Rente"
+                        + "(?i)(Lohn, Gehalt, Rente"
                         + "|Zahlungseingang"
                         + "|Storno Gutschrift"
                         + "|Bareinzahlung am GA"
@@ -770,13 +771,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .section("month1", "day", "month2", "note", "amount")
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. "
-                                + "(?<note>Lohn, Gehalt, Rente"
+                                + "(?i)(?<note>(Lohn, Gehalt, Rente"
                                 + "|Zahlungseingang"
                                 + "|Storno Gutschrift"
                                 + "|Bareinzahlung am GA"
                                 + "|sonstige Buchung"
                                 + "|Eingang Inst.Paym."
-                                + "|Eingang Echtzeit.berw) "
+                                + "|Eingang Echtzeit.berw)) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -819,7 +820,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .section("month1", "day", "month2", "note", "amount")
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ "
-                                + "(?<note>Steuerausgleich) "
+                                + "(?i)(?<note>Steuerausgleich) "
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -842,7 +843,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (?i)(Rechnung|Buchung) [\\.,\\d]+$");
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
+                        + "(?i)(Rechnung"
+                        + "|Buchung"
+                        + "|sonstige Entgelte) "
+                        + "[\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -854,9 +859,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                 .section("month1", "day", "month2", "note1", "amount", "note2")
                 .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. "
-                                + "(?i)(?<note1>Rechnung|Buchung) "
+                                + "(?i)(?<note1>(Rechnung"
+                                + "|Buchung"
+                                + "|sonstige Entgelte)) "
                                 + "(?<amount>[\\.,\\d]+)$")
-                .match("^(.*)?(?i)(?<note2>(Bargeldeinzahlung|R.ckruf\\/Nachforschung|Identifikationscode)).*$")
+                .match("^.*"
+                                + "(?i)(?<note2>(Bargeldeinzahlung"
+                                + "|R.ckruf\\/Nachforschung"
+                                + "|Identifikationscode"
+                                + "|Girokarte)).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // since year is not within the date correction
