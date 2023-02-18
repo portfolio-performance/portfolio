@@ -743,6 +743,7 @@ public class Messages extends NLS
     public static String LabelSmallerSize;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
+    public static String LabelDuplicateSecurity;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
     public static String LabelGross;

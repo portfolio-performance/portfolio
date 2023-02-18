@@ -957,6 +957,12 @@ public final class SecuritiesTable implements ModificationListener
 
         if (watchlist == null)
         {
+            if (selection.size() == 1)
+                manager.add(new SimpleAction(Messages.LabelDuplicateSecurity, a -> {
+                    getClient().addSecurity(((Security) selection.getFirstElement()).deepCopy());
+                    markDirty();
+                }));
+
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSingleSecurity,
                             Messages.SecurityMenuDeleteMultipleSecurity,
                             MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,
