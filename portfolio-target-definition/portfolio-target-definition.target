@@ -45,6 +45,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_da.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository"/>
