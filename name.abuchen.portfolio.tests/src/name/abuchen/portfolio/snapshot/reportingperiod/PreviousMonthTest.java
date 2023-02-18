@@ -16,7 +16,7 @@ public class PreviousMonthTest
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        assertEquals(ReportingPeriod.from(new PreviousMonth().getCode()), new PreviousMonth());
+        assertEquals(new PreviousMonth(), ReportingPeriod.from(new PreviousMonth().getCode()));
     }
 
     @Test
@@ -26,6 +26,6 @@ public class PreviousMonthTest
 
         LocalDate today = LocalDate.of(2021, 7, 11);
 
-        assertEquals(period.toInterval(today), Interval.of(LocalDate.of(2021, 5, 31), LocalDate.of(2021, 6, 30)));
+        assertEquals(Interval.of(LocalDate.of(2021, 5, 31), LocalDate.of(2021, 6, 30)), period.toInterval(today));
     }
 }

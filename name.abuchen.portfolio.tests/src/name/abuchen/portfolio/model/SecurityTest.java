@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.beans.BeanInfo;
@@ -199,22 +198,22 @@ public class SecurityTest
         Security security = new Security();
 
         security.setName("Apple ORD");
-        assertEquals(security.getExternalIdentifier(), "Apple ORD");
+        assertThat(security.getExternalIdentifier(), is("Apple ORD"));
 
         security.setWkn("865985");
-        assertEquals(security.getExternalIdentifier(), "865985");
+        assertThat(security.getExternalIdentifier(), is("865985"));
 
         security.setTickerSymbol("AAPL");
-        assertEquals(security.getExternalIdentifier(), "AAPL");
+        assertThat(security.getExternalIdentifier(), is("AAPL"));
 
         // In some countries there is no ISIN or WKN, only the ticker symbol.
         // If historical prices are retrieved from the stock exchange,
         // the ticker symbol is expanded. (UMAX --> UMAX.AX)
         security.setTickerSymbol("AAPL.BA");
-        assertEquals(security.getExternalIdentifier(), "AAPL");
+        assertThat(security.getExternalIdentifier(), is("AAPL"));
 
         security.setIsin("US0378331005");
-        assertEquals(security.getExternalIdentifier(), "US0378331005");
+        assertThat(security.getExternalIdentifier(), is("US0378331005"));
     }
 
     @Test

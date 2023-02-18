@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class LastXTest
         String code = "L2Y6";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), LastX.class);
+        assertEquals(LastX.class, period.getClass());
     }
 
     @Test
@@ -31,7 +32,7 @@ public class LastXTest
 
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getCode(), code);
+        assertEquals(code, period.getCode());
     }
 
     @Test
@@ -43,7 +44,7 @@ public class LastXTest
 
         Interval result = period.toInterval(intervalEnd);
 
-        assertEquals(result, Interval.of(intervalStart, intervalEnd));
+        assertEquals(Interval.of(intervalStart, intervalEnd), result);
     }
 
     @Test
@@ -54,7 +55,7 @@ public class LastXTest
         ReportingPeriod notEqualSameClass = ReportingPeriod.from("L2Y1");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualSameClass);
         assertNotEquals(equal1, notEqualDifferentClass);
 
@@ -68,7 +69,7 @@ public class LastXTest
         String code = "2Y";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), LastX.class);
+        assertEquals(LastX.class, period.getClass());
     }
 
 }

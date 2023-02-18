@@ -16,9 +16,9 @@ public class ColorConversionTest
     {
         String hex = "#K10203";
         RGB rgb = ColorConversion.hex2RGB(hex);
-        assertEquals(rgb.red, 0);
-        assertEquals(rgb.green, 0);
-        assertEquals(rgb.blue, 0);
+        assertEquals(0, rgb.red);
+        assertEquals(0, rgb.green);
+        assertEquals(0, rgb.blue);
     }
 
     @Test
@@ -26,9 +26,9 @@ public class ColorConversionTest
     {
         String hex = "#010203";
         RGB rgb = ColorConversion.hex2RGB(hex);
-        assertEquals(rgb.red, 1);
-        assertEquals(rgb.green, 2);
-        assertEquals(rgb.blue, 3);
+        assertEquals(1, rgb.red);
+        assertEquals(2, rgb.green);
+        assertEquals(3, rgb.blue);
     }
 
     @Test
@@ -55,9 +55,9 @@ public class ColorConversionTest
         String hex = "#123456";
         float[] hsb = ColorConversion.toHSB(hex);
         float delta = (float) 0.0001;
-        assertEquals(hsb[0], 210.0, delta);
-        assertEquals(hsb[1], 0.7906977, delta);
-        assertEquals(hsb[2], 0.3372549, delta);
+        assertEquals(210.0, hsb[0], delta);
+        assertEquals(0.7906977, hsb[1], delta);
+        assertEquals(0.3372549, hsb[2], delta);
     }
 
     @Test

@@ -16,7 +16,7 @@ public class PreviousYearTest
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        assertEquals(ReportingPeriod.from(new PreviousYear().getCode()), new PreviousYear());
+        assertEquals(new PreviousYear(), ReportingPeriod.from(new PreviousYear().getCode()));
     }
 
     @Test
@@ -28,6 +28,6 @@ public class PreviousYearTest
 
         Interval result = period.toInterval(today);
 
-        assertEquals(result, Interval.of(LocalDate.of(2019, 12, 31), LocalDate.of(2020, 12, 31)));
+        assertEquals(Interval.of(LocalDate.of(2019, 12, 31), LocalDate.of(2020, 12, 31)), result);
     }
 }

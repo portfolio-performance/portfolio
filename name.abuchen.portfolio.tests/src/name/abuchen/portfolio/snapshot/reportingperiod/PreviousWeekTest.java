@@ -17,7 +17,7 @@ public class PreviousWeekTest
     @Test
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
-        assertEquals(ReportingPeriod.from(new PreviousWeek().getCode()), new PreviousWeek());
+        assertEquals(new PreviousWeek(), ReportingPeriod.from(new PreviousWeek().getCode()));
     }
 
     @Test
@@ -35,8 +35,8 @@ public class PreviousWeekTest
 
             Interval result = period.toInterval(date);
 
-            assertEquals(result.getStart(), LocalDate.of(2021, 5, 30));
-            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 6));
+            assertEquals(LocalDate.of(2021, 5, 30), result.getStart());
+            assertEquals(LocalDate.of(2021, 6, 6), result.getEnd());
         }
         finally
         {
@@ -59,8 +59,8 @@ public class PreviousWeekTest
 
             Interval result = period.toInterval(date);
 
-            assertEquals(result.getStart(), LocalDate.of(2021, 5, 29));
-            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 5));
+            assertEquals(LocalDate.of(2021, 5, 29), result.getStart());
+            assertEquals(LocalDate.of(2021, 6, 5), result.getEnd());
         }
         finally
         {

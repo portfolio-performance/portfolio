@@ -17,7 +17,7 @@ public class PreviousDayTest
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
         PreviousDay previousDay = new PreviousDay();
-        assertEquals(ReportingPeriod.from(previousDay.getCode()), previousDay);
+        assertEquals(previousDay, ReportingPeriod.from(previousDay.getCode()));
     }
 
     @Test
@@ -27,7 +27,7 @@ public class PreviousDayTest
 
         LocalDate today = LocalDate.now();
 
-        assertEquals(period.toInterval(today), Interval.of(today.minusDays(2), today.minusDays(1)));
+        assertEquals(Interval.of(today.minusDays(2), today.minusDays(1)), period.toInterval(today));
     }
 
 
