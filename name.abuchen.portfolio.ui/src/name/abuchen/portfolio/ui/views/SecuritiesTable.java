@@ -901,10 +901,14 @@ public final class SecuritiesTable implements ModificationListener
 
             manager.add(new Separator());
             new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+        }
 
-            manager.add(new Separator());
-            manager.add(new BookmarkMenu(view.getPart(), security));
+        manager.add(new Separator());
+        manager.add(new BookmarkMenu(view.getPart(), selection.toList()));
 
+        if (selection.size() == 1)
+        {
+            Security security = (Security) selection.getFirstElement();
             if (security.getOnlineId() == null)
             {
                 manager.add(new Separator());
@@ -922,6 +926,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         }
 
+        manager.add(new Separator());
         // update quotes for multiple securities
         if (selection.size() > 1)
         {
