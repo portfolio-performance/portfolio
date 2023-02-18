@@ -884,6 +884,7 @@ public final class SecuritiesTable implements ModificationListener
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void fillContextMenu(IMenuManager manager)
     {
         IStructuredSelection selection = (IStructuredSelection) securities.getSelection();
@@ -903,10 +904,14 @@ public final class SecuritiesTable implements ModificationListener
 
             manager.add(new Separator());
             new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+        }
 
-            manager.add(new Separator());
-            manager.add(new BookmarkMenu(view.getPart(), security));
+        manager.add(new Separator());
+        manager.add(new BookmarkMenu(view.getPart(), selection.toList()));
 
+        if (selection.size() == 1)
+        {
+            Security security = (Security) selection.getFirstElement();
             if (security.getOnlineId() == null)
             {
                 manager.add(new Separator());
@@ -924,6 +929,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         }
 
+        manager.add(new Separator());
         // update quotes for multiple securities
         if (selection.size() > 1)
         {
@@ -966,7 +972,7 @@ public final class SecuritiesTable implements ModificationListener
 
                     // add security
                     getClient().addSecurity(target);
-                    
+
                     // copy attributes
                     target.setAttributes(source.getAttributes().copy());
 
@@ -985,7 +991,7 @@ public final class SecuritiesTable implements ModificationListener
                             }
                         }
                     }));
-                    
+
                     markDirty();
                 }));
 
