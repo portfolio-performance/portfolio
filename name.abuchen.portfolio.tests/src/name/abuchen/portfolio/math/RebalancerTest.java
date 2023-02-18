@@ -39,7 +39,7 @@ public class RebalancerTest
         Rebalancer rebalancer = new Rebalancer();
         Rebalancer.RebalancingSolution solution = rebalancer.solve();
         
-        assertEquals(solution.getInvestmentVehicles(), Collections.emptySet());
+        assertEquals(Collections.emptySet(), solution.getInvestmentVehicles());
     }
     @Test
     public void testEmptyConstraints()

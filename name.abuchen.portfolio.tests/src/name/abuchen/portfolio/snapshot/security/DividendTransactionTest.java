@@ -57,7 +57,7 @@ public class DividendTransactionTest
         Money result = t.getGrossValue();
         Money expected = Money.of(CurrencyUnit.EUR, 100L);
 
-        assertEquals(result, expected);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DividendTransactionTest
         Money result = t.getGrossValue();
         Money expected = Money.of(CurrencyUnit.EUR, 95L);
 
-        assertEquals(result, expected);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class DividendTransactionTest
 
         long result = t.getDividendPerShare();
 
-        assertEquals(result, Values.Share.factorize(9500));
+        assertEquals(Values.Share.factorize(9500), result);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class DividendTransactionTest
 
         long result = t.getDividendPerShare();
 
-        assertEquals(result, 0L);
+        assertEquals(0L, result);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DividendTransactionTest
         Money result = t1.getMovingAverageCost();
         Money expected = Money.of(CurrencyUnit.EUR, 1000L);
 
-        assertEquals(result, expected);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class DividendTransactionTest
         Money result = t1.getFifoCost();
         Money expected = Money.of(CurrencyUnit.EUR, 2000L);
 
-        assertEquals(result, expected);
+        assertEquals(expected, result);
     }
 
     @Test

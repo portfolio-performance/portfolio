@@ -7,6 +7,7 @@ import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class CurrentWeekTest
         String code = "W";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), CurrentWeek.class); // NOSONAR
+        assertEquals(CurrentWeek.class, period.getClass()); // NOSONAR
     }
 
     @Test
@@ -56,7 +57,7 @@ public class CurrentWeekTest
 
             Interval result = period.toInterval(today);
 
-            assertEquals(result, Interval.of(monday.minusDays(1), sunday));
+            assertEquals(Interval.of(monday.minusDays(1), sunday), result);
         }
         finally
         {
@@ -81,9 +82,9 @@ public class CurrentWeekTest
 
             Interval result = period.toInterval(date);
 
-            assertEquals(result, Interval.of(monday.minusDays(1), sunday));
-            assertEquals(result.getStart(), LocalDate.of(2021, 6, 6));
-            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 13));
+            assertEquals(Interval.of(monday.minusDays(1), sunday), result);
+            assertEquals(LocalDate.of(2021, 6, 6), result.getStart());
+            assertEquals(LocalDate.of(2021, 6, 13), result.getEnd());
         }
         finally
         {
@@ -108,9 +109,9 @@ public class CurrentWeekTest
 
             Interval result = period.toInterval(date);
 
-            assertEquals(result, Interval.of(sunday.minusDays(1), saturday));
-            assertEquals(result.getStart(), LocalDate.of(2021, 6, 5));
-            assertEquals(result.getEnd(), LocalDate.of(2021, 6, 12));
+            assertEquals(Interval.of(sunday.minusDays(1), saturday), result);
+            assertEquals(LocalDate.of(2021, 6, 5), result.getStart());
+            assertEquals(LocalDate.of(2021, 6, 12), result.getEnd());
         }
         finally
         {
@@ -126,7 +127,7 @@ public class CurrentWeekTest
         ReportingPeriod equal2 = ReportingPeriod.from("W");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualDifferentClass);
 
         assertEquals(equal1, equal1);
