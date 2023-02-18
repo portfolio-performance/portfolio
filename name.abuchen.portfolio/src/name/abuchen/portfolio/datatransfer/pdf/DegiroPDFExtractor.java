@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -152,6 +154,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "(?<valuta>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
                             + "(W.hrungswechsel"
                             + "|FX Debit"
+                            + "|Valuta Creditering"
                             + "|Valuta Debitering"
                             + "|Prelievo"
                             + "|Retirada Cambio de Divisa"
@@ -195,6 +198,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             + "(W.hrungswechsel"
                             + "|FX Debit"
                             + "|Valuta Creditering"
+                            + "|Valuta Debitering"
                             + "|Credito"
                             + "|Ingreso Cambio de Divisa"
                             + "|Prelievo FX"
@@ -246,8 +250,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 item.baseAmount = item.termAmount;
                                 item.termCurrency = mBase.group("currency");
                                 item.termAmount = asAmount(mBase.group("amount"));
-                            }
-
+                            } 
                             exchangeRateHelper.items.add(item);
                             break;
                         }
@@ -321,7 +324,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         + "|Storting"
                         + "|Ingreso"
                         + "|Vklad)"
-                        + "( flatex)? "
+                        + "( flatex| iDEAL)? "
                         + "[\\w]{3} .*$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
@@ -342,7 +345,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "|Storting"
                                         + "|Ingreso"
                                         + "|Vklad))"
-                                        + "( flatex)? "
+                                        + "( flatex| iDEAL)? "
                                         + "(?<currency>[\\w]{3}) "
                                         + "(?<amount>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
@@ -375,8 +378,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 05-08-2019 00:09 05-08-2019 Auszahlung EUR -1.000,00 EUR 1.445,06
         // 20-04-2022 17:30 21-04-2022 Prelievo flatex EUR -1.046,92 EUR 1.411,80
         // 23-06-2022 18:00 24-06-2022 Prelievo flatex EUR -26.600,00 EUR -24.176,26
+        // 30-06-2022 18:20 01-07-2022 flatex terugstorting EUR -2.900,00 EUR -2.884,26
         // @formatter:on
-        Block blockRemoval = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (Auszahlung|Prelievo flatex) [\\w]{3} \\-[\\.,'\\d\\s]+ [\\w]{3} (\\-)?[\\.,'\\d\\s]+$");
+        Block blockRemoval = new Block("^.*([\\d]{2}:[\\d]{2}|[\\d]{4}) (Auszahlung"
+                        + "|Prelievo flatex"
+                        + "|(flatex |iDEAL )?terugstorting) [\\w]{3} \\-[\\.,'\\d\\s]+ [\\w]{3} (\\-)?[\\.,'\\d\\s]+$");
         type.addBlock(blockRemoval);
         blockRemoval.set(new Transaction<AccountTransaction>()
 
@@ -389,7 +395,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .section("date", "time", "note", "currency", "amount")
                         .match("(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                         + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<note>(Auszahlung|Prelievo flatex)) "
+                                        + "(?<note>(Auszahlung"
+                                        + "|Prelievo flatex"
+                                        + "|(flatex |iDEAL )?terugstorting)) "
                                         + "(?<currency>[\\w]{3}) "
                                         + "\\-(?<amount>[\\.,'\\d\\s]+) "
                                         + "[\\w]{3} "
@@ -490,72 +498,173 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        // @formatter:off
-                        // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
-                        // 05-08-2019 14:12 31-07-2019 MORGAN STANLEY USD LIQUIDITY FUND LU0904783114 Fondsausschüttung USD 1,64 USD 6.383,23
-                        // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
-                        // 31-03-2022 07:36 30-03-2022 ISHARES GLOB HIG YLD CORP BOND UCITS IE00B74DQ490 Dividendo USD 24,19 USD 24,19
-                        // 30-09-2022 07:25 29-09-2022 T. ROWE PRICE GROUP I US74144T1088 Dividendo USD 31,20 USD 26,52
-                        // @formatter:on
-                        .section("date", "time", "name", "isin", "currency", "amount").optional()
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
-                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
-                                        + "(?<name>.*) "
-                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                        + "(Dividende"
-                                        + "|Dividend"
-                                        + "|Fondsaussch.ttung"
-                                        + "|Dividendo"
-                                        + "|Dividenda) "
-                                        + "(?<currency>[\\w]{3}) "
-                                        + "(?<amount>[\\.,'\\d\\s]+) "
-                                        + "[\\w]{3} "
-                                        + "(\\-)?[\\.,'\\d\\s]+$")
-                        .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                        .optionalOneOf(
+                                        // @formatter:off
+                                        // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
+                                        // 05-08-2019 14:12 31-07-2019 MORGAN STANLEY USD LIQUIDITY FUND LU0904783114 Fondsausschüttung USD 1,64 USD 6.383,23
+                                        // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
+                                        // 31-03-2022 07:36 30-03-2022 ISHARES GLOB HIG YLD CORP BOND UCITS IE00B74DQ490 Dividendo USD 24,19 USD 24,19
+                                        // 30-09-2022 07:25 29-09-2022 T. ROWE PRICE GROUP I US74144T1088 Dividendo USD 31,20 USD 26,52
+                                        // 
+                                        // -------------------------------------
+                                        // Date of currency exchange is different from the dividend date
+                                        // 
+                                        // 27-06-2022 07:30 24-06-2022 Valuta Creditering EUR 497,44 EUR 2.648,76
+                                        // 27-06-2022 07:30 24-06-2022 Valuta Debitering 1,0582 USD -526,37 USD 0,00
+                                        // 26-06-2022 06:41 24-06-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 751,95 USD 526,37
+                                        // 26-06-2022 06:41 24-06-2022 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -225,58 USD -225,58
+                                        // -------------------------------------
+                                        //
+                                        // Dividend refund + tax refund
+                                        //
+                                        // 07-11-2022 09:59 02-11-2022 INDITEX ES0148396007 Dividendo EUR -317,70 EUR 534,43
+                                        // 07-11-2022 09:59 02-11-2022 INDITEX ES0148396007 Retención del dividendo EUR 60,36 EUR 852,13
+                                        // @formatter:on
+                                        section -> section
+                                        .attributes("date", "time", "valueDate", "name", "isin", "currency", "type", "amount")
+                                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                                        + "(?<valueDate>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) "
+                                                        + "(?<name>.*) "
+                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
+                                                        + "(Dividende"
+                                                        + "|Dividend"
+                                                        + "|Fondsaussch.ttung"
+                                                        + "|Dividendo"
+                                                        + "|Dividenda) "
+                                                        + "(?<currency>[\\w]{3})"
+                                                        + "(?<type>\\s(\\-)?)"
+                                                        + "(?<amount>[\\.,'\\d\\s]+) "
+                                                        + "[\\w]{3} "
+                                                        + "(\\-)?[\\.,'\\d\\s]+$")
+                                        .assign((t, v) -> {
+                                            DocumentContext context = type.getCurrentContext();
+                                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                            t.setSecurity(getOrCreateSecurity(v));
 
-                            Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                            // Dividend refund
+                                            if ("-".equals(trim(v.get("type"))))
+                                                t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
 
-                            if (!money.getCurrencyCode().equals(getClient().getBaseCurrency()))
-                            {
-                                ExchangeRateHelper exchangeRateHelper = context.getType(ExchangeRateHelper.class)
-                                                .orElseGet(ExchangeRateHelper::new);
+                                            Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                                Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
-                                                t.getDateTime().toLocalDate());
+                                            if (!money.getCurrencyCode().equals(getClient().getBaseCurrency()))
+                                            {
+                                                ExchangeRateHelper exchangeRateHelper = context.getType(ExchangeRateHelper.class)
+                                                                .orElseGet(ExchangeRateHelper::new);
 
-                                if (item.isPresent())
-                                {
-                                    v.put("currency", asCurrencyCode(v.get("currency")));
-                                    v.put("exchangeRate", item.get().rate.toString());
-                                    v.put("baseCurrency", asCurrencyCode(item.get().baseCurrency));
-                                    v.put("termCurrency", asCurrencyCode(item.get().termCurrency));
+                                                Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
+                                                                t.getDateTime().toLocalDate());
 
-                                    ExtrExchangeRate rate = asExchangeRate(v);
-                                    type.getCurrentContext().putType(rate);
+                                                // @formatter:off
+                                                // If no exchange rate is found, 
+                                                // search for the exchange rate on the value date
+                                                // @formatter:on
+                                                if (!item.isPresent())
+                                                {
+                                                    LocalDate valuta = LocalDate.parse(v.get("valueDate"), DATEFORMAT);
+                                                    item = exchangeRateHelper.findItem(v.getStartLineNumber(), money, valuta);
+                                                }
 
-                                    Money fxGross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-                                    Money gross = rate.convert(asCurrencyCode(item.get().baseCurrency), fxGross);
+                                                if (item.isPresent())
+                                                {
+                                                    v.put("currency", asCurrencyCode(v.get("currency")));
+                                                    v.put("exchangeRate", item.get().rate.toString());
+                                                    v.put("baseCurrency", asCurrencyCode(item.get().baseCurrency));
+                                                    v.put("termCurrency", asCurrencyCode(item.get().termCurrency));
 
-                                    t.setMonetaryAmount(gross);
+                                                    ExtrExchangeRate rate = asExchangeRate(v);
+                                                    type.getCurrentContext().putType(rate);
 
-                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                    Money fxGross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                    Money gross = rate.convert(asCurrencyCode(item.get().baseCurrency), fxGross);
 
-                                    context.putType(item.get());
-                                }
-                                else
-                                {
-                                    // skip transaction (transactions with zero
-                                    // amount will not be added - see below)
-                                }
-                            }
-                            else
-                            {
-                                t.setMonetaryAmount(money);
-                            }
-                        })
+                                                    t.setMonetaryAmount(gross);
+
+                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+
+                                                    context.putType(item.get());
+                                                }
+                                                else
+                                                {
+                                                    // skip transaction (transactions with zero
+                                                    // amount will not be added - see below)
+                                                }
+                                            }
+                                            else
+                                            {
+                                                t.setMonetaryAmount(money);
+                                            }
+                                        })
+                                        ,
+                                        // @formatter:off
+                                        // 17-07-2017 00:00 IS.DJ U.S.SELEC.DIV.U.ETF DE000A0D8Q49 Dividende USD 0,86 USD 0,86
+                                        // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividende EUR 2,07 EUR 521,41
+                                        // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividendensteuer EUR -0,55 EUR 519,34
+                                        // 17-07-2017 00:00 ISH.S.EU.SEL.DIV.30 U.ETF DE0002635299 Dividende EUR 22,64 EUR 519,89
+                                        // 17-07-2017 00:00 IS.S.GL.SE.D.100 U.ETF A DE000A0F5UH1 Dividende EUR 0,09 EUR 497,25
+                                        // 17-07-2017 00:00 IS.S.GL.SE.D.100 U.ETF A DE000A0F5UH1 Dividendensteuer EUR -0,02 EUR 497,16
+                                        // 17-07-2017 00:00 IS.S.GL.SE.D.100 U.ETF A DE000A0F5UH1 Dividende EUR 1,74 EUR 497,18
+                                        // @formatter:on
+                                        section -> section
+                                                .attributes("date", "time", "name", "isin", "currency", "amount")
+                                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                                                + "(?<name>.*) "
+                                                                + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
+                                                                + "(Dividende"
+                                                                + "|Dividend"
+                                                                + "|Fondsaussch.ttung"
+                                                                + "|Dividendo"
+                                                                + "|Dividenda) "
+                                                                + "(?<currency>[\\w]{3}) "
+                                                                + "(?<amount>[\\.,'\\d\\s]+) "
+                                                                + "[\\w]{3} "
+                                                                + "(\\-)?[\\.,'\\d\\s]+$")
+                                                .assign((t, v) -> {
+                                                    DocumentContext context = type.getCurrentContext();
+                                                    t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                                    t.setSecurity(getOrCreateSecurity(v));
+
+                                                    Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                                                    if (!money.getCurrencyCode().equals(getClient().getBaseCurrency()))
+                                                    {
+                                                        ExchangeRateHelper exchangeRateHelper = context.getType(ExchangeRateHelper.class)
+                                                                        .orElseGet(ExchangeRateHelper::new);
+
+                                                        Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
+                                                                        t.getDateTime().toLocalDate());
+
+                                                        if (item.isPresent())
+                                                        {
+                                                            v.put("currency", asCurrencyCode(v.get("currency")));
+                                                            v.put("exchangeRate", item.get().rate.toString());
+                                                            v.put("baseCurrency", asCurrencyCode(item.get().baseCurrency));
+                                                            v.put("termCurrency", asCurrencyCode(item.get().termCurrency));
+
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money fxGross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                            Money gross = rate.convert(asCurrencyCode(item.get().baseCurrency), fxGross);
+
+                                                            t.setMonetaryAmount(gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+
+                                                            context.putType(item.get());
+                                                        }
+                                                        else
+                                                        {
+                                                            // skip transaction (transactions with zero
+                                                            // amount will not be added - see below)
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        t.setMonetaryAmount(money);
+                                                    }
+                                                })
+                                )
 
                         // @formatter:off
                         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
@@ -680,6 +789,119 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             ExtractorUtils.fixGrossValueA().accept(t);
 
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                            {
+                                if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+                                    return new TransactionItem(t);
+                                else
+                                    return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                            }
+                            return null;
+                        }));
+
+        Block blockDividendTax = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
+                        + "(Dividendensteuer"
+                        + "|Dividend Tax"
+                        + "|Dividendbelasting"
+                        + "|Ritenuta sul dividendo"
+                        + "|Retenci.n del dividendo) "
+                        + ".*$");
+        type.addBlock(blockDividendTax);
+        blockDividendTax.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
+
+                        // @formatter:off
+                        // 16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -10,45 USD -22,78
+                        // 16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -5,99 USD -12,33
+                        // 16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -4,47 USD -6,34
+                        // 16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -1,87 USD -1,87
+                        //
+                        // 02-05-2019 08:20 02-05-2019 ING GROEP NV EO -,01 NL0011821202 Dividendensteuer EUR 2,20 EUR 129,07
+                        // 02-05-2019 08:20 02-05-2019 ING GROEP NV EO -,01 NL0011821202 Dividendensteuer EUR -1,25 EUR 126,87
+                        // @formatter:on
+                        .section("date", "time", "name", "isin", "note", "currency", "type", "amount").optional()
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
+                                        + "([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?"
+                                        + "(?<name>.*) "
+                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*"
+                                        + "(?<note>Dividendensteuer"
+                                        + "|Dividend Tax"
+                                        + "|Dividendbelasting"
+                                        + "|Ritenuta sul dividendo"
+                                        + "|Retenci.n del dividendo) "
+                                        + "(?<currency>[\\w]{3})"
+                                        + "(?<type>\\s(\\-)?)"
+                                        + "(?<amount>[\\.,'\\d\\s]+) "
+                                        + "[\\w]{3} "
+                                        + "(\\-)?[\\.,'\\d\\s]+$")
+                        .assign((t, v) -> {
+                            DocumentContext context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setNote(v.get("note") + ": " + v.get("isin"));
+                            
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.TAXES);
+
+                            // @formatter:off
+                            // Sometimes the dividend tax is settled without a dividend transaction.
+                            //
+                            // To capture this, we note all these dividend transactions and look for whether 
+                            // this tax belongs to a dividend transaction or not.
+                            // 
+                            // If there is no dividend transaction, then we record this tax.
+                            // @formatter:on
+
+                            DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
+                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+
+                            if (!dividendTransaction.isPresent())
+                            {
+                                Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                                if (!money.getCurrencyCode().equals(getClient().getBaseCurrency()))
+                                {
+                                    ExchangeRateHelper exchangeRateHelper = context.getType(ExchangeRateHelper.class)
+                                                    .orElseGet(ExchangeRateHelper::new);
+
+                                    Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
+                                                    t.getDateTime().toLocalDate());
+                                    
+                                    if (item.isPresent())
+                                    {
+                                        Money converted = Money.of(item.get().baseCurrency,
+                                                        BigDecimal.valueOf(money.getAmount())
+                                                                        .divide(item.get().rate, Values.MC)
+                                                                        .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                        t.setMonetaryAmount(converted);
+                                        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, converted, money,
+                                                        BigDecimal.ONE.divide(item.get().rate, Values.MC)));
+
+                                        context.putType(item.get());
+                                    }
+                                    else
+                                    {
+                                        // skip transaction (transactions with zero
+                                        // amount will not be added - see below)
+                                    }
+                                }
+                                else
+                                {
+                                    t.setMonetaryAmount(money);
+                                }
+                            }
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(DividendeTransactionsItem.class);
+                            type.getCurrentContext().removeType(CurrencyExchangeItem.class);
+
                             if (t.getCurrencyCode() != null && t.getAmount() != 0L)
                                 return new TransactionItem(t);
                             return null;
@@ -717,7 +939,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            t.setType(AccountTransaction.Type.INTEREST);
                             return t;
                         })
 
@@ -740,10 +962,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
 
-                            if (" ".equalsIgnoreCase(v.get("type")))
-                            {
-                                t.setType(AccountTransaction.Type.INTEREST);
-                            }
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
                         })
 
                         .wrap(t -> {
@@ -835,6 +1055,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         //
         // 03-01-2023 14:01 31-12-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 212,97
         // 2023 (Euronext Amsterdam - EAM)
+        //
+        // 03-01-2023 14:00 31-12-2022 DEGIRO Aansluitingskosten 2023 (NYSE Arca - NYA) EUR -2,50 EUR 1.426,00
+        // 03-01-2023 14:00 31-12-2022 DEGIRO Aansluitingskosten 2023 (NASDAQ - NDQ) EUR -2,50 EUR 1.428,50
         // @formatter:on
         Block blockTrademodalities = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}:[\\d]{2} ([\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )?.*"
                         + "(Einrichtung von"
@@ -849,7 +1072,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES);
+                            t.setType(AccountTransaction.Type.FEES_REFUND);
                             return t;
                         })
 
@@ -872,8 +1095,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
 
-                                        if (" ".equalsIgnoreCase(v.get("type")))
-                                            t.setType(AccountTransaction.Type.FEES_REFUND);
+                                        if ("-".equals(trim(v.get("type"))))
+                                            t.setType(AccountTransaction.Type.FEES);
                                     }),
                                 section -> section
                                     .attributes("date", "time", "note1", "currency", "type", "amount", "note2")
@@ -896,8 +1119,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note1") + " " + v.get("note2"));
 
-                                        if (" ".equalsIgnoreCase(v.get("type")))
-                                            t.setType(AccountTransaction.Type.FEES_REFUND);
+                                        if ("-".equals(trim(v.get("type"))))
+                                            t.setType(AccountTransaction.Type.FEES);
                                     }),
                                 section -> section
                                     .attributes("date", "time", "note", "currency", "type", "amount")
@@ -907,7 +1130,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "|DEGIRO Aansluitingskosten"
                                                     + "|Giro Exchange Connection Fee"
                                                     + "|DEGIRO Costi di connessione"
-                                                    + "|DEGIRO poplatek za Obchodování)( [\\d]{4})?) .* "
+                                                    + "|DEGIRO poplatek za Obchodování)( [\\d]{4})?( \\(.*\\))?).* "
                                                     + "(?<currency>[\\w]{3})"
                                                     + "(?<type>\\s(\\-)?)"
                                                     + "(?<amount>[\\.,'\\d\\s]+) "
@@ -919,8 +1142,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note"));
 
-                                        if (" ".equalsIgnoreCase(v.get("type")))
-                                            t.setType(AccountTransaction.Type.FEES_REFUND);
+                                        if ("-".equals(trim(v.get("type"))))
+                                            t.setType(AccountTransaction.Type.FEES);
                                     }),
                                 section -> section
                                     .attributes("date", "time", "isin", "note", "currency", "type", "amount")
@@ -939,8 +1162,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setDateTime(asDate(v.get("date"), v.get("time")));
                                         t.setNote(t.getSecurity().getIsin() + ": " + v.get("note"));
 
-                                        if (" ".equalsIgnoreCase(v.get("type")))
-                                            t.setType(AccountTransaction.Type.FEES_REFUND);
+                                        if ("-".equals(trim(v.get("type"))))
+                                            t.setType(AccountTransaction.Type.FEES);
 
                                         // @formatter:off
                                         // Sometimes the ADR/GDR transfer fee is settled without a dividend transaction.
