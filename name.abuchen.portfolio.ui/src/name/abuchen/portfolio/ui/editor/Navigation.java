@@ -63,6 +63,11 @@ public final class Navigation
         DEFAULT_VIEW;
     }
 
+    public class AllSecuritiesParameter
+    {
+        // empty class at the moment. Only needed to flag the navigation item
+    }
+
     public static class Item
     {
         private String label;
@@ -338,7 +343,9 @@ public final class Navigation
 
         roots.add(generalData);
 
-        generalData.add(new Item(Messages.LabelAllSecurities, Images.SECURITY, SecurityListView.class));
+        Item allSecuritesItem = new Item(Messages.LabelAllSecurities, Images.SECURITY, SecurityListView.class);
+        allSecuritesItem.setParameter(new AllSecuritiesParameter());
+        generalData.add(allSecuritesItem);
 
         for (Watchlist watchlist : client.getWatchlists())
         {
