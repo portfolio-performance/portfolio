@@ -17,6 +17,8 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
@@ -609,10 +611,22 @@ public class ClientFactory
 
         // open an output stream for the file using a 64 KB buffer to speed up
         // writing
-        try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file), 65536))
+        try (FileOutputStream stream = new FileOutputStream(file);
+                        BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
         {
+            // lock file while writing (apparently network-attache storage is
+            // garbling up the files if it already starts syncing while the file
+            // is still being written)
+            FileChannel channel = stream.getChannel();
+            FileLock lock = channel.tryLock();
+
             ClientPersister persister = buildPersister(flags, password);
             persister.save(client, output);
+
+            output.flush();
+
+            if (lock != null && lock.isValid())
+                lock.release();
 
             if (updateFlags)
             {
