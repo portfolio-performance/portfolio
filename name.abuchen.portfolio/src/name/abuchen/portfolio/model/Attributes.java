@@ -52,6 +52,13 @@ public class Attributes
     {
         return map.isEmpty();
     }
+    
+    public Attributes copy()
+    {
+        Attributes copy = new Attributes();
+        copy.map.putAll(this.map);
+        return copy;
+    }
 
     /* protobuf only */ List<PKeyValue> toProto(Client client)
     {
