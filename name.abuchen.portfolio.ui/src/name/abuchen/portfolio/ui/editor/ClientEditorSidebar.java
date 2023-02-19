@@ -21,9 +21,9 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
 import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.editor.Navigation.AllSecuritiesParameter;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
 import name.abuchen.portfolio.ui.editor.Navigation.Tag;
+import name.abuchen.portfolio.ui.views.SecurityListView;
 
 /* package */class ClientEditorSidebar
 {
@@ -88,9 +88,7 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
 
         sidebar = new Sidebar<>(scrolledComposite, model);
 
-        editor.getClientInput().getNavigation()
-                        .findAll(item -> item.getParameter() instanceof AllSecuritiesParameter
-                                        || item.getParameter() instanceof Watchlist)
+        editor.getClientInput().getNavigation().findAll(item -> item.getViewClass() == SecurityListView.class)
                         .forEach(this::setupAllSecuritesAndWatchlistDnD);
 
         scrolledComposite.setContent(sidebar);
@@ -102,9 +100,7 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
 
         Navigation.Listener listener = item -> {
             sidebar.rebuild();
-            editor.getClientInput().getNavigation()
-                            .findAll(i -> i.getParameter() instanceof AllSecuritiesParameter
-                                            || i.getParameter() instanceof Watchlist)
+            editor.getClientInput().getNavigation().findAll(i -> item.getViewClass() == SecurityListView.class)
                             .forEach(this::setupAllSecuritesAndWatchlistDnD);
 
             scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -141,23 +137,32 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
                 if (securities == null)
                     return;
 
+                boolean isDirty = false;
+
                 for (Security security : securities)
                 {
                     // if the security is dragged from another file, add
                     // a deep copy to the client's securities list
                     if (!editor.getClient().getSecurities().contains(security))
                     {
+                        System.out.println("COPY :" + security.getName());
                         security = security.deepCopy();
                         editor.getClient().addSecurity(security);
+                        isDirty = true;
                     }
 
                     // if drop target is a watchlist, add
                     if (item.getParameter() instanceof Watchlist watchlist
                                     && !watchlist.getSecurities().contains(security))
+                    {
+                        System.out.println("ADD WATCHLIST :" + security.getName());
                         watchlist.addSecurity(security);
+                        isDirty = true;
+                    }
                 }
 
-                editor.getClient().touch();
+                if (isDirty)
+                    editor.getClient().touch();
             }
         };
 
