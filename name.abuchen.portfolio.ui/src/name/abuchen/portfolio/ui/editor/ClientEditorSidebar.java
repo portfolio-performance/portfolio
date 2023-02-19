@@ -145,7 +145,6 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
                     // a deep copy to the client's securities list
                     if (!editor.getClient().getSecurities().contains(security))
                     {
-                        System.out.println("COPY :" + security.getName());
                         security = security.deepCopy();
                         editor.getClient().addSecurity(security);
                         isDirty = true;
@@ -155,7 +154,6 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
                     if (item.getParameter() instanceof Watchlist watchlist
                                     && !watchlist.getSecurities().contains(security))
                     {
-                        System.out.println("ADD WATCHLIST :" + security.getName());
                         watchlist.addSecurity(security);
                         isDirty = true;
                     }
