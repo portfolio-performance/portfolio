@@ -68,7 +68,8 @@ public class BookmarkMenu extends MenuManager
         List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
         Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
         templates.forEach(bookmark -> templatesMenu.add(new SimpleAction(bookmark.getLabel(),
-                        a -> securities.forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s))))));
+                        a -> securities.stream().limit(10)
+                                        .forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s))))));
 
         add(new Separator());
         add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,
