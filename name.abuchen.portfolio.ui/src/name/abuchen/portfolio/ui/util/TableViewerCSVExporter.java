@@ -94,8 +94,9 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
             {
                 // if the table is tagged SWT.VIRTUAL, then the item is only
                 // resolved if the text (or other properties are requested)
-                Object subject = item.getData();
-                if (subject == null)
+                // Also for invisible items the getText sometimes returns "" so
+                // in case of blank string, additional call of getText required
+                if (item.getData() == null || item.getText().isEmpty())
                     item.getText();
 
                 for (int ii = 0; ii < columnCount; ii++)
