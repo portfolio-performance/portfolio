@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 
@@ -92,6 +93,9 @@ public class ReportingPeriodDialog extends Dialog
 
         message = new Label(editArea, SWT.CENTER);
         message.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+
+        Label hint = new Label(editArea, SWT.CENTER | SWT.WRAP);
+        hint.setText(Messages.LabelReportingDialogHint);
 
         radioLast = new Button(editArea, SWT.RADIO);
         radioLast.setText(Messages.LabelReportingDialogLast);
@@ -186,7 +190,10 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(message).top(new FormAttachment(0, 10)).left(new FormAttachment(0))
                         .right(new FormAttachment(100, 10));
 
-        FormDataFactory.startingWith(radioLast).top(new FormAttachment(message, 20)).thenRight(years)
+        FormDataFactory.startingWith(hint).top(new FormAttachment(message, 10)).left(new FormAttachment(0))
+                        .right(new FormAttachment(100, 0)).height(SWTHelper.lineHeight(hint) * 3).width(300);
+
+        FormDataFactory.startingWith(radioLast).top(new FormAttachment(hint, 20)).thenRight(years) //
                         .thenRight(lblYears).thenRight(months).thenRight(lblMonths);
 
         FormDataFactory.startingWith(radioLastDays).top(new FormAttachment(radioLast, 20)).thenRight(days)
@@ -202,7 +209,7 @@ public class ReportingPeriodDialog extends Dialog
 
             FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
                             .thenRight(dateFrom.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP))
-                            .thenRight(lblFromExcl).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
+                            .thenRight(lblFromExcl).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP)) //
                             .thenRight(lblTo).top(new FormAttachment(radioFromXtoY, 2, SWT.TOP))
                             .thenRight(dateTo.getControl()).top(new FormAttachment(radioFromXtoY, -1, SWT.TOP));
 
@@ -213,7 +220,7 @@ public class ReportingPeriodDialog extends Dialog
         else
         {
             FormDataFactory.startingWith(radioFromXtoY).top(new FormAttachment(radioLastTradingDays, 20))
-                            .thenRight(dateFrom.getControl()).thenRight(lblFromExcl)
+                            .thenRight(dateFrom.getControl()).thenRight(lblFromExcl) //
                             .thenRight(lblTo).thenRight(dateTo.getControl());
 
             FormDataFactory.startingWith(radioSinceX).top(new FormAttachment(radioFromXtoY, 20))
