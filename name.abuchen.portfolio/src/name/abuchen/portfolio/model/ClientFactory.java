@@ -59,6 +59,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 
 import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
@@ -618,7 +619,12 @@ public class ClientFactory
             // garbling up the files if it already starts syncing while the file
             // is still being written)
             FileChannel channel = stream.getChannel();
-            FileLock lock = channel.tryLock();
+            FileLock lock = null;
+            
+            // On OS X fcntl does not support locking files on AFP or SMB
+            // https://bugs.openjdk.org/browse/JDK-8167023
+            if (!Platform.getOS().equals(Platform.OS_MACOSX))
+                lock = channel.tryLock();
 
             ClientPersister persister = buildPersister(flags, password);
             persister.save(client, output);
