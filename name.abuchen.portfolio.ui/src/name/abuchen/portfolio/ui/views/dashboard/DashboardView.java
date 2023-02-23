@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -878,7 +879,7 @@ public class DashboardView extends AbstractHistoricView
         Dashboard.Column newColumn = new Dashboard.Column();
         dashboard.getColumns().add(index, newColumn);
 
-        newColumn.setWidgets(column.getWidgets().stream().map(Widget::copy).toList());
+        newColumn.setWidgets(column.getWidgets().stream().map(Widget::copy).collect(Collectors.toList()));
 
         getClient().touch();
 
