@@ -180,7 +180,7 @@ public class SecuritiesChart
                 case H:
                     List<TransactionPair<?>> tx = security.getTransactions(client);
                     if (tx.isEmpty())
-                        return new ChartInterval(now, now);
+                        return getAllPrices(now, security);
 
                     Collections.sort(tx, TransactionPair.BY_DATE);
                     boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
@@ -190,16 +190,20 @@ public class SecuritiesChart
                                     ? LocalDate.now()
                                     : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
                 case ALL:
-                    List<SecurityPrice> prices = security.getPricesIncludingLatest();
-
-                    if (prices.isEmpty())
-                        return new ChartInterval(now, now);
-                    else
-                        return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
+                    return getAllPrices(now, security);
 
                 default:
                     throw new IllegalArgumentException();
             }
+        }
+
+        private ChartInterval getAllPrices(LocalDate now, Security security)
+        {
+            List<SecurityPrice> prices = security.getPricesIncludingLatest();
+            if (prices.isEmpty())
+                return new ChartInterval(now, now);
+            else
+                return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
         }
     }
 
