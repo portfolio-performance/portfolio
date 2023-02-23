@@ -25,8 +25,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -120,6 +125,34 @@ public class SecuritiesChart
         }
     }
 
+    private static class ChartIntervalOrMessage
+    {
+        private final String message;
+        private final ChartInterval interval;
+
+        private ChartIntervalOrMessage(ChartInterval interval)
+        {
+            this.interval = interval;
+            this.message = null;
+        }
+
+        private ChartIntervalOrMessage(String message)
+        {
+            this.interval = null;
+            this.message = message;
+        }
+
+        public String getMessage()
+        {
+            return message;
+        }
+
+        public ChartInterval getInterval()
+        {
+            return interval;
+        }
+    }
+
     public enum IntervalOption
     {
         M1(Messages.SecurityTabChart1M, Messages.SecurityTabChart1MToolTip), //
@@ -153,49 +186,52 @@ public class SecuritiesChart
             return tooltip;
         }
 
-        public ChartInterval getInverval(Client client, CurrencyConverter converter, Security security)
+        public ChartIntervalOrMessage getInterval(Client client, CurrencyConverter converter, Security security)
         {
             LocalDate now = LocalDate.now();
 
             switch (this)
             {
                 case M1:
-                    return new ChartInterval(now.minus(Period.ofMonths(1)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofMonths(1)), now));
                 case M2:
-                    return new ChartInterval(now.minus(Period.ofMonths(2)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofMonths(2)), now));
                 case M6:
-                    return new ChartInterval(now.minus(Period.ofMonths(6)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofMonths(6)), now));
                 case Y1:
-                    return new ChartInterval(now.minus(Period.ofYears(1)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofYears(1)), now));
                 case Y2:
-                    return new ChartInterval(now.minus(Period.ofYears(2)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofYears(2)), now));
                 case Y3:
-                    return new ChartInterval(now.minus(Period.ofYears(3)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofYears(3)), now));
                 case Y5:
-                    return new ChartInterval(now.minus(Period.ofYears(5)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofYears(5)), now));
                 case Y10:
-                    return new ChartInterval(now.minus(Period.ofYears(10)), now);
+                    return new ChartIntervalOrMessage(new ChartInterval(now.minus(Period.ofYears(10)), now));
                 case YTD:
-                    return new ChartInterval(now.minus(Period.ofDays(now.getDayOfYear() - 1)), now);
+                    return new ChartIntervalOrMessage(
+                                    new ChartInterval(now.minus(Period.ofDays(now.getDayOfYear() - 1)), now));
                 case H:
                     List<TransactionPair<?>> tx = security.getTransactions(client);
                     if (tx.isEmpty())
-                        return new ChartInterval(now, now);
+                        return new ChartIntervalOrMessage(Messages.SecuritiesChart_NoDataMessage_NoHoldings);
 
                     Collections.sort(tx, TransactionPair.BY_DATE);
                     boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
                                     .getPositionsByVehicle().containsKey(security);
 
-                    return new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(), hasHoldings
-                                    ? LocalDate.now()
-                                    : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
+                    return new ChartIntervalOrMessage(
+                                    new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
+                                                    hasHoldings ? LocalDate.now()
+                                                                    : tx.get(tx.size() - 1).getTransaction()
+                                                                                    .getDateTime().toLocalDate()));
                 case ALL:
                     List<SecurityPrice> prices = security.getPricesIncludingLatest();
-
                     if (prices.isEmpty())
-                        return new ChartInterval(now, now);
+                        return new ChartIntervalOrMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
                     else
-                        return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
+                        return new ChartIntervalOrMessage(new ChartInterval(prices.get(0).getDate(),
+                                        prices.get(prices.size() - 1).getDate()));
 
                 default:
                     throw new IllegalArgumentException();
@@ -274,6 +310,9 @@ public class SecuritiesChart
          */
         public static ChartRange createFor(List<SecurityPrice> prices, ChartInterval chartInterval)
         {
+            if (chartInterval == null)
+                return null;
+
             int start = Collections.binarySearch(prices, new SecurityPrice(chartInterval.getStart(), 0),
                             new SecurityPrice.ByDate());
 
@@ -359,6 +398,8 @@ public class SecuritiesChart
 
     private int swtAntialias = SWT.ON;
 
+    private MessagePainter messagePainter = new MessagePainter();
+
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
         this.client = client;
@@ -375,6 +416,10 @@ public class SecuritiesChart
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
         chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addPaintListener(this.messagePainter);
+        chart.getPlotArea().addDisposeListener(this.messagePainter);
+
+        messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
         setupTooltip();
 
@@ -709,36 +754,37 @@ public class SecuritiesChart
             customPaintListeners.clear();
             customBehindPaintListener.clear();
             customTooltipEvents.clear();
+            chart.resetAxes();
+            chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
+            messagePainter.setMessage(""); //$NON-NLS-1$
 
-            if (security == null || security.getPrices().isEmpty())
+            if (security == null)
             {
-                chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-                chart.redraw();
+                messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
                 return;
             }
-
-            chart.getTitle().setText(security.getName());
-
-            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
-                            || chartConfig.contains(ChartDetails.PURCHASEPRICE);
-
-            // determine the interval to be shown in the chart
-
-            ChartInterval chartInterval = intervalOption.getInverval(client, converter, security);
-
-            // determine index range for given interval in prices list
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
-
-            ChartRange range = ChartRange.createFor(prices, chartInterval);
-            if (range == null)
+            if (prices.isEmpty())
             {
-                chart.redraw();
+                messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
                 return;
             }
 
-            // prepare value arrays
+            ChartIntervalOrMessage chartIntervalOrMessage = intervalOption.getInterval(client, converter, security);
+            if (chartIntervalOrMessage.getMessage() != null)
+            {
+                messagePainter.setMessage(chartIntervalOrMessage.getMessage());
+                return;
+            }
 
+            // determine the interval to be shown in the chart
+            ChartInterval chartInterval = chartIntervalOrMessage.getInterval();
+            ChartRange range = ChartRange.createFor(prices, chartInterval);
+            if (range == null)
+                return;
+
+            // prepare value arrays
             LocalDate[] dates = new LocalDate[range.size];
 
             double[] values = new double[range.size];
@@ -752,6 +798,8 @@ public class SecuritiesChart
             // performance issue in Drawing
             swtAntialias = range.size > 1000 ? SWT.OFF : SWT.ON;
 
+            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
+                            || chartConfig.contains(ChartDetails.PURCHASEPRICE);
             if (!chartConfig.contains(ChartDetails.PURCHASEPRICE))
             {
                 SecurityPrice p2 = prices.get(range.start);
@@ -1602,5 +1650,48 @@ public class SecuritiesChart
                         .getRecord(security) //
                         .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
                         .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
+    }
+
+    private static class MessagePainter implements PaintListener, DisposeListener
+    {
+        private String message;
+        private Font font;
+
+        private void setMessage(String message)
+        {
+            this.message = message;
+        }
+
+        @Override
+        public void paintControl(PaintEvent e)
+        {
+            if (message == null || message.isEmpty())
+                return;
+
+            if (font == null)
+            {
+                Font f = e.gc.getFont();
+                FontData[] fds = f.getFontData();
+                for (FontData fd : fds)
+                    fd.setHeight(20);
+
+                font = new Font(e.display, fds);
+            }
+
+            e.gc.setFont(font);
+
+            Point txtExtend = e.gc.textExtent(message);
+            int posX = (e.width - txtExtend.x) / 2;
+            int posY = (e.height - txtExtend.y) / 2;
+            e.gc.setForeground(Colors.DARK_GRAY);
+            e.gc.drawText(message, posX, posY);
+        }
+
+        @Override
+        public void widgetDisposed(DisposeEvent e)
+        {
+            if (font != null)
+                font.dispose();
+        }
     }
 }
