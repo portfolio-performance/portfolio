@@ -620,11 +620,22 @@ public class ClientFactory
             // is still being written)
             FileChannel channel = stream.getChannel();
             FileLock lock = null;
-            
-            // On OS X fcntl does not support locking files on AFP or SMB
-            // https://bugs.openjdk.org/browse/JDK-8167023
-            if (!Platform.getOS().equals(Platform.OS_MACOSX))
-                lock = channel.tryLock();
+
+            try
+            {
+                // On OS X fcntl does not support locking files on AFP or SMB
+                // https://bugs.openjdk.org/browse/JDK-8167023
+                if (!Platform.getOS().equals(Platform.OS_MACOSX))
+                    lock = channel.tryLock();
+            }
+            catch (IOException e)
+            {
+                // also on some other platforms (for example reported for Linux
+                // Mint, locks are not supported on SMB shares)
+
+                PortfolioLog.warning(MessageFormat.format("Failed to aquire lock {0} with message {1}", //$NON-NLS-1$
+                                file.getAbsolutePath(), e.getMessage()));
+            }
 
             ClientPersister persister = buildPersister(flags, password);
             persister.save(client, output);
