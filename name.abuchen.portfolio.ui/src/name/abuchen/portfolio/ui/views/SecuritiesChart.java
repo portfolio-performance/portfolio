@@ -180,7 +180,7 @@ public class SecuritiesChart
                 case H:
                     List<TransactionPair<?>> tx = security.getTransactions(client);
                     if (tx.isEmpty())
-                        return getAllPrices(now, security);
+                        return null;
 
                     Collections.sort(tx, TransactionPair.BY_DATE);
                     boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
@@ -190,20 +190,15 @@ public class SecuritiesChart
                                     ? LocalDate.now()
                                     : tx.get(tx.size() - 1).getTransaction().getDateTime().toLocalDate());
                 case ALL:
-                    return getAllPrices(now, security);
+                    List<SecurityPrice> prices = security.getPricesIncludingLatest();
+                    if (prices.isEmpty())
+                        return null;
+                    else
+                        return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
 
                 default:
                     throw new IllegalArgumentException();
             }
-        }
-
-        private ChartInterval getAllPrices(LocalDate now, Security security)
-        {
-            List<SecurityPrice> prices = security.getPricesIncludingLatest();
-            if (prices.isEmpty())
-                return new ChartInterval(now, now);
-            else
-                return new ChartInterval(prices.get(0).getDate(), prices.get(prices.size() - 1).getDate());
         }
     }
 
@@ -278,6 +273,9 @@ public class SecuritiesChart
          */
         public static ChartRange createFor(List<SecurityPrice> prices, ChartInterval chartInterval)
         {
+            if (chartInterval == null)
+                return null;
+
             int start = Collections.binarySearch(prices, new SecurityPrice(chartInterval.getStart(), 0),
                             new SecurityPrice.ByDate());
 
@@ -716,6 +714,7 @@ public class SecuritiesChart
 
             if (security == null || security.getPrices().isEmpty())
             {
+                chart.resetAxes();
                 chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
                 chart.redraw();
                 return;
@@ -737,6 +736,7 @@ public class SecuritiesChart
             ChartRange range = ChartRange.createFor(prices, chartInterval);
             if (range == null)
             {
+                chart.resetAxes();
                 chart.redraw();
                 return;
             }
