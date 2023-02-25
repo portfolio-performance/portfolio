@@ -86,7 +86,7 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 * `Java` --> `Editor` --> `Content Assist` --> `Favorites`
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
-		- `name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils`
+		- `name.abuchen.portfolio.datatransfer.ExtractorUtils`
 * `Java` --> `Installed JREs`
 	- Add the Java 17 JDK
 
@@ -201,7 +201,7 @@ Designation basic format as an example:
 | blue (logo)   | ![#0e6e8e](https://placehold.co/15x15/0e6e8e/0e6e8e.png) `#0e6e8e`		| `rgb(14, 110, 142)`   |  	|
 | green (logo)  | ![#9ac155](https://placehold.co/15x15/9ac155/9ac155.png) `#9ac155`		| `rgb(154, 193, 85)`   |  	|
 | dark blue     | ![#95a4b3](https://placehold.co/15x15/95a4b3/95a4b3.png) `#95a4b3`   	| `rgb(149, 164, 179)`  | Default color for icons |
-| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#f00000`		| `rgb(255, 0, 0)`      | Error, Fault            |
+| red         	| ![#d11d1d](https://placehold.co/15x15/d11d1d/d11d1d.png) `#d11d1d`		| `rgb(209, 29, 29)`      | Error, Fault            |
 | yellow       	| ![#ffd817](https://placehold.co/15x15/ffd817/ffd817.png) `#ffd817`		| `rgb(255, 216, 23)`   | Warning                 |
 
 ## PDF Importer
@@ -306,9 +306,9 @@ A finished PDF importer as a basis would be e.g. the [V-Bank AG](https://github.
 
 ### Auxiliary classes
 
-The utility class about standardized conversions, is called by the [AbstractPDFExtractor.java](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
-and processed in the [PDFExtractorUtils.java](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExtractorUtils.java).
-The [PDFExchangeRate](https://github.com/buchen/portfolio/blob/8d86513b6a4dcd8af0348f73e1b9c7df8af2cd83/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFExchangeRate.java) helps processing for foreign currencies.
+The utility class about standardized conversions, is called by the [AbstractPDFExtractor](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
+and processed in the [ExtractorUtils](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorUtils.java).
+The [ExtrExchangeRate](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtrExchangeRate.java) helps processing for foreign currencies.
 
 Use the [Money](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (it includes the currency and the value rounded to cents). Use *BigDecimal* for exchange rates and the conversion between currencies. 
 
