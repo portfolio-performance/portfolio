@@ -62,6 +62,7 @@ public enum Images
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
     CHECK("check.png"), //$NON-NLS-1$
+    OK("ok.png"),  //$NON-NLS-1$
     XMARK("xmark.png"), //$NON-NLS-1$
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
