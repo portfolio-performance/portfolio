@@ -33,6 +33,8 @@ import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
+    protected final static String FAILURE = "FAILURE"; //$NON-NLS-1$
+
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;

@@ -249,10 +249,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // STORNO
                 .section("type").optional()
                 .match("^(Dividendenabrechnung )?(?<type>STORNO)$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("STORNO"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                 // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
                 // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
@@ -329,19 +326,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     // If we have multiple entries in the document, then
                     // the "noTax" flag must be removed.
                     type.getCurrentContext().remove("noTax");
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
-                    return new TransactionItem(t);
+                    else
+                    {
+                        return null;
+                    }
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);

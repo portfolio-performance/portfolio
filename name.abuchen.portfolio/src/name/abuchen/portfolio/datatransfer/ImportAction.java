@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer;
 
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -89,11 +88,6 @@ public interface ImportAction
     }
 
     default Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
-    {
-        return Status.OK_STATUS;
-    }
-
-    default Status process(NonImportableItem item)
     {
         return Status.OK_STATUS;
     }
