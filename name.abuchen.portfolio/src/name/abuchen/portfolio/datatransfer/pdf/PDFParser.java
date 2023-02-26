@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -194,7 +195,7 @@ import name.abuchen.portfolio.model.TypedMap;
     /* package */static class Transaction<T>
     {
         private Supplier<T> supplier;
-        private Function<T, Item> wrapper;
+        private BiFunction<T, TypedMap, Item> wrapper;
         private List<Section<T>> sections = new ArrayList<>();
         private List<Consumer<T>> concludes = new ArrayList<>();
 
@@ -287,6 +288,11 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public Transaction<T> wrap(Function<T, Item> wrapper)
         {
+            return wrap((t, c) -> wrapper.apply(t));
+        }
+
+        public Transaction<T> wrap(BiFunction<T, TypedMap, Item> wrapper)
+        {
             this.wrapper = wrapper;
             return this;
         }
@@ -306,7 +312,7 @@ import name.abuchen.portfolio.model.TypedMap;
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
-            Item item = wrapper.apply(target);
+            Item item = wrapper.apply(target, txContext);
             if (item != null)
                 items.add(item);
         }
