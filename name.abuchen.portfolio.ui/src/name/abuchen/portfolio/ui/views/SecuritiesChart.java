@@ -1698,10 +1698,10 @@ public class SecuritiesChart
 
             e.gc.setLineWidth(2);
             e.gc.setLineStyle(SWT.LINE_SOLID);
-            e.gc.drawText(message, e.width / 2 - txtXExtend.x / 2, e.height / 2 - txtXExtend.y / 2);
-            e.gc.drawRectangle(e.width / 2 - txtXExtend.x / 2 - 2, e.height / 2 - txtXExtend.y / 2 - 2, txtXExtend.x,
-                            txtXExtend.y);
-
+            int posX = (e.width - txtXExtend.x) / 2;
+            int posY = (e.height - txtXExtend.y) / 2;
+            e.gc.drawText(message, posX, posY);
+            e.gc.drawRectangle(posX - 2, posY - 2, txtXExtend.x, txtXExtend.y);
         }
 
         @Override
