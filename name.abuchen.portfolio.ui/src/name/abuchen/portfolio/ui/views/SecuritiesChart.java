@@ -1687,27 +1687,23 @@ public class SecuritiesChart
                 for (FontData fd : fds)
                     fd.setHeight(20);
 
-                this.font = new Font(e.display, fds);
+                font = new Font(e.display, fds);
             }
 
-            e.gc.setFont(this.font);
+            e.gc.setFont(font);
 
-            Point txtXExtend = e.gc.textExtent(message);
-            txtXExtend.x += 4;
-            txtXExtend.y += 4;
-
-            e.gc.setLineWidth(2);
-            e.gc.setLineStyle(SWT.LINE_SOLID);
-            int posX = (e.width - txtXExtend.x) / 2;
-            int posY = (e.height - txtXExtend.y) / 2;
+            Point txtExtend = e.gc.textExtent(message);
+            int posX = (e.width - txtExtend.x) / 2;
+            int posY = (e.height - txtExtend.y) / 2;
+            e.gc.setForeground(Colors.DARK_GRAY);
             e.gc.drawText(message, posX, posY);
-            e.gc.drawRectangle(posX - 2, posY - 2, txtXExtend.x, txtXExtend.y);
         }
 
         @Override
         public void widgetDisposed(DisposeEvent e)
         {
-            this.font.dispose();
+            if (font != null)
+                font.dispose();
         }
     }
 }
