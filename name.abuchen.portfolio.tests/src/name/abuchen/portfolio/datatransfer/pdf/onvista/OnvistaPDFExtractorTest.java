@@ -2798,6 +2798,62 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
+    
+    @Test
+    public void testDividendeWithOutbondDelivery()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeWithOutbondDelivery01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("DE000A3MQQ33"));
+        assertThat(security1.getName(), is("Vonovia SE Dividende Cash"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-25T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+        assertThat(transaction.getSource(), is("DividendeWithOutbondDelivery01.txt"));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.96))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.96))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check outbond delivery
+        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+
+        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(6)));
+        assertThat(entry.getSource(), is("DividendeWithOutbondDelivery01.txt"));
+        assertThat(entry.getNote(), 
+                        is("Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt."));
+
+        assertThat(entry.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));    
+    }
 
     @Test
     public void testVorabpauschale01()
