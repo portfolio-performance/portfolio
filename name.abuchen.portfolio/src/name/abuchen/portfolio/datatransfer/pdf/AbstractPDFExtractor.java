@@ -239,6 +239,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
+    protected long asAmount(String value, String language, String country)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
     protected ExtrExchangeRate asExchangeRate(Map<String, String> data)
     {
         return new ExtrExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
