@@ -7,10 +7,12 @@ import static org.junit.Assert.assertFalse;
 
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
@@ -45,6 +47,10 @@ public class TestUtilities
     {
         Set<String> exclude = new HashSet<>(Arrays.asList(skip));
 
+        // List of skipped keys
+        List<String> skippedKeys = new ArrayList<String>();
+        skippedKeys.add("AboutTextTranslationDevelopers");
+
         Enumeration<String> keys = bundle.getKeys();
         while (keys.hasMoreElements())
         {
@@ -61,9 +67,16 @@ public class TestUtilities
                 assertThat(test, is(notNullValue()));
 
                 // replacement character
-                assertFalse(value, value.contains("\uFFFD")); //$NON-NLS-1$
-                assertFalse(value, value.contains("\uFFEF")); //$NON-NLS-1$
-                assertFalse(value, value.contains("\uFFBF")); //$NON-NLS-1$
+                assertFalse(key + ":\n" + value, value.contains("\uFFFD")); //$NON-NLS-1$
+                assertFalse(key + ":\n" + value, value.contains("\uFFEF")); //$NON-NLS-1$
+                assertFalse(key + ":\n" + value, value.contains("\uFFBF")); //$NON-NLS-1$
+
+                // wrong starter character
+                assertFalse(key + " -> \n" + value, value.startsWith("\n")); //$NON-NLS-1$
+
+                // wrong end character
+                if ((!value.endsWith("\r\n") || !value.endsWith("\n\n")) && !skippedKeys.contains(key))
+                    assertFalse(key + ":\n" + value, value.endsWith("\n")); //$NON-NLS-1$
             }
             catch (IllegalArgumentException e)
             {

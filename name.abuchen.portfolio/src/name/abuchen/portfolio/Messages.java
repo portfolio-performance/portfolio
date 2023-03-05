@@ -294,7 +294,6 @@ public class Messages extends NLS
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
-    public static String PDFdbLabel;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
