@@ -110,13 +110,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)([\\s]+)? (?<notation>St\\.|[\\w]{3}).*$")
+                .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)([\\s]+)? (?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -1272,13 +1277,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("shares", "notation")
-                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St.|Stk\\.|[\\w]{3})) .*$")
+                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})) .*$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            if (v.get("notation") != null && !v.get("notation").startsWith("Stk") && !v.get("notation").startsWith("St"))
-                                                t.setShares((asShares(v.get("shares")) / 100));
+                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                            {
+                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                            }
                                             else
+                                            {
                                                 t.setShares(asShares(v.get("shares")));
+                                            }
                                         })
                                 ,
                                 // @formatter:off
@@ -1400,13 +1410,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Stk./Nominale   : 25.000,000000 EUR    Einbeh. Steuer* :              0,00 EUR
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3}).*$")
+                .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -1589,13 +1604,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|[\\w]{3})).*$")
+                .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -2277,13 +2297,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("shares", "notation")
-                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St.|Stk\\.|[\\w]{3})) .*$")
+                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})) .*$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            if (v.get("notation") != null && !v.get("notation").startsWith("Stk") && !v.get("notation").startsWith("St"))
-                                                t.setShares((asShares(v.get("shares")) / 100));
+                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                            {
+                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                            }
                                             else
+                                            {
                                                 t.setShares(asShares(v.get("shares")));
+                                            }
                                         })
                                 ,
                                 // @formatter:off
