@@ -75,6 +75,8 @@ public class Messages extends NLS
     public static String CSVFormatMMDDYY1;
     public static String CSVFormatMMDDYYYY;
     public static String CSVFormatMMDDYYYY1;
+    public static String CSVFormatMMMDDYYYY;
+    public static String CSVFormatNumberFrence;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
@@ -294,7 +296,6 @@ public class Messages extends NLS
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
-    public static String PDFdbLabel;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
