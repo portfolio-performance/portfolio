@@ -101,7 +101,8 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         .match("^(Purchase|Sale) [\\w]{3} (\\-)?(?<shares>[\\.'\\d]+) (?<name>.*) at [\\.'\\d]+%$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            t.setShares((asShares(v.get("shares")) / 100));
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                         })
                         )
 

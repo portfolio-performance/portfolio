@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanksAndUnderscores;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
@@ -297,22 +299,25 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                .oneOf(
-                                // S T K            1 . 9 0 0 , 0  0 0                C e r t . v .A a n d e  l e n  E  O -, 1 6            NL  0 00  0 00  9 3 5 5
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^([\\s]+)?(S([\\s]+)?T([\\s]+)?K) ([\\s]+)?(?<shares>[\\.,\\d\\s]+) .*$")
-                                        .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
-                                ,
-                                // E U R             5. 0 0  0 ,0 0 0                 ST  Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)         D  E0  00  A1 T N A 7 0 
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^[A-Z\\s]+ (?<shares>[\\.,\\d\\s]+) ST .*$")
-                                        .assign((t, v) -> {
-                                            // Percentage quotation, workaround for bonds
-                                            t.setShares(asShares(stripBlanks(v.get("shares"))) / 100);
-                                        })
-                        )
+                // S T K            1 . 9 0 0 , 0  0 0                C e r t . v .A a n d e  l e n  E  O -, 1 6            NL  0 00  0 00  9 3 5 5
+                // E U R             5. 0 0  0 ,0 0 0                 ST  Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)         D  E0  00  A1 T N A 7 0 
+                .section("notation", "shares")
+                .match("^(?<notation>[A-Z\\s]+) (?<shares>[\\.,\\d\\s]+) .*$")
+                .assign((t, v) -> {
+                    v.put("notation", stripBlanks(v.get("notation")));
+                    v.put("shares", stripBlanks(v.get("shares")));
+
+                    // Percentage quotation, workaround for bonds
+                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
+                    else
+                    {
+                        t.setShares(asShares(v.get("shares")));
+                    }
+                })
 
                 // 000000000  EUR            00000000      15.12.2010         EUR             335,92
                 // Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
