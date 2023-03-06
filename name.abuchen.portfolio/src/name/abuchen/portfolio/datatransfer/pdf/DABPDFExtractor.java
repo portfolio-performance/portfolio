@@ -705,10 +705,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
             }
         });
         this.addDocumentTyp(type);
-
+        
+        // OLD FORMAT
+        
         // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
         // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
-        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
+        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) (?!.*Lastschrift).*$");
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -719,7 +721,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("note", "date", "amount")
-                .match("^(?<note>(SEPA\\-Gutschrift|SEPA-Lastschrift)) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .match("^(?<note>(SEPA\\-Gutschrift|SEPA\\-Lastschrift)) (?!.*Lastschrift).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -736,6 +738,38 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
+        // SEPA-Überweisung MUSTERMANN, MAX 05.07.19 15.000,00  // no minus sign!
+        // SEPA-Dauerauftrag MUSTERMANN, MAX 15.07.19 300,00    // no minus sign!
+        Block removalBlock_Format01 = new Block("^(SEPA\\-.berweisung|SEPA\\-Dauerauftrag) .*$");
+        type.addBlock(removalBlock_Format01);
+        removalBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.REMOVAL);
+                    return transaction;
+                })
+
+                .section("note", "date", "amount")
+                .match("^(?<note>(SEPA\\-.berweisung|SEPA\\-Dauerauftrag)) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    t.setDateTime(asDate(v.get("date")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        // NEW (Smartbroker) FORMAT
+        
         // 23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
         Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* [\\.,\\d]+ [\\w]{3}$");
         type.addBlock(depositBlock_Format02);
