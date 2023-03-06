@@ -195,22 +195,21 @@ public class SecuritiesChart
                 case H:
                     List<TransactionPair<?>> tx = security.getTransactions(client);
                     if (tx.isEmpty())
-                        return ChartIntervalOrMessage.createMessage("No holdings");
+                        return ChartIntervalOrMessage.createMessage(Messages.SecuritiesChart_NoDataMessage_NoHoldings);
 
                     Collections.sort(tx, TransactionPair.BY_DATE);
-                    boolean hasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
+                    boolean stillHasHoldings = ClientSnapshot.create(client, converter, LocalDate.now())
                                     .getPositionsByVehicle().containsKey(security);
 
                     return ChartIntervalOrMessage.createInterval(
                                     new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
-                                    hasHoldings
-                                    ? LocalDate.now()
-                                                    : tx.get(tx.size() - 1).getTransaction().getDateTime()
-                                                                                    .toLocalDate()));
+                                                    stillHasHoldings ? LocalDate.now()
+                                                                    : tx.get(tx.size() - 1).getTransaction()
+                                                                                    .getDateTime().toLocalDate()));
                 case ALL:
                     List<SecurityPrice> prices = security.getPricesIncludingLatest();
                     if (prices.isEmpty())
-                        return ChartIntervalOrMessage.createMessage("No prices");
+                        return ChartIntervalOrMessage.createMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
                     else
                         return ChartIntervalOrMessage.createInterval(new ChartInterval(prices.get(0).getDate(),
                                         prices.get(prices.size() - 1).getDate()));
@@ -432,6 +431,8 @@ public class SecuritiesChart
         chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
         chart.getPlotArea().addPaintListener(this.messagePainter);
         chart.getPlotArea().addDisposeListener(this.messagePainter);
+
+        messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
         setupTooltip();
 
@@ -768,17 +769,17 @@ public class SecuritiesChart
             customTooltipEvents.clear();
             chart.resetAxes();
             chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-            messagePainter.setMessage("");
+            messagePainter.setMessage(""); //$NON-NLS-1$
 
             if (security == null)
             {
-                messagePainter.setMessage("No security selected");
+                messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
                 return;
             }
 
             if (security.getPrices().isEmpty())
             {
-                messagePainter.setMessage("No prices available");
+                messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoPrices);
                 return;
             }
 
