@@ -867,6 +867,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "(?i)(?<note2>(Bargeldeinzahlung"
                                 + "|R.ckruf\\/Nachforschung"
                                 + "|Identifikationscode"
+                                + "|Stornorechnung"
                                 + "|Girokarte)).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -881,7 +882,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + context.get("year")));
                     }
-
+                    if (v.get("note2").equals("Stornorechnung"))
+                    {
+                        t.setType(AccountTransaction.Type.FEES_REFUND);
+                    }
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(v.get("note1") + " " + v.get("note2"));
