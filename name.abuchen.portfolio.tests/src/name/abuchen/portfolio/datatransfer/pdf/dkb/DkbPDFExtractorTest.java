@@ -3674,12 +3674,12 @@ public class DkbPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug22.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(11));
+        assertThat(results.size(), is(12));
 
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(11L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(12L));
 
         Item item = iter.next();
 
@@ -3801,6 +3801,17 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.88)));
         assertThat(transaction.getSource(), is("GiroKontoauszug22.txt"));
         assertThat(transaction.getNote(), is("sonstige Entgelte Girokarte"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.12)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug22.txt"));
+        assertThat(transaction.getNote(), is("sonstige Entgelte Stornorechnung"));
     }
 
     @Test
