@@ -773,7 +773,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        Block removalBlock = new Block("^(UEBERWEISUNG|EURO\\-UEBERW\\.)( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
+        Block removalBlock = new Block("^(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG)( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -788,7 +788,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
                 // @formatter:on
                 .section("note", "date", "amount")
-                .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.))( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$")
+                .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG))( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
