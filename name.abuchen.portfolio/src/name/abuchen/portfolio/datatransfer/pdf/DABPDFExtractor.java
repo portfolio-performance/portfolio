@@ -710,7 +710,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         
         // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
         // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
-        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) (?!.*Lastschrift).*$");
+        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) (?!.*Lastschrift).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -740,7 +740,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
         // SEPA-Überweisung MUSTERMANN, MAX 05.07.19 15.000,00  // no minus sign!
         // SEPA-Dauerauftrag MUSTERMANN, MAX 15.07.19 300,00    // no minus sign!
-        Block removalBlock_Format01 = new Block("^(SEPA\\-.berweisung|SEPA\\-Dauerauftrag) .*$");
+        Block removalBlock_Format01 = new Block("^(SEPA\\-.berweisung|SEPA\\-Dauerauftrag) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
         type.addBlock(removalBlock_Format01);
         removalBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -752,6 +752,34 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                 .section("note", "date", "amount")
                 .match("^(?<note>(SEPA\\-.berweisung|SEPA\\-Dauerauftrag)) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    t.setDateTime(asDate(v.get("date")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+        // Belastung Porto 05.04.16 0,70  // no minus sign!
+        Block feesBlock_Format01 = new Block("^Belastung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
+        type.addBlock(feesBlock_Format01);
+        feesBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.FEES);
+                    return transaction;
+                })
+
+                .section("note", "date", "amount")
+                .match("^Belastung (?<note>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
