@@ -32,6 +32,9 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter;
+import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter.InterestRateType;
+import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter.Interval;
+import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter.Maturity;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Pair;
@@ -51,10 +54,15 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
     private static final String MONTH_POSTFIX = "-01"; //$NON-NLS-1$
     private static final String ECB_SDW_DATE_FORMAT = "yyyy-MM-dd"; //$NON-NLS-1$
 
+    private static final String ESTR_EONIA_COMBINED_ID = "€STR/EONIA"; //$NON-NLS-1$
+    private static final String ESTR_ID = "ECB,EST,1.0/B.EU000A2QQF08.CI"; //$NON-NLS-1$
+    private static final String EONIA_ID = "ECB,EON,1.0/D.EONIA_TO.RATE"; //$NON-NLS-1$
+
     public enum ECBSDWSeries
     {
-        ESTR("ECB,EST,1.0/B.EU000A2QQF08.CI", Messages.LabelESTR), //$NON-NLS-1$
-        EONIA("ECB,EON,1.0/D.EONIA_TO.RATE", Messages.LabelEONIA), //$NON-NLS-1$
+        ESTR(ESTR_ID, Messages.LabelESTR),
+        ESTREONIA(ESTR_EONIA_COMBINED_ID, Messages.LabelESTREONIACombined),
+        EONIA(EONIA_ID, Messages.LabelEONIA),
         EURIBOR1M("ECB,FM,1.0/M.U2.EUR.RT.MM.EURIBOR1MD_.HSTA", Messages.LabelEURIBOR1M), //$NON-NLS-1$
         EURIBOR3M("ECB,FM,1.0/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA", Messages.LabelEURIBOR3M), //$NON-NLS-1$
         EURIBOR6M("ECB,FM,1.0/M.U2.EUR.RT.MM.EURIBOR6MD_.HSTA", Messages.LabelEURIBOR6M), //$NON-NLS-1$
@@ -84,6 +92,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
     {
         switch (freq)
         {
+            case "B": //$NON-NLS-1$
             case "D": //$NON-NLS-1$
                 return InterestRateToSecurityPricesConverter.Interval.DAILY;
             case "M": //$NON-NLS-1$
@@ -165,8 +174,45 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
 
         try
         {
-            String responseBody = requestData(security, collectRawResponse, data);
-            extractQuotes(responseBody, data);
+            if (security.getTickerSymbol().equals(ESTR_EONIA_COMBINED_ID))
+            {
+                // first add ESTR data
+                String responseBody = requestData(ESTR_ID, collectRawResponse, data);
+                extractQuotes(responseBody, data);
+
+                // then get EONIA data
+                String eoniaString = requestData(EONIA_ID, collectRawResponse, data);
+                ExtractedData extractedData = extractData(eoniaString);
+                // subtract 8.5 base points from EONIA index
+                // Since publishing €STR in 2019-10-02, EONIA was calculated as
+                // €STR + 8.5 base points
+                // To get a consistent index, we have to subtract 8.5 pase
+                // points from the EONIA index.
+                BigDecimal toSubtract = new BigDecimal("0.085"); //$NON-NLS-1$
+                extractedData.dataSeries = extractedData.dataSeries.stream()
+                                .map(pair -> new Pair<>(pair.getLeft(), pair.getRight().subtract(toSubtract)))
+                                .collect(Collectors.toList());
+                Collection<Pair<LocalDate, BigDecimal>> eoniaPrices = new InterestRateToSecurityPricesConverter(
+                                InterestRateType.ACT_360).convertBigDecimal(extractedData.dataSeries, Interval.DAILY,
+                                                Maturity.OVER_NIGHT);
+                // Align with €STR index: On 2019-10-01 this index has the value
+                // 100
+                BigDecimal alignFactor = new BigDecimal(100).multiply(Values.Quote.getBigDecimalFactor()).divide(eoniaPrices.stream()
+                                .filter(pair -> pair.getLeft().isAfter(LocalDate.of(2019, 10, 01).minusDays(1)))
+                                .findFirst().get().getRight(), 20, RoundingMode.HALF_EVEN);
+                List<LatestSecurityPrice> pricesToAdd = eoniaPrices.stream()
+                                .filter(pair -> pair.getLeft().isBefore(LocalDate.of(2019, 10, 01)))
+                                .map(pair -> new Pair<>(pair.getLeft(), pair.getRight().multiply(alignFactor)))
+                                .map(pair -> InterestRateToSecurityPricesConverter.toLatestSecurityPrice(pair.getLeft(),
+                                                pair.getRight()))
+                                .toList();
+                data.addAllPrices(pricesToAdd);
+            }
+            else
+            {
+                String responseBody = requestData(security, collectRawResponse, data);
+                extractQuotes(responseBody, data);
+            }
         }
         catch (IOException | URISyntaxException | ParserConfigurationException | SAXException e)
         {
@@ -177,12 +223,17 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         return data;
     }
 
-    @SuppressWarnings("nls")
     private String requestData(Security security, boolean collectRawResponse, QuoteFeedData data)
                     throws IOException, URISyntaxException
     {
-        WebAccess webaccess = new WebAccess(ECB_SDW_HOST, ECB_SDW_DATA_PATH + security.getTickerSymbol()) //
-                        .withScheme(ECB_SDW_PROTOCOL); // //$NON-NLS-1$
+        return requestData(security.getTickerSymbol(), collectRawResponse, data);
+    }
+
+    private String requestData(String dataSeriesID, boolean collectRawResponse, QuoteFeedData data)
+                    throws IOException, URISyntaxException
+    {
+        WebAccess webaccess = new WebAccess(ECB_SDW_HOST, ECB_SDW_DATA_PATH + dataSeriesID) //
+                        .withScheme(ECB_SDW_PROTOCOL); //
 
         String text = webaccess.get();
 
@@ -192,7 +243,41 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         return text;
     }
 
+    private class ExtractedData
+    {
+        InterestRateToSecurityPricesConverter.Interval interval = null;
+        InterestRateToSecurityPricesConverter.Maturity maturity = null;
+        String providerIdFM = null;
+        String eoniaItem = null;
+        List<Pair<LocalDate, BigDecimal>> dataSeries;
+    }
+
     private void extractQuotes(String responseBody, QuoteFeedData data)
+                    throws ParserConfigurationException, SAXException, IOException
+    {
+        ExtractedData extractedData = extractData(responseBody);
+        // EONIA and data from FM dataset need conversion from interest rate to
+        // prices
+        if (extractedData.providerIdFM != null || extractedData.eoniaItem != null)
+        {
+            Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
+                            InterestRateToSecurityPricesConverter.InterestRateType.ACT_360).convert(
+                                            extractedData.dataSeries, extractedData.interval, extractedData.maturity);
+            data.addAllPrices(latestSecurityPrices);
+        }
+        else
+        {
+            data.addAllPrices(extractedData.dataSeries.stream()
+                            .map((pair -> new LatestSecurityPrice(pair.getLeft(),
+                                            pair.getRight().multiply(Values.Quote.getBigDecimalFactor())
+                                                            .setScale(0, RoundingMode.HALF_UP).longValue(),
+                                            LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE,
+                                            LatestSecurityPrice.NOT_AVAILABLE)))
+                            .toList());
+        }
+    }
+
+    private ExtractedData extractData(String responseBody)
                     throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -292,24 +377,13 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             // more day given the current interest rate.
             dataSeries.add(new Pair<LocalDate, BigDecimal>(lastQuoteDate, new BigDecimal(0)));
         }
-        
-        if(providerIdFM != null || eoniaItem != null) // EONIA and data from FM dataset need conversion from interest rate to prices
-        {
-            Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
-                        InterestRateToSecurityPricesConverter.InterestRateType.ACT_360).convert(dataSeries, interval,
-                                        maturity);
-            data.addAllPrices(latestSecurityPrices);
-        }
-        else
-        {
-            data.addAllPrices(dataSeries.stream()
-                            .map((pair -> new LatestSecurityPrice(pair.getLeft(),
-                                            pair.getRight().multiply(Values.Quote.getBigDecimalFactor())
-                                                            .setScale(0, RoundingMode.HALF_UP).longValue(),
-                                            LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE,
-                                            LatestSecurityPrice.NOT_AVAILABLE)))
-                            .toList());
-        }
+        ExtractedData extractedData = new ExtractedData();
+        extractedData.dataSeries = dataSeries;
+        extractedData.eoniaItem = eoniaItem;
+        extractedData.providerIdFM = providerIdFM;
+        extractedData.interval = interval;
+        extractedData.maturity = maturity;
+        return extractedData;
     }
 
     @Override

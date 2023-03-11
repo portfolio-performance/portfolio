@@ -47,18 +47,9 @@ public class InterestRateToSecurityPricesConverter
     }
 
     /**
-     * Calculate security prices based on interest rates. This method assumes
-     * that interest is paid every day at midnight with the latest interest rate
-     * from {@code interestRates}. It produces one security price per interest
-     * rate in {@code interestRates}. Price changes of fixed price securities
-     * are taken into account using the modified duration. The last interest
-     * rate is ignored (only the day is used to compute the last price).
-     * 
-     * @param interestRates
-     *            Annualized interest rates as percent (i.e. for 1.5% p.a. the
-     *            double {@code 1.5d}).
+     * See {@link #convert(List, Interval, Maturity)}, but the result is represented with BigDecimal.
      */
-    public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, BigDecimal>> interestRates, Interval interval,
+    public Collection<Pair<LocalDate, BigDecimal>> convertBigDecimal(List<Pair<LocalDate, BigDecimal>> interestRates, Interval interval,
                     Maturity maturity)
     {
         if (interestRates.isEmpty())
@@ -67,8 +58,8 @@ public class InterestRateToSecurityPricesConverter
         Collections.sort(interestRates, (o1, o2) -> o1.getLeft().compareTo(o2.getLeft()));
 
         BigDecimal lastValue = START_VALUE;
-        List<LatestSecurityPrice> results = new ArrayList<>();
-        results.add(toLatestSecurityPrice(interestRates.get(0).getKey(), lastValue));
+        List<Pair<LocalDate, BigDecimal>> results = new ArrayList<>();
+        results.add(new Pair<LocalDate, BigDecimal>(interestRates.get(0).getKey(), lastValue));
 
         for (int nextInterestRateIndex = 0; nextInterestRateIndex < interestRates.size() - 1; nextInterestRateIndex++)
         {
@@ -96,12 +87,31 @@ public class InterestRateToSecurityPricesConverter
                                 .divide(new BigDecimal(100));
                 lastValue = lastValue.multiply(BigDecimal.ONE.add(modifiedDuration));
             }
-            results.add(toLatestSecurityPrice(interestRates.get(nextInterestRateIndex + 1).getLeft(), lastValue));
+            results.add(new Pair<LocalDate, BigDecimal>(interestRates.get(nextInterestRateIndex + 1).getLeft(), lastValue));
         }
         return results;
     }
+    
+    /**
+     * Calculate security prices based on interest rates. This method assumes
+     * that interest is paid every day at midnight with the latest interest rate
+     * from {@code interestRates}. It produces one security price per interest
+     * rate in {@code interestRates}. Price changes of fixed price securities
+     * are taken into account using the modified duration. The last interest
+     * rate is ignored (only the day is used to compute the last price).
+     * 
+     * @param interestRates
+     *            Annualized interest rates as percent (i.e. for 1.5% p.a. the
+     *            double {@code 1.5d}).
+     */
+    public Collection<LatestSecurityPrice> convert(List<Pair<LocalDate, BigDecimal>> interestRates, Interval interval,
+                    Maturity maturity)
+    {
+        return convertBigDecimal(interestRates, interval, maturity).stream()
+                        .map(pair -> toLatestSecurityPrice(pair.getLeft(), pair.getRight())).toList();
+    }
 
-    private LatestSecurityPrice toLatestSecurityPrice(LocalDate date, BigDecimal value)
+    public static LatestSecurityPrice toLatestSecurityPrice(LocalDate date, BigDecimal value)
     {
         return new LatestSecurityPrice(date, value.setScale(0, RoundingMode.HALF_UP).longValue(), LatestSecurityPrice.NOT_AVAILABLE,
                         LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE);
@@ -139,7 +149,7 @@ public class InterestRateToSecurityPricesConverter
                 assert false;
         }
         return macaulayDuration.divide(BigDecimal.ONE.add(
-                        interestRate).divide(new BigDecimal(paymentsPerYear), SCALE, RoundingMode.HALF_EVEN), SCALE, RoundingMode.HALF_EVEN);
+                        interestRate.divide(new BigDecimal(paymentsPerYear), SCALE, RoundingMode.HALF_EVEN)), SCALE, RoundingMode.HALF_EVEN);
     }
 
     /**

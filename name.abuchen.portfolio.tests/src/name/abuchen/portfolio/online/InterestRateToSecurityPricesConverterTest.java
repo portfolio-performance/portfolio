@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,42 +19,42 @@ import name.abuchen.portfolio.util.Pair;
 
 public class InterestRateToSecurityPricesConverterTest
 {
-    private static final List<Pair<LocalDate, Double>> gaplessData;
+    private static final List<Pair<LocalDate, BigDecimal>> gaplessData;
     static
     {
         gaplessData = new ArrayList<>();
-        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 01), 1d));
-        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 02), 0d));
-        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 03), -1d));
-        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 04), -.5d));
+        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 01), new BigDecimal(1)));
+        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 02), new BigDecimal(0)));
+        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 03), new BigDecimal(-1)));
+        gaplessData.add(new Pair<>(LocalDate.of(2021, 01, 04), new BigDecimal("-0.5")));
     }
-    private static final List<Pair<LocalDate, Double>> dataWithGap;
+    private static final List<Pair<LocalDate, BigDecimal>> dataWithGap;
     static
     {
         dataWithGap = new ArrayList<>();
-        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 01), .1d));
-        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 04), -.123d));
-        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 05), -.4565d));
+        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 01), new BigDecimal("0.1")));
+        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 04), new BigDecimal("-.123")));
+        dataWithGap.add(new Pair<>(LocalDate.of(2021, 01, 05), new BigDecimal("-.4565")));
     }
-    private static final List<Pair<LocalDate, Double>> monthlyConstantInterestRate;
+    private static final List<Pair<LocalDate, BigDecimal>> monthlyConstantInterestRate;
     static
     {
         monthlyConstantInterestRate = new ArrayList<>();
-        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 01, 01), 1d));
-        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 02, 01), 1d));
-        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 03, 01), 1d));
-        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 04, 01), 1d));
+        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 01, 01), BigDecimal.ONE));
+        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 02, 01), BigDecimal.ONE));
+        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 03, 01), BigDecimal.ONE));
+        monthlyConstantInterestRate.add(new Pair<>(LocalDate.of(2021, 04, 01), BigDecimal.ONE));
     }
-    private static final List<Pair<LocalDate, Double>> monthlyChangingInterestRate;
+    private static final List<Pair<LocalDate, BigDecimal>> monthlyChangingInterestRate;
     static
     {
         monthlyChangingInterestRate = new ArrayList<>();
-        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 01, 01), 1d));
-        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 02, 01), 0d));
-        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 03, 01), 2d));
-        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 04, 01), 1d));
+        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 01, 01), new BigDecimal(1)));
+        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 02, 01), new BigDecimal(0)));
+        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 03, 01), new BigDecimal(2)));
+        monthlyChangingInterestRate.add(new Pair<>(LocalDate.of(2021, 04, 01), new BigDecimal(1)));
     }
-    private static final double MAX_ERROR = 0.001d / 36000d;
+    private static final double MAX_ERROR = 0.0001d / 36000d;
 
     @Test
     public void testAct360Empty()
