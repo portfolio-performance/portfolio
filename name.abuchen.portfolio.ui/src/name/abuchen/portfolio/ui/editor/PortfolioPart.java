@@ -57,6 +57,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
+import name.abuchen.portfolio.ui.survey.Survey;
+import name.abuchen.portfolio.ui.survey.SurveyReminder;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
@@ -290,6 +292,17 @@ public class PortfolioPart implements ClientInputListener
         data.right = new FormAttachment(100, -10);
         label.setLayoutData(data);
 
+        if (Survey.isActive())
+        {
+            Composite reminder = new SurveyReminder(container);
+            
+            data = new FormData();
+            data.top = new FormAttachment(0, 10);
+            data.right = new FormAttachment(100, -10);
+            data.width = 300;
+            reminder.setLayoutData(data);
+        }
+        
         return bar;
     }
 

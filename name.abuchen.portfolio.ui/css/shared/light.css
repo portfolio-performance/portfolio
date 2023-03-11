@@ -14,6 +14,7 @@
 	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
     padding: 0px;
+    swt-tab-height: 22px;
 }
 
 .MPartStack.active {

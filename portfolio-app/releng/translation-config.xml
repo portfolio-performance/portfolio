@@ -56,6 +56,7 @@
 				<string>AboutTextOtherSoftware</string>
 				<string>AboutTextTranslationDevelopers</string>
 				<string>AboutTextDeveloped</string>
+				<string>SurveyIcon</string>
 			</excludes>
 		</artifact>
 		<artifact>
