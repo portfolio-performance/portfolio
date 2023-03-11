@@ -191,6 +191,7 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String LabelEurostatHICP;
     public static String LabelECBStatisticalDataWarehouse;
+    public static String LabelESTR;
     public static String LabelEONIA;
     public static String LabelEURIBOR1M;
     public static String LabelEURIBOR3M;

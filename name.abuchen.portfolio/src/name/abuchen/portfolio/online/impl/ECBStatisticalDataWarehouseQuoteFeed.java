@@ -2,6 +2,8 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.InterestRateToSecurityPricesConverter;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -50,6 +53,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
 
     public enum ECBSDWSeries
     {
+        ESTR("ECB,EST,1.0/B.EU000A2QQF08.CI", Messages.LabelESTR), //$NON-NLS-1$
         EONIA("ECB,EON,1.0/D.EONIA_TO.RATE", Messages.LabelEONIA), //$NON-NLS-1$
         EURIBOR1M("ECB,FM,1.0/M.U2.EUR.RT.MM.EURIBOR1MD_.HSTA", Messages.LabelEURIBOR1M), //$NON-NLS-1$
         EURIBOR3M("ECB,FM,1.0/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA", Messages.LabelEURIBOR3M), //$NON-NLS-1$
@@ -208,6 +212,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         InterestRateToSecurityPricesConverter.Interval interval = null;
         InterestRateToSecurityPricesConverter.Maturity maturity = null;
         String providerIdFM = null;
+        String eoniaItem = null;
         for (int i = 0; i < seriesKeyValues.getLength(); i++)
         {
             Element e = (Element) seriesKeyValues.item(i);
@@ -220,12 +225,16 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             {
                 providerIdFM = e.getAttribute("value"); //$NON-NLS-1$
             }
+            if (e.getAttribute("id").equals("EONIA_ITEM")) //$NON-NLS-1$ //$NON-NLS-2$
+            {
+                eoniaItem = e.getAttribute("value"); //$NON-NLS-1$
+            }
         }
         maturity = getMaturity(providerIdFM);
 
         NodeList dataList = root.getElementsByTagName("generic:Obs"); //$NON-NLS-1$
 
-        List<Pair<LocalDate, Double>> interestRates = new ArrayList<>();
+        List<Pair<LocalDate, BigDecimal>> dataSeries = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECB_SDW_DATE_FORMAT);
         LocalDate lastInterestRateDay = LocalDate.MIN;
 
@@ -264,31 +273,43 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 throw new SAXException("Expected one value, but found: " + interestRateNodeList.getLength()); //$NON-NLS-1$
             Element interestRateElement = (Element) interestRateNodeList.item(0);
             String interestRateString = interestRateElement.getAttribute("value"); //$NON-NLS-1$
-            double interestRate = Double.parseDouble(interestRateString);
 
             // This check is necessary because for USA 10year yield NaN is
             // returned in the period 1914-08 - 1914-11
-            if (!Double.isNaN(interestRate))
+            if (!interestRateString.equals("NaN")) //$NON-NLS-1$
             {
-                interestRates.add(new Pair<LocalDate, Double>(date, interestRate));
+                BigDecimal interestRate = new BigDecimal(interestRateString);
+                dataSeries.add(new Pair<LocalDate, BigDecimal>(date, interestRate));
             }
         }
 
-        if (providerIdFM == null) // Is EONIA Index? EONIA data is from EON, not
-                                  // FM, so it does not have a provider_fm_id
+        if (eoniaItem != null) // Is EONIA index?
         {
             TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(TradeCalendarManager.TARGET2_CALENDAR_CODE);
             LocalDate lastQuoteDate = tradeCalendar.getNextNonHoliday(lastInterestRateDay.plusDays(1));
             // EONIA is an over-night index, so it has modified duration 0 and
             // we can calculate the quote for one
             // more day given the current interest rate.
-            interestRates.add(new Pair<LocalDate, Double>(lastQuoteDate, Double.NaN));
+            dataSeries.add(new Pair<LocalDate, BigDecimal>(lastQuoteDate, new BigDecimal(0)));
         }
-
-        Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
-                        InterestRateToSecurityPricesConverter.InterestRateType.ACT_360).convert(interestRates, interval,
+        
+        if(providerIdFM != null || eoniaItem != null) // EONIA and data from FM dataset need conversion from interest rate to prices
+        {
+            Collection<LatestSecurityPrice> latestSecurityPrices = new InterestRateToSecurityPricesConverter(
+                        InterestRateToSecurityPricesConverter.InterestRateType.ACT_360).convert(dataSeries, interval,
                                         maturity);
-        data.addAllPrices(latestSecurityPrices);
+            data.addAllPrices(latestSecurityPrices);
+        }
+        else
+        {
+            data.addAllPrices(dataSeries.stream()
+                            .map((pair -> new LatestSecurityPrice(pair.getLeft(),
+                                            pair.getRight().multiply(Values.Quote.getBigDecimalFactor())
+                                                            .setScale(0, RoundingMode.HALF_UP).longValue(),
+                                            LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE,
+                                            LatestSecurityPrice.NOT_AVAILABLE)))
+                            .toList());
+        }
     }
 
     @Override
