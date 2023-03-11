@@ -16,7 +16,6 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -2716,18 +2715,17 @@ public class OnvistaPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoDividende01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoDividende01.txt"));
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoDividende01.txt"));
     }
 
     @Test
@@ -2932,18 +2930,17 @@ public class OnvistaPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check advance tax transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("Vorabpauschale02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("Vorabpauschale02.txt"));
     }
 
     @Test

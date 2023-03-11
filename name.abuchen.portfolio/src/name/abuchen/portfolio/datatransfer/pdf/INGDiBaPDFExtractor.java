@@ -240,10 +240,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Sie erhalten eine neue Abrechnung.
                 .section("type").optional()
                 .match("^(?<type>Sie erhalten eine neue Abrechnung\\.)$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Sie erhalten eine neue Abrechnung."))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // ISIN (WKN) US5801351017 (856958)
                 // Wertpapierbezeichnung McDonald's Corp.
@@ -338,13 +336,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });

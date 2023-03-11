@@ -359,10 +359,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // Storno der Dividende mit dem Ex-Tag 29.11.2019.
                 .section("type").optional()
                 .match("^(?<type>Storno) der Dividende .*$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Storno"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                 // Registered Shares USD o.N.
@@ -480,13 +478,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 .conclude(ExtractorUtils.fixGrossValueA())
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });

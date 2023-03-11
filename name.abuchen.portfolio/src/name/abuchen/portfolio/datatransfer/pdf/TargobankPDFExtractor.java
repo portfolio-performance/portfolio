@@ -384,10 +384,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return new NonImportableItem(Messages.MsgErrorTransactionTypeNotSupported);
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+                    if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                    return item;
                 });
 
         block.set(pdfTransaction);
@@ -420,6 +421,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     {
         // Filter transactions by sell transactions
         List<Item> sellTransactionList = items.stream() //
+                        .filter(item -> !item.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .map(BuySellEntryItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
@@ -429,6 +431,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
         // Filter transactions by taxes transactions
         List<Item> taxTransactionList = items.stream() //
+                        .filter(item -> !item.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
@@ -445,6 +448,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         // Group dividend and taxes transactions together and group by date and
         // security
         Map<LocalDateTime, Map<Security, List<Item>>> dividendTaxTransactions = items.stream() //
+                        .filter(item -> !item.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //

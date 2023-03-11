@@ -406,10 +406,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // Storno unserer Dividendengutschrift Nr. 67390000 vom 15.05.2020.
                 .section("type").optional()
                 .match("^(?<type>Storno) unserer Dividendengutschrift .*$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Storno"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // Gattungsbezeichnung ISIN
                 // Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
@@ -662,7 +660,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                 .conclude(ExtractorUtils.fixGrossValueA())
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     // If we have multiple entries in the document, with
                     // taxes and tax refunds, then the "negative" flag
                     // must be removed.
@@ -674,10 +672,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });
@@ -754,9 +751,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     // must be removed.
                     type.getCurrentContext().remove("negative");
 
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return new NonImportableItem(Messages.MsgErrorTransactionTypeNotSupported);
+                    TransactionItem item = new TransactionItem(t);
+                    if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                    return item;
                 });
         
         block.set(pdfTransaction);

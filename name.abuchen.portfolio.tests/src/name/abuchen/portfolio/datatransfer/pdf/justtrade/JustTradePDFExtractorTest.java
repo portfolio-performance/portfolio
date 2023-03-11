@@ -14,7 +14,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -2919,42 +2918,41 @@ public class JustTradePDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
         assertThat(security1.getIsin(), is("IE00BH04GL39"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getIsin(), is("LU1681041627"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
+        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getIsin(), is("IE00B8KGV557"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
+        Security security4 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getIsin(), is("IE00BL25JN58"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        BuySellEntryItem cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("Depotauszug05.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("Depotauszug05.txt"));
 
         // check 1st buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -2975,7 +2973,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -2996,7 +2994,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3017,7 +3015,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3038,7 +3036,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3059,7 +3057,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3080,7 +3078,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3101,7 +3099,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3122,7 +3120,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3143,7 +3141,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3164,7 +3162,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3185,7 +3183,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3206,7 +3204,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3227,7 +3225,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3248,7 +3246,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3269,7 +3267,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 16th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3290,7 +3288,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 17th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(17).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3311,7 +3309,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 18th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(17).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(18).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3332,7 +3330,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 19th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(18).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3353,7 +3351,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 20th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3374,7 +3372,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 21th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3395,7 +3393,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 22th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3416,7 +3414,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 23th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3437,7 +3435,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 24th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3458,7 +3456,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 25th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3479,7 +3477,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3500,7 +3498,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3521,7 +3519,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3542,7 +3540,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3563,7 +3561,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3584,7 +3582,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 31th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3605,7 +3603,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 32th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3626,7 +3624,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 33th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3647,7 +3645,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 34th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(34).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3668,7 +3666,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 35th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(34).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(35).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3689,7 +3687,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 36th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(35).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(36).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3710,7 +3708,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 37th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(36).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(37).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3731,7 +3729,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 38th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(37).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(38).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3752,7 +3750,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 39th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(38).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(39).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3773,7 +3771,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 40th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(39).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(40).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3794,7 +3792,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 41th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(40).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(41).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3815,7 +3813,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 42th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(41).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(42).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3836,7 +3834,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 43th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(42).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(43).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3857,7 +3855,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 44th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(43).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(44).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3878,7 +3876,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 45th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(44).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(45).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3899,7 +3897,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 46th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(45).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(46).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3920,7 +3918,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 47th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(46).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(47).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3941,7 +3939,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 48th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(47).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(48).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3962,7 +3960,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 49th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(48).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(49).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -3983,7 +3981,7 @@ public class JustTradePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 50th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(49).findFirst()
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(50).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));

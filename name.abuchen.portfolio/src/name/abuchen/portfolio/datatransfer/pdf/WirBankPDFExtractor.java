@@ -237,10 +237,8 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 // Cancelation Dividend Payment
                 .section("type").optional()
                 .match("^(?<type>Cancelation Dividend Payment)$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Cancelation Dividend Payment"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // 47.817 Ant UBS ETF MSCI USA SRI
                 // ISIN: LU0629460089
@@ -314,13 +312,12 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         t.setNote(trim(v.get("note")));
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });

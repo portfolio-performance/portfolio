@@ -14,7 +14,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -804,18 +803,17 @@ public class TargobankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuermitteilungDividende02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende02.txt"));
     }
 
     @Test
@@ -860,14 +858,13 @@ public class TargobankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende02.txt"));
     }
 
     @Test
@@ -893,7 +890,7 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -912,14 +909,13 @@ public class TargobankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende02.txt"));
     }
 
     @Test
@@ -1389,18 +1385,17 @@ public class TargobankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuermitteilungDividende04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende04.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende04.txt"));
     }
 
     @Test
@@ -1445,14 +1440,13 @@ public class TargobankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende04.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende04.txt"));
     }
 
     @Test
@@ -1478,7 +1472,7 @@ public class TargobankPDFExtractorTest
 
         // check dividends transaction
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1497,14 +1491,13 @@ public class TargobankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("SteuermitteilungDividende04.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getSource(), is("SteuermitteilungDividende04.txt"));
     }
 
     @Test

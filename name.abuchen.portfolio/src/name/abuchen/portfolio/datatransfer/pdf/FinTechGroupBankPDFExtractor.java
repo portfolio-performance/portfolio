@@ -80,10 +80,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Stornierung Wertpapierabrechnung Kauf Fonds
                 .section("type").optional()
                 .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Storno") || v.get("type").equals("Stornierung"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // @formatter:off
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
@@ -339,7 +337,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     // If the taxes are negative, then this is a tax
                     // refund and has been marked so. 
                     // Finally, we remove the flag.
@@ -347,10 +345,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                     {
-                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new BuySellEntryItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        BuySellEntryItem item = new BuySellEntryItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });

@@ -178,18 +178,15 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 // STORNO VON 20210817  45747417
                 .section("type").optional()
                 .match("^(?<type>STORNO VON) .*$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("STORNO VON"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                     {
-                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new BuySellEntryItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        BuySellEntryItem item = new BuySellEntryItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });

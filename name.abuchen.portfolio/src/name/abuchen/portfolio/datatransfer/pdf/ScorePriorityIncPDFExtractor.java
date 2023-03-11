@@ -247,9 +247,10 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return new NonImportableItem("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            TransactionItem item = new TransactionItem(t);
+                            if (t.getCurrencyCode() != null || t.getAmount() == 0)
+                                item.setFailureMessage("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            return item;
                         }));
 
         // @formatter:off

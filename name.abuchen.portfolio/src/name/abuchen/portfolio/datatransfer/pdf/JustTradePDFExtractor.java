@@ -280,7 +280,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
                                         t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                         t.setAmount(asAmount(v.get("amount")));
-                                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+
+                                        v.getTransactionContext().put(FAILURE,
+                                                        Messages.MsgErrorOrderCancellationUnsupported);
                                     })
                             ,
                             // Storno ohne Wechselkurs
@@ -435,12 +437,13 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                     })
                         )
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new BuySellEntryItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                    {
+                        BuySellEntryItem item = new BuySellEntryItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
+                    }
                     return null;
                 }));
 

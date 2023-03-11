@@ -16,7 +16,6 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -3165,18 +3164,16 @@ public class ConsorsbankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoDividende01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancelations = (TransactionItem) results.stream()
+                        .filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoDividende01.txt"));
+        assertThat(cancelations.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancelations.getSource(), is("StornoDividende01.txt"));
     }
 
     @Test

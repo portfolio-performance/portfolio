@@ -543,7 +543,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                             // Dividend refund
                                             if ("-".equals(trim(v.get("type"))))
-                                                t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
 
                                             Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
@@ -747,16 +747,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .wrap(t -> {
-                            Optional<CurrencyExchangeItem> item = type.getCurrentContext().getType(CurrencyExchangeItem.class);
+                        .wrap((t, ctx) -> {
+                            Optional<CurrencyExchangeItem> currencyExchange = type.getCurrentContext().getType(CurrencyExchangeItem.class);
 
-                            if (item.isPresent())
+                            if (currencyExchange.isPresent())
                             {
-                                long delta = t.getAmount() - item.get().baseAmount;
+                                long delta = t.getAmount() - currencyExchange.get().baseAmount;
 
                                 if (Math.abs(delta) == 1)
                                 {
-                                    t.setAmount(item.get().baseAmount);
+                                    t.setAmount(currencyExchange.get().baseAmount);
 
                                     // pick the first unit and make it fit;
                                     // see discussion
@@ -791,10 +791,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                             {
-                                if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                                    return new TransactionItem(t);
-                                else
-                                    return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                                TransactionItem item = new TransactionItem(t);
+                                item.setFailureMessage(ctx.getString(FAILURE));
+                                return item;
                             }
                             return null;
                         }));

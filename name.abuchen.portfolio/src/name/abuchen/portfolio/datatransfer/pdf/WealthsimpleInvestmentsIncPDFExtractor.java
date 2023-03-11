@@ -455,7 +455,9 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    return new NonImportableItem(MessageFormat.format(Messages.MsgMissingTickerSymbol, t.getNote()));
+                    TransactionItem item = new TransactionItem(t);
+                    item.setFailureMessage(MessageFormat.format(Messages.MsgMissingTickerSymbol, t.getNote()));
+                    return item;
                 }));
 
         // Dec 31 Gross management fee to Wealthsimple – – -$4.42
