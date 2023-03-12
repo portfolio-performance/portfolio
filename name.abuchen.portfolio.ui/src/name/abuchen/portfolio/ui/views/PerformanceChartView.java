@@ -56,6 +56,9 @@ import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
+    public static final int TOTALS_YAXIS_INDEX = 0;
+    public static final int DELTA_PERCENTAGE_YAXIS_INDEX = 2;
+    
     private static final String KEY_AGGREGATION_PERIOD = "performance-chart-aggregation-period"; //$NON-NLS-1$
 
     private static class MinusOneDecimalFormat extends DecimalFormat
@@ -197,7 +200,13 @@ public class PerformanceChartView extends AbstractHistoricView
         chart = new TimelineChart(composite);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new MinusOneDecimalFormat("0.#%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(TOTALS_YAXIS_INDEX).getTick().setFormat(new MinusOneDecimalFormat("0.#%")); //$NON-NLS-1$
+        int axisId = chart.getAxisSet().createYAxis();
+        assert axisId == DELTA_PERCENTAGE_YAXIS_INDEX;
+        chart.getAxisSet().getYAxis(TOTALS_YAXIS_INDEX).getTitle().setText("Kummulierte Performance");
+        chart.getAxisSet().getYAxis(TOTALS_YAXIS_INDEX).getTitle().setVisible(true);
+        chart.getAxisSet().getYAxis(DELTA_PERCENTAGE_YAXIS_INDEX).getTitle().setText("Tägliche Performance");
+        chart.getAxisSet().getYAxis(DELTA_PERCENTAGE_YAXIS_INDEX).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getToolTip().setDefaultValueFormat(new MinusOneDecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
@@ -296,7 +305,7 @@ public class PerformanceChartView extends AbstractHistoricView
         {
             chart.suspendUpdate(false);
         }
-        chart.getAxisSet().getYAxis(0).enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
+        chart.getAxisSet().getYAxis(TOTALS_YAXIS_INDEX).enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
         
         chart.redraw();
 

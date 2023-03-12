@@ -9,6 +9,7 @@ import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 import name.abuchen.portfolio.util.Interval;
 
@@ -34,6 +35,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
             ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
                             series.getLabel());
+            lineSeries.setYAxisId(PerformanceChartView.TOTALS_YAXIS_INDEX);
             configure(series, lineSeries);
         }
 
@@ -50,12 +52,14 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
                 ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
                                 series.getLabel());
                 configure(series, lineSeries);
+                lineSeries.setYAxisId(PerformanceChartView.TOTALS_YAXIS_INDEX);
                 break;
             case DELTA_PERCENTAGE:
                 String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
                                 : Messages.LabelAggregationDaily;
                 IBarSeries barSeries = getChart().addDateBarSeries(index.getDates(), index.getDeltaPercentage(),
                                 aggreagtionPeriodLabel);
+                barSeries.setYAxisId(PerformanceChartView.DELTA_PERCENTAGE_YAXIS_INDEX);
                 // update label, e.g. 'daily' to 'weekly'
                 series.setLabel(aggreagtionPeriodLabel);
                 configure(series, barSeries);
