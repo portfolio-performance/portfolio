@@ -1,0 +1,46 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf Limitauftrag ADRESSZEILE2=Max Mustermann
+Kommissionsgeschäft ADRESSZEILE3=Musterstraße 123
+ADRESSZEILE4=54321 Musterstadt
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+1234567890 99887755 / 18.02.2022 ADRESSZEILE6=
+Herr BELEGNUMMER=1234
+Max Mustermann SEITENNUMMER=1
+Musterstraße 123 STEUERERSTATTUNG=N
+54321 Musterstadt Depotinhaber
+Max Mustermann
+München, 18.02.2022
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+First Majestic Silver Corp. Registered Shares o.N. CA32076V1031
+Nominal Kurs
+STK 100,000 CAD 14,9900
+Handelstag 18.02.2022 Kurswert CAD 1.499,00 
+Handelszeit 16:56* Provision CAD 13,06-
+Börse Kanada/NCT Handelsplatzentgelt CAD 15,00-
+Verwahrart Wertpapierrechnung Ausmachender Betrag CAD 1.470,94 
+Lagerland Kanada
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+23.02.2022 1234567890 EUR/CAD 1,451293 EUR 1.013,54
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 76,24
+Aktienverlusttopf EUR 2.053,85 1.977,61
+allgemeiner Verlusttopf EUR 1.996,95 1.996,95
+Freistellungsauftrag (eingereicht: EUR 1.500,00) EUR 1.500,00 1.500,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé

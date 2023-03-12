@@ -1,0 +1,184 @@
+﻿PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstrasse 8e
+80538 Munich
+service@scalable.capital
+Page 1/3
+Mr. Munich
+2022-03-02
+John Doe
+Neue Straße 1 John Doe
+12345 Neue Stadt Client ID: 1208374    Portfolio: 1
+Account No.: 1209625007
+IBAN: DE44 2114 4200 5506 3530 01
+BLZ: 800 442 11
+BIC: BDWBDEMM
+Transaction No.: 204751222
+Reference No.: 339366528
+Periodic Account Statement: EUR Account
+Account Statement No. 020123
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Account Balance in EUR on 0.00
+2022-02-02 Credit SEPA 2022-02-02 1,000.00
+JOHN DOE
+DE48900600677700345201
+CCDDFFFFXXX
+End to end Referenz:
+MOB.32.UE.721300
+Case No.: 910129125
+2022-02-03 Direct Debit 2022-02-03 1.00
+John Doe
+DE48900600677700345201
+CCDDFFFFXXX
+Scalable Capital Broker first depos
+it
+End to end Referenz:
+CJKZ8DKQXHP2BEDYXMMZQY
+Mandatsreferenz:
+U69ZNG8ZPXNA4TUME5FH7R
+Mandatsdatum:
+25.01.2022
+Gläubiger-ID:
+DE63MUC00001787612
+Case No.: 910106563
+2022-02-16 Purchase 2022-02-18 69.97 -
+X(IE)-MSCI WO.IN.TE. 1CDL
+ISIN IE00BM67HT60
+STK               1,304
+Case No.: WWUM 82775816
+Balance: 931.03
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 •
+www.scalable.capital
+
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 •
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
+Periodic Account Statement: EUR Account
+Account Statement No. 022001
+Continued: Page 2/3
+Account No.: 1209625007   BLZ: 800 442 11   IBAN: DE44 2114 4200 5506 3530 01   BIC: BDWBDEMM
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Balance: 931.03
+2022-02-16 Purchase 2022-02-18 40.00 -
+F.-F.EM.MKT.Q.I.U.ETF DLD
+ISIN IE00BYSX4739
+STK               7,367
+Case No.: WWUM 82788624
+2022-02-16 Purchase 2022-02-18 49.99 -
+HETF-FMNXFIE ETFDLA
+ISIN IE000WF4FCJ3
+STK               7,682
+Case No.: WWUM 82818982
+2022-02-16 Purchase 2022-02-18 39.99 -
+FRAN.LIB.Q GL.DIV.UC.DLD
+ISIN IE00BF2B0M76
+STK               1,364
+Case No.: WWUM 82819562
+2022-02-21 Purchase 2022-02-23 69.98 -
+WISDOMTREE ART. INT.DLAC
+ISIN IE00BDVPNG13
+STK               1,33
+Case No.: WWUM 83417782
+2022-02-21 Purchase 2022-02-23 60.00 -
+FIDELITY GL.QUAL.INC. INC
+ISIN IE00BYXVGZ48
+STK               8,746
+Case No.: WWUM 83423564
+2022-02-21 Purchase 2022-02-23 39.99 -
+VANECK MSTR.DM DIV.UC.ETF
+ISIN NL0011683594
+STK               1,207
+Case No.: WWUM 83424535
+2022-02-21 Purchase 2022-02-23 70.00 -
+L+G-L+G BATT.VALUE-CHAIN
+ISIN IE00BF0M2Z96
+STK               4,499
+Case No.: WWUM 83425253
+2022-02-21 Purchase 2022-02-23 89.98 -
+VANECK VID ESPORTS UC.ETF
+ISIN IE00BYWQWR46
+STK               2,718
+Case No.: WWUM 83449146
+2022-02-21 Purchase 2022-02-23 99.94 -
+INV.COINSH.GL.BLOCKCH. A
+ISIN IE00BGBN6P67
+STK               1,176
+Case No.: WWUM 83456771
+Balance: 371.16
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 •
+www.scalable.capital
+
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 •
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
+Periodic Account Statement: EUR Account
+Account Statement No. 022001
+Continued: Page 3/3
+Account No.: 1209625007   BLZ: 800 442 11   IBAN: DE44 2114 4200 5506 3530 01   BIC: BDWBDEMM
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Balance: 371.16
+2022-02-22 Purchase 2022-02-24 60.00 -
+ISHSII-MSCI WL.QUA.DV.DLD
+ISIN IE00BYYHSQ67
+STK              11,029
+Case No.: WWUM 83733935
+2022-02-22 Purchase 2022-02-24 50.00 -
+HANETF-EM.EMI+E.EO ACC
+ISIN IE00BFYN8Y92
+STK               5,344
+Case No.: WWUM 83742941
+2022-02-22 Purchase 2022-02-24 50.00 -
+ISHSV-S+P500 C.S.U.ETF DL
+ISIN IE00BDDRF478
+STK               7,711
+Case No.: WWUM 83744345
+2022-02-22 Purchase 2022-02-24 60.00 -
+WISDOMTREE E.M.EQ.INC.ETF
+ISIN IE00BQQ3Q067
+STK               4,132
+Case No.: WWUM 83745588
+2022-02-25 Purchase 2022-03-01 99.99 -
+VNE-DIG.AS.
+ISIN IE00BMDKNW35
+STK              11,58
+Case No.: WWUM 84619750
+2022-02-25 Purchase 2022-03-01 29.98 -
+IS.DJ AS.PAC.S.D.50 U.ETF
+ISIN DE000A0H0744
+STK               1,225
+Case No.: WWUM 84631114
+2022-02-28 Coupons/Dividends 2022-02-25 0.20
+F.-F.EM.MKT.Q.I.U.ETF DLD
+ISIN IE00BYSX4739
+STK               7,367
+07328743
+Case No.: WWEK 06769057
+2022-02-28 Credit SEPA 2022-02-28 1,000.00
+JOHN DOE
+DE48900600677700345201
+CCDDFFFFXXX
+End to end Referenz:
+MOB.59.UE.6199
+Case No.: 910858517
+Account Balance in EUR on 2022-02-28 1,021.39
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 •
+www.scalable.capital
+
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 •
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

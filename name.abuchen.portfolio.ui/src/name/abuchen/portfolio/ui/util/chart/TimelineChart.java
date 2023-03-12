@@ -1,13 +1,8 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,12 +27,12 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart // NOSONAR
 {
+
     private static class MarkerLine
     {
         private LocalDate date;
@@ -73,27 +68,6 @@ public class TimelineChart extends Chart // NOSONAR
         public long getTimeMillis()
         {
             return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
-        }
-    }
-
-    public static class ThousandsNumberFormat extends Format
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
-        {
-            if (!(obj instanceof Number))
-                throw new IllegalArgumentException();
-
-            return toAppendTo.append(Values.Thousands.format(((Number) obj).doubleValue()));
-        }
-
-        @Override
-        public Object parseObject(String source, ParsePosition pos)
-        {
-            pos.setErrorIndex(0);
-            return null;
         }
     }
 
@@ -204,19 +178,21 @@ public class TimelineChart extends Chart // NOSONAR
         this.nonTradingDayMarkers.clear();
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
+    public ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        return addDateSeries(dates, values, Colors.BLACK, false, label);
+        return addDateSeries(id, dates, values, Colors.BLACK, false, label);
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
+    public ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, Color color, String label)
     {
-        return addDateSeries(dates, values, color, false, label);
+        return addDateSeries(id, dates, values, color, false, label);
     }
 
-    private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)
+    private ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, Color color, boolean showArea,
+                    String label)
     {
-        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
+        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, id);
+        lineSeries.setDescription(label);
         lineSeries.setXDateSeries(toJavaUtilDate(dates));
         lineSeries.enableArea(showArea);
         lineSeries.setLineWidth(2);
@@ -227,9 +203,10 @@ public class TimelineChart extends Chart // NOSONAR
         return lineSeries;
     }
 
-    public IBarSeries addDateBarSeries(LocalDate[] dates, double[] values, String label)
+    public IBarSeries addDateBarSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
+        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, id);
+        barSeries.setDescription(label);
         barSeries.setXDateSeries(toJavaUtilDate(dates));
         barSeries.setYSeries(values);
         barSeries.setBarColor(Colors.DARK_GRAY);
@@ -252,47 +229,8 @@ public class TimelineChart extends Chart // NOSONAR
         LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
         LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
 
-        LocalDate cursor = start.getDayOfMonth() == 1 ? start : start.plusMonths(1).withDayOfMonth(1);
-        Period period;
-        DateTimeFormatter format;
-
-        long days = ChronoUnit.DAYS.between(start, end);
-        if (days < 250)
-        {
-            period = Period.ofMonths(1);
-            format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
-        }
-        else if (days < 800)
-        {
-            period = Period.ofMonths(3);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
-        }
-        else if (days < 1200)
-        {
-            period = Period.ofMonths(6);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
-        }
-        else
-        {
-            period = Period.ofYears(days > 5000 ? 2 : 1);
-            format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-
-            if (cursor.getMonthValue() > 1)
-                cursor = cursor.plusYears(1).withDayOfYear(1);
-        }
-
-        e.gc.setForeground(getTitle().getForeground());
-
-        while (cursor.isBefore(end))
-        {
-            int y = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(format.format(cursor), y + 5, 5, true);
-
-            cursor = cursor.plus(period);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end,
+                        cursor -> xAxis.getPixelCoordinate(cursor.atStartOfDay(zoneId).toInstant().toEpochMilli()));
     }
 
     private void paintMarkerLines(PaintEvent e) // NOSONAR
@@ -396,7 +334,7 @@ public class TimelineChart extends Chart // NOSONAR
             setRedraw(false);
 
             getAxisSet().adjustRange();
-            ChartUtil.addYMargins(this, 0.03);
+            ChartUtil.addYMargins(this, 0.08);
         }
         finally
         {
@@ -408,5 +346,11 @@ public class TimelineChart extends Chart // NOSONAR
     public void save(String filename, int format)
     {
         ChartUtil.save(this, filename, format);
+    }
+
+    @Override
+    public boolean setFocus()
+    {
+        return getPlotArea().setFocus();
     }
 }

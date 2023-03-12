@@ -1,0 +1,56 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+06.05.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+
+94161 Ruderting Stamm-Nr.: 11    Portfolio: 1
+Depot-Nr.: 11
+Vorgangs-Nr.: 11
+Referenz-Nr.: 11
+Buchungsanzeige
+Spitzenregulierung KOPIE
+Ex-Tag: 29.04.2020
+Ausbuchung aus Depot 11 per 05.05.2020
+Nominale ISIN: US75513E1010 WKN: A2PZ0R Barabfindung
+STK 0,339 Raytheon Technologies Corp. EUR 41,39026112 
+Registered Shares DL -,01 p.STK
+Bruttobetrag EUR 14,03
+Zu Gunsten Konto 1162406001 Valuta: 05.05.2020 EUR 14,03
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. AUSB-040.041
+Spitzenregulierung KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlustverrechnungstopf EUR 0,00 EUR 5,53 EUR 5,53
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+KESt./ AbgSt. Gewinne/Verluste EUR 5,53 - EUR 0,00
+Kapitalertragsteuer auf allgemeine Gewinne EUR 5,53 - EUR 0,00
+Ausbuchung
+Stück 0,33 Raytheon Technologies Corp.
+ISIN: US75513E1010/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 2739043 12.03.2020 STK 0,33 19,56 14,03 5,53 -
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. AUSB-040.041
+

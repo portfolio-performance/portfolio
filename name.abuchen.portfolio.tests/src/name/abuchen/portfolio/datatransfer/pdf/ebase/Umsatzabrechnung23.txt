@@ -1,0 +1,94 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+finvesto, 80218 München
+Depotauszug-Nr. 9
+Depot-Nr. XXX
+Seite 1 von 2
+Frau
+Maxi Musterfrau
+Zusatz Vollmacht
+Musterstraße 15
+47119 Musterstadt
+04.10.2021
+Depotauszug für Ihr finvesto Depot bei ebase
+für den Zeitraum vom 03.07.2021 bis 01.10.2021
+Ansparplan 219,00 EUR mit Kursdatum 02.08.2021 in Depotposition XXX.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. XXX/XXX, Buchungsdatum 03.08.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 2,276295 113,855400 USD 1,185800 218,56 EUR
+Belastete Entgelte zzgl. Entgelte
+Summe 0,44 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+Kontonummer Institut 219,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,44 EUR 0,00 EUR 0,44 EUR
+Summe der belasteten Entgelte 0,44 EUR
+Kauf 100,00 EUR mit Kursdatum 06.08.2021 in Depotposition XXX.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. XXX/XXX, Buchungsdatum 09.08.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 1,025198 114,120000 USD 1,172300 99,80 EUR
+Belastete Entgelte zzgl. Entgelte
+Summe 0,20 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+IBAN Institut 100,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,20 EUR 0,00 EUR 0,20 EUR
+Summe der belasteten Entgelte 0,20 EUR
+Gerne beantworten wir Ihre Fragen unter der Info-Line +49 89 45460-380.
+Das Team der finvesto Anlageberatung erreichen Sie unter +49 89 45460-389.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 141 740 Geschäftsführung: Telefon: +49 89 45460-380
+eine Marke der European Bank for USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Telefax: +49 89 45460-161
+Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Mail: info@finvesto.de
+80218 München DE68ZZZ00000025032 Frank Strauß Web: www.finvesto.de
+Depotauszug-Nr. 9
+Depot-Nr. 99135162742
+Seite 2 von 2
+Ansparplan 219,00 EUR mit Kursdatum 01.09.2021 in Depotposition XXX.01
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Ref. Nr. XXXX/XXXX, Buchungsdatum 02.09.2021
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BK5BQT80 2,222628 116,280000 USD 1,182500 218,56 EUR
+Belastete Entgelte zzgl. Entgelte
+Summe 0,44 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+IBAN Institut 219,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,44 EUR 0,00 EUR 0,44 EUR
+Summe der belasteten Entgelte 0,44 EUR
+Bestand Depotpositionen
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+01 IE00BK5BQT80 XXXX 110,938900 USD 30.09.2021 1,157100 XXXX EUR
+Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+4Ihr Freistellungsauftrag in Höhe von 801,00 EUR ist vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 800,36 EUR.
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit erheben Sie bitte unverzüglich, nach Erhalt dieses Depotauszugs, gegenüber der ebase unter Nennung der
+Depotnummer und des Datums des Depotauszugs.
+Das Unterlassen der rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt
+"Prüfungen und Einwendungen bei Mitteilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for
+Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der European
+Bank for Financial Services GmbH. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den
+Verkaufsunterlagen. Die European Bank for Financial Services GmbH ist lediglich depotführende Stelle.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 141 740 Geschäftsführung: Telefon: +49 89 45460-380
+eine Marke der European Bank for USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Telefax: +49 89 45460-161
+Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Mail: info@finvesto.de
+80218 München DE68ZZZ00000025032 Frank Strauß Web: www.finvesto.de

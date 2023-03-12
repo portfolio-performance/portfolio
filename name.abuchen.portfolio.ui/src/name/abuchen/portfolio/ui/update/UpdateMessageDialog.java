@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +20,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -110,14 +109,16 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
         StringBuilder buffer = new StringBuilder();
         if (newVersion.requiresNewJavaVersion())
         {
+            String msg = MessageFormat.format(Messages.MsgUpdateRequiresLatestJavaVersion, newVersion.getMinimumJavaVersionRequired());
+            
             StyleRange style = new StyleRange();
             style.start = buffer.length();
-            style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
+            style.length = msg.length();
             style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_RED);
             style.fontStyle = SWT.BOLD;
             ranges.add(style);
 
-            buffer.append(Messages.MsgUpdateRequiresLatestJavaVersion);
+            buffer.append(msg);
 
         }
 

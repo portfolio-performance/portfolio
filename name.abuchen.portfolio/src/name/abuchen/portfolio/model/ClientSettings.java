@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -20,7 +21,7 @@ public class ClientSettings
     private List<AttributeType> attributeTypes;
     private Map<String, ConfigurationSet> configurationSets;
 
-    public ClientSettings()
+    /* package */ ClientSettings()
     {
         doPostLoadInitialization();
     }
@@ -47,28 +48,38 @@ public class ClientSettings
     {
         List<Bookmark> answer = new ArrayList<>();
 
-        answer.add(new Bookmark("Yahoo Finance", //$NON-NLS-1$
-                        "http://de.finance.yahoo.com/q?s={tickerSymbol}")); //$NON-NLS-1$
-        answer.add(new Bookmark("OnVista", //$NON-NLS-1$
-                        "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$
-        answer.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
+        answer.add(new Bookmark("finance.yahoo.com", //$NON-NLS-1$
+                        "http://finance.yahoo.com/quote/{tickerSymbol}")); //$NON-NLS-1$
+        answer.add(new Bookmark("onvista.de", //$NON-NLS-1$
+                        "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("finanzen.net", //$NON-NLS-1$
                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
-                        "http://www.ariva.de/{isin}/bilanz-guv")); //$NON-NLS-1$
-        answer.add(new Bookmark("justETF", //$NON-NLS-1$
-                        "https://www.justetf.com/de/etf-profile.html?isin={isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("fondsweb.de", //$NON-NLS-1$
-                        "http://www.fondsweb.de/{isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("Morningstar.de", //$NON-NLS-1$
+        answer.add(new Bookmark("ariva.de", //$NON-NLS-1$
+                        "http://www.ariva.de/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("justetf.com  (ETF)", //$NON-NLS-1$
+                        "https://www.justetf.com/etf-profile.html?isin={isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("fondsweb.com", //$NON-NLS-1$
+                        "http://www.fondsweb.com/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("morningstar.de", //$NON-NLS-1$
                         "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("extraETF.com", //$NON-NLS-1$
+        answer.add(new Bookmark("extraETF.com (ETF)", //$NON-NLS-1$
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("Alle Aktien Kennzahlen", //$NON-NLS-1$
+        answer.add(new Bookmark("alleaktien.de (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
-        answer.add(new Bookmark("Comdirect (Aktien)", //$NON-NLS-1$
+        answer.add(new Bookmark("comdirect.de (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
-        answer.add(new Bookmark("DivvyDiary", //$NON-NLS-1$
+        answer.add(new Bookmark("comdirect.de (ETF)", //$NON-NLS-1$
+                        "https://www.comdirect.de/inf/etfs/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("divvydiary.com", //$NON-NLS-1$
                         "https://divvydiary.com/symbols/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("trackingdifferences.com (ETF)", //$NON-NLS-1$
+                        "https://www.trackingdifferences.com/ETF/ISIN/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("tradingview.com", //$NON-NLS-1$
+                        "https://www.tradingview.com/chart/?symbol=XETR:{tickerSymbolPrefix}")); //$NON-NLS-1$
+        answer.add(new Bookmark("cnbc.com (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        "https://www.cnbc.com/quotes/{tickerSymbolPrefix}")); //$NON-NLS-1$
+        answer.add(new Bookmark("nasdaq.com (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        "https://www.nasdaq.com/market-activity/stocks/{tickerSymbolPrefix}")); //$NON-NLS-1$
 
         return answer;
     }
@@ -94,7 +105,7 @@ public class ClientSettings
         ter.setName(Messages.AttributesTERName);
         ter.setColumnLabel(Messages.AttributesTERColumn);
         ter.setTarget(Security.class);
-        ter.setSource("etf-data.com$ter"); //$NON-NLS-1$
+        ter.setSource("ter"); //$NON-NLS-1$
         ter.setType(Double.class);
         ter.setConverter(PercentConverter.class);
         attributeTypes.add(ter);
@@ -111,7 +122,7 @@ public class ClientSettings
         vendor.setName(Messages.AttributesVendorName);
         vendor.setColumnLabel(Messages.AttributesVendorColumn);
         vendor.setTarget(Security.class);
-        vendor.setSource("etf-data.com$vendor"); //$NON-NLS-1$
+        vendor.setSource("vendor"); //$NON-NLS-1$
         vendor.setType(String.class);
         vendor.setConverter(StringConverter.class);
         attributeTypes.add(vendor);
@@ -164,6 +175,11 @@ public class ClientSettings
             bookmarks.add(bookmarks.indexOf(after) + 1, bookmark);
     }
 
+    public void clearBookmarks()
+    {
+        bookmarks.clear();
+    }
+
     public Stream<AttributeType> getAttributeTypes()
     {
         return attributeTypes.stream();
@@ -189,9 +205,29 @@ public class ClientSettings
         return attributeTypes.indexOf(type);
     }
 
+    public void clearAttributeTypes()
+    {
+        attributeTypes.clear();
+    }
+
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    public Set<Map.Entry<String, ConfigurationSet>> getConfigurationSets()
+    {
+        return configurationSets.entrySet();
+    }
+
+    public void clearConfigurationSets()
+    {
+        configurationSets.clear();
+    }
+
+    public void putAllConfigurationSets(Map<String, ConfigurationSet> newSets)
+    {
+        configurationSets.putAll(newSets);
     }
 
     @SuppressWarnings("unchecked")

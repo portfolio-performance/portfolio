@@ -1,0 +1,31 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 19
+Depot-Nr. 1234567890
+Seite 1 von 12
+Eingang externer Übertrag 10,000000 Anteile mit Kursdatum 27.09.2019 in Depotposition 1234567890.24
+ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N.
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
+ISIN Anteile
+LU0378453376 10,000000
+Gegenwert der Anteile: 202,64 EUR
+Kauf 300,00 EUR mit Kursdatum 20.11.2019 in Depotposition 1234567890.01
+Xtr.(IE) - Russell Midcap Registered Shares 1C USD o.N.
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,60 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE49XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX 300,00 EUR
+Kauf 199,500000 Anteile mit Kursdatum 13.01.2020 in Depotposition 1234567890.47
+Lyxor MSCI Greece UCITS ETF Actions au Porteur Dist o.N.
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 13.01.2020
+ISIN Anteile Abrechnungskurs Betrag
+FR0010405431 199,500000 1,055800 EUR 210,63 EUR
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,42 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE49XXXXXXXX XXXXXXXX 211,05 EUR

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -14,20 +15,20 @@ public class ColorConversionTest
     public void testInvalidRGB()
     {
         String hex = "#K10203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 0);
-        assertEquals(rgb[1], 0);
-        assertEquals(rgb[2], 0);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(0, rgb.red);
+        assertEquals(0, rgb.green);
+        assertEquals(0, rgb.blue);
     }
 
     @Test
     public void testToRGB()
     {
         String hex = "#010203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 1);
-        assertEquals(rgb[1], 2);
-        assertEquals(rgb[2], 3);
+        RGB rgb = ColorConversion.hex2RGB(hex);
+        assertEquals(1, rgb.red);
+        assertEquals(2, rgb.green);
+        assertEquals(3, rgb.blue);
     }
 
     @Test
@@ -40,14 +41,23 @@ public class ColorConversionTest
     }
 
     @Test
+    public void testHex2RGBA()
+    {
+        String hex = "#EF0C2238";
+        RGBA color = new RGBA(12, 34, 56, 239);
+        RGBA color2 = ColorConversion.hex2RGBA(hex);
+        assertEquals(color, color2);
+    }
+
+    @Test
     public void testToHSB()
     {
         String hex = "#123456";
         float[] hsb = ColorConversion.toHSB(hex);
         float delta = (float) 0.0001;
-        assertEquals(hsb[0], 210.0, delta);
-        assertEquals(hsb[1], 0.7906977, delta);
-        assertEquals(hsb[2], 0.3372549, delta);
+        assertEquals(210.0, hsb[0], delta);
+        assertEquals(0.7906977, hsb[1], delta);
+        assertEquals(0.3372549, hsb[2], delta);
     }
 
     @Test
@@ -57,6 +67,14 @@ public class ColorConversionTest
         String hex = "#010203";
         String colour2 = ColorConversion.toHex(rgb);
         assertEquals(hex, colour2);
+    }
+
+    @Test
+    public void testToHexRGBA()
+    {
+        RGBA rgba = new RGBA(12, 34, 56, 239);
+        String color = ColorConversion.toHex(rgba);
+        assertEquals("#EF0C2238", color.toUpperCase());
     }
 
     @Test
@@ -71,8 +89,8 @@ public class ColorConversionTest
     public void testToHexFloatFloatFloat()
     {
         String hex = "#123354";
-        String colour2 = ColorConversion.toHex((float) 210.0, (float) 0.79, (float) 0.33);
-        assertEquals(hex, colour2);
+        String color2 = ColorConversion.toHex((float) 210.0, (float) 0.79, (float) 0.33);
+        assertEquals(hex, color2);
     }
 
     @Test

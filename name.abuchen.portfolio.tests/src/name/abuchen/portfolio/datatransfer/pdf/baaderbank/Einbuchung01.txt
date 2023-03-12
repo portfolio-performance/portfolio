@@ -1,0 +1,63 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+11.03.2021
+Herrn
+Scalable Capital 
+xxxxxxxxxxx Vermögensverwaltung GmbH 
+Seitzstraße 8e
+xxxxxxxxxxxxxx
+80538 München 
+xxxxxxxxxxxxxxxxxx service@scalable.capital
+xxxxxxxxxxx
+Stamm-Nr.: yyyyyyy    Portfolio: 1
+Depot-Nr.: yyyyyyyyyy
+Vorgangs-Nr.: 4443811
+Referenz-Nr.: 98890436
+Buchungsanzeige
+Kapitalerhöhung gegen Bareinzahlung
+Ausbuchung aus Depot yyyyyyyyyy per 09.03.2021
+Nominale ISIN: DE000A3H3MF2 WKN: A3H3MF
+STK 96 Enapter AG
+Inhaber-Bezugsrechte
+Einbuchung in Depot yyyyyyyyyy per 09.03.2021
+Nominale ISIN: DE000A3H3MG0 WKN: A3H3MG Bezugspreis:
+STK 6 Enapter AG EUR 22,00 p.STK
+junge Inhaber-Aktien o.N.
+Bezugsverhältnis: 16 : 1 
+Bezugspreis EUR 132,00
+Zu Lasten Konto yyyyyyyyyy 	Valuta: 09.03.2021 EUR 132,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. BRZEAUSB-038.041
+Kapitalerhöhung gegen Bareinzahlung
+Fortsetzung: Seite 2/2
+Ausbuchung
+Stück 96,00 Enapter AG
+ISIN: DE000A3H3MF2
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 4352417 02.12.2020 STK 12,00 0,00 0,00 0,00
+WP Kauf 4352417 04.12.2020 STK 13,00 0,00 0,00 0,00
+WP Kauf 4352417 15.12.2020 STK 13,00 0,00 0,00 0,00
+WP Kauf 4352417 17.12.2020 STK 37,00 0,00 0,00 0,00
+WP Kauf 4352417 08.02.2021 STK 21,00 0,00 0,00 0,00
+Einbuchung
+Stück 6,00 Enapter AG
+ISIN: DE000A3H3MG0
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Einbuchung CA 4443811 10.03.2021 STK 6,00 132,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. BRZEAUSB-038.041

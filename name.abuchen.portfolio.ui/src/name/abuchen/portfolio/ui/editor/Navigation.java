@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -32,7 +34,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
-import name.abuchen.portfolio.ui.views.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.PerformanceView;
@@ -44,7 +45,8 @@ import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.currency.CurrencyView;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
-import name.abuchen.portfolio.ui.views.earnings.EarningsView;
+import name.abuchen.portfolio.ui.views.holdings.HoldingsPieChartView;
+import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
@@ -70,6 +72,7 @@ public final class Navigation
         private IMenuListener contextMenu;
 
         private Class<? extends AbstractFinanceView> viewClass;
+        private boolean hideInformationPane;
         private Object parameter;
 
         private List<Item> children = new ArrayList<>();
@@ -77,19 +80,31 @@ public final class Navigation
 
         private Item(String label)
         {
-            this(label, null, null);
+            this(label, null, null, false);
         }
 
         private Item(String label, Class<? extends AbstractFinanceView> viewClass)
         {
-            this(label, null, viewClass);
+            this(label, null, viewClass, false);
+        }
+
+        private Item(String label, Class<? extends AbstractFinanceView> viewClass, boolean hideInformationPane)
+        {
+            this(label, null, viewClass, hideInformationPane);
         }
 
         private Item(String label, Images image, Class<? extends AbstractFinanceView> viewClass)
         {
+            this(label, image, viewClass, false);
+        }
+
+        private Item(String label, Images image, Class<? extends AbstractFinanceView> viewClass,
+                        boolean hideInformationPane)
+        {
             this.label = label;
             this.image = image;
             this.viewClass = viewClass;
+            this.hideInformationPane = hideInformationPane;
 
             if (viewClass != null)
                 addTag(Tag.VIEW);
@@ -123,6 +138,16 @@ public final class Navigation
         /* package */ void setParameter(Object parameter)
         {
             this.parameter = parameter;
+        }
+
+        public boolean hideInformationPane()
+        {
+            return hideInformationPane;
+        }
+
+        /* package */ void setHideInformationPane(boolean hideInformationPane)
+        {
+            this.hideInformationPane = hideInformationPane;
         }
 
         public Class<? extends AbstractFinanceView> getViewClass()
@@ -160,6 +185,7 @@ public final class Navigation
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
+    @Inject
     /* protected */ Navigation(Client client)
     {
         createGeneralDataSection(client);
@@ -420,17 +446,17 @@ public final class Navigation
         statementOfAssets.addTag(Tag.DEFAULT_VIEW);
         section.add(statementOfAssets);
 
-        statementOfAssets.add(new Item(Messages.ClientEditorLabelChart, StatementOfAssetsHistoryView.class));
-        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class));
+        statementOfAssets.add(new Item(Messages.ClientEditorLabelChart, StatementOfAssetsHistoryView.class, true));
+        statementOfAssets.add(new Item(Messages.ClientEditorLabelHoldings, HoldingsPieChartView.class, true));
 
-        Item performance = new Item(Messages.ClientEditorLabelPerformance, DashboardView.class);
+        Item performance = new Item(Messages.ClientEditorLabelPerformance, DashboardView.class, true);
         section.add(performance);
 
         performance.add(new Item(Messages.ClientEditorPerformanceCalculation, PerformanceView.class));
-        performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class));
-        performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
+        performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class, true));
+        performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class, true));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
-        performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class));
+        performance.add(new Item(Messages.LabelPayments, PaymentsView.class, true));
         performance.add(new Item(Messages.LabelTrades, TradeDetailsView.class));
     }
 
@@ -483,6 +509,7 @@ public final class Navigation
     private Item createTaxonomyItem(Item section, Client client, Taxonomy taxonomy)
     {
         Item item = new Item(taxonomy.getName(), TaxonomyView.class);
+        item.hideInformationPane = true;
         item.parameter = taxonomy;
 
         item.contextMenu = manager -> {
@@ -572,7 +599,7 @@ public final class Navigation
         Item section = new Item(Messages.ClientEditorLabelGeneralData);
         roots.add(section);
 
-        section.add(new Item(Messages.LabelCurrencies, CurrencyView.class));
+        section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
         section.add(new Item(Messages.LabelSettings, SettingsView.class));
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$

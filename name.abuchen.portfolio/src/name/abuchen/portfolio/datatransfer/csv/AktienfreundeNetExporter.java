@@ -35,7 +35,7 @@ public class AktienfreundeNetExporter
         List<? extends Transaction> transactions = Stream
                         .concat(client.getAccounts().stream(), client.getPortfolios().stream())
                         .flatMap(l -> l.getTransactions().stream()) //
-                        .sorted(new Transaction.ByDate()) //
+                        .sorted(Transaction.BY_DATE) //
                         .collect(Collectors.toList());
 
         // write to file

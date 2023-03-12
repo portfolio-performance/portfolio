@@ -1,0 +1,36 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=58205100
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Registrierung ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=50
+54321 Musterhausen 58205100 63550522 / 24.07.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Registrierungsgebühr Frankfurt am Main, 24.07.2017
+Gattungsbezeichnung ISIN
+Vonovia SE Namens-Aktien o.N. DE000A1ML7J1
+Nominal Schlusstag
+STK 6,000 22.07.2017
+Registrierungsgebühr EUR 0,75-
+Dt. Umsatzsteuer EUR 0,14-
+Wert Konto-Nr. Betrag zu Ihren Lasten
+24.07.2017 172406048 EUR 0,89
+Für die Registrierung der Namens-Aktien (auf Ihren Namen) im Aktionärs-Register belasten wir Ihrem Konto vorstehenden 
+Betrag.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+2.26/ABRESERVREGI/GAAASAFG/000050/250717/001945

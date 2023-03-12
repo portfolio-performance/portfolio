@@ -1,0 +1,17 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vorname Nachname SEITE 1 von 1
+Strasse 1 DATUM 20.07.2021
+12345 Ort DEPOT 1234567890
+UMTAUSCH/BEZUG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Umtausch/Bezug Nordex SE 129,25 Stk.
+Inhaber-Bezugsrechte
+DE000A3E5CX4
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+DUAN / 20.07.2021 / 44073982 / a80f-d159

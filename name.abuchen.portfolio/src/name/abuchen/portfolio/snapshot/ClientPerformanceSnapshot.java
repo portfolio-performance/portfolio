@@ -37,6 +37,7 @@ import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ClientPerformanceSnapshot
 {
@@ -220,6 +221,18 @@ public class ClientPerformanceSnapshot
         return categories.get(categoryType).getValuation();
     }
 
+    public Money getValue(CategoryType categoryType, CategoryType... more)
+    {
+        MutableMoney answer = MutableMoney.of(converter.getTermCurrency());
+
+        answer.add(categories.get(categoryType).getValuation());
+
+        for (CategoryType t : more)
+            answer.add(categories.get(t).getValuation());
+
+        return answer.toMoney();
+    }
+
     public List<TransactionPair<?>> getEarnings()
     {
         return earnings;
@@ -264,6 +277,47 @@ public class ClientPerformanceSnapshot
         }
 
         return delta.toMoney();
+    }
+
+    /**
+     * Returns taxes / (capital gains + realized capital gains + earnings -
+     * fees)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either taxes or denominator are negative
+     */
+    public double getPortfolioTaxRate()
+    {
+        Money numerator = getValue(CategoryType.TAXES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS).subtract(getValue(CategoryType.FEES));
+
+        if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
+    /**
+     * Returns fees / (capital gains + realized capital gains + earnings)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either fees or denominator are negative
+     */
+    public double getPortfolioFeeRate()
+    {
+        Money numerator = getValue(CategoryType.FEES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS);
+
+        if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
     }
 
     private void calculate()
@@ -320,7 +374,7 @@ public class ClientPerformanceSnapshot
                     Function<SecurityPerformanceRecord, CapitalGainsRecord> mapper)
     {
         category.positions = securityPerformance.getRecords().stream()
-                        .sorted((p1, p2) -> p1.getSecurityName().compareToIgnoreCase(p2.getSecurityName())) //
+                        .sorted((p1, p2) -> TextUtil.compare(p1.getSecurityName(), p2.getSecurityName())) //
                         .map(mapper)
                         .filter(gains -> !gains.getCapitalGains().isZero() || !gains.getForexCaptialGains().isZero())
                         .map(gains -> new Position(gains.getSecurity(), gains.getCapitalGains(),
@@ -461,7 +515,7 @@ public class ClientPerformanceSnapshot
                                 return p2.getSecurity() == null ? 0 : 1;
                             if (p2.getSecurity() == null)
                                 return -1;
-                            return p1.getLabel().compareToIgnoreCase(p2.getLabel());
+                            return TextUtil.compare(p1.getLabel(), p2.getLabel());
                         }) //
                         .collect(Collectors.toList());
 

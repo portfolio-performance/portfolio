@@ -1,0 +1,45 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Dr. Maria Muster
+Herrn Direkt-Depot Nr.: 4747114711
+Dr. Harald Puhl Datum: 24.11.2020
+Einestr. 47 Seite: 1 von 2
+99999 Stadt
+Wertpapierabrechnung Verk. Teil-/Bezugsr.
+Ordernummer 189282593.001
+ISIN (WKN) FR0014000IN0 (A2QJCL)
+Wertpapierbezeichnung Alstom S.A. Anrechte
+Fälligkeit 30.11.2020
+Nominale Stück 300,00
+Kurs (Festpreisgeschäft) EUR 2,60
+Handelsplatz Direktgeschäft Inl.
+Ausführungstag / -zeit 24.11.2020 um 08:17:03 Uhr
+Kurswert EUR 780,00
+Kapitalertragsteuer 25,00 % EUR 193,29
+Solidaritätszuschlag 5,50 % EUR 10,63
+Provision EUR 6,85
+Endbetrag zu Ihren Gunsten EUR 569,23
+Abrechnungs-IBAN DE02 4711 4711 4711 4711 47
+Valuta 26.11.2020
+Wertpapiere zulasten Girosammelverwahrung.
+Ihre nicht ausgeübten Bezugsrechte haben wir bestens für Sie verkauft.
+Jahressteuerbescheinigung folgt.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8003849044_T
+Depotinhaber: Dr. Maria Muster
+Direkt-Depot Nr.: 4747114711
+Datum: 24.11.2020
+Seite: 2 von 2
+Ordernummer 189282593.001
+ISIN (WKN) FR0014000IN0 (A2QJCL)
+Veräußerungsgewinn nach Differenzmethode 773,15 EUR
+KapSt-pflichtiger Kapitalertrag 773,15 EUR
+Bemessungsgrundlage für KapSt 773,15 EUR
+Es wurde keine Kirchensteuer einbehalten.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

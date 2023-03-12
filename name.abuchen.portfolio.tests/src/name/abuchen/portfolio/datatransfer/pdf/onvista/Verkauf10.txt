@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123123000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=NNNNN NNNNN
+Verkauf Limitauftrag ADRESSZEILE3=NNN NNNN NN
+Kommissionsgeschäft ADRESSZEILE4=NNNNN NNNNN
+Herr ADRESSZEILE5=
+NNNN NNNN ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+NNN NNNN NN BELEGNUMMER=9281
+NNN NNNNN 123123000 60770481 / 15.12.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+NNNNN NNNNN
+Frankfurt am Main, 15.12.2021
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+SLR Senior Investment Corp. Registered Shares DL -,01 US83416M1053
+Nominal Kurs
+STK 100,000 USD 14,3000
+Handelstag 14.12.2021 Kurswert USD 1.430,00
+Handelszeit 18:55 Handelsplatzgebühr USD 5,66-
+Handelsplatz Börse NASDAQ/NAN Ausmachender Betrag USD 1.424,34
+Verwahrart Wertpapierrechnung
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+16.12.2021 237692041 EUR/USD 1,1312 EUR 1.259,14
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 5,18
+Aktienverlusttopf EUR 1,68 1,86
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1,76
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,75
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/ABREABHNHANDVFDI/POJ1618/009281/161221/010901

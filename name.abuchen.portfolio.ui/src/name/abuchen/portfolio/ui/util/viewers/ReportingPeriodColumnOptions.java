@@ -1,11 +1,10 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;

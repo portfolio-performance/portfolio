@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.util;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.text.Collator;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -11,9 +10,11 @@ public final class TextUtil
 {
     public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
 
+    public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
 
-    public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+    private static final Collator COLLATOR = Collator.getInstance();
 
     private TextUtil()
     {
@@ -53,23 +54,11 @@ public final class TextUtil
         return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public static final String sanitizeFilename(String label)
+    public static final String sanitizeFilename(String filename)
     {
-        // https://stackoverflow.com/a/10151795/1158146
-
-        String filename = label;
-
-        try
-        {
-            filename = new String(label.getBytes(), StandardCharsets.UTF_8.name());
-        }
-        catch (UnsupportedEncodingException ignore)
-        {
-            // UTF-8 is available
-        }
-
         // filter ? \ / : | < > // *
         filename = filename.replaceAll("[\\?\\\\/:|<>\\*]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        // replace multiple spaces
         filename = filename.replaceAll("\\s+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
         return filename;
     }
@@ -79,7 +68,7 @@ public final class TextUtil
      * characters, this is an alternative implementation. Inspired by the blog
      * post at http://closingbraces.net/2008/11/11/javastringtrim/
      */
-    public static String strip(String value)
+    public static String trim(String value)
     {
         if (value == null)
             return null;
@@ -112,7 +101,7 @@ public final class TextUtil
      * Strips all whitespace and space characters using {@link #strip} from all
      * values of the array.
      */
-    public static String[] strip(String[] values)
+    public static String[] trim(String[] values)
     {
         if (values == null)
             return new String[0];
@@ -120,9 +109,25 @@ public final class TextUtil
         String[] answer = new String[values.length];
 
         for (int i = 0; i < values.length; i++)
-            answer[i] = TextUtil.strip(values[i]);
+            answer[i] = TextUtil.trim(values[i]);
 
         return answer;
+    }
+
+    /**
+     * Removes all blanks from the given string.
+     */
+    public static String stripBlanks(String input)
+    {
+        return input == null ? null : Pattern.compile("\\s").matcher(input).replaceAll(""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Remove all blanks followed by underscores from the given string.
+     */
+    public static String stripBlanksAndUnderscores(String input)
+    {
+        return input == null ? null : Pattern.compile("[\\s_]").matcher(input).replaceAll(""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -209,5 +214,23 @@ public final class TextUtil
             return json.substring(start, end);
 
         return json;
+    }
+
+    public static String limit(String text, int length)
+    {
+        if (text == null)
+            return null;
+        
+        int l = text.length();
+        
+        return l <= length ? text : text.substring(0, length) + "…"; //$NON-NLS-1$
+    }
+
+    /*
+     * Locale-sensitive compare of two strings using Java Text Collator.
+     */
+    public static int compare(String left, String right)
+    {
+        return COLLATOR.compare(left, right);
     }
 }

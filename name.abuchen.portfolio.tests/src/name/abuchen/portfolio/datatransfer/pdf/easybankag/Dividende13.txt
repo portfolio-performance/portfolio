@@ -1,0 +1,51 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 07.06.2022
+Wir haben für Sie am 07.06.2022 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Verlusttopf Nr.: 111111111111
+Geschäftsart: Ertrag
+Bestand: Stk 1.200
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 1.200
+Titel: AT0000821103 UNIQA Insurance Group AG
+Stamm-Aktien o.N.
+Dividende: 0,55 EUR
+Verwahrart: SVK
+Positionsdaten: Loco: Wien_K
+Ertrag: 660,00 EUR
+KESt aus Neubestand: -181,50 EUR
+Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
+Eingang vorbehalten
+KESt-pflichtiges Wertpapier
+Extag: 02.06.2022
+Record-Tag: 03.06.2022
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2022060701934P07_a/2385
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 7.808,13 EUR
+Steuerrelevanter Anschaffungswert aktuell: 7.808,13 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt bezahlt: 158,15 EUR
+KESt bezahlt: 181,50 EUR
+Aktueller Stand KESt bezahlt: 339,65 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2022060701934P07_a/2386

@@ -37,7 +37,7 @@ public final class DataSeries implements Adaptable
     {
         TOTALS, INVESTED_CAPITAL, ABSOLUTE_INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, ABSOLUTE_DELTA_ALL_RECORDS, //
         DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED, //
-        EARNINGS, EARNINGS_ACCUMULATED;
+        EARNINGS, EARNINGS_ACCUMULATED, FEES, FEES_ACCUMULATED;
     }
 
     /**
@@ -80,11 +80,18 @@ public final class DataSeries implements Adaptable
     private String label;
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
+    private int lineWidth = 2;
 
     private RGB color;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
+
+    /**
+     * indicates whether the data series is visible or (temporarily) removed
+     * from the chart
+     */
+    private boolean isVisible = true;
 
     /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
@@ -195,6 +202,16 @@ public final class DataSeries implements Adaptable
         this.lineStyle = lineStyle;
     }
 
+    public int getLineWidth()
+    {
+        return lineWidth;
+    }
+
+    public void setLineWidth(int lineWidth)
+    {
+        this.lineWidth = lineWidth;
+    }
+
     public Image getImage()
     {
         switch (type)
@@ -223,6 +240,16 @@ public final class DataSeries implements Adaptable
     public String getUUID()
     {
         return this.type.buildUUID(instance);
+    }
+
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
+
+    public void setVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
     }
 
     @Override

@@ -133,6 +133,9 @@ public class WithoutTaxesFilter implements ClientFilter
         else
             copy.setAmount(deliveryT.getAmount() + taxes.getAmount());
 
+        // copy units, except for taxes
+        deliveryT.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(u));
+
         readOnlyPortfolio.internalAddTransaction(copy);
     }
 

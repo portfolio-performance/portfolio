@@ -33,6 +33,12 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.name = name;
     }
 
+    /* package */ Account(String uuid, String name)
+    {
+        this.uuid = uuid;
+        this.name = name;
+    }
+
     @Override
     public String getUUID()
     {

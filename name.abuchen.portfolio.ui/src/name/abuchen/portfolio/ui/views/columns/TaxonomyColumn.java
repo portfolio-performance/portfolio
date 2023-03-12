@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TaxonomyColumn extends Column
 {
@@ -177,7 +178,7 @@ public class TaxonomyColumn extends Column
             else if (s2 == null)
                 return 1;
 
-            return s1.compareToIgnoreCase(s2);
+            return TextUtil.compare(s1, s2);
         }
     }
 }

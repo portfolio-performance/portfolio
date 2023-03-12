@@ -220,6 +220,11 @@ public class ConfigurationStore
         listeners.forEach(l -> l.onConfigurationPicked(config.getData()));
     }
 
+    public void activate(String uuid)
+    {
+        configSet.lookup(uuid).ifPresent(this::activate);
+    }
+
     public void updateActive(String data)
     {
         if (!Objects.equals(data, active.getData()))
@@ -242,13 +247,5 @@ public class ConfigurationStore
     public String getActiveUUID()
     {
         return active.getUUID();
-    }
-
-    public void insertMigratedConfiguration(String data)
-    {
-        active = new Configuration(Messages.ConfigurationStandard, data);
-        configSet.add(active);
-        preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
-        client.touch();
     }
 }

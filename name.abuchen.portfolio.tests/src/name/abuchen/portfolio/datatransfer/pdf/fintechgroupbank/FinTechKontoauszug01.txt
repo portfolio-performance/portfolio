@@ -13,18 +13,18 @@ Max Mustermann
 Musterstra�e. 2
 12345 Stadt
 Kontoauszug Nr:    001/2016                              Seite 1 von 2
-Kontonummer :      1111111111  dazugeh�rige IBAN:  DE00 0000 0000 0000 0000 00
+Kontonummer :      1111111111  dazugehörige IBAN:  DE00 0000 0000 0000 0000 00
 Kontenart   :      Kontokorrentkonto
 Kontow�hrung:      EUR
 Alter Saldo vom    31.12.2015                     in EUR             2.000,00+
 Buchungs-  Valuta  Buchungstext                                         Betrag
 datum                                                                   in EUR
-04.01.     06.01.  Ausf�hrung ORDER Kauf   000000000000              1.000,00-
+04.01.     06.01.  Ausführung ORDER Kauf   000000000000              1.000,00-
                    00000000
-04.01.     04.01.  Ertr�gnisaussch�ttung XXXXXXXXXXXX                    1,00+
-05.01.     06.01.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+04.01.     04.01.  Erträgnisausschüttung XXXXXXXXXXXX                    1,00+
+05.01.     06.01.  Gebühren Ordernummer 00000000 Transnr                 5,90-
                    000000000
-29.01.     29.01.  �berweisung                                       1.100,00+
+29.01.     29.01.  Überweisung                                       1.100,00+
                    Ubertrag Depot
                    BICBICBICBI
                    DE00000000000000000000
@@ -36,13 +36,13 @@ Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Bernd 
 Kontoauszug Nr:    001/2016                              Seite 2 von 2
 Buchungs-  Valuta  Buchungstext                                         Betrag
 datum                                                                   in EUR
-11.03.     14.03.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+11.03.     14.03.  Gebühren Ordernummer 00000000 Transnr                 5,90-
                    0000000000                                                 
-18.03.     22.03.  Ausf�hrung ORDER Verkauf   XXXXXXXXXXXX             500,00+
+18.03.     22.03.  Ausführung ORDER Verkauf   XXXXXXXXXXXX             500,00+
                    00000000
-19.03.     22.03.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+19.03.     22.03.  Gebühren Ordernummer 00000000 Transnr                 5,90-
                    0000000000                                                 
-30.03.     29.03.  Ertr�gnisaussch�ttung 000000000000                    1,00+
+30.03.     29.03.  Erträgnisausschüttung 000000000000                    1,00+
 31.03.     31.03.  Zinsabschluss   01.01.2016 - 31.03.2016               0,00+
 Neuer Saldo 31.03.2016 Nr. 001/2016         W�hrung EUR              1.584,30+
 Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom

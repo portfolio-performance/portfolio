@@ -1,18 +1,29 @@
 <translations>
-	<defaultLanguage>en</defaultLanguage>
+	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
-		<string>de</string>
-		<string>es</string>
-		<string>nl</string>
-		<string>pt</string>
-		<string>fr</string>
-		<string>it</string>
+		<language identifier="cs" poeditor="cs" />
+		<language identifier="da" poeditor="da" />>
+		<language identifier="de" poeditor="de" />
+		<language identifier="es" poeditor="es" />
+		<language identifier="fr" poeditor="fr" />
+		<language identifier="it" poeditor="it" />
+		<language identifier="nl" poeditor="nl" />
+		<language identifier="pl" poeditor="pl" />
+		<language identifier="pt" poeditor="pt" />
+		<language identifier="ru" poeditor="ru" />
+		<language identifier="sk" poeditor="sk" />
+		<language identifier="zh" poeditor="zh-Hans" />
 	</languages>
 	<artifacts>
 		<artifact>
 			<context>core.messages</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio</path>
 			<filename>messages</filename>
+		</artifact>
+		<artifact>
+			<context>core.holiday-names</context>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/util</path>
+			<filename>holiday-names</filename>
 		</artifact>
 		<artifact>
 			<context>core.labels</context>
@@ -41,6 +52,11 @@
 			<excludes>
 				<string>AboutText</string>
 				<string>AboutTextContributions</string>
+				<string>AboutTextDevelopers</string>
+				<string>AboutTextOtherSoftware</string>
+				<string>AboutTextTranslationDevelopers</string>
+				<string>AboutTextDeveloped</string>
+				<string>SurveyIcon</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -72,10 +88,14 @@
 			<context>ui.menu</context>
 			<path>name.abuchen.portfolio.bootstrap/OSGI-INF/l10n</path>
 			<filename>bundle</filename>
+			<excludes>
+				<string>Bundle-Vendor</string>
+				<string>Bundle-Name</string>
+			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.security-type</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>security-type</filename>
 			<excludes>
 				<string>colors</string>
@@ -89,7 +109,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.kommer</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>kommer</filename>
 			<excludes>
 				<string>colors</string>
@@ -103,7 +123,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.asset-classes</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>assetclasses</filename>
 			<excludes>
 				<string>colors</string>
@@ -117,7 +137,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions</filename>
 			<excludes>
 				<string>colors</string>
@@ -131,7 +151,7 @@
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions-msci</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions-msci</filename>
 			<excludes>
 				<string>colors</string>

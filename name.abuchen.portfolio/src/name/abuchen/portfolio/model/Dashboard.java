@@ -9,7 +9,9 @@ public final class Dashboard
 {
     public enum Config
     {
-        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, CLIENT_FILTER, CALCULATION_METHOD, METRIC;
+        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, //
+        COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, CLIENT_FILTER, CALCULATION_METHOD, METRIC, //
+        ATTRIBUTE_UUID, URL, SHOW_Y_AXIS, TAXONOMY, FLAG_INCLUDE_UNASSIGNED;
     }
 
     public static final class Column
@@ -85,6 +87,15 @@ public final class Dashboard
 
             return configuration;
         }
+
+        public Widget copy()
+        {
+            Widget copy = new Widget();
+            copy.setLabel(this.getLabel());
+            copy.setType(this.getType());
+            copy.getConfiguration().putAll(this.getConfiguration());
+            return copy;
+        }
     }
 
     private String name;
@@ -131,13 +142,7 @@ public final class Dashboard
         for (Column column : columns)
         {
             Column copyColumn = new Column();
-            column.getWidgets().stream().map(w -> {
-                Widget c = new Widget();
-                c.setLabel(w.getLabel());
-                c.setType(w.getType());
-                c.getConfiguration().putAll(w.getConfiguration());
-                return c;
-            }).forEach(copyColumn.getWidgets()::add);
+            column.getWidgets().stream().map(Widget::copy).forEach(copyColumn.getWidgets()::add);
             copy.getColumns().add(copyColumn);
         }
         return copy;

@@ -1,0 +1,125 @@
+<client>
+  <version>55</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>77dc5237-e0b5-46e8-a1ba-22cdf1b19a91</uuid>
+      <name>USD Security</name>
+      <currencyCode>USD</currencyCode>
+      <feed>MANUAL</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+      <updatedAt>2022-05-08T07:24:49.672555Z</updatedAt>
+    </security>
+    <security>
+      <uuid>cdb57c58-dffc-11ec-9d64-0242ac120002</uuid>
+      <name>CHF Security</name>
+      <currencyCode>CHF</currencyCode>
+      <feed>MANUAL</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+      <updatedAt>2022-05-08T07:24:49.672555Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>efb002d2-84ac-407e-b669-3ca259bd47ee</uuid>
+      <name>Konto</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>f463e093-094b-4cf9-8c60-11a932e507a9</uuid>
+          <date>2022-05-08T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>8461</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="FEE">
+              <amount currency="EUR" amount="1000"/>
+            </unit>
+            <unit type="GROSS_VALUE">
+              <amount currency="EUR" amount="8523"/>
+              <forex currency="USD" amount="90"/>
+              <exchangeRate>0.9460737938</exchangeRate>
+            </unit>
+          </units>
+          <updatedAt>2022-05-08T07:25:10.405710Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2022-04-04T17:06:08.230692Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio>
+      <uuid>5315ec55-b622-4466-aa45-a488e7c1ccec</uuid>
+      <name>Depot</name>
+      <isRetired>false</isRetired>
+      <referenceAccount reference="../../../accounts/account"/>
+      <transactions>
+        <portfolio-transaction>
+          <uuid>ddbd3449-f55f-4777-8b64-8f923477e1b4</uuid>
+          <date>2022-05-08T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>23760</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="FEE">
+              <amount currency="EUR" amount="1000"/>
+            </unit>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1000"/>
+            </unit>
+            <unit type="GROSS_VALUE">
+              <amount currency="EUR" amount="20833"/>
+              <forex currency="USD" amount="22000"/>
+              <exchangeRate>0.9460737938</exchangeRate>
+            </unit>
+          </units>
+          <updatedAt>2022-05-08T07:25:31.890551Z</updatedAt>
+          <type>DELIVERY_INBOUND</type>
+        </portfolio-transaction>
+        <portfolio-transaction>
+          <uuid>d91bd33a-dffc-11ec-9d64-0242ac120002</uuid>
+          <date>2022-05-08T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>337280</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="GROSS_VALUE">
+              <!-- wrong gross value will force new calcluation --> 
+              <amount currency="EUR" amount="200"/>
+              <forex currency="CHF" amount="200"/>
+              <exchangeRate>-1.152</exchangeRate>
+            </unit>
+          </units>
+          <updatedAt>2022-05-08T07:25:31.890551Z</updatedAt>
+          <type>DELIVERY_INBOUND</type>
+        </portfolio-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2022-04-04T17:06:07.285724Z</updatedAt>
+    </portfolio>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings/>
+</client>

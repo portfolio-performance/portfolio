@@ -31,6 +31,13 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
         this.name = name;
     }
 
+    /* package */ Portfolio(String uuid, String name)
+    {
+        this.uuid = uuid;
+        this.name = name;
+    }
+
+    @Override
     public String getUUID()
     {
         return uuid;

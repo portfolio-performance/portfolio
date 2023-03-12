@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -43,19 +44,17 @@ public class LastXTradingDaysTest
         String code = "T10";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), LastXTradingDays.class);
+        assertEquals(LastXTradingDays.class, period.getClass());
     }
 
     @Test
     public void testWriteTo() throws IOException
     {
         String code = "T10";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(code, period.getCode());
     }
 
     @Test
@@ -67,7 +66,7 @@ public class LastXTradingDaysTest
 
         Interval result = period.toInterval(intervalEnd);
 
-        assertEquals(result, Interval.of(intervalStart, intervalEnd));
+        assertEquals(Interval.of(intervalStart, intervalEnd), result);
     }
 
     @Test
@@ -78,7 +77,7 @@ public class LastXTradingDaysTest
         ReportingPeriod notEqualSameClass = ReportingPeriod.from("T11");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("D90");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualSameClass);
         assertNotEquals(equal1, notEqualDifferentClass);
 

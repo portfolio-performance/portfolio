@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
++
++
++
++
++
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 15.02.2022, um 17:39 Uhr (Europe/Berlin) an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+3M Co. 7 Stk. 139,40 EUR 975,80 EUR
+Registered Shares DL -,01
+ISIN: US88579Y1010
+GESAMT 975,80 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -976,80 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE123+++ 17.02.2022 -976,80 EUR
+3M Co. Registered Shares DL -,01 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 15.02.2022 / 35573379 / 9bb6-125d

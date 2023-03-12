@@ -1,15 +1,14 @@
 package name.abuchen.portfolio.ui.preferences;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
@@ -21,8 +20,9 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle("Portfolio Report");
-        setDescription("Sync data with server portfolio");
+        setTitle(Messages.PrefTitlePortfolioReport);
+        setDescription(Messages.PrefDescriptionPortfolioReport);
+        setImageDescriptor(Images.PORTFOLIO_REPORT_LOGO.descriptor());
     }
 
     @Override
@@ -41,13 +41,9 @@ public class PortfolioReportPreferencePage extends FieldEditorPreferencePage
         });
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, //
-                        "Portfolio Report API URL", getFieldEditorParent()));
+                        Messages.PrefPortfolioReportAPIURL, getFieldEditorParent()));
 
         addField(new StringFieldEditor(UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY, //
-                        "Portfolio Report Session Key", getFieldEditorParent()));
-
-        Composite note = createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
-                        Messages.PrefLabelNote, "Keep the session key secret!");
-        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(note);
+                        Messages.PrefPortfolioReportAPIKey, getFieldEditorParent()));
     }
 }

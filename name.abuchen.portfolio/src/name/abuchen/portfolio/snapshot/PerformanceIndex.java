@@ -49,6 +49,7 @@ public class PerformanceIndex
     protected long[] outboundTransferals;
     protected long[] taxes;
     protected long[] dividends;
+    protected long[] fees;
     protected long[] interest;
     protected long[] interestCharge;
     protected long[] buys;
@@ -128,6 +129,11 @@ public class PerformanceIndex
         return reportInterval;
     }
 
+    public String getCurrency()
+    {
+        return converter.getTermCurrency();
+    }
+
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;
@@ -161,6 +167,13 @@ public class PerformanceIndex
     public double getFinalAccumulatedPercentage()
     {
         return accumulated != null ? accumulated[accumulated.length - 1] : 0;
+    }
+
+    public double getFinalAccumulatedAnnualizedPercentage()
+    {
+        double accumulatedPercentage = getFinalAccumulatedPercentage();
+        long days = getActualInterval().getDays();
+        return Math.pow(1 + accumulatedPercentage, 365d / ((double) days)) - 1;
     }
 
     public double[] getDeltaPercentage()
@@ -261,6 +274,11 @@ public class PerformanceIndex
     public long[] getDividends()
     {
         return dividends;
+    }
+
+    public long[] getFees()
+    {
+        return fees;
     }
 
     public long[] getInterest()
@@ -405,8 +423,9 @@ public class PerformanceIndex
 
     private void exportTo(File file, IntPredicate filter) throws IOException
     {
-        CSVFormat csvformat = CSVFormat //
-                        .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
+        CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
+                        .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n").setAllowDuplicateHeaderNames(true) //$NON-NLS-1$
+                        .build();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))
@@ -432,5 +451,29 @@ public class PerformanceIndex
                 printer.println();
             }
         }
+    }
+
+    /**
+     * Returns the performance for the given interval. If the interval does not
+     * intersect with the performance time period, i.e. is before or after the
+     * performance time period, then zero is returned.
+     */
+    public double getPerformance(Interval interval)
+    {
+        int startIndex = Arrays.binarySearch(this.getDates(), interval.getStart());
+        int endIndex = Arrays.binarySearch(this.getDates(), interval.getEnd());
+
+        // return zero if the interval does not intersect
+        if (startIndex < 0 && startIndex == endIndex)
+            return 0;
+
+        // return zero if start is after end
+        if (Math.abs(startIndex) > Math.abs(endIndex))
+            return 0;
+
+        double startValue = this.getAccumulatedPercentage()[startIndex >= 0 ? startIndex : 0];
+        double endValue = this.getAccumulatedPercentage()[endIndex >= 0 ? endIndex : this.getDates().length - 1];
+
+        return ((endValue + 1) / (startValue + 1)) - 1;
     }
 }

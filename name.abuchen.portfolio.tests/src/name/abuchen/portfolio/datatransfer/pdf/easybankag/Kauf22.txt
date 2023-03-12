@@ -1,0 +1,36 @@
+Abrechnung Dauerauftrag
+easybank Service Center 36562241-14.11.2022
+BAWAG P.S.K. AG Depot-Nr.: 23456789012
+Wiedner Gürtel 11 Max Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Max Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 14.11.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf aus Dauerauftrag
+Auftrags-Nr.: 36338031-3.5.2017
+Auftragseingang: 11.11.2022-00:26:19
+Zugang: 10,065 Stk
+Titel: IE00B4L5Y983  i S h s I I I - C o r e MSCI World U.ETF      
+Registered Shs USD (Acc) o.N.      
+Fondsgesellschaft: iShares III PLC
+Kurs: 73,0179 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 11.11.2022
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: -734,93 EUR 
+Eigene Spesen: -2,02 EUR 
+Grundgebühr: -3,-- EUR 
+Zu Lasten IBAN AT12 1234 1234 1234 1234 -739,95 EUR 
+Valuta 15.11.2022
+Kunden UID: ATU12312312    
+Es wurde keine Umsatzsteuer verrechnet.
+Schlusstag: 11.11.2022
+Kassatag: 15.11.2022
+1.12.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+01730 Doknr.: ON00-036-0000000001

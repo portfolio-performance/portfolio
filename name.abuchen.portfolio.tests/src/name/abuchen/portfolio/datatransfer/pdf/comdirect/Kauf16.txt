@@ -1,0 +1,194 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    xxxxx xxx
+Depotnr.:        1111111 00 
+            BLZ:             111 111 11
+Vorname Nachname                  
+und Frau Vorname Nachname                                    
+Straße 111                                         
+11111 Stadt                                               
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 03.12.2019                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 11 111111 bis 11 111112                                                                                         
+Ordernummer       : 111111111111      Rechnungsnummer   : 111111111111DB11                                                          
+Geschäftstag      : 02.12.2019        Ausführungsplatz  : LONDON OFF.MARKT                                                          
+                                                          (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Rolls Royce Holdings PLC                                                 A1H81L                                                     
+Registered Shares LS 0.20                                          GB00B63H8491                                                     
+                                                                                                                                    
+                                                                                                                                    
+Ihre Order wurde wie folgt ausgeführt:                                                                                              
+                                                                                                                                    
+Handelszeit   Nennwert                Zum Kurs von                     Kurswert                                                     
+ 10:33        St.  1.076              GBP  7,12         GBP            7.661,12                                                     
+ 10:33        St.  2.795              GBP  7,12         GBP           19.900,40                                                     
+ 10:33        St.  2.129              GBP  7,12         GBP           15.158,48                                                     
+--------------------------------------------------------------------------------                                                    
+ Summe        St.  6.000              GBP  7,12         GBP           42.720,00                                                     
+(ggf. gerundet)                                                                                                                     
+                          Ausmachender Betrag           GBP           42.948,67                                                     
+       Umrechn. zum Dev. kurs 0,850350 vom 03.12.2019 : EUR           50.507,04                                                     
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Gesamtprovision             : EUR               62,90                                                     
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Transaktionssteuer          : GBP              213,60                                                     
+                          Fremde Spesen               : GBP               15,07                                                     
+                          Summe Kosten                : GBP              228,67                                                     
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE11 1111 1111 1111 1111 11   EUR     04.12.2019        EUR           50.569,94                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG GROSSBRITANNIEN                                                                                 
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+Teilausführung Ihrer Order                                                                                                          
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 112 279 461                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+1111111  Vorname Nachname und Frau Vorname Nachname                
+                                                  
+            
+111 111 11 Straße 11                                 11111 Stadt                                       
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+2   5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  1  1823
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+ H  e  r r n                           
+Vornam D   a  t u  m   :                        0  3  . 1  2  .2019           e  N   a  c hname                     
+u   n  d   F  r a  u    V  o  r  n  a m e  Nachname        D   e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 00  
+ S t     S   t  r a ß  e 1  1  1  1 1   1  1              
+11111 Stadt                   R   e  f e  r e  n  z  - N   u mmer:    1 1   A A  A   A  A   A  11100011                     
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 11111111 vom 02.12.2019                                                                
+Stk.           6.000 ROLLS ROYCE HLDGS LS 0.20 , WKN / ISIN: A1H81L  / GB00B63H8491                                               
+Z u  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R         -50.569,9 4   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              E_  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ ,_ _0 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U _R _ _ _ _ _ _ _ _  __ _ _ _  _0__,0_ _0   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R         -50.569,9 4   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 04.12.2019 auf Konto EUR mit der IBAN DE11 1111 1111 1111 1111 11                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2019 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+            1.770,77               116,14
+              118,15             1.093,98
+nach Ermittlung
+            1.770,77 116,14               118,15             1.093,98              
+Verrechnungssalden in EUR (4)
+in 2019 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+          -11.111,03            11.111,56                 0,00                 0,00
+nach Ermittlung
+          -11.111,03            11.111,56
+                0,00                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

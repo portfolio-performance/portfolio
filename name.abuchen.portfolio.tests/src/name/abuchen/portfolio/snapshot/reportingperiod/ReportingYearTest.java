@@ -18,7 +18,7 @@ public class ReportingYearTest
         ReportingPeriod period = ReportingPeriod.from(code);
         String result = period.getCode();
 
-        assertEquals(result, code);
+        assertEquals(code, result);
     }
 
     @Test(expected = IOException.class)

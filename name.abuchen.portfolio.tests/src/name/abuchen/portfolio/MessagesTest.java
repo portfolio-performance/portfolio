@@ -1,12 +1,6 @@
 package name.abuchen.portfolio;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-
-import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -14,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import name.abuchen.portfolio.junit.TestUtilities;
 
 @RunWith(Parameterized.class)
 public class MessagesTest
@@ -44,7 +40,67 @@ public class MessagesTest
     }
 
     @Test
-    public void testExchnageLabels()
+    public void testHolidayNameLabels()
+    {
+        test("name.abuchen.portfolio.util.holiday-names"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesAssetClassesLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.assetclasses"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesIndustrySimpleLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.industry-simple"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesIndustryGICSLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.industry-gics"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesKommerLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.kommer"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesRegionsLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.regions"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesRegionsMSCILabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.regions-msci"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testTaxonomyTemplatesSecurityTypeLabels()
+    {
+        test("name.abuchen.portfolio.model.taxonomy_templates.security-type"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testMoneyCurrenciesPLabels()
+    {
+        test("name.abuchen.portfolio.money.currencies"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testEurostatHICPLabels()
+    {
+        test("name.abuchen.portfolio.online.impl.eurostathicp-labels"); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testExchangeLabels()
     {
         test("name.abuchen.portfolio.online.impl.exchange-labels"); //$NON-NLS-1$
     }
@@ -55,26 +111,9 @@ public class MessagesTest
         test("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
     }
 
-    private void test(String bundleName)
+    private void test(String bundleName, String... skip)
     {
         ResourceBundle resources = ResourceBundle.getBundle(bundleName, new Locale(language));
-
-        Enumeration<String> keys = resources.getKeys();
-        while (keys.hasMoreElements())
-        {
-            String key = keys.nextElement();
-
-            try
-            {
-                String value = resources.getString(key);
-
-                String test = MessageFormat.format(value, (Object) null);
-                assertThat(test, is(notNullValue()));
-            }
-            catch (IllegalArgumentException e)
-            {
-                throw new IllegalArgumentException(bundleName + " # " + key + " : " + e.getMessage(), e); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
+        TestUtilities.testBundleStrings(resources, skip);
     }
 }

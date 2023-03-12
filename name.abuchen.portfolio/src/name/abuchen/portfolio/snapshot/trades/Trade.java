@@ -101,8 +101,7 @@ public class Trade implements Adaptable
 
         // let's sort again because the list might not be sorted anymore due to
         // transfers
-        Collections.sort(transactions,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(transactions, TransactionPair.BY_DATE);
 
         // re-set start date from first entry after sorting
         this.setStart(transactions.get(0).getTransaction().getDateTime());
@@ -174,6 +173,13 @@ public class Trade implements Adaptable
     public List<TransactionPair<PortfolioTransaction>> getTransactions()
     {
         return transactions;
+    }
+
+
+    public TransactionPair<PortfolioTransaction> getLastTransaction()
+    {
+        // transactions have been sorted by calculate(), which is called once after creation
+        return transactions.get(transactions.size() - 1);
     }
 
     public Money getEntryValue()

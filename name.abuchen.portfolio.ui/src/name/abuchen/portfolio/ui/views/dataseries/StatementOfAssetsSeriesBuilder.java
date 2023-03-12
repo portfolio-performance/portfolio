@@ -18,6 +18,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
     public void build(DataSeries series, Interval reportingPeriod)
     {
+        if (!series.isVisible())
+            return;
+
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
         if (series.getType() == DataSeries.Type.CLIENT)
@@ -26,7 +29,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
         }
         else
         {
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(),
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), series.getLabel());
             configure(series, lineSeries);
         }
@@ -84,18 +87,26 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 values = accumulateAndToDouble(add(clientIndex.getDividends(), clientIndex.getInterest()),
                                 Values.Amount.divider());
                 break;
+            case FEES:
+                values = toDouble(add(clientIndex.getFees(), clientIndex.getInterest()), Values.Amount.divider());
+                break;
+            case FEES_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getFees(), Values.Amount.divider());
+                break;
             default:
                 throw new IllegalArgumentException(String.valueOf(series.getInstance()));
         }
 
         if (series.isLineChart())
         {
-            ILineSeries lineSeries = getChart().addDateSeries(clientIndex.getDates(), values, series.getLabel());
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, lineSeries);
         }
         else
         {
-            IBarSeries barSeries = getChart().addDateBarSeries(clientIndex.getDates(), values, series.getLabel());
+            IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, barSeries);
         }
     }

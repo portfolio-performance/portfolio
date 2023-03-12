@@ -3,54 +3,228 @@
 <target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.18/R-4.18-202012021800/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.18.0.v20201202-1103"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.18.0.v20201202-1103"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.1000.v20200915-1508"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1000.v20200915-1508"/>
-		<unit id="org.eclipse.pde.feature.group" version="3.14.600.v20201202-1800"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.18.0.v20201202-1800"/>
+		<repository location="https://download.eclipse.org/eclipse/updates/4.26/R-4.26-202211231800/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.26.0.v20221123-2302"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.26.0.v20221123-2302"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.1900.v20221108-1024"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1900.v20221108-1024"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.26.0.v20221123-2302"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository"/>
-		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.9.0.v20181106-1534"/>
-		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
-		<unit id="org.bouncycastle.bcpg" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpg.source" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpkix" version="1.65.0.v20200527-1955"/>
-		<unit id="org.bouncycastle.bcpkix.source" version="1.65.0.v20200527-1955"/>
-		<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
-		<unit id="org.hamcrest.core.source" version="1.1.0.v20090501071000"/>
-		<unit id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
-		<unit id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
-		<unit id="org.hamcrest.integration.source" version="1.3.0.v201305210900"/>
-		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>
 		<unit id="org.junit" version="4.12.0.v201504281640"/>
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
-		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
-		<unit id="org.objenesis" version="2.6.0.v20180420-1519"/>
-		<unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
+		<unit id="org.bouncycastle.bcpg" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpg.source" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpkix" version="1.70.0.v20220105-1522"/>
+		<unit id="org.bouncycastle.bcpkix.source" version="1.70.0.v20220105-1522"/>
+		<unit id="net.bytebuddy.byte-buddy" version="1.9.0.v20181107-1410"/>
+		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
+		<unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
+		<unit id="org.apache.commons.math3.source" version="3.6.1.v20200817-1830"/>
+		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<unit id="org.hamcrest.library.source" version="1.3.0.v20180524-2246"/>
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.mockito.source" version="2.23.0.v20200310-1642"/>
+		<unit id="org.objectweb.asm" version="9.2.0.v20210813-1119"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/nebula/releases/2.4.2"/>
-		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202007241204"/>
+		<repository location="https://download.eclipse.org/nebula/releases/2.5.0"/>
+		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202106201019"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.5.0"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.5.0"/>
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.19.2/2021-12/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_da.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.18.1/2020-09/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.17.0.v20201010020001"/>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository"/>
+		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
+		<unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.14.0.202301260747"/>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>fontbox</artifactId>
+				<version>1.8.17</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>jempbox</artifactId>
+				<version>1.8.17</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>1.8.17</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" label="XStream" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.servicemix.bundles</groupId>
+				<artifactId>org.apache.servicemix.bundles.xpp3</artifactId>
+				<version>1.1.4c_7</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.servicemix.bundles</groupId>
+				<artifactId>org.apache.servicemix.bundles.xstream</artifactId>
+				<version>1.4.19_1</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache Commons" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>1.9.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="SWT Chart 0.10" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.swtchart</groupId>
+				<artifactId>org.swtchart</artifactId>
+				<version>0.10.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+		<repositories>
+			<repository>
+				<id>portfolio-non-maven-dependencies</id>
+				<url>https://www.portfolio-performance.info/maven-repo/</url>
+			</repository>
+		</repositories>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="SWT Treemap" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>de.engehausen</groupId>
+				<artifactId>de.engehausen.treemap.swt</artifactId>
+				<version>0.0.5</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>de.engehausen</groupId>
+				<artifactId>de.engehausen.treemap</artifactId>
+				<version>0.0.4</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+		<repositories>
+			<repository>
+				<id>portfolio-non-maven-dependencies</id>
+				<url>https://www.portfolio-performance.info/maven-repo/</url>
+			</repository>
+		</repositories>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="JSoup" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.15.3</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Google JSON" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>1.1.1</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Google Protobuf" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>3.21.9</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Google Guava" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>failureaccess</artifactId>
+				<version>1.0.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>31.1-jre</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Google Gson" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.10</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="JSONPath" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>2.7.0</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>accessors-smart</artifactId>
+				<version>2.4.8</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>json-smart</artifactId>
+				<version>2.4.8</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="JavaBeans Activation Framework" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.sun.activation</groupId>
+				<artifactId>javax.activation</artifactId>
+				<version>1.2.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
 	</location>
 </locations>
 </target>

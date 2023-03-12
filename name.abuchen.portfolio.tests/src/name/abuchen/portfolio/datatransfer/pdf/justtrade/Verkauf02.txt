@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+x x Email: service@justtrade.com
+x x Str 9 Web: www.justtrade.com
+45678 x
+Name des Kunden: x x
+Depotnummer: 999999999
+25. Juni 2021
+Fälligkeit/Verfall
+Produktbezeichnung - Discount Zertifikat auf Münchener Rückversicherungs AG:
+Internationale Wertpapierkennnummer DE000VP63TQ3
+(ISIN)
+Anzahl/Nominale 9,00
+Referenz 6709
+Zahlbarkeitstag: 25. Juni 2021
+Ex Datum - Tag 25. Juni 2021
+Bestandsstichtag: 25. Juni 2021
+Valutadatum 25. Juni 2021
+Rückzahlungskurs EUR 230,000000
+Rückzahlungsbetrag EUR 2.070,00
+Ausmachender Betrag EUR 2.070,00
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Keine Steuerbescheinigung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

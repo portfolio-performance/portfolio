@@ -1,0 +1,10 @@
+<FlexQueryResponse queryName="PortfolioPerformence" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U1234567" fromDate="20180119" toDate="20180904" period="LastMonth" whenGenerated="20210904;114604">
+      <CashTransactions>
+        <CashTransaction accountId="-" acctAlias="-" model="" currency="USD" fxRateToBase="1" assetCategory="" symbol="" description="USD IBKR MANAGED SECURITIES (SYEP) INTEREST FOR NOV-2022" conid="" securityID="" securityIDType="" cusip="" isin="" listingExchange="" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="0" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="20221205" settleDate="20221205" amount="0.02" type="Broker Interest Received" tradeID="" code="" transactionID="" reportDate="20221205" clientReference="" actionID="" levelOfDetail="SUMMARY" serialNumber="" deliveryType="" commodityType="" fineness="0.0" weight="0.0 (null)" />
+        <CashTransaction accountId="myaccountnumberhere" acctAlias="myaliashere" model="" currency="USD" fxRateToBase="1" assetCategory="" symbol="" description="USD IBKR MANAGED SECURITIES (SYEP) INTEREST FOR NOV-2022" conid="" securityID="" securityIDType="" cusip="" isin="" listingExchange="" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="0" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="20221205" settleDate="20221205" amount="0.02" type="Broker Interest Received" tradeID="" code="" transactionID="mytransactionidhere" reportDate="20221205" clientReference="" actionID="" levelOfDetail="DETAIL" serialNumber="" deliveryType="" commodityType="" fineness="0.0" weight="0.0 (null)" />
+     </CashTransactions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

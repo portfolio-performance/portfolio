@@ -1,0 +1,299 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.1.qualifier
+-----------------------------------------
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Přehled účtu od 01-01-2020 do 03-02-2023
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+04-01-2023 05:36 03-01-2023 Transfer from your Cash Account at flatex Bank: 7,5 EUR EUR 210,47
+04-01-2023 05:36 03-01-2023 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 7,50 EUR 217,97
+03-01-2023 14:01 31-12-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 210,47
+2023 (Borsa Italiana S.p.A. - MIL)
+03-01-2023 14:01 31-12-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 212,97
+2023 (Euronext Amsterdam - EAM)
+03-01-2023 14:01 31-12-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 215,47
+2023 (Xetra - XET)
+02-01-2023 13:41 02-01-2023 Flatex Interest Income EUR 0,00 EUR 217,97
+30-12-2022 20:04 30-12-2022 Transfer to your Cash Account at flatex Bank: 37,88 EUR EUR 217,97
+30-12-2022 20:04 30-12-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -37,88 EUR 180,09
+30-12-2022 07:49 29-12-2022 FX vyučtování konverze měny EUR 37,88 EUR 217,97
+30-12-2022 07:49 29-12-2022 FX vyučtování konverze měny 1,0688 USD -40,49 USD 0,00
+29-12-2022 08:50 28-12-2022 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 35,56 USD 40,49
+29-12-2022 08:50 28-12-2022 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,93 USD 4,93
+01-10-2022 20:01 30-09-2022 Flatex Interest EUR -0,06 EUR 180,09
+30-09-2022 17:50 30-09-2022 Transfer to your Cash Account at flatex Bank: 41,88 EUR EUR 180,15
+30-09-2022 17:50 30-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -41,88 EUR 138,27
+30-09-2022 07:49 29-09-2022 FX vyučtování konverze měny EUR 41,88 EUR 180,15
+30-09-2022 07:49 29-09-2022 FX vyučtování konverze měny 0,9840 USD -41,21 USD 0,00
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 1 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+29-09-2022 08:03 28-09-2022 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 36,19 USD 41,21
+29-09-2022 08:03 28-09-2022 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 5,02 USD 5,02
+03-07-2022 00:11 30-06-2022 Flatex Interest EUR -0,12 EUR 138,27
+02-07-2022 01:19 01-07-2022 Transfer to your Cash Account at flatex Bank: 37,96 EUR EUR 138,39
+02-07-2022 01:19 01-07-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -37,96 EUR 100,43
+01-07-2022 08:39 30-06-2022 FX vyučtování konverze měny EUR 37,96 EUR 138,39
+01-07-2022 08:39 30-06-2022 FX vyučtování konverze měny 1,0509 USD -39,89 USD 0,00
+30-06-2022 10:12 29-06-2022 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 35,03 USD 39,89
+30-06-2022 10:12 29-06-2022 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,86 USD 4,86
+04-04-2022 19:04 04-04-2022 Transfer to your Cash Account at flatex Bank: 36,26 EUR EUR 100,43
+04-04-2022 19:04 04-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -36,26 EUR 64,17
+02-04-2022 16:50 31-03-2022 Flatex Interest EUR -0,08 EUR 100,43
+02-04-2022 07:37 01-04-2022 FX vyučtování konverze měny EUR 36,26 EUR 100,51
+02-04-2022 07:37 01-04-2022 FX vyučtování konverze měny 1,1076 USD -40,17 USD 0,00
+01-04-2022 09:37 30-03-2022 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 35,28 USD 40,17
+01-04-2022 09:37 30-03-2022 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,89 USD 4,89
+04-02-2022 10:15 03-02-2022 Transfer from your Cash Account at flatex Bank: 7,5 EUR EUR 64,25
+04-02-2022 10:15 03-02-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 7,50 EUR 71,75
+03-02-2022 10:03 31-01-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 64,25
+2022 (Borsa Italiana S.p.A. - MIL)
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 2 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+03-02-2022 10:03 31-01-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 66,75
+2022 (Euronext Amsterdam - EAM)
+03-02-2022 10:03 31-01-2022 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 69,25
+2022 (Xetra - XET)
+04-01-2022 02:55 03-01-2022 Transfer to your Cash Account at flatex Bank: 32,07 EUR EUR 71,75
+04-01-2022 02:55 03-01-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -32,07 EUR 39,68
+31-12-2021 07:54 30-12-2021 FX vyučtování konverze měny EUR 32,07 EUR 71,75
+31-12-2021 07:54 30-12-2021 FX vyučtování konverze měny 1,1355 USD -36,42 USD 0,00
+31-12-2021 00:40 31-12-2021 Flatex Interest EUR -0,33 EUR 39,68
+30-12-2021 09:04 29-12-2021 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 31,90 USD 36,42
+30-12-2021 09:04 29-12-2021 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,52 USD 4,52
+22-12-2021 17:33 22-12-2021 Transfer to your Cash Account at flatex Bank: 37,24 EUR EUR 40,01
+22-12-2021 17:33 22-12-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -37,24 EUR 2,77
+22-12-2021 11:46 22-12-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 3 VANGUARD S&P500@77,97 EUR EUR -233,91 EUR 40,01
+(IE00B3XXRP09)
+22-12-2021 11:38 22-12-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 325 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -1 708,85 EUR 273,92
+E... Acc@5,258 EUR (IE00BDBRDM35)
+22-12-2021 07:37 21-12-2021 FX vyučtování konverze měny EUR 1 980,00 EUR 1 982,77
+22-12-2021 07:37 21-12-2021 FX vyučtování konverze měny 25,252 CZK -50 000,00 CZK 0,00
+21-12-2021 16:59 21-12-2021 Vklad CZK 50 000,00 CZK 50 000,00
+25-11-2021 11:03 24-11-2021 Transfer from your Cash Account at flatex Bank: 78,71 EUR EUR 2,77
+25-11-2021 11:03 24-11-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 78,71 EUR 81,48
+24-11-2021 14:26 24-11-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 69 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -360,97 EUR 2,77
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 3 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+E... Acc@5,2314 EUR (IE00BDBRDM35)
+24-11-2021 14:14 24-11-2021 ISHARES MSCI EUR A IE00B4K48X80 Nákup 25 ISHARES MSCI EUR A@67,11 EUR EUR -1 677,75 EUR 363,73
+(IE00B4K48X80)
+24-11-2021 07:35 23-11-2021 FX vyučtování konverze měny EUR 1 960,00 EUR 2 041,48
+24-11-2021 07:35 23-11-2021 FX vyučtování konverze měny 25,510 CZK -50 000,00 CZK 0,00
+23-11-2021 15:10 23-11-2021 Vklad CZK 50 000,00 CZK 50 000,00
+20-10-2021 10:47 19-10-2021 Transfer to your Cash Account at flatex Bank: 78,85 EUR EUR 81,48
+20-10-2021 10:47 19-10-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -78,85 EUR 2,63
+19-10-2021 09:44 19-10-2021 ISHARES DIVERISIFIED COMM SWAP UCITS ... IE00BDFL4P12 Nákup 21 iShares Diverisified Comm SWAP UCITS ETF EUR -117,92 EUR 81,48
+USD Acc@5,615 EUR (IE00BDFL4P12)
+19-10-2021 09:41 19-10-2021 VANGUARD S&P500 IE00B3XXRP09 DEGIRO Transaction and/or third party fees EUR -0,15 EUR 199,40
+19-10-2021 09:41 19-10-2021 VANGUARD S&P500 IE00B3XXRP09 DEGIRO Transaction and/or third party fees EUR -2,00 EUR 199,55
+19-10-2021 09:41 19-10-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 7 VANGUARD S&P500@73,177 EUR EUR -512,24 EUR 201,55
+(IE00B3XXRP09)
+19-10-2021 09:39 19-10-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 239 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -1 253,84 EUR 713,79
+E... Acc@5,2462 EUR (IE00BDBRDM35)
+19-10-2021 07:33 18-10-2021 FX vyučtování konverze měny EUR 1 965,00 EUR 1 967,63
+19-10-2021 07:33 18-10-2021 FX vyučtování konverze měny 25,445 CZK -50 000,00 CZK 0,00
+18-10-2021 11:40 18-10-2021 Vklad CZK 50 000,00 CZK 50 000,00
+12-10-2021 10:32 11-10-2021 Transfer from your Cash Account at flatex Bank: 1 995,1 EUR 2,63
+EUR
+12-10-2021 10:32 11-10-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1 995,10 EUR 1 997,73
+11-10-2021 09:49 11-10-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 DEGIRO Transaction and/or third party fees EUR -0,02 EUR 2,63
+E...
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 4 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+11-10-2021 09:49 11-10-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 DEGIRO Transaction and/or third party fees EUR -2,00 EUR 2,65
+E...
+11-10-2021 09:49 11-10-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 14 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -73,26 EUR 4,65
+E... Acc@5,2328 EUR (IE00BDBRDM35)
+11-10-2021 09:45 11-10-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 230 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -1 203,22 EUR 77,91
+E... Acc@5,2314 EUR (IE00BDBRDM35)
+11-10-2021 09:41 11-10-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 10 VANGUARD S&P500@71,66 EUR EUR -716,60 EUR 1 281,13
+(IE00B3XXRP09)
+04-10-2021 12:24 01-10-2021 Transfer to your Cash Account at flatex Bank: 29,97 EUR EUR 1 997,73
+04-10-2021 12:24 01-10-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -29,97 EUR 1 967,76
+02-10-2021 00:20 30-09-2021 Flatex Interest EUR -0,25 EUR 1 997,73
+01-10-2021 07:48 30-09-2021 FX vyučtování konverze měny EUR 29,97 EUR 1 997,98
+01-10-2021 07:48 30-09-2021 FX vyučtování konverze měny 1,1588 USD -34,74 USD 0,00
+30-09-2021 14:50 29-09-2021 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 29,89 USD 34,74
+30-09-2021 14:50 29-09-2021 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,85 USD 4,85
+23-09-2021 10:47 22-09-2021 Transfer to your Cash Account at flatex Bank: 1 965 EUR EUR 1 968,01
+23-09-2021 10:47 22-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -1 965,00 EUR 3,01
+22-09-2021 07:32 21-09-2021 FX vyučtování konverze měny EUR 1 965,00 EUR 1 968,01
+22-09-2021 07:32 21-09-2021 FX vyučtování konverze měny 25,445 CZK -50 000,00 CZK 0,00
+21-09-2021 14:39 21-09-2021 Vklad CZK 50 000,00 CZK 50 000,00
+14-09-2021 12:17 13-09-2021 Transfer to your Cash Account at flatex Bank: 3,01 EUR EUR 3,01
+14-09-2021 12:17 13-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -3,01 EUR 0,00
+13-09-2021 12:01 09-09-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 3,0845 v 0,9761 EUR EUR -0,01 EUR 3,01
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 5 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+22-07-2021 12:01 21-07-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 37,0315 v 0,9771 EUR EUR -0,11 EUR 3,02
+21-07-2021 09:37 21-07-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 666 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -3 546,18 EUR 3,13
+E... Acc@5,3246 EUR (IE00BDBRDM35)
+21-07-2021 07:32 20-07-2021 FX vyučtování konverze měny EUR 3 510,00 EUR 3 549,32
+21-07-2021 07:32 20-07-2021 FX vyučtování konverze měny 25,641 CZK -90 000,00 CZK 0,00
+20-07-2021 14:49 20-07-2021 Vklad CZK 90 000,00 CZK 90 000,00
+09-07-2021 12:55 08-07-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 29,0024 za 0,9774 EUR EUR 0,08 EUR 39,32
+08-07-2021 13:42 08-07-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 175 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -929,08 EUR 39,23
+E... Acc@5,309 EUR (IE00BDBRDM35)
+08-07-2021 09:33 08-07-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 66 VANGUARD S&P500@69,509 EUR EUR -4 587,59 EUR 968,31
+(IE00B3XXRP09)
+08-07-2021 09:29 08-07-2021 ISHARES MSCI EM A IE00B4L5YC18 Nákup 11 ISHARES MSCI EM A@37,095 EUR EUR -408,04 EUR 5 555,90
+(IE00B4L5YC18)
+08-07-2021 09:26 08-07-2021 ISHARES DIVERISIFIED COMM SWAP UCITS ... IE00BDFL4P12 Nákup 58 iShares Diverisified Comm SWAP UCITS ETF EUR -284,52 EUR 5 963,95
+USD Acc@4,9055 EUR (IE00BDFL4P12)
+08-07-2021 09:22 08-07-2021 ISHARES MSCI EUR A IE00B4K48X80 Nákup 67 ISHARES MSCI EUR A@63,26 EUR EUR -4 238,42 EUR 6 248,47
+(IE00B4K48X80)
+08-07-2021 09:14 07-07-2021 FX vyučtování konverze měny EUR 10 476,00 EUR 10 486,89
+08-07-2021 09:14 07-07-2021 FX vyučtování konverze měny 25,773 CZK -270 000,00 CZK 0,00
+07-07-2021 11:29 07-07-2021 Vklad CZK 270 000,00 CZK 270 000,00
+05-07-2021 14:32 02-07-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 11,1136 za 0,9776 EUR EUR 0,03 EUR 10,89
+02-07-2021 10:35 01-07-2021 FX vyučtování konverze měny EUR 13,36 EUR 10,86
+02-07-2021 10:35 01-07-2021 FX vyučtování konverze měny 1,1862 USD -15,85 USD 0,00
+02-07-2021 08:23 30-06-2021 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR -2,50
+2021 (Xetra - XET)
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 6 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+01-07-2021 10:56 30-06-2021 VANGUARD S&P500 IE00B3XXRP09 Dividenda USD 11,55 USD 15,85
+01-07-2021 10:56 30-06-2021 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,30 USD 4,30
+03-06-2021 12:02 02-06-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 0,0048 v 0,9783 EUR EUR 0,00
+02-06-2021 13:11 01-06-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 162,2262 v 0,9783 EUR EUR -0,28 EUR 0,00
+01-06-2021 14:04 01-06-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 DEGIRO Transaction and/or third party fees EUR -0,02 EUR 0,28
+E...
+01-06-2021 14:04 01-06-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 DEGIRO Transaction and/or third party fees EUR -2,00 EUR 0,30
+E...
+01-06-2021 14:04 01-06-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 15 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -78,71 EUR 2,30
+E... Acc@5,2474 EUR (IE00BDBRDM35)
+01-06-2021 13:41 01-06-2021 ISHARES DIVERISIFIED COMM SWAP UCITS ... IE00BDFL4P12 Nákup 658 iShares Diverisified Comm SWAP UCITS ETF EUR -3 180,44 EUR 81,01
+USD Acc@4,8335 EUR (IE00BDFL4P12)
+01-06-2021 13:37 01-06-2021 ISHARES CORE GLB AGGREGATE BD UCITS IE00BDBRDM35 Nákup 699 iShares Core Glb Aggregate Bd UCITS ETF USD EUR -3 668,35 EUR 3 261,45
+E... Acc@5,248 EUR (IE00BDBRDM35)
+01-06-2021 13:25 01-06-2021 ISHARES MSCI EM A IE00B4L5YC18 Nákup 27 ISHARES MSCI EM A@37,82 EUR EUR -1 021,14 EUR 6 929,81
+(IE00B4L5YC18)
+01-06-2021 13:22 01-06-2021 ISHARES MSCI EUR A IE00B4K48X80 Nákup 73 ISHARES MSCI EUR A@62,7 EUR EUR -4 577,10 EUR 7 950,95
+(IE00B4K48X80)
+01-06-2021 13:15 01-06-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 30 VANGUARD S&P500@65,708 EUR EUR -1 971,24 EUR 12 528,05
+(IE00B3XXRP09)
+01-06-2021 13:15 01-06-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 1 VANGUARD S&P500@65,7 EUR (IE00B3XXRP09) EUR -65,70 EUR 14 499,29
+01-06-2021 13:15 01-06-2021 VANGUARD S&P500 IE00B3XXRP09 Nákup 20 VANGUARD S&P500@65,7 EUR EUR -1 314,00 EUR 14 564,99
+(IE00B3XXRP09)
+01-06-2021 09:08 31-05-2021 FX vyučtování konverze měny EUR 15 720,00 EUR 15 878,99
+01-06-2021 09:08 31-05-2021 FX vyučtování konverze měny 25,445 CZK -400 000,00 CZK 0,00
+31-05-2021 12:43 31-05-2021 Vklad CZK 400 000,00 CZK 400 000,00
+07-04-2021 12:04 06-04-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 3,9411 za 0,9794 EUR EUR 158,99
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 7 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+02-04-2021 09:37 01-04-2021 FX vyučtování konverze měny EUR 3,86 EUR 158,98
+02-04-2021 09:37 01-04-2021 FX vyučtování konverze měny 1,1789 USD -4,56 USD 0,00
+01-04-2021 13:56 31-03-2021 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,56 USD 4,56
+02-02-2021 12:04 01-02-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 5,0993 v 0,9805 EUR EUR 155,12
+31-01-2021 13:20 31-12-2020 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 155,12
+2021 (Borsa Italiana S.p.A. - MIL)
+31-01-2021 13:20 31-12-2020 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 157,62
+2021 (Euronext Amsterdam - EAM)
+05-01-2021 12:40 04-01-2021 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 0,8357 za 0,9811 EUR EUR 160,12
+04-01-2021 11:09 31-12-2020 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 160,12
+2020 (Euronext Amsterdam - EAM)
+01-01-2021 08:22 31-12-2020 FX vyučtování konverze měny EUR 3,32 EUR 162,62
+01-01-2021 08:22 31-12-2020 FX vyučtování konverze měny 1,2228 USD -4,07 USD 0,00
+31-12-2020 09:20 30-12-2020 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,07 USD 4,07
+23-12-2020 12:03 22-12-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 67,6821 za 0,9815 EUR EUR -0,10 EUR 159,30
+22-12-2020 15:07 22-12-2020 ISHARES MSCI WOR A IE00B4L5Y983 Nákup 17 ISHARES MSCI WOR A@59,01 EUR EUR -1 003,17 EUR 159,40
+(IE00B4L5Y983)
+22-12-2020 08:02 21-12-2020 FX vyučtování konverze měny EUR 1 069,60 EUR 1 162,57
+22-12-2020 08:02 21-12-2020 FX vyučtování konverze měny 26,178 CZK -28 000,00 CZK 0,00
+21-12-2020 12:08 21-12-2020 Vklad CZK 28 000,00 CZK 28 000,00
+09-10-2020 12:03 08-10-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 4,1079 za 0,9834 EUR EUR -0,01 EUR 92,97
+08-10-2020 08:33 07-10-2020 FX vyučtování konverze měny EUR 4,04 EUR 92,98
+08-10-2020 08:33 07-10-2020 FX vyučtování konverze měny 1,1776 USD -4,76 USD 0,00
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 8 / 9
+Pan Max Mustermann
+Street 1111
+12345 Roznov pod
+Radhostem
+Jméno uživatele: *******007
+Datum Čas Datum Produkt ISIN Popis Kurz Pohyb Zůstatek
+07-10-2020 08:05 07-10-2020 VANGUARD S&P 500 UCITS IE00B3XXRP09 Dividenda USD 4,76 USD 4,76
+06-10-2020 12:03 05-10-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 2,5417 v 0,9835 EUR EUR 0,01 EUR 88,94
+01-10-2020 11:58 30-09-2020 DEGIRO poplatek za Obchodování na zahraničních burzách EUR -2,50 EUR 88,94
+2020 (Borsa Italiana S.p.A. - MIL)
+24-09-2020 12:03 23-09-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Prodej 1 045,3491 v 0,9837 EUR 3,87 EUR 91,44
+EUR
+23-09-2020 14:21 23-09-2020 VANGUARD S&P 500 UCITS IE00B3XXRP09 DEGIRO Transaction and/or third party fees EUR -2,00 EUR 87,57
+23-09-2020 14:21 23-09-2020 VANGUARD S&P 500 UCITS IE00B3XXRP09 DEGIRO Transaction and/or third party fees EUR -0,31 EUR 89,57
+23-09-2020 14:21 23-09-2020 VANGUARD S&P 500 UCITS IE00B3XXRP09 Nákup 19 VANGUARD S&P 500 UCITS@54 EUR EUR -1 026,00 EUR 89,88
+(IE00B3XXRP09)
+15-07-2020 00:00 14-07-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Změna ceny Peněžního Fondu (EUR) EUR -11,39 EUR 1 115,88
+15-06-2020 12:36 12-06-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 1 138,6239 za 0,9854 EUR 5,24 EUR 1 127,26
+EUR
+12-06-2020 07:36 11-06-2020 FX vyučtování konverze měny EUR 1 122,00 EUR 1 122,03
+12-06-2020 07:36 11-06-2020 FX vyučtování konverze měny 26,738 CZK -30 000,00 CZK 0,00
+11-06-2020 11:43 11-06-2020 Vklad CZK 30 000,00 CZK 30 000,00
+03-06-2020 12:05 02-06-2020 FUNDSHARE UCITS EUR CASH FUND NL0010661914 Konverze Peněžního Fondu: Nákup 0,0304 za 0,9855 EUR EUR 0,03
+02-06-2020 07:16 01-06-2020 FX vyučtování konverze měny EUR 0,03 EUR 0,03
+02-06-2020 07:16 01-06-2020 FX vyučtování konverze měny 26,738 CZK -1,00 CZK 0,00
+01-06-2020 13:08 01-06-2020 Vklad CZK 1,00 CZK 1,00
+flatex DEGIRO Bank Dutch Branch, obchodující pod názvem www.degiro.cz Přehled účtu
+DEGIRO, je nizozemská pobočka flatexDEGIRO Bank AG. clients@degiro.com 2023-02-03
+flatexDEGIRO Bank AG je primárně pod dohledem německého
+finančního regulátora (BaFin) a registrována u DNB v Nizozemsku. Amstelplein 1 1096 HA Strana 9 / 9

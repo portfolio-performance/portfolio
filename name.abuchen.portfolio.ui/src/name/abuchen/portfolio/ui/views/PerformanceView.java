@@ -7,11 +7,15 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -25,6 +29,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -54,13 +59,18 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -80,6 +90,9 @@ public class PerformanceView extends AbstractHistoricView
 
     @Inject
     private ExchangeRateProviderFactory factory;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private ClientFilterDropDown clientFilter;
 
@@ -196,11 +209,12 @@ public class PerformanceView extends AbstractHistoricView
     private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
     {
         StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
-        Control control = viewer.createControl(folder);
+        Control control = viewer.createControl(folder, false);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(control);
+        item.setImage(Images.VIEW_TABLE.image());
 
         return viewer;
     }
@@ -213,9 +227,17 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        ColumnEditingSupport.prepare(calculation);
         MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(calculation);
 
-        final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
+        // make sure to apply the styles (including font information to the
+        // table) before creating the bold font. Otherwise the font does not
+        // match the styles in CSS
+        stylingEngine.style(calculation.getTree());
+
+        final Font boldFont = JFaceResources.getResources()
+                        .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
@@ -280,9 +302,10 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
+        column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
         support.addColumn(column);
 
-        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("value", Messages.ColumnValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -324,7 +347,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         support.addColumn(column);
 
-        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
+        column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -372,6 +395,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
 
         hookContextMenu(calculation.getTree(), this::fillContextMenu);
     }
@@ -380,10 +404,66 @@ public class PerformanceView extends AbstractHistoricView
     {
         Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
         if (!(selection instanceof ClientPerformanceSnapshot.Position))
+        {
+            addTreeActionsContextMenu(manager, selection);
             return;
+        }
 
         Security security = ((ClientPerformanceSnapshot.Position) selection).getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
+    }
+
+    private void addTreeActionsContextMenu(IMenuManager manager, Object obj)
+    {
+        manager.add(new Action(Messages.LabelExpand)
+        {
+            @Override
+            public void run()
+            {
+                calculation.setExpandedState(obj, true);
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return calculation.isExpandable(obj) && !calculation.getExpandedState(obj);
+            }
+        });
+
+        manager.add(new Action(Messages.LabelCollapse)
+        {
+            @Override
+            public void run()
+            {
+                calculation.setExpandedState(obj, false);
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return calculation.getExpandedState(obj);
+            }
+        });
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.LabelExpandAll)
+        {
+            @Override
+            public void run()
+            {
+                calculation.expandAll();
+            }
+        });
+
+        manager.add(new Action(Messages.LabelCollapseAll)
+        {
+            @Override
+            public void run()
+            {
+                calculation.collapseAll();
+            }
+        });
     }
 
     private TableViewer createTransactionViewer(CTabFolder folder, String title)
@@ -394,6 +474,7 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactionViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(transactionViewer);
 
         transactionViewer.addSelectionChangedListener(event -> {
             TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
@@ -406,16 +487,15 @@ public class PerformanceView extends AbstractHistoricView
                         getPreferenceStore(), transactionViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 100);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
         {
             @Override
-            public String getText(Object element)
+            public Color getForeground(Object element)
             {
-                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
+                return colorFor(element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
-                        SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(TransactionPair.BY_DATE), SWT.DOWN);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);
@@ -428,8 +508,14 @@ public class PerformanceView extends AbstractHistoricView
                 return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
                                 : ((PortfolioTransaction) t).getType().toString();
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
                             : ((PortfolioTransaction) t).getType().toString();
@@ -445,6 +531,12 @@ public class PerformanceView extends AbstractHistoricView
                 return Values.Money.format(((TransactionPair<?>) element).getTransaction().getMonetaryAmount(),
                                 getClient().getBaseCurrency());
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getMonetaryAmount()));
         support.addColumn(column);
@@ -457,6 +549,20 @@ public class PerformanceView extends AbstractHistoricView
 
         column = new NoteColumn();
         column.setEditingSupport(null);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.LEFT, 200);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((TransactionPair<?>) element).getTransaction().getSource();
+            }
+        });
+        column.setSorter(ColumnViewerSorter
+                        .createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource()));
+        column.setVisible(false);
         support.addColumn(column);
 
         support.createColumns();
@@ -472,6 +578,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
 
         return transactionViewer;
     }
@@ -502,6 +609,12 @@ public class PerformanceView extends AbstractHistoricView
                 }
 
                 return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
             }
         });
         column.setSorter(ColumnViewerSorter
@@ -536,6 +649,12 @@ public class PerformanceView extends AbstractHistoricView
 
                 return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.FEE)));
@@ -562,8 +681,14 @@ public class PerformanceView extends AbstractHistoricView
                                 ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings())
                                 : null;
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Security security = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return security != null ? security.getName() : null;
         }));
@@ -594,8 +719,14 @@ public class PerformanceView extends AbstractHistoricView
                                 ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings())
                                 : null;
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Portfolio portfolio = ((TransactionPair<?>) e).getOwner() instanceof Portfolio
                             ? (Portfolio) ((TransactionPair<?>) e).getOwner()
                             : null;
@@ -639,8 +770,14 @@ public class PerformanceView extends AbstractHistoricView
                                 ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings())
                                 : null;
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor(element);
+            }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> {
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Account account = getAccount.apply(e);
             return account != null ? account.getName() : null;
         }));
@@ -655,6 +792,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(earningsByAccount, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(earningsByAccount);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts2", //$NON-NLS-1$
                         getPreferenceStore(), earningsByAccount, layout);
@@ -758,6 +896,7 @@ public class PerformanceView extends AbstractHistoricView
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+        item.setImage(Images.VIEW_TABLE.image());
     }
 
     @Override
@@ -888,4 +1027,19 @@ public class PerformanceView extends AbstractHistoricView
         }
     }
 
+    private Color colorFor(Object element)
+    {
+        TransactionPair<?> tx = (TransactionPair<?>) element;
+        if (tx.getTransaction() instanceof AccountTransaction)
+        {
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
+        }
+        else
+        {
+            return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
+                            ? Colors.theme().greenForeground()
+                            : Colors.theme().redForeground();
+        }
+    }
 }

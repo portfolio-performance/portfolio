@@ -9,8 +9,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ListSelectionDialog extends Dialog
 {
@@ -53,7 +55,8 @@ public class ListSelectionDialog extends Dialog
         }
     }
 
-    private LabelProvider labelProvider;
+    private ILabelProvider labelProvider;
+    private ViewerComparator viewerComparator;
 
     private String title;
     private String message = ""; //$NON-NLS-1$
@@ -69,7 +72,7 @@ public class ListSelectionDialog extends Dialog
     private ElementFilter elementFilter;
     private Text searchText;
 
-    public ListSelectionDialog(Shell parentShell, LabelProvider labelProvider)
+    public ListSelectionDialog(Shell parentShell, ILabelProvider labelProvider)
     {
         super(parentShell);
         this.labelProvider = labelProvider;
@@ -90,6 +93,11 @@ public class ListSelectionDialog extends Dialog
         this.isMultiSelection = isMultiSelection;
     }
 
+    public void setViewerComparator(ViewerComparator viewerComparator)
+    {
+        this.viewerComparator = viewerComparator;
+    }
+
     public void setElements(List<?> elements)
     {
         this.elements = elements.toArray();
@@ -97,7 +105,7 @@ public class ListSelectionDialog extends Dialog
 
     public Object[] getResult()
     {
-        return selected;
+        return selected != null ? selected : new Object[0];
     }
 
     public String getProperty()
@@ -143,15 +151,17 @@ public class ListSelectionDialog extends Dialog
             input.addFocusListener(FocusListener.focusGainedAdapter(e -> input.selectAll()));
             input.addModifyListener(e -> property = input.getText());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(input);
+            input.setFocus(); // when text input visible, set focus
         }
 
-        Label label = new Label(container, SWT.None);
+        Label label = new Label(container, SWT.NONE | SWT.WRAP);
         label.setText(this.message);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
 
         searchText = new Text(container, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(searchText);
-        searchText.setFocus();
+        if (propertyLabel == null)
+            searchText.setFocus(); // only set focus if text input invisible
 
         Composite tableArea = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().span(2, 1).grab(false, true).applyTo(tableArea);
@@ -166,6 +176,7 @@ public class ListSelectionDialog extends Dialog
         if (isMultiSelection)
             style |= SWT.MULTI;
         tableViewer = new TableViewer(tableArea, style);
+        CopyPasteSupport.enableFor(tableViewer);
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);
@@ -178,7 +189,7 @@ public class ListSelectionDialog extends Dialog
         tableViewer.addFilter(elementFilter);
         tableViewer.setInput(elements);
 
-        tableViewer.setComparator(new ViewerComparator());
+        tableViewer.setComparator(viewerComparator != null ? viewerComparator : new ViewerComparator());
 
         hookListener();
 

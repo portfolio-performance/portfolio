@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -16,8 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
@@ -26,6 +25,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.Interval;
 
@@ -72,6 +72,8 @@ public class SecurityQuoteQualityMetricsViewer
 
         missing = new TableViewer(container, SWT.FULL_SELECTION);
 
+        CopyPasteSupport.enableFor(missing);
+
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         SecurityQuoteQualityMetricsViewer.class.getSimpleName() + "@missing", //$NON-NLS-1$
                         preferences, missing, layout);
@@ -91,7 +93,7 @@ public class SecurityQuoteQualityMetricsViewer
                                     Values.Date.format(interval.getEnd()));
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((Interval) e).getStart()), SWT.DOWN);
         support.addColumn(column);
 
         support.createColumns();

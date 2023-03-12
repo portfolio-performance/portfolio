@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+VRB Oberbayern Südost eG · Münchner Allee 2 · 83435 Bad Reichenhall
+Depotnummer 74721608
+ 
+ Kundennummer 472160800
+Max Mustermann
+ Auftragsnummer 370971/71.00
+Max Mustermann Datum 14.05.2020
+Schulgasse 12 Ihr Berater Armin Mustermann
+83329 Waging a. See Telefon 08111 6000-123
+Rechnungsnummer W06358-0000004203/20
+Steuernummer 016311234567  
+VR Depot Klassik
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 50 DAIMLER AG                         DE0007100000 (710000)
+NAMENS-AKTIEN O.N.                 
+Handels-/Ausführungsplatz Stuttgart (gemäß Weisung)
+Börsensegment STUA
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 14.05.2020 15:40:55 Auftraggeber Flo B
+Ausführungskurs 26,885 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 1.344,25- EUR
+Provision 9,95- EUR
+Transaktionsentgelt Börse 2,49- EUR
+Ausmachender Betrag 1.356,69- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 18.05.2020 zu Lasten des Kontos 234567 (IBAN DE27 7109 0000 0004 1234 56),
+BLZ 71090000 (BIC GENODEF1BGL).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6358.05141812.0000028OR07
+

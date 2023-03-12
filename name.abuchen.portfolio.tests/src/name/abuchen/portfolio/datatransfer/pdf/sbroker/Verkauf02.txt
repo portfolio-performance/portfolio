@@ -1,0 +1,99 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=111/2222/012
+DEPOTUNTERBEZEICHNUNG=
+Verkauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Bruce Wayne
+ADRESSZEILE3=Bathöhle 123
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=12345 Gotham
+ADRESSZEILE5=
+Bruce Wayne
+111/2222/012 94703363
+ADRESSZEILE6=
+Bathöhle 123
+BELEGNUMMER=7074
+12345 Gotham
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Bruce Wayne
+Wiesbaden, 26.04.2021
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Deka iB.EO L.Sov.D.1-10 U.ETF Inhaber-Anteile DE000ETFL110
+Nominal Kurs
+STK 0,836 EUR 119,1200
+Handelstag 26.04.2021 EUR 99,58
+Kurswert
+EUR 0,71-
+Handelszeit 14:10
+Fremde Spesen
+Handelsplatz Xetra
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+28.04.2021 11/2222/012 EUR 98,87
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Gesamtveräußerungsergebnis vor Anwendung einer TFQ EUR 1,52-
+Veräußerungsverlust Fonds EUR 1,52
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 6,64 8,16
+Freistellungsauftrag (eingereicht: EUR 300,00) EUR 300,00 300,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,00
+Es folgt Seite 2
+3.18/ABREABHNHANDVK/ITS/007074/270421/004934
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr.
+DEPOTNUMMER=111/2222/012
+111/2222/012 94703363 2
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Bruce Wayne
+ADRESSZEILE3=Bathöhle 123
+Jahressteuerbescheinigung folgt
+ADRESSZEILE4=12345 Gotham
+ADRESSZEILE5=
+Fremde Spesen beinhalten ggf. gesetzliche MwSt.
+ADRESSZEILE6=
+Die Höhe des von der Kapitalverwaltungsgesellschaft (KVG) festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie
+BELEGNUMMER=7074
+die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+SEITENNUMMER=2
+Vertragsbedingungen zu entnehmen.
+STEUERERSTATTUNG=N
+Wir werden in Ihrem Depot wie angegeben buchen.
+Fondsart: Sonstiger Investmentfonds
+Angewendete Teilfreistellungsquote: 0%
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Betriebliche Anleger
+Höhe der Teilfreistellung Privatanleger Körperschaft
+(natürliche Person)
+Aktienfonds 30% 60% 80%
+Mischfonds 15% 30% 40%
+Immobilienfonds 60% 60% 60%
+Immobilienfonds mit
+überwiegend 80% 80% 80%
+Auslandsimmobilien
+Sonstiger Investmentfonds 0% 0% 0%
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDVK/ITS/007074/270421/004934

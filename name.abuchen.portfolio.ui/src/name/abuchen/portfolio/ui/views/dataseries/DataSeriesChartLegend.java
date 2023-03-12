@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -119,6 +120,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
     private static final class PaintItem extends Canvas implements Listener // NOSONAR
     {
         private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
+        private static final int PADDING = 10;
 
         private final DataSeries series;
 
@@ -179,6 +181,9 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
             e.gc.setForeground(getForeground());
             e.gc.drawString(text, size.y + 2, 1, true);
 
+            if (!series.isVisible())
+                e.gc.drawLine(size.y + 2, size.y / 2 + 1, size.x - PADDING, size.y / 2 + 1);
+
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
         }
@@ -192,7 +197,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
             Point extentText = gc.stringExtent(text);
             gc.dispose();
 
-            return new Point(extentText.x + extentText.y + 12, extentText.y + 2);
+            return new Point(extentText.x + extentText.y + PADDING + 2, extentText.y + 2);
         }
 
         private void seriesMenuAboutToShow(IMenuManager manager) // NOSONAR
@@ -238,6 +243,19 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
+
+                MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
+                IntStream.range(1, 4).forEach(i -> {
+                    Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
+                        series.setLineWidth(i);
+                        configurator.fireUpdate();
+                    });
+                    action.setChecked(i == series.getLineWidth());
+                    lineWidth.add(action);
+
+                });
+                manager.add(lineWidth);
+
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)
@@ -293,6 +311,12 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                     configurator.fireUpdate();
                 }));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(series.isVisible() ? Messages.LabelHide : Messages.LabelUnhide, a -> {
+                series.setVisible(!series.isVisible());
+                configurator.fireUpdate();
+            }));
 
             manager.add(new Separator());
             manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> configurator.doDeleteSeries(series)));

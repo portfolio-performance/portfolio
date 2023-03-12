@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,9 +40,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.NumberFormat;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
@@ -202,10 +201,24 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                 }
             };
             time.setFormat(CDT.TIME_SHORT);
+            adjustTimePattern();
             time.setButtonImage(Images.CLOCK.image());
 
             button = new ImageHyperlink(editArea, SWT.NONE);
             button.setImage(Images.CLOCK.image());
+        }
+
+        /*
+         * Modify pattern to always create enough space for two hour-digits.
+         * 'h:mm a' => 'hh:mm a'
+         */
+        private void adjustTimePattern()
+        {
+            String pattern = time.getPattern();
+            if (pattern.length() > 1 && pattern.charAt(1) == ':')
+            {
+                time.setPattern(pattern.substring(0, 1) + pattern);
+            }
         }
 
         public void bindDate(String property)

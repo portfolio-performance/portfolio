@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+Personnel Financial Affairs
+PFA Services
+Tel. 044-238 27 80
+UBS Wertschriftendepot CHF
+Depot-Nr. 292-123456.S1
+Herr Rubrik DEPOTNAME
+Max Mustermann
+Musterstrasse 3 Kunden-Nr. 123-456789
+1234 Musterhausen
+Auftrags-Nr. 8583497
+Anzeige / Abrechnung Erstellt am 13. April 2021
+FUSION
+Stück Valor 26729122 ISIN CH0267291224 Preis
+73 N-AKT SUNRISE COMMUNICATIONS CHF 110.00
+GROUP AG
+Zum Preis von CHF 8 030.00
+Zugunsten Konto 292-123456.40R CHF Valuta 12.04.2021 CHF 8 030.00
+KONTONAME
+Die Titel haben wir aus Ihrem Depot ausgebucht.
+Ex-Datum: 12.04.2021
+Freundliche Grüsse
+UBS Switzerland AG
+Formular ohne Unterschrift Seite 1 / 1
+EG550L05 / 022620 / 5S9B4SAJ7ESGUPDA00001 12.04.2021

@@ -1,0 +1,27 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 9
+Depot-Nr. 00000000000
+Seite 1 von 2
+Herrn
+Max Mustermann
+Straße 1
+12345 Stadt
+Fondsertrag (Ausschüttung) mit Bestandsdatum 13.11.2019 in Depotposition XXXXXXXXXX.34
+iShsII- BRIC 50 UCITS ETF Registered Shs USD (Dist) o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 28.11.2019
+ISIN Anteilsbestand Betrag je Anteil Betrag
+IE00B1W57M07 12,000000 0,661400 USD 7,94 USD
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+1,53 EUR 0,08 EUR 0,00 EUR 1,103900 1,78 USD
+Zahlungsbetrag 6,16 USD
+Wiederanlage des Zahlungsbetrags erfolgt in Depotposition XXXXXXXXXX.34 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX
+Wiederanlage Fondsertrag 6,16 USD mit Kursdatum 29.11.2019 in Depotposition XXXXXXXXXX.34
+iShsII- BRIC 50 UCITS ETF Registered Shs USD (Dist) o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 02.12.2019
+Wiederanlage Fondsertrag erfolgt aus Depotposition XXXXXXXXXX.34 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX
+ISIN Anteile Abrechnungskurs Betrag
+IE00B1W57M07 0,200653 30,699800 USD 6,16 USD
+Zahlungsbetrag 6,16 USD

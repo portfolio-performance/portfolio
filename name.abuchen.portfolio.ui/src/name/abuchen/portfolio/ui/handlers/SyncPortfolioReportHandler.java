@@ -39,9 +39,16 @@ public class SyncPortfolioReportHandler
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_URL) String portfolioReportApiUrl,
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.PORTFOLIO_REPORT_API_KEY) String portfolioReportApiKey)
     {
-        if (portfolioReportApiKey == null)
+
+        if (portfolioReportApiUrl == null || portfolioReportApiUrl.isEmpty())
         {
-            MessageDialog.openInformation(shell, Messages.LabelInfo, "First configure session token in preferences");
+            MessageDialog.openError(shell, Messages.LabelError, Messages.PortfolioReportMissingAPIURL);
+            return;
+        }
+
+        if (portfolioReportApiKey == null || portfolioReportApiKey.isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.PortfolioReportMissingAPIKey);
             return;
         }
 

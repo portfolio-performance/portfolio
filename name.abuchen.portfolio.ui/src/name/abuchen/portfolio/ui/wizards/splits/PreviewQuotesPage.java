@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewQuotesPage extends AbstractWizardPage
@@ -49,9 +50,8 @@ public class PreviewQuotesPage extends AbstractWizardPage
                     return Values.Quote.format(p.getValue());
                 case 2:
                     if (model.isChangeHistoricalQuotes() && p.getDate().isBefore(model.getExDate()))
-                    {
-                        long shares = p.getValue() * model.getOldShares() / model.getNewShares();
-                        return Values.Quote.format(shares);
+                    {                    
+                        return Values.Quote.format(model.calculateNewQuote(p.getValue()));
                     }
                     return null;
                 default:
@@ -99,6 +99,7 @@ public class PreviewQuotesPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,8 +36,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -64,8 +63,11 @@ import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodLis
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -78,8 +80,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
-import name.abuchen.portfolio.ui.views.panes.CaclulationLineItemPane;
+import name.abuchen.portfolio.ui.views.panes.CalculationLineItemPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.util.Interval;
@@ -90,7 +93,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 {
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private final Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
+        private final Predicate<SecurityPerformanceRecord> sharesNotZero = record -> record.getSharesHeld() != 0;
         private final Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
 
         private ClientFilterMenu clientFilterMenu;
@@ -100,7 +103,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero")) //$NON-NLS-1$
-                recordFilter.add(sharesGreaterZero);
+                recordFilter.add(sharesNotZero);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
                 recordFilter.add(sharesEqualZero);
@@ -123,7 +126,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
             addDisposeListener(e -> {
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
-                                recordFilter.contains(sharesGreaterZero));
+                                recordFilter.contains(sharesNotZero));
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
@@ -145,7 +148,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
 
             manager.add(new Separator());
@@ -170,10 +173,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                     // uncheck mutually exclusive actions if new filter is added
                     if (!isChecked)
                     {
-                        if (predicate == sharesGreaterZero)
+                        if (predicate == sharesNotZero)
                             recordFilter.remove(sharesEqualZero);
                         else if (predicate == sharesEqualZero)
-                            recordFilter.remove(sharesGreaterZero);
+                            recordFilter.remove(sharesNotZero);
                     }
 
                     setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
@@ -257,6 +260,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
+        CopyPasteSupport.enableFor(records);
 
         createCommonColumns();
         createDividendColumns();
@@ -265,7 +269,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         createRiskColumns();
         createAdditionalColumns();
 
-        recordColumns.createColumns();
+        recordColumns.createColumns(true);
 
         records.getTable().setHeaderVisible(true);
         records.getTable().setLinesVisible(true);
@@ -331,6 +335,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         // security name
         column = new NameColumn(getClient());
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);
 
         // cost value - fifo
@@ -633,12 +638,22 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private void addPerformanceColumns()
     {
-        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("twror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
+        column.setMenuLabel(Messages.LabelTTWROR);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
                         r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.LabelTTWROR_Annualized);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
+                        "trueTimeWeightedRateOfReturnAnnualized")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // internal rate of return
@@ -852,15 +867,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
-                return date != null ? Values.Date.format(date) : null;
-            }
-        });
+        column.setLabelProvider(new DateLabelProvider(r -> ((SecurityPerformanceRecord) r).getLastDividendPayment()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -953,7 +960,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         AttributeColumn.createFor(getClient(), Security.class) //
                         .forEach(column -> {
-                            column.setEditingSupport(null);
+                            column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
                             recordColumns.addColumn(column);
                         });
     }
@@ -963,8 +970,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     {
         super.addPanePages(pages);
         pages.add(make(SecurityPriceChartPane.class));
-        pages.add(make(CaclulationLineItemPane.class));
+        pages.add(make(CalculationLineItemPane.class));
         pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,7 +19,11 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -150,6 +155,7 @@ public class StyledLabel extends Canvas // NOSONAR
 
     private TextLayout textLayout;
     private SAXParserFactory spf;
+    private Consumer<String> openLinkHandler;
 
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
@@ -174,6 +180,9 @@ public class StyledLabel extends Canvas // NOSONAR
         addListener(SWT.Paint, this::handlePaint);
         addListener(SWT.Dispose, this::handleDispose);
         addListener(SWT.MouseDown, this::openBrowser);
+        addListener(SWT.MouseMove, this::updateCursor);
+        
+        initAccessibility();
     }
 
     public void setText(String text)
@@ -220,6 +229,22 @@ public class StyledLabel extends Canvas // NOSONAR
     {
         super.setFont(font);
         this.textLayout.setFont(font);
+
+        // update existing styles with new font
+        TextStyle[] styles = this.textLayout.getStyles();
+        for (TextStyle style : styles)
+        {
+            if (style.font != null)
+                style.font = resourceManager.createFont(FontDescriptor.createFrom(textLayout.getFont())
+                                .setStyle(style.font.getFontData()[0].getStyle()));
+        }
+
+        redraw();
+    }
+
+    public void setOpenLinkHandler(Consumer<String> openLinkHandler)
+    {
+        this.openLinkHandler = openLinkHandler;
     }
 
     @Override
@@ -244,13 +269,55 @@ public class StyledLabel extends Canvas // NOSONAR
 
     private void openBrowser(Event event)
     {
-        int offset = this.textLayout.getOffset(event.x, event.y, null);
-        if (offset == -1)
-            return;
-
-        TextStyle style = this.textLayout.getStyle(offset);
-        if (style != null && style.data != null)
-            DesktopAPI.browse(String.valueOf(style.data));
+        String linkUrl = this.getLinkUrlAtMousePointer(event);
+        if (linkUrl != null && event.button == 1)
+        {
+            if (openLinkHandler != null)
+                openLinkHandler.accept(linkUrl);
+            else
+                DesktopAPI.browse(linkUrl);
+        }
     }
 
+    private void updateCursor(Event event)
+    {
+        this.setCursor(this.getLinkUrlAtMousePointer(event) != null ? new Cursor(this.getDisplay(), SWT.CURSOR_HAND)
+                        : null);
+    }
+
+    private String getLinkUrlAtMousePointer(Event event)
+    {
+        int offset = this.textLayout.getOffset(event.x, event.y, null);
+        if (offset == -1)
+            return null;
+        
+        Point mostLeftPoint = this.textLayout.getLocation(offset, false);
+        Point mostRightPoint = this.textLayout.getLocation(offset, true);
+        if (event.x < mostLeftPoint.x || event.x > mostRightPoint.x)
+            return null;
+
+        TextStyle style = this.textLayout.getStyle(offset);
+        if (style == null || style.data == null)
+            return null;
+
+        return String.valueOf(style.data);
+    }
+    
+    private void initAccessibility()
+    {
+        getAccessible().addAccessibleControlListener(new AccessibleControlAdapter()
+        {
+            @Override
+            public void getRole(AccessibleControlEvent e)
+            {
+                e.detail = ACC.ROLE_LABEL;
+            }
+
+            @Override
+            public void getValue(AccessibleControlEvent e)
+            {
+                e.result = textLayout.getText();
+            }
+        });
+    }
 }

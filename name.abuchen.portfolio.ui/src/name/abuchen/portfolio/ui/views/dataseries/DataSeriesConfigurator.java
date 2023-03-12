@@ -97,6 +97,11 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
         store.updateActive(new DataSeriesSerializer().toString(getSelectedDataSeries()));
     }
 
+    public void activate(String uuid)
+    {
+        store.activate(uuid);
+    }
+
     @Override
     protected String getActiveUUID()
     {

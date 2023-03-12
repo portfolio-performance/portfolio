@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+                                     INVESTMENTGESELLSCH.
+           
+TRANSAKTIONSABRECHNUNG
+                                                                            A N G E G E B EN  IN :      EUR
+ D A T U M :    23-09-2022    CLEOME INDEX USA EQUITIES V EURHDG ACC              W E C H S E LK U R S :        1,00
+ I SI N :      LU2403432821
+       INHABER        XXXXXXXX  XXXXXX                                            ID      XXXXXXXXX
+     V E R  T R A G S N U  M M E R  :         0 0  7  3   0  1 00 840 XXXXXXX MIT DER TRANSAKTION
+IBAN
+                                       V  E R K N Ü  P T E S         ES93 0073 0100 5684 XXXX XXXX
+     T R A  N S A K T I O N S N U  M M E R  :   0  0  0  0 1  5  0  5 0  0    PERSÖNLICHES KONTO
+Sehr geehrter Anteilseigner: Gemäß Ihren Anweisungen haben wir folgende Transaktion durchgeführt:
+    TRANSAKTION                RÜCKERSTATTUNG
+    DATUM NETTOINVENTARWERT    21.09.2022
+    BETEILIGUNGEN                       0,0030000
+    NETTOINVENTARWERT                 1.450,54000 EUR
+    BETRAG                                   4,01 EUR
+    EINBEHALT                                     EUR
+    GESAMTKOSTEN                                  EUR
+    GESAMTANREIZE                                 EUR
+    NETTOBETRAG                              4,01 EUR
+       Verwaltungsgesellsc : ALLFUNDS BANK S.A. CL/ NURIA Nº 57 ,28034 MADRID,MADRID,ESPAÑA
+       VERTRIEBSGESELLSCH. : OPEN BANK, S.A. AV DE CANTABRIA S/N 28660 - BOADILLA DEL MONTE MADRID
+       H A NDELSREG. ST STEUERIDENA28021079 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, D0033
+       G E SELLSCHAFT : STEUERIDEN V99999999 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, F1275GRÜNDUNGSDATUM 24.01.2022

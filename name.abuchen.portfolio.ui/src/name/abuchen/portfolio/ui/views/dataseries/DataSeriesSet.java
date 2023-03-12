@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /**
  * The set of available data series for a given presentation use case.
@@ -139,6 +140,14 @@ public class DataSeriesSet
                         Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
+                        Colors.GRAY.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
+                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
+        availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
@@ -268,7 +277,7 @@ public class DataSeriesSet
                         return;
 
                     availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
-                                    classification.getName(), Colors.toRGB(classification.getColor())));
+                                    classification.getName(), ColorConversion.hex2RGB(classification.getColor())));
                 }
             });
         }

@@ -217,8 +217,8 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
 
-        // asset that time is removed --> not supported for removal
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        // date and time is read 
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T10:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }

@@ -1,0 +1,118 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontoauszug vom 2 9 . 0 1 . 2 0 2 1
+A u s z u g - N r . 1 S e i t e - N r . 1
+IBAN: DE33 8204 0000 0000 0000 00 U S t - I d N r . : DE 114 103 514
+BIC : COBADEFFXXX F i l i a l e O r t
+S t r . 1
+98693 O r t
+I h r A n s p r e c h p a r t n e r
+Team P r i v a t k u n d e n
+99077 E r f u r t Tele fonnummer 03677 4661 -0
+M a x M u s t e r m a n n
+St‌raße 1
+12345 O r t
+Kontowährung Euro
+zu I h r e n L a s t e n zu I h r e n Gunsten
+A l t e r Kontostand vom 3 1 . 1 2 . 2 0 2 0 2 . 3 1 4 , 5 3
+Angaben zu den Umsätzen V a l u t a
+Buchungsdatum: 0 5 . 0 1 . 2 0 2 1
+M a x M u s t e r m a n n 0 5 . 0 1 2 . 0 0 0 , 0 0
+V e r w e n d u n g s z w e c k
+E n d - t o - E n d - R e f . : NOTPROVIDED
+K u n d e n r e f e r e n z :
+NSCT2001090001240000000000000000001
+Buchungsdatum: 0 6 . 0 1 . 2 0 2 1
+M a x M u s t e r m a n n 0 6 . 0 1 1 . 0 0 1 . 0 0 0 , 0 0 -
+V e r w e n d u n g s z w e c k AG - Kontonummer
+0000000000
+E n d - t o - E n d - R e f . :
+kwLJwL67ViCG7b-800092
+M a n d a t s r e f : 806692
+G l ä u b i g e r - I D : DE0000000000000000
+SEPA-BASISLASTSCHRIFT w i e d e r h o l e n d
+Buchungsdatum: 0 8 . 0 1 . 2 0 2 1
+M a x M u s t e r m a n n 0 8 . 0 1 2 . 5 1 5 , 0 0 -
+V e r w e n d u n g s z w e c k AG - Kontonumme
+r 0000000000
+E n d - t o - E n d - R e f . :
+Rn8TW55eBTsD1-000000
+M a n d a t s r e f : 000000
+G l ä u b i g e r - I D : DE0000000000000000
+SEPA-BASISLASTSCHRIFT w i e d e r h o l e n d
+Buchungsdatum: 1 2 . 0 1 . 2 0 2 1
+1u1 Telecom GmbH 1 2 . 0 1 2 9 , 2 0 -
+K D - N r . K000000000/ RG-Nr . 123456789
+407
+E n d - t o - E n d - R e f . : 005224037783
+M a n d a t s r e f : 0000000000000
+G l ä u b i g e r - I D : DE0000000000000000
+SEPA-BASISLASTSCHRIFT w i e d e r h o l e n d
+Buchungsdatum: 1 8 . 0 1 . 2 0 2 1
+S t a d t w e r k e O r t 1 8 . 0 1 6 2 , 0 3 -
+COBADEFFXXX
+DE00000000000000000000
+Kundennummer 000000 / Rechnungse inh
+e i t 000000
+E n d - t o - E n d - R e f . : CCB.16.UE.223813
+F o l g e s e i t e 2 vorhanden
+VSA000 - FIL860 - KTEA
+Kontoauszug vom 2 9 . 0 1 . 2 0 2 1
+A u s z u g - N r . 1 S e i t e - N r . 2
+IBAN: DE33 8204 0000 0000 0000 00 U S t - I d N r . : DE 114 103 514
+BIC : COBADEFFXXX F i l i a l e O r t
+S t r . 1
+98693 O r t
+I h r A n s p r e c h p a r t n e r
+Team P r i v a t k u n d e n
+Tele fonnummer 03677 4661 -0
+M a x M u s t e r m a n n
+Kontowährung Euro
+zu I h r e n L a s t e n zu I h r e n Gunsten
+Angaben zu den Umsätzen V a l u t a
+Buchungsdatum: 2 9 . 0 6 . 2 0 2 1
+H i n w e i s : M i t U r t e i l vom 2 7 . A p r i l 2 9 . 0 6 0 , 0 0
+2021 ( X I ZR 2 6 / 2 0 ) h a t d e r Bundes-
+g e r i c h t s h o f d i e K l a u s e l n zum
+Ver t ragsÃ¤nderungsmechan ismus i n
+N r . 1 A b s . 2 und N r . 12 A b s . 5
+AGB-Banken b e i V e r t r Ã¤ g e n m i t V e r -
+b r a u c h e r n f Ã¼ r u n z u l Ã¤ s s i g b e w e r t e t .
+D i e Bank w i r d s i c h a u f d i e K l a u s e l n
+n i c h t mehr b e r u f e n . B e i d e r kommen-
+den E n t g e l t a b r e c h n u n g k o n n t e das
+U r t e i l noch n i c h t b e r Ã¼ c k s i c h t i g t
+w e r d e n .
+Buchungsdatum: 3 0 . 0 6 . 2 0 2 1
+Rechnungsabsch luss 3 0 . 0 6 0 , 0 0
+Kon to 000000000 EUR
+BLZ 820 400 00
+vom 3 1 . 0 3 . 2 0 2 1 b i s 3 0 . 0 6 . 2 0 2 1
+S a l d o nach A b s c h l u s s
+1 . 3 3 7 , 0 0 EUR
+w / Genehmigung des A b s c h l u s s e s
+Einwendungen wegen U n r i c h t i g k e i t o d e r
+U n v o l l s t Ã¤ n d i g k e i t des Rechnungsab-
+s c h l u s s e s s i n d s p Ã¤ t e s t e n s v o r A b l a u f
+von 6 Wochen nach dessen Zugang zu
+e r h e b e n ; werden Einwendungen i n T e x t -
+f o r m g e l t e n d g e m a c h t , g e n Ã¼ g t d i e
+Absendung i n n e r h a l b d e r 6 - W o c h e n f r i s t .
+Das U n t e r l a s s e n r e c h t z e i t i g e r E i n -
+wendungen g i l t a l s Genehmigung. Der
+Kunde kann auch nach F r i s t a b l a u f e i n e
+B e r i c h t i g u n g des Rechnungsabsch lusses
+v e r l a n g e n , muss dann a b e r b e w e i s e n ,
+dass zu U n r e c h t s e i n Kon to b e l a s t e t
+o d e r e i n e ihm z u s t e h e n d e G u t s c h r i f t
+n i c h t e r t e i l t w u r d e .
+Guthaben s i n d a l s E i n l a g e n nach Maßgabe des E i n l a g e n s i c h e r u n g s g e s e t z e s e n t s c h ä d i -
+g u n g s f ä h i g . Nähere I n f o r m a t i o n e n können dem " I n f o r m a t i o n s b o g e n f ü r den E i n l e g e r "
+entnommen w e r d e n .
+Der angegebene K o n t o s t a n d b e r ü c k s i c h t i g t n i c h t d i e W e r t s t e l l u n g d e r Buchungen. D i e s
+b e d e u t e t , dass d e r a n g e z e i g t e B e t r a g n i c h t dem t a t s ä c h l i c h z u r V e r f ü g u n g s tehenden
+Guthaben e n t s p r e c h e n muss . S o m i t können b e i Ve r fügungen m ö g l i c h e r w e i s e Z i n s e n f ü r
+d i e Inanspruchnahme e i n e r e i n g e r ä u m t e n o d e r g e d u l d e t e n K o n t o ü b e r z i e h u n g a n f a l l e n .
+Neuer Kontostand vom 2 9 . 0 1 . 2 0 2 1 7 0 8 , 3 0
+VSA000 - FIL860 - KTEE

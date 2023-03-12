@@ -1,0 +1,69 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+Depotübertrag
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0003432000000123780230
+Herrn
+Max Mustermann
+Str. 1
+12345 Stadt
+             Frankfurt, 18.09.2020
+Gutschrifts-/Belastungsanzeige
+Ihre Depotnummer: 123456789
+Depotinhaber:     Max Mustermann
+Depotausgang                          COMS.-MSCI WORL.T.U.ETF I (LU0392494562)
+St./Nominale      :      310,000000 St.  Bemessungs-
+Verwahrart        : GS-Verwahrung        grundlage       :           0,00 EUR
+Lagerstelle       : Clearstream Nat.     Einbeh. Steuer* :           0,00 EUR
+Lagerland         : Deutschland
+                                         Geldgegenwert***:           0,00 EUR
+                                         Eigene Spesen   :           0,00 EUR
+                                         Fremde Spesen   :           0,00 EUR
+                                         zzg. MwSt.      :           0,00 EUR
+                                         Endbetrag****   :           0,00 EUR
+Vermerk/Sperrschlüssel
+*   Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer     :           0,00 EUR
+                                 Solidaritätszuschlag    :           0,00 EUR
+                                 Kirchensteuer           :           0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    9876543211.
+*** Gutschrift auf / ****Verrechnung über Ihr Konto Nr. 123456788
+______________________________________________________________________________
+                                                                     Seite 2/3
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+
+Depotausgang                          C-IBO.E.L.S.D.O.T.U.ETF I (LU0444605645)
+St./Nominale      :      118,000000 St.  Bemessungs-
+Verwahrart        : GS-Verwahrung        grundlage       :           0,00 EUR
+Lagerstelle       : Clearstream Nat.     Einbeh. Steuer* :           0,00 EUR
+Lagerland         : Deutschland
+                                         Geldgegenwert***:           0,00 EUR
+                                         Eigene Spesen   :           0,00 EUR
+                                         Fremde Spesen   :           0,00 EUR
+                                         zzg. MwSt.      :           0,00 EUR
+                                         Endbetrag****   :           0,00 EUR
+Vermerk/Sperrschlüssel
+*   Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer     :           0,00 EUR
+                                 Solidaritätszuschlag    :           0,00 EUR
+                                 Kirchensteuer           :           0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    9876543210.
+*** Gutschrift auf / ****Verrechnung über Ihr Konto Nr. 123456788
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 3/3
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+

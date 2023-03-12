@@ -1,0 +1,122 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+Sparda-Bank München eG
+Herrn Union Investment - Kundenservice
+Florian Alexander Telefon: 069 58998-6000
+Bahnhofstr. 10 Telefax: 069 58998-9000
+12345 Musterstadt E-Mail: service@union-investment.de
+UnionDepot: 13456742
+Depotinhaber:
+Florian Alexander
+11. Februar 2014
+Abrechnung Nr. 40
+Unterdepot-Nr.: 1345674205
+Fonds: UniDynamicFonds: Global A ISIN: LU0089558679 Verwaltungsvergütung: 1,20 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 15.11.2013 23,766
+11.02.2014
+10.02.2014 Umtausch 458,99
+aus Unterdepot 1345674218
+Anlage 458,99 0,00 37,77 12,152
+Kauf ohne Ausgabeaufschlag
+Bestand am 11.02.2014 35,918
+Unterdepot-Nr.: 1345674217
+Fonds: UniDividendenAss ISIN: LU0186860408 Verwaltungsvergütung: 1,20 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 17.05.2013 7,756
+11.02.2014
+10.02.2014 Umtausch 271,20
+aus Unterdepot 1345674218
+Anlage 271,20 0,00 52,68 5,148
+Kauf ohne Ausgabeaufschlag
+Bestand am 11.02.2014 12,904
+Unterdepot-Nr.: 1345674218
+Fonds: UniEM Global ISIN: LU0115904467 Verwaltungsvergütung: 1,55 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 15.11.2013 11,308
+11.02.2014
+10.02.2014 Umtausch 271,20 65,57 -4,136
+Umtauschbetrag 271,20
+zugunsten Unterdepot 1345674217
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Horst Dietzel, Rainer Kobusch, Barbara Resch· Aufsichtsratsvorsitzender: Hans Joachim Reinke · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 3
+zum Schreiben vom 11. Februar 2014
+UnionDepot: 13456742
+Depotinhaber:
+Florian Alexander
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+11.02.2014
+10.02.2014 Umtausch 458,99 65,57 -7,000
+Umtauschbetrag 458,99
+zugunsten Unterdepot 1345674205
+Bestand am 11.02.2014 0,172
+Steuerübersicht per 11.02.2014
+Freistellungsauftrag gültig bis auf Widerruf
+erteilter Freistellungsauftrag in EUR: 75,00
+verbleibender Freistellungsauftrag in EUR: 74,89
+Depotübersicht zum 11.02.2014
+Unterdepot- Fondsname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+1345674205 UniDynamicFonds: Global A 35,918 37,77 EUR 1.356,62 EUR
+LU0089558679/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Im Anteilbestand sind 23,347 Anteile enthalten, die steuerlich als "Altbestand" gelten.*
+1345674206 GenoEuroClassic 0,000 45,15 EUR 0,00 EUR
+DE0009757781/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+1345674216 UniProfiRente
+UniGlobal 28,378 141,54 EUR 4.016,62 EUR
+DE0008491051/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+1345674217 UniDividendenAss 12,904 52,68 EUR 679,78 EUR
+LU0186860408/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Im Anteilbestand sind 6,553 Anteile enthalten, die steuerlich als "Altbestand" gelten.*
+1345674218 UniEM Global 0,172 65,57 EUR 11,28 EUR
+LU0115904467/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1345674219 UniAsiaPacific A 5,819 92,25 EUR 536,80 EUR
+LU0100937670/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Im Anteilbestand sind 5,613 Anteile enthalten, die steuerlich als "Altbestand" gelten.*
+1345674220 UniGlobal 20,049 141,54 EUR 2.837,74 EUR
+DE0008491051/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+Im Anteilbestand sind 16,980 Anteile enthalten, die steuerlich als "Altbestand" gelten.*
+1345674221 UniRak Konservativ A 5,147 105,03 EUR 540,59 EUR
+DE000A1C81C0/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+Im Anteilbestand sind 4,666 Anteile enthalten, die steuerlich als "Altbestand" gelten.*
+Gesamt-Depotwert 9.979,43 EUR
+Fortsetzung auf Seite 3
+Seite 3 von 3
+zum Schreiben vom 11. Februar 2014
+UnionDepot: 13456742
+Depotinhaber:
+Florian Alexander
+* Veräußerungsgewinneaus dem Verkauf der als "Altbestand" gekennzeichnetenAnteile sind im Privatvermögenin unbegrenzterHöhe steu-
+erfrei. Der Verkauf von Fondsanteilenerfolgt nach einer gesetzlich vorgegebenenReihenfolge. Dabei gelten die zuerst erworbenen Anteile
+als zuerst veräußert (FIFO-Methode= First in - first out). Der Gegenwert eines Anteils verändert sich börsentäglich.Alle Fondspreise finden
+Sie im Internet unter www.union-investment.de.
+Die Bewertung des Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis.
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 121 (1) InvG und aktuelle Fondsinformationen erhalten Sie bei Ihrer Bank oder im Internet unter 
+www.union-investment.de.
+ Bei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.
+Als Nutzer eines Onlinedepots können Sie Ihre Depotunterlagen
+über die elektronische Postbox erhalten und so seit Januar 2014
+von einer geringeren Depotgebühr profitieren. Sie nutzen noch
+nicht die Postbox? Informieren Sie sich unter
+www.uniondepot-postbox.de und lassen sich noch heute frei-
+schalten.

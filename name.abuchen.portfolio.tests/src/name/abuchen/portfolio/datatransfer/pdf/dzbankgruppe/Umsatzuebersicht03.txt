@@ -1,0 +1,138 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+Volksbank ABC eG
+Union Investment - Kundenservice
+Telefon: 069 123
+Telefax: 069 123
+Herrn E-Mail: privatfonds@union-investment.de
+Max Mustermann
+Musterstr. 1 UnionDepot: 12345678
+74111 Mannheim Depotinhaber:
+Max Mustermann
+11. Dezember 2020
+Abrechnung Nr. 43
+Unterdepot-Nr.: 1234567811
+Fonds: UniImmo: Europa ISIN: DE0009805515 Verwaltungsvergütung: 0,80 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag vom 13.12.2019 362,803
+Ausschüttung *1 362,80
+abgeführte Kapitalertragsteuer 0,00
+inklusive Solidaritätszuschlag
+11.12.2020
+1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
+Kauf ohne Ausgabeaufschlag
+Bestand am 11.12.2020 369,533
+*1 Diese Abrechnung stellt keine Steuerbescheinigung dar. Nach Ablauf des Kalenderjahres erhalten Sie automatisch eine für Ihr UnionDepot
+geltende Steuerbescheinigung. Bitte berücksichtigen Sie, dass Kapitalerträge steuerpflichtig sind. Von der Ausschüttung sind 80 Prozent
+steuerlich freigestellt.
+Die steuerpflichtigen Erträge betragen 72,56 Euro.
+Steuerübersicht per 11.12.2020
+Es liegt kein Freistellungsauftrag vor.
+Verlustverrechnungstopf für Kapitalerträge in EUR: -2.478,51
+gezahlte Kapitalertragsteuer in EUR: 242,73
+gezahlte Kirchensteuer in EUR*: 19,37
+gezahlter Solidaritätszuschlag in EUR: 13,30
+* Wir führen die Kirchensteuer an die Religionsgemeinschaft ab, die uns das Bundeszentralamt für Steuern (BZSt) mit Ihrem Kirchensteuerab-
+zugsmerkmal (KISTAM) übermittelt hat. Aus Gründen des Datenschutzes dürfen wir keine konkreten Daten zu Ihrer Religionszugehörigkeit
+ausweisen.
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Horst Dietzel, Rainer Kobusch, Barbara Resch · Aufsichtsratsvorsitzender: Alexander Lichtenberg · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 3 Datenschutzfeld
+zum Schreiben vom 11. Dezember 2020 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 12345678 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max Mustermann XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotübersicht zum 11.12.2020
+Unterdepot- Fondsname/Produktname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+1234567801 Carmignac Patrimoine FCP D EUR 188,705 119,25 EUR 22.503,07 EUR
+FR0011269588/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1234567802 DWS Concept - Kaldemorgen LD 152,173 145,88 EUR 22.199,00 EUR
+LU0599946976/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1234567803 First Private Wealth B 0,000 65,24 EUR 0,00 EUR
+DE000A0KFTH1/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+Unterdepot zur Löschung vorgemerkt.
+1234567804 LOYS FCP-Global L/S P 295,639 66,07 EUR 19.532,87 EUR
+LU0720541993/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1234567805 PrivatFonds: Kontrolliert pro 143,216 156,81 EUR 22.457,70 EUR
+DE000A0RPAN3/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+1234567806 Flossbach von Storch SICAV - Multip 127,203 277,54 EUR 35.303,92 EUR
+LU0323578657/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1234567807 JPMorgan Funds - Global Income Fund 161,351 131,09 EUR 21.151,50 EUR
+LU0395794307/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+1234567808 UniImmo: Deutschland 230,960 92,60 EUR 21.386,90 EUR
+DE0009805507/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+Bitte beachten Sie die zum 22.07.2013 eingeführten gesetzlichen Regelungen.*
+1234567809 JPMorgan Investment Funds SICAV - G 156,356 203,26 EUR 31.780,92 EUR
+LU0095938881/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+1234567810 Templeton Global Bond Fund N (acc) 1.183,406 22,20 EUR 26.271,61 EUR
+LU0260870588/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+1234567811 UniImmo: Europa 369,533 53,91 EUR 19.921,52 EUR
+DE0009805515/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+Bitte beachten Sie die zum 22.07.2013 eingeführten gesetzlichen Regelungen.*
+Fortsetzung auf Seite 3
+Seite 3 von 3
+zum Schreiben vom 11. Dezember 2020
+UnionDepot: 12345678
+Depotinhaber:
+Max Mustermann
+Unterdepot- Fondsname/Produktname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+1234567812 Mor.St.Inv.-Global Opportunity 45,770 129,22 USD 5.914,40 USD
+LU0552385295/thesaurierend 1 EUR = 1,212 USD (= 4.879,87 EUR)
+Wertpapierrechnung/CBL - Luxemburg
+Gesamt-Depotwert 247.388,88 EUR
+* Weitere Informationen unter www.union-investment.de/immobilienfonds-korrespondenz.
+Die Bewertung der Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis. In der Depotübersicht sind alle Fondsanteile enthalten, die
+am Tag der Erstellung dieser Abrechnung in Ihrem Depotbestand sind.
+In manchen Fällen weichen die Werte der Depotübersicht von der Abrechnungsübersicht ab. Das kann dann vorkommen, wenn zum Beispiel
+Fonds betroffen sind, die nicht taggleich abgerechnet werden. Das ist bei den meisten Drittfonds oder Finanzportfolioverwaltungen der Fall.
+Hier können Transaktionen zwar bereits für einen der betroffenen Fonds gebucht und abgerechnet sein, für den anderen betroffenen Fonds
+aber noch nicht. In Ihrer nächsten Depotübersicht ist die ausstehende Buchung berücksichtigt.
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 297 Abs. 5  KAGB und aktuelle Fondsinformationen erhalten Sie kostenlos bei Ihrer Bank oder im 
+Internet unter www.union-investment.de.
+Aufgrund des Beschlusses der Bundesregierung zur befristeten Senkung der Mehrwertsteuer von 19 auf 16 Prozent ergänzt Union Investment
+Service Bank AG für den Zeitraum 1. Juli bis 31. Dezember 2020 das Preis- und Leistungsverzeichnis. Die darin aufgeführten Entgelte und
+Gebühren berücksichtigen den reduzierten Mehrwertsteuersatz und wurden entsprechend gesenkt.
+B ei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.
+Jetzt elektronisches Postfach nutzen, bares Geld sparen und
+zudem auch die Umwelt schonen. Sprechen Sie Ihren Berater
+an oder rufen Sie uns an.

@@ -1,0 +1,34 @@
+Abrechnung Ereignis
+easybank Service Center 36502064-24.5.2022
+BAWAG P.S.K. AG Depot-Nr.: 23456789012
+Wiedner Gürtel 11 Max Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Max Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 24.5.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+100 Stk
+Titel: DE0007164600  S A P  S E                             
+Inhaber-Aktien o.N.                
+Dividende: 2,45 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 245,-- EUR 
+Quellensteuer: -64,62 EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 179,24 EUR 
+Valuta 24.5.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 19.5.2022
+Record-Tag: 20.5.2022
+Bemessungsgrundlage USt: -0,95 EUR
+QUSt pro Stück 26,375 %
+1.6.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+04604 Doknr.: ON00-036-0000000001

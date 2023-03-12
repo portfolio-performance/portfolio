@@ -10,19 +10,18 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -89,10 +88,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (value.isPresent())
                 price.setValue(asPrice(value.get()));
 
-            Optional<String> previousClose = extract(html, startIndex, "\"regularMarketPreviousClose\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (previousClose.isPresent())
-                price.setPreviousClose(asPrice(previousClose.get()));
-
             Optional<String> high = extract(html, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (high.isPresent())
                 price.setHigh(asPrice(high.get()));
@@ -107,7 +102,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             if (price.getDate() == null || price.getValue() <= 0)
             {
-                PortfolioLog.error(html);
+                PortfolioLog.error(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1, security.getTickerSymbol(),
+                                html));
                 return Optional.empty();
             }
             else
@@ -234,6 +230,25 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (result0 == null)
                 throw new IOException("result[0]"); //$NON-NLS-1$
 
+            ZoneId exchangeZoneId = ZoneOffset.UTC;
+            if (result0.containsKey("meta")) //$NON-NLS-1$
+            {
+                JSONObject meta = (JSONObject) result0.get("meta"); //$NON-NLS-1$
+
+                String exchangeTimezoneName = (String) meta.get("exchangeTimezoneName"); //$NON-NLS-1$
+                if (exchangeTimezoneName != null)
+                {
+                    try
+                    {
+                        exchangeZoneId = ZoneId.of(exchangeTimezoneName);
+                    }
+                    catch (DateTimeException e)
+                    {
+                        // Ignore
+                    }
+                }
+            }
+
             JSONArray timestamp = (JSONArray) result0.get("timestamp"); //$NON-NLS-1$
 
             JSONObject indicators = (JSONObject) result0.get("indicators"); //$NON-NLS-1$
@@ -252,7 +267,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 if (ts != null && q != null && q.doubleValue() > 0)
                 {
                     LatestSecurityPrice price = new LatestSecurityPrice();
-                    price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
+                    price.setDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(ts), exchangeZoneId).toLocalDate());
 
                     // yahoo api seesm to return floating numbers --> limit to 4
                     // digits which seems to round it to the right value
@@ -312,65 +327,23 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         Set<String> candidates = new HashSet<>();
         answer.forEach(e -> candidates.add(e.getId()));
 
-        // add existing ticker symbol as well
+        // At the moment, we do not have a reasonable way to search for
+        // exchanges of a given symbol. For the time being, we add all
+        // exchanges...
+
         String symbol = subject.getTickerSymbol();
         if (symbol != null && !symbol.isEmpty())
-            candidates.add(symbol);
-
-        for (String candidate : candidates)
         {
-            searchExchanges(candidate, answer, errors);
+            // strip away exchange suffix
+            int p = symbol.indexOf('.');
+            String plainSymbol = p >= 0 ? symbol.substring(0, p) : symbol;
+
+            answer.add(createExchange(plainSymbol));
+
+            ExchangeLabels.getAllExchangeKeys("yahoo.").forEach(e -> answer.add(createExchange(plainSymbol + "." + e))); //$NON-NLS-1$ //$NON-NLS-2$
         }
-
-        if (symbol != null && !symbol.isEmpty())
-        {
-            // Issue #251
-            // sometimes Yahoo does not return the default exchange which
-            // prevents selecting this security (example: searching for GOOG
-            // does return only unimportant exchanges)
-            Optional<Exchange> defaultExchange = answer.stream() //
-                            .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
-            if (!defaultExchange.isPresent())
-                answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
-
-            if (answer.isEmpty())
-            {
-                // Issue #29
-                // at least add the given ticker symbol if the search returns
-                // nothing (sometimes accidentally)
-                answer.add(createExchange(subject.getTickerSymbol()));
-            }
-        }
-
-        Collections.sort(answer, (r, l) -> r.getId().compareTo(l.getId()));
 
         return answer;
-    }
-
-    private void searchExchanges(String candidate, List<Exchange> answer, List<Exception> errors)
-    {
-        // strip away exchange suffix to search for all available exchanges
-        int p = candidate.indexOf('.');
-        String prefix = p >= 0 ? candidate.substring(0, p + 1) : candidate + "."; //$NON-NLS-1$
-
-        // ensure we do not add duplicates
-        Set<String> duplicates = new HashSet<>();
-        answer.forEach(e -> duplicates.add(e.getId()));
-
-        try
-        {
-            searchSymbols(prefix) //
-                            .filter(r -> !duplicates.contains(r.getSymbol())) //
-                            .map(r -> createExchange(r.getSymbol())).forEach(e -> {
-                                duplicates.add(e.getId());
-                                answer.add(e);
-                            });
-        }
-        catch (IOException e)
-        {
-            errors.add(e);
-        }
-
     }
 
     private Exchange createExchange(String symbol)
@@ -398,11 +371,5 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
-    }
-
-    /* enable testing */
-    protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
-    {
-        return new YahooSymbolSearch().search(query);
     }
 }

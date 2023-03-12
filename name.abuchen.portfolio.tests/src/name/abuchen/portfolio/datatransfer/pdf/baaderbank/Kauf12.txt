@@ -1,0 +1,48 @@
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Gartenstraße 67
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de 76135 Karlsruhe
+www.finanzen.net/zero
++49 89 5455 8188
+Seite 1/1
+DonauCapital Wertpapier GmbH Karlsruhe
+06.04.2022
+Passauer Str. 5
+94161 Ruderting Max Mustermann
+Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 94196810
+Referenz-Nr.: 231743244
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 05.04.2022 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 16:54:28:84
+Nominale ISIN: CA2553311002 WKN: A12C65 Kurs 
+STK 1.000 Diversified Royalty Corp. EUR 2,44
+Registered Shares o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 2.440,00
+Zu Lasten Konto 1111111111 Valuta: 07.04.2022 EUR 2.440,00
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   1.000 EUR 2,44 GETTEX - MM Munich 05.04.2022 16:54:29:17
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 2379 MIC des Ausführungsplatzes: MUNC
+Lagerland: Kanada
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH 
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+WPABRECHNUNG-058.112
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

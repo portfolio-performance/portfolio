@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.model;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -65,6 +65,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
+        
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -114,6 +116,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
+
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -145,6 +149,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.DEPOSIT));
+
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -159,6 +165,31 @@ public class InvestmentPlanTest
         assertThat(tx.get(1), instanceOf(AccountTransaction.class));
         assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
         assertThat(((AccountTransaction) tx.get(1)).getType(), is(AccountTransaction.Type.DEPOSIT));
+    }
+
+    @Test
+    public void testGenerationOfRemovalTransaction() throws IOException
+    {
+        // Negative amount => REMOVAL transaction
+        investmentPlan.setAmount(Values.Amount.factorize(-100));
+        
+        investmentPlan.setAccount(account);
+        investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        List<Transaction> tx = investmentPlan.getTransactions().stream()
+                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .collect(Collectors.toList());
+
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.REMOVAL));
+        
+        assertThat(tx.isEmpty(), is(false));
+        assertThat(tx.size(), is(1));
+
+        assertThat(tx.get(0), instanceOf(AccountTransaction.class));
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.REMOVAL));
     }
 
     @Test

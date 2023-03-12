@@ -1,0 +1,28 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 18.09.2020
+Alter Saldo per 17.09.2020 1.771,87
+Summe der Gutschriften 0,00
+Online Summe der Lastschriften 33,62-
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 1.000,25
+Musterstreet 41/11
+1010 Wien
+Konto-Nr.: 00078068000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+18.09 Die DADAT Bank erhöht den Maximalbetrag einer stillschweigend 18.09 0,00
+akzeptierten Kontoüberziehung (Überschreitung) von bisher € 25.000,00
+auf einen Betrag von € 50.000,00. Sie haben hierzu ein Schreiben in
+Ihrem elektronischen Postfach.
+18.09 Steuerdividende                  Depot    7806858000/20200917-45573542 10.09 33,62-
+ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               6,05000 STK
+Kurs                      0,000000  KEST                    -39,68 USD
+DevKurs        1,180200/9.9.2020
+Neuer Saldo zu Ihren Gunsten 1.000,25
+AT40 1919 0000 7806 8000 BSSWATWW 01 0012 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 06408 Doknr.: EK00-045-0262002000

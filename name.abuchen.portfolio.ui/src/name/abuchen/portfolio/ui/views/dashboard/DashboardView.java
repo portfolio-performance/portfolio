@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -64,6 +64,14 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AbstractHistoricView;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.util.Pair;
 
 public class DashboardView extends AbstractHistoricView
 {
@@ -110,15 +118,13 @@ public class DashboardView extends AbstractHistoricView
         private final DashboardView dashboardView;
         private final LocalSelectionTransfer transfer;
         private final Composite dropTarget;
-        private final Consumer<Dashboard.Widget> listener;
 
         private WidgetDropTargetAdapter(DashboardView dashboardView, LocalSelectionTransfer transfer,
-                        Composite dropTarget, Consumer<Dashboard.Widget> listener)
+                        Composite dropTarget)
         {
             this.dashboardView = dashboardView;
             this.transfer = transfer;
             this.dropTarget = dropTarget;
-            this.listener = listener;
         }
 
         @Override
@@ -148,14 +154,59 @@ public class DashboardView extends AbstractHistoricView
                 newParent = newParent.getParent();
             Dashboard.Column newColumn = (Dashboard.Column) newParent.getData();
 
+            if ((event.detail & DND.DROP_MOVE) != 0)
+                doDropMove(droppedComposite, droppedWidget, oldColumn, newColumn, newParent);
+
+            if ((event.detail & DND.DROP_COPY) != 0)
+                doDropCopy(droppedWidget.copy(), newColumn, newParent);
+
+            dashboardView.markDirty();
+
+            oldParent.layout();
+            newParent.layout();
+        }
+
+        private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
+        {
+            Composite elementToMoveAbove = null;
+            if (dropTarget.getData() instanceof Dashboard.Widget dropTargetWidget)
+            {
+                // dropped on another widget, place above drop target
+                elementToMoveAbove = dropTarget;
+                newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), copiedWidget);
+            }
+            else if (dropTarget.getData() instanceof Dashboard.Column)
+            {
+                // dropped on another column, place above filler
+                elementToMoveAbove = (Composite) newParent.getData(FILLER_KEY);
+                newColumn.getWidgets().add(copiedWidget);
+            }
+            else
+            {
+                throw new IllegalArgumentException();
+            }
+
+            WidgetFactory factory = WidgetFactory.valueOf(copiedWidget.getType());
+            if (factory == null)
+                throw new IllegalArgumentException();
+
+            Pair<WidgetDelegate<?>, Composite> newDelegateWithComposite = dashboardView
+                            .buildDelegateAndMoveAboveElement(newParent, factory, copiedWidget, elementToMoveAbove);
+
+            newDelegateWithComposite.getLeft().update();
+            newDelegateWithComposite.getRight().setParent(newParent);
+        }
+
+        private void doDropMove(Composite droppedComposite, Dashboard.Widget droppedWidget, Dashboard.Column oldColumn,
+                        Dashboard.Column newColumn, Composite newParent)
+        {
             droppedComposite.setParent(newParent);
 
-            if (dropTarget.getData() instanceof Dashboard.Widget)
+            if (dropTarget.getData() instanceof Dashboard.Widget dropTargetWidget)
             {
                 // dropped on another widget
                 droppedComposite.moveAbove(dropTarget);
 
-                Dashboard.Widget dropTargetWidget = (Dashboard.Widget) dropTarget.getData();
                 oldColumn.getWidgets().remove(droppedWidget);
                 newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), droppedWidget);
             }
@@ -172,11 +223,6 @@ public class DashboardView extends AbstractHistoricView
             {
                 throw new IllegalArgumentException();
             }
-
-            listener.accept(droppedWidget);
-
-            oldParent.layout();
-            newParent.layout();
         }
 
         @Override
@@ -423,7 +469,7 @@ public class DashboardView extends AbstractHistoricView
         scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
 
         container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
-                        getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
+                        getClient().getDashboards().toList().indexOf(dashboard)));
 
         return scrolledComposite;
     }
@@ -492,7 +538,7 @@ public class DashboardView extends AbstractHistoricView
                 if (factory == null)
                     continue;
 
-                buildDelegate(columnControl, factory, widget);
+                buildDelegateAndMoveAboveFiller(columnControl, factory, widget);
             }
             catch (IllegalArgumentException e)
             {
@@ -548,7 +594,15 @@ public class DashboardView extends AbstractHistoricView
         manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
     }
 
-    private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveFiller(Composite columnControl,
+                    WidgetFactory widgetType, Dashboard.Widget widget)
+    {
+        Composite filler = (Composite) columnControl.getData(FILLER_KEY);
+        return buildDelegateAndMoveAboveElement(columnControl, widgetType, widget, filler);
+    }
+
+    private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveElement(Composite columnControl,
+                    WidgetFactory widgetType, Dashboard.Widget widget, Composite elementToMoveAbove)
     {
         WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
         inject(delegate);
@@ -557,8 +611,8 @@ public class DashboardView extends AbstractHistoricView
         element.setData(widget);
         element.setData(DELEGATE_KEY, delegate);
 
-        Composite filler = (Composite) columnControl.getData(FILLER_KEY);
-        element.moveAbove(filler);
+        if (elementToMoveAbove != null)
+            element.moveAbove(elementToMoveAbove);
 
         new ContextMenu(delegate.getTitleControl(), manager -> widgetMenuAboutToShow(manager, delegate)).hook();
         InfoToolTip.attach(delegate.getTitleControl(), () -> buildToolTip(delegate));
@@ -570,7 +624,7 @@ public class DashboardView extends AbstractHistoricView
             addDragListener(child);
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
-        return delegate;
+        return new Pair<>(delegate, element);
     }
 
     private String buildToolTip(WidgetDelegate<?> delegate)
@@ -641,7 +695,7 @@ public class DashboardView extends AbstractHistoricView
     {
         LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
 
-        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(this, transfer, parent, w -> markDirty());
+        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(this, transfer, parent);
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(transfer);
@@ -778,7 +832,7 @@ public class DashboardView extends AbstractHistoricView
         widget.setType(widgetType.name());
         column.getWidgets().add(widget);
 
-        WidgetDelegate<?> delegate = buildDelegate(columnControl, widgetType, widget);
+        WidgetDelegate<?> delegate = buildDelegateAndMoveAboveFiller(columnControl, widgetType, widget).getLeft();
 
         getClient().touch();
         delegate.update();
@@ -826,13 +880,7 @@ public class DashboardView extends AbstractHistoricView
         Dashboard.Column newColumn = new Dashboard.Column();
         dashboard.getColumns().add(index, newColumn);
 
-        newColumn.setWidgets(column.getWidgets().stream().map(widget -> {
-            Widget copy = new Widget();
-            copy.setLabel(widget.getLabel());
-            copy.setType(widget.getType());
-            copy.getConfiguration().putAll(widget.getConfiguration());
-            return copy;
-        }).collect(Collectors.toList()));
+        newColumn.setWidgets(column.getWidgets().stream().map(Widget::copy).collect(toMutableList()));
 
         getClient().touch();
 
@@ -951,5 +999,17 @@ public class DashboardView extends AbstractHistoricView
         column.getWidgets().add(widget);
 
         return newDashboard;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
+        pages.add(make(HistoricalPricesDataQualityPane.class));
     }
 }

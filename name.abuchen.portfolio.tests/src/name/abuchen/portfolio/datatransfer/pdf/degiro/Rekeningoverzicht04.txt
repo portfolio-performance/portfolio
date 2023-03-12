@@ -1,0 +1,18 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.58.6.qualifier
+-----------------------------------------
+Dhr. John
+Doe
+Hoofdstraat 1
+1001AA Amsterdam
+Gebruikersnaam: ****bob
+Rekeningoverzicht van 13-06-2022 t/m 13-07-2022
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividend EUR 1,50 EUR 3,21
+11-07-2022 07:45 08-07-2022 LYXOR ETF CAC 40 FR0007052782 Dividendbelasting EUR -0,38 EUR 1,71
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2022-07-13
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 1 / 6
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.

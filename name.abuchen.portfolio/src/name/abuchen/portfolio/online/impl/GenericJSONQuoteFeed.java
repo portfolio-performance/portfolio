@@ -32,6 +32,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -85,7 +86,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     public String getJson(String url) throws IOException, URISyntaxException
     {
-        return new WebAccess(url).get();
+        return new WebAccess(url).addUserAgent(OnlineHelper.getUserAgent()).addHeader("Accept", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
+                        .get();
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,

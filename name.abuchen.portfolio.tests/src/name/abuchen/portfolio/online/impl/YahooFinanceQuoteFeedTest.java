@@ -10,8 +10,8 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,8 +28,18 @@ public class YahooFinanceQuoteFeedTest
 {
     private String getHistoricalYahooQuotes()
     {
+        return getHistoricalYahooQuotes("response_yahoo_historical.txt");
+    }
+
+    private String getHistoricalYahooQuotesAX()
+    {
+        return getHistoricalYahooQuotes("yahoo_australian_quotes.txt");
+    }
+
+    private String getHistoricalYahooQuotes(String filename)
+    {
         String responseBody = null;
-        Scanner scanner = new Scanner(getClass().getResourceAsStream("response_yahoo_historical.txt"), "UTF-8");
+        Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
         responseBody = scanner.useDelimiter("\\A").next();
         scanner.close();
 
@@ -109,6 +119,25 @@ public class YahooFinanceQuoteFeedTest
     }
 
     @Test
+    public void testParsingAustralianTimezoneQuotes()
+    {
+        String rawQuotes = getHistoricalYahooQuotesAX();
+
+        Security security = new Security();
+        security.setTickerSymbol("ALL.AX");
+
+        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
+        QuoteFeedData data = feed.extractQuotes(rawQuotes);
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        assertThat(prices.size(), is(64));
+
+        // Timestamp 1641942000 => 2022-01-12
+        assertThat(prices.get(62).getDate(), is(LocalDate.of(2022, 1, 12)));
+    }
+
+    @Test
     public void testParsingHistoricalAdjustedCloseQuotes() throws IOException
     {
         String rawQuotes = getHistoricalYahooQuotes();
@@ -139,27 +168,19 @@ public class YahooFinanceQuoteFeedTest
     }
 
     @Test
-    public void testThatAtLeastTheGivenExchangeIsReturned() throws IOException
+    public void testThatAtLeastTheGivenExchangeIsReturned()
     {
-        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
-        {
-            @Override
-            protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
-            {
-                throw new IOException();
-            }
-        };
+        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
 
         Security s = new Security();
         s.setTickerSymbol("BAS.DE");
 
-        ArrayList<Exception> errors = new ArrayList<Exception>();
+        ArrayList<Exception> errors = new ArrayList<>();
         List<Exchange> exchanges = feed.getExchanges(s, errors);
 
-        assertThat(exchanges.size(), is(1));
-        assertThat(exchanges.get(0).getId(), is("BAS.DE"));
+        Optional<Exchange> original = exchanges.stream().filter(e -> e.getId().equals("BAS.DE")).findAny();
 
-        assertThat(errors.size(), is(1));
+        assertThat(original.isPresent(), is(true));
     }
 
 }

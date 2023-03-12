@@ -11,7 +11,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -36,6 +39,7 @@ import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -98,7 +102,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private TimelineChart chart;
     private DataSeriesConfigurator picker;
-    
+    private ChartViewConfig chartViewConfig;
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.SCALING_LINEAR);
 
     private Aggregation.Period aggregationPeriod;
@@ -127,6 +131,13 @@ public class PerformanceChartView extends AbstractHistoricView
                 PortfolioPlugin.log(ignore);
             }
         }
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) ChartViewConfig config)
+    {
+        this.chartViewConfig = config;
     }
 
     @Override
@@ -214,6 +225,13 @@ public class PerformanceChartView extends AbstractHistoricView
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
+        if (chartViewConfig != null)
+        {
+            // do *not* update reporting period as it changes the default for
+            // all other views as well --> unexpected UX
+            picker.activate(chartViewConfig.getUUID());
+        }
+
         picker.addListener(this::updateChart);
         picker.setToolBarManager(getViewToolBarManager());
 

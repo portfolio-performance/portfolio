@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
@@ -169,6 +170,8 @@ import name.abuchen.portfolio.money.Money;
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
 
+        ExtractorUtils.fixGrossValueBuySell().accept(entry);
+        
         return new BuySellEntryItem(entry);
     }
 
@@ -232,6 +235,8 @@ import name.abuchen.portfolio.money.Money;
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, t);
 
+        ExtractorUtils.fixGrossValue().accept(t);
+       
         return new TransactionItem(t);
     }
 

@@ -3,9 +3,9 @@ package scenarios;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;

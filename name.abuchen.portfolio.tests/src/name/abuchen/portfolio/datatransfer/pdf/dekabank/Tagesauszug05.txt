@@ -1,0 +1,81 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: xxxxxxx
+Depotinhaber:
+Herrn xxxxx xxxxxx
+xxxxx xxxxx
+xxxxxx xx Bankverbindung generell:IBAN:
+xxxxx xxxxxxx DExx xxxx xxxx xxxx xxxx xx
+xxxxxxxxxxxx
+Kontoinhaber:
+xxxxxxxx, xxxxx
+7. März 2022
+Kauf von Wertpapieren Auszug: 2 / Seite 1 von 2
+Verkauf wegen Tausch von Wertpapieren
+Sehr geehrter Herr xxxxxxxx,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+LASTSCHRIFTEINZUG / Vorabankündigung (Pre-Notification) 
+Auftraggeber: xxxxxxx xxxxxxxx
+Auftragserteilung: Geschäft ohne Beratung
+Bankverbindung: IBAN: DExx xxxx xxxx xxxx xxxx xx
+Kontoinhaber: xxxxxxxx, xxxxxx
+xxxxxxxxxx
+Mandatsdaten: Mandatsreferenz: xxxxxxxxxxxx
+Gläubiger-ID: xxxxxxxxxxxxx
+Bezeichnung: Partners Group List. Investm. SICAV-Listed Infrastructure C
+ISIN: LU1225718409 Unterdepot: 00 Auftragsnummer: 9701 0301
+Verwahrart: WR-Gutschrift Lagerland: LUXEM Abrechnungstag: 04.03.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Einzugsbetrag EUR 50,00 Kurs/Kaufpreis Bestand alt: 0,000
+=Abrechnungsbetrag EUR 50,00 EUR 50,00 EUR 135,670000 Anteilumsatz: 0,369
+Bestand neu: 0,369
+Wir werden aufgrund des von Ihnen erteilten Lastschriftmandats den zur Zahlung fälligen Betrag 
+(siehe Abrechnungsbetrag) mit der Mandatsreferenz: xxxxxxxx und der
+Gläubiger-ID: xxxxxxxxxx am 09.03.2022 von Ihrem Konto einziehen.
+Sollten Sie nicht der Inhaber des angegebenen Kontos sein, bitten wir Sie, den Kontoinhaber entsprechend zu
+informieren.
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA xxxxxx
+Depot: xxxxxxxxxx
+Auszug: 2 / Seite 2 von 2
+TAUSCH/VERKAUF 
+zu Gunsten
+Bezeichnung: Deka Deutsche Börse EUROGOV Germany Money Market UCITS ETF
+ISIN: DE000ETFL227 Unterdepot: 00
+zu Lasten
+Bezeichnung: Deka-Industrie 4.0 CF
+ISIN: LU1508359509 Unterdepot: 00 Auftragsnummer: 8108 0595
+Verwahrart: GiroSammel Abrechnungstag: 07.03.2022
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Kurs Bestand alt: 0,277
+Abrechnungsbetrag EUR 14,74 EUR 14,74 EUR 177,620000 Anteilumsatz: -0,083
+Bestand neu: 0,194
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste EUR 0,17
+(sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Bitte prüfen Sie die vorliegenden Informationen.
+Die aktuellen Verkaufsunterlagen mit den Details zu Ihrer Fondsanlage finden Sie unter www.bevestor.de oder
+www.deka.de.
+Über Chancen, Risiken und Kosten der Anlage informieren Sie die "Wesentlichen Anlegerinformationen" bzw.
+das Produktinformationsblatt. Wünschen Sie weitere aktuelle Informationen zu Ihrer Anlage, können Sie diese
+jederzeit im Internet über www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: 0800 - 33 77 2 99 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

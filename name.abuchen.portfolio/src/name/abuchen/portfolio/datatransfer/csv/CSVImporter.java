@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -274,6 +276,7 @@ public final class CSVImporter
                         new DateFieldFormat(Messages.CSVFormatMMDDYY, "MM-dd-yy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatMMDDYYYY, "MM-dd-yyyy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMMYYYY, "dd-MMM-yyyy"), // NOSONAR //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatMMMDDYYYY, "MMM dd, yyyy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_German, "dd-MMM-yyyy", Locale.GERMAN), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_English, "dd-MMM-yyyy", Locale.US) //$NON-NLS-1$
         ));
@@ -345,6 +348,8 @@ public final class CSVImporter
                                         NumberFormat.getInstance(Locale.GERMANY)),
                         new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
                                         NumberFormat.getInstance(Locale.US)),
+                        new FieldFormat("0 000.00", Messages.CSVFormatNumberFrance, //$NON-NLS-1$
+                                        NumberFormat.getInstance(Locale.FRANCE)),
                         new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');
@@ -369,8 +374,10 @@ public final class CSVImporter
             // arbitrary number format patterns, map it to the available FORMAT
             // objects
 
-            if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+            if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
                 return FORMATS.get(2);
+            if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+                return FORMATS.get(3);
             if (TextUtil.DECIMAL_SEPARATOR == ',')
                 return FORMATS.get(0);
             if (TextUtil.DECIMAL_SEPARATOR == '.')
@@ -734,7 +741,8 @@ public final class CSVImporter
     {
         Reader reader = new InputStreamReader(stream, encoding);
 
-        CSVFormat strategy = CSVFormat.newFormat(delimiter).withQuote('"').withRecordSeparator("\r\n"); //$NON-NLS-1$
+        CSVFormat strategy = CSVFormat.DEFAULT.builder().setDelimiter(delimiter).setQuote('"')
+                        .setRecordSeparator("\r\n").build(); //$NON-NLS-1$
 
         try
         {
@@ -834,7 +842,7 @@ public final class CSVImporter
         for (Column column : columns)
         {
             column.setField(null);
-            String normalizedColumnName = normalizeColumnName(TextUtil.strip(column.getLabel()));
+            String normalizedColumnName = normalizeColumnName(trim(column.getLabel()));
             Iterator<Field> iter = list.iterator();
             while (iter.hasNext())
             {

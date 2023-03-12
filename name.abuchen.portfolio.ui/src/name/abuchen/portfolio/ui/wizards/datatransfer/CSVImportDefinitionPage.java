@@ -110,6 +110,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.TextUtil;
@@ -146,8 +147,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         this.configManager = configManager;
         this.onlySecurityPrices = onlySecurityPrices;
 
-        importer.setExtractor(
-                        onlySecurityPrices ? importer.getSecurityPriceExtractor() : importer.getExtractors().get(0));
+        if (onlySecurityPrices)
+            importer.setExtractor(importer.getSecurityPriceExtractor());
 
         this.context = new DataBindingContext();
     }
@@ -262,6 +263,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         compositeTable.setLayout(layout);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
+
+        CopyPasteSupport.enableFor(tableViewer);
+
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -543,12 +547,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.refresh();
             tableViewer.getTable().pack();
 
-            // see #1723 and #1536: under Linux, the first column is extended to
-            // the full size of the table
+            TableColumn[] columns = tableViewer.getTable().getColumns();
+            for (TableColumn column : columns)
+                column.pack();
 
-            if (!Platform.getWS().equals(Platform.WS_GTK))
-                for (TableColumn column : tableViewer.getTable().getColumns())
-                    column.pack();
+            // see #1723 and #1536: under Linux, the first column is extended to
+            // the full size of the table. Re-packing it after all other columns
+            // have been packed resolves this.
+            if (Platform.getWS().equals(Platform.WS_GTK) && columns.length > 0)
+                tableViewer.getTable().getColumns()[0].pack();
 
             doUpdateErrorMessages();
         }
@@ -795,6 +802,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite keyArea = new Composite(details, SWT.NONE);
             glf.applyTo(keyArea);
             final TableViewer tableViewer = new TableViewer(keyArea, SWT.FULL_SELECTION);
+            CopyPasteSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
@@ -958,7 +966,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             for (Enum<?> entry : mapFormat.map().keySet())
                 elements.add(new Entry(mapFormat.map(), entry));
 
-            Collections.sort(elements, (e1, e2) -> e1.key.name().compareToIgnoreCase(e2.key.name()));
+            Collections.sort(elements, (e1, e2) -> TextUtil.compare(e1.key.name(), e2.key.name()));
 
             return elements.toArray();
         }

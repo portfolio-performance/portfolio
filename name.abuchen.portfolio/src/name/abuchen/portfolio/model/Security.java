@@ -19,6 +19,7 @@ import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TextUtil;
 
 /**
  * A <code>Security</code> is used for assets that have historical prices
@@ -38,7 +39,7 @@ public final class Security implements Attributable, InvestmentVehicle
         {
             if (s1 == null)
                 return s2 == null ? 0 : -1;
-            return s1.name.compareToIgnoreCase(s2.name);
+            return TextUtil.compare(s1.name, s2.name);
         }
     }
 
@@ -101,6 +102,11 @@ public final class Security implements Attributable, InvestmentVehicle
         this.isin = isin;
         this.tickerSymbol = tickerSymbol;
         this.feed = feed;
+    }
+
+    /* package */ Security(String uuid)
+    {
+        this.uuid = uuid;
     }
 
     @Override
@@ -221,6 +227,22 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
+    /**
+     * Returns the ticker symbol (if available) without the stock market
+     * extension.
+     * </p>
+     * In some countries there is no ISIN or WKN, only the ticker symbol. If
+     * historical prices are retrieved from the stock exchange, the ticker
+     * symbol is expanded. (UMAX --> UMAX.AX)
+     */
+    public String getTickerSymbolWithoutStockMarket()
+    {
+        if (tickerSymbol != null && !tickerSymbol.isEmpty() && tickerSymbol.contains(".")) //$NON-NLS-1$
+            return tickerSymbol.substring(0, tickerSymbol.indexOf('.'));
+        else
+            return tickerSymbol;
+    }
+
     public String getWkn()
     {
         return wkn;
@@ -261,7 +283,7 @@ public final class Security implements Attributable, InvestmentVehicle
         if (isin != null && isin.length() > 0)
             return isin;
         else if (tickerSymbol != null && tickerSymbol.length() > 0)
-            return tickerSymbol;
+            return getTickerSymbolWithoutStockMarket();
         else if (wkn != null && wkn.length() > 0)
             return wkn;
         else
@@ -336,6 +358,34 @@ public final class Security implements Attributable, InvestmentVehicle
         List<SecurityPrice> copy = new ArrayList<>(prices);
         copy.add(~index, latest);
         return copy;
+    }
+
+    /**
+     * Returns a list of the last historical security prices with requested
+     * number of prices (or less if there are not enough prices) from requested
+     * Date.
+     */
+    public List<SecurityPrice> getLatestNPricesOfDate(LocalDate dateOfLastPrice, int numberOfPrices)
+    {
+        List<SecurityPrice> allPrices = getPricesIncludingLatest();
+
+        int index = Collections.binarySearch(allPrices, new SecurityPrice(dateOfLastPrice, 0),
+                        new SecurityPrice.ByDate());
+
+        if (index < 0)
+            index = -index - 2; // if price for requested date not found, use
+                                // price before start date
+
+        if (index >= allPrices.size())
+            index = allPrices.size() - 1; // requested date greater than last
+                                          // prize --> use last price
+
+        int fromIndex = index - numberOfPrices + 1;
+        if (fromIndex < 0)
+            fromIndex = 0; // always start with first element if fromIndex is
+                           // out of bounds
+
+        return new ArrayList<>(allPrices.subList(fromIndex, index + 1));
     }
 
     /**
@@ -577,6 +627,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.events.remove(event);
     }
 
+    public boolean removeAllEvents()
+    {
+        boolean removed = this.events != null && !this.events.isEmpty();
+        this.events = null;
+        return removed;
+    }
+
     public boolean removeEventIf(Predicate<SecurityEvent> filter)
     {
         if (events != null)
@@ -786,7 +843,10 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.feed = feed;
         answer.feedURL = feedURL;
-        answer.prices = new ArrayList<>(prices);
+
+        // cannot use Stream#toList b/c it returns an unmodifiable list
+        answer.prices = new ArrayList<>(
+                        prices.stream().map(p -> new SecurityPrice(p.getDate(), p.getValue())).toList());
 
         answer.latestFeed = latestFeed;
         answer.latestFeedURL = latestFeedURL;

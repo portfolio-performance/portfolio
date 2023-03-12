@@ -2,18 +2,20 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.52.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Version: 0.61.4.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
  name.abuchen.portfolio.datatransfer.actions,
  name.abuchen.portfolio.datatransfer.csv,
+ name.abuchen.portfolio.datatransfer.ibflex,
  name.abuchen.portfolio.datatransfer.pdf,
  name.abuchen.portfolio.events,
  name.abuchen.portfolio.json,
  name.abuchen.portfolio.math,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.money,
+ name.abuchen.portfolio.money.impl;x-friends:="name.abuchen.portfolio.junit",
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
  name.abuchen.portfolio.online.portfolioreport,
@@ -29,17 +31,22 @@ Import-Package: com.google.common.base,
  com.google.gson,
  com.google.gson.reflect,
  com.google.gson.stream,
+ com.google.protobuf,
  com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.converters,
  com.thoughtworks.xstream.converters.basic,
+ com.thoughtworks.xstream.converters.collections,
  com.thoughtworks.xstream.converters.extended,
  com.thoughtworks.xstream.converters.reflection,
  com.thoughtworks.xstream.io,
  com.thoughtworks.xstream.mapper,
- javax.annotation;version="1.2.0",
+ javax.annotation,
  javax.inject,
  org.apache.commons.csv,
+ org.apache.commons.math3,
+ org.apache.commons.math3.linear,
+ org.apache.commons.math3.util,
  org.apache.pdfbox.pdmodel,
  org.apache.pdfbox.util,
  org.bouncycastle,
@@ -58,10 +65,9 @@ Import-Package: com.google.common.base,
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
- org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.client5.httpclient5,
+ org.apache.httpcomponents.core5.httpcore5,
  org.apache.pdfbox,
- com.jayway.jsonpath.json-path,
+ json-path,
  com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
-Eclipse-ExtensibleAPI: true

@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -38,11 +39,13 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
@@ -93,6 +96,16 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         setInput();
 
         portfolios.setSelection(selection);
+    }
+
+    @Override
+    protected void notifyViewCreationCompleted()
+    {
+        setInput();
+        portfolios.refresh();
+
+        if (portfolios.getTable().getItemCount() > 0)
+            portfolios.setSelection(new StructuredSelection(portfolios.getElementAt(0)), true);
     }
 
     @Override
@@ -180,6 +193,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         ColumnEditingSupport.prepare(portfolios);
         ColumnViewerToolTipSupport.enableFor(portfolios, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(portfolios);
 
         portfolioColumns = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), portfolios, layout);
@@ -246,13 +260,12 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         addAttributeColumns(portfolioColumns);
 
-        portfolioColumns.createColumns();
+        portfolioColumns.createColumns(true);
 
         portfolios.getTable().setHeaderVisible(true);
         portfolios.getTable().setLinesVisible(true);
 
         portfolios.setContentProvider(ArrayContentProvider.getInstance());
-        setInput();
 
         portfolios.addSelectionChangedListener(event -> {
             Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -292,6 +305,14 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         manager.add(new Separator());
 
+        if (LogoManager.instance().hasCustomLogo(portfolio, getClient().getSettings()))
+        {
+            manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                LogoManager.instance().clearCustomLogo(portfolio, getClient().getSettings());
+                markDirty();
+            }));
+        }
+
         manager.add(new SimpleAction(
                         portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate,
                         a -> {
@@ -316,7 +337,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(TransactionsPane.class));
         pages.add(make(StatementOfAssetsPane.class));
+        pages.add(make(TransactionsPane.class));
     }
 }

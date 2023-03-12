@@ -19,6 +19,11 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class InvestmentPlan implements Named, Adaptable, Attributable
 {
+    public enum Type
+    {
+        BUY_OR_DELIVERY, DEPOSIT, REMOVAL
+    }
+
     private String name;
     private String note;
     private Security security;
@@ -51,12 +56,12 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         this.name = name;
     }
 
-    public Class<? extends Transaction> getPlanType()
+    public Type getPlanType()
     {
         if (portfolio != null && security != null)
-            return PortfolioTransaction.class;
+            return Type.BUY_OR_DELIVERY;
         else if (portfolio == null && account != null && security == null)
-            return AccountTransaction.class;
+            return (amount >= 0) ? Type.DEPOSIT : Type.REMOVAL;
         else
             throw new IllegalArgumentException();
     }
@@ -381,12 +386,12 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate) throws IOException
     {
-        Class<? extends Transaction> planType = getPlanType();
+        Type planType = getPlanType();
 
-        if (planType == PortfolioTransaction.class)
+        if (planType == Type.BUY_OR_DELIVERY)
             return createSecurityTx(converter, tDate);
-        else if (planType == AccountTransaction.class)
-            return createDepositTx(converter, tDate);
+        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL)
+            return createAccountTx(converter, tDate);
         else
             throw new IllegalArgumentException();
     }
@@ -467,9 +472,21 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
     }
 
-    private TransactionPair<?> createDepositTx(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createAccountTx(CurrencyConverter converter, LocalDate tDate)
     {
-        Money deposit = Money.of(getCurrencyCode(), amount);
+        long txAmount = amount;
+
+        AccountTransaction.Type type;
+        if (txAmount > 0)
+        {
+            type = AccountTransaction.Type.DEPOSIT;
+        }
+        else
+        {
+            type = AccountTransaction.Type.REMOVAL;
+            txAmount = -txAmount;
+        }
+        Money deposit = Money.of(getCurrencyCode(), txAmount);
 
         boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
         if (needsCurrencyConversion)
@@ -478,7 +495,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
         transaction.setDateTime(tDate.atStartOfDay());
-        transaction.setType(AccountTransaction.Type.DEPOSIT);
+        transaction.setType(type);
         transaction.setMonetaryAmount(deposit);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
                         Values.DateTime.format(LocalDateTime.now()), name));

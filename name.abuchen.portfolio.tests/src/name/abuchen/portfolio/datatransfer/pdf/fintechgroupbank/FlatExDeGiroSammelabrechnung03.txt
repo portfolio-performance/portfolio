@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Kundenservice
+Opernring 1 / Top 736
+1010 Wien
+Tel.: +43 - (0)720 518 777
+Mail: info@flatex.at
+flatexDEGIRO Bank AG -  Opernring 1 / Top 736 -  A-1010 Wien
+0303502000002285419000
+Herrn
+Max Mustermann
+Dorfstraße 11 / 11
+1010 Ort
+ÖSTERREICH
+          Wien, den 07.11.2022
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 123456789
+Depotinhaber:     Max Mustermann
+Nr.183646902/1    Verkauf          MS CI.I. CALL23 ABL   (DE000MA5GEG8/MA5GEG)
+Ordervolumen  : 1.190,00 St.            Handelsplatz  :         Morgan Stanley
+davon ausgef. : 1.190,00 St.            Schlusstag    :  07.11.2022, 17:21 Uhr
+Kurs          : 0,0010 EUR              Kurswert      :               1,19 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+Gewinn/Verlust: -1.034,11 EUR           grundlage     :          -1.041,91 EUR
+Valuta        : 09.11.2022            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :              -4,71 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             0,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport
+    unter der Transaktion-Nr.: 2512347917.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 123456789198
+______________________________________________________________________________
+                                                                     Seite 1/2
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Martin Korbmacher | Vorstand: Frank Niehage (Vors.), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch -
+2000002285419960 0351303500000101

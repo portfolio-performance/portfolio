@@ -238,10 +238,6 @@ public class SashLayout extends Layout
     @Override
     protected void layout(Composite composite, boolean flushCache)
     {
-        List<Control> children = getChildren();
-        if (children.size() != 2)
-            throw new IllegalArgumentException();
-
         Rectangle bounds = composite.getBounds();
         if (composite instanceof Shell)
         {
@@ -253,9 +249,21 @@ public class SashLayout extends Layout
             bounds.y = 0;
         }
 
+        List<Control> children = getChildren();
+        if (children.size() != 2)
+        {
+            // should not happen, but if previous error just create one element,
+            // render this one element fully
+
+            if (children.size() == 1)
+                children.get(0).setBounds(bounds);
+
+            return;
+        }
+
         int availableSize = (isHorizontal ? bounds.width : bounds.height) - SASH_WIDTH;
 
-        int fixedSize = Math.max(0, getLayoutData(children.get(isBeginning ? 0 : 1)).size);
+        int fixedSize = Math.min(Math.max(0, getLayoutData(children.get(isBeginning ? 0 : 1)).size), availableSize);
         int remaining = Math.max(0, availableSize - fixedSize);
 
         int pos = isHorizontal ? bounds.x : bounds.y;

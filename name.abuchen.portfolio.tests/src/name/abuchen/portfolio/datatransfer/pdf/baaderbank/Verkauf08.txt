@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ Scalable Capital GmbH
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+20.05.2022
+...
+Vorgangs-Nr.: 11111111
+Referenz-Nr.: 111111111
+Wertpapierabrechnung: Verkauf
+Auftragsdatum: 20.05.2022 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 21:57:21:02
+Nominale ISIN: DE000TT410K7 WKN: TT410K Kurs 
+STK 1.520    HSBC Trinkaus & Burkhardt AG EUR 0,37
+Call 14.06.23 S&P500 5000
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 562,40
+Zu Gunsten Konto (Removed) Valuta: 24.05.2022 EUR 562,40
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   1.520    EUR 0,37 GETTEX - MM Munich 20.05.2022 21:57:22:78
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital

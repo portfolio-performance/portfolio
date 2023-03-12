@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -66,6 +68,7 @@ import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -365,13 +368,14 @@ import name.abuchen.portfolio.util.TextUtil;
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(nodeViewer);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);
 
         addColumns(support);
 
-        support.createColumns();
+        support.createColumns(true);
 
         nodeViewer.getTree().setHeaderVisible(true);
         nodeViewer.getTree().setLinesVisible(true);
@@ -390,10 +394,39 @@ import name.abuchen.portfolio.util.TextUtil;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
-                    if (!predicate.test(node))
-                        return false;
+                if (node.isAssignment())
+                {
+                    // is assignment = leaf node
+                    for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                        if (!predicate.test(node))
+                            return false;
 
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        String label = node.getName();
+                        return filterPattern.matcher(label).matches();
+                    }
+                }
+                else
+                {
+                    // is classification = not a leaf node -> search children
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        if (filterPattern.matcher(node.getName()).matches())
+                            return true;
+
+                        ITreeContentProvider provider = (ITreeContentProvider) nodeViewer.getContentProvider();
+                        for (Object child : provider.getChildren(element))
+                        {
+                            if (select(viewer, element, child))
+                                return true;
+                        }
+
+                        return false;
+                    }
+                }
                 return true;
             }
         });
@@ -456,6 +489,26 @@ import name.abuchen.portfolio.util.TextUtil;
         column.setRemovable(false);
         // drag & drop sorting does not work well with auto sorting
         column.setSorter(null);
+        support.addColumn(column);
+
+        column = new Column("classificationKey", Messages.ColumnCategoryKey, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (node.isClassification())
+                    return node.getClassification().getKey();
+                return null;
+            }
+        });
+        new StringEditingSupport(TaxonomyNode.class, "key") //$NON-NLS-1$
+                        .setMandatory(false).setCanEditCheck(n -> (((TaxonomyNode) n).isClassification()))
+                        .addListener(this).attachTo(column);
+        column.setSorter(null);
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new IsinColumn();
@@ -803,6 +856,12 @@ import name.abuchen.portfolio.util.TextUtil;
                 manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
                                 a -> doDeleteClassification(node)));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.LabelExpandAll,
+                            a -> nodeViewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
+            manager.add(new SimpleAction(Messages.LabelCollapseAll,
+                            a -> nodeViewer.collapseToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
         }
         else
         {
@@ -841,8 +900,8 @@ import name.abuchen.portfolio.util.TextUtil;
                 public void run()
                 {
                     assignment.moveTo(targetNode);
-                    nodeViewer.setExpandedState(targetNode, true);
                     onTaxnomyNodeEdited(targetNode);
+                    nodeViewer.setExpandedState(targetNode, true);
                 }
             });
         }
@@ -946,7 +1005,7 @@ import name.abuchen.portfolio.util.TextUtil;
             if (byType && !node1.isClassification() && node2.isClassification())
                 return 1;
 
-            return node1.getName().compareToIgnoreCase(node2.getName());
+            return TextUtil.compare(node1.getName(), node2.getName());
         });
 
         int rank = 0;

@@ -45,8 +45,8 @@ public class NameColumn extends Column
             Named element = Adaptor.adapt(Named.class, e);
             if (element == null)
                 return null;
-            else if (element instanceof Security)
-                return TextUtil.tooltip(((Security) element).toInfoString());
+            else if (element instanceof Security security)
+                return TextUtil.wordwrap(security.toInfoString());
             else
                 return TextUtil.tooltip(element.getName());
         }

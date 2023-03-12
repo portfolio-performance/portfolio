@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Tree;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
@@ -238,6 +239,7 @@ public class DataSeriesSelectionDialog extends Dialog
         if (isMultiSelection)
             style |= SWT.MULTI;
         treeViewer = new TreeViewer(treeArea, style);
+        CopyPasteSupport.enableFor(treeViewer);
         final Tree table = treeViewer.getTree();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);

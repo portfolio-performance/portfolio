@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestUtilities;
+import name.abuchen.portfolio.junit.TestUtilities;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;

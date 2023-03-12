@@ -1,0 +1,132 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+Postbank Köln - 51222 Köln
+Postbank Köln
+Postfach
+51222 Köln
+Herrn Postbank Direkt-Service
+Vorname Nachname Telefon: 0228 5500 5500
+Strasse 12 Mo.-Sa. 07.00-22.00 UhrSo. 08.00-22.00 Uhr
+12345 Wohnort Telefax: 0228 5500 5515
+ E-Mail: direkt@postbank.de
+ BIC (SWIFT): PBNKDEFF
+ 
+www.postbank.de
+7. Oktober 2019
+Kontoauszug: Postbank Anlagekonto vom 24.07.2019 bis 07.10.2019
+Kontoinhaber: Vorname Nachname
+
+Auszug Jahr Seite von IBAN Alter Kontostand
+001 2019 1 3 DE00 0000 0000 0000 0000 00 EUR  0,00
+Buchung/Wert Vorgang/Buchungsinformation Soll Haben
+01.08./01.08. D Gut SEPA + 2,70
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Gebuehren Sparplaene Vorname Nachname
+01.08./01.08. D Gut SEPA + 1.100,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage Vorname Nachname
+01.08./01.08. Gutschr.SEPA + 600,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage Vorname Nachname
+06.08./07.08. Lastschrift - 250,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   07.08.19 
+000001004215400  WKN A1JX51 GESCH.ART  KV VANGUARD 
+FTSE EMU.ETF DLD IE00B3VVMM84 IHR FONDSSPARPLAN 
+PREIS        48,6700000 EUR STÜCK                5,1366 NAME
+06.08./07.08. Lastschrift - 300,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   07.08.19 
+000001031131100  WKN A1T8FS GESCH.ART  KV VANG.FTSE 
+DEV.EU.UETF EOD IE00B945VV12 IHR FONDSSPARPLAN H 
+PREIS        29,3250000 EUR STÜCK               10,2302 NAME
+06.08./07.08. Lastschrift - 550,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   07.08.19 
+000001034955500  WKN A12CX1 GESCH.ART  KV VANG.FTSE 
+DEV.W.U.ETF DLD IE00BKX55T58 IHR FONDSSPARPLAN PREIS        
+55,8600000 EUR STÜCK                9,8460 NAME
+06.08./07.08. Lastschrift - 300,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   07.08.19 
+000007799019300  WKN A143JM GESCH.ART  KV VANG.USD 
+CORP.B.U.ETF DLD IE00BZ163K21 IHR FONDSSPARPLAN H 
+PREIS        49,1740000 EUR STÜCK                6,1008 NAME
+1/3
+ls00701p / 00505600C4631EE9BAA693024DB1930A / BRK
+
+Auszug Jahr Seite von IBAN Übertrag
+001 2019 2 3 DE00 0000 0000 0000 0000 00 EUR + 299,10
+Buchung/Wert Vorgang/Buchungsinformation Soll Haben
+06.08./07.08. SEPA Überw. Einzel - 250,00
+Vorname Nachname DX3Y4G/DE00000000000000000000 Umbu-
+chung Vorname Nachname
+06.08./07.08. SEPA Überw. Einzel - 49,10
+Vorname Nachname NFUZ9Q/DE00000000000000000000 Umbu-
+chung Vorname Nachname
+07.08./07.08. Gutschr.SEPA + 300,90
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage Vorname Nachname
+21.08./22.08. Lastschrift - 300,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   22.08.19 
+000001129146300  WKN A2DWBY GESCH.ART  KV ISHSIII-
+M.W.S.C.U.ETF DLA IE00BF4RFH31 IHR FONDSSPARPLAN PREIS         
+4,4720000 EUR STÜCK               67,0841 NAME
+02.09./02.09. D Gut SEPA + 2,70
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Gebuehren Sparplaene Vorname Nachname
+02.09./02.09. D Gut SEPA + 1.100,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage ETF-Sparplaene Vorname Nachname
+06.09./09.09. Lastschrift - 550,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   09.09.19 
+000001239641800  WKN A12CX1 GESCH.ART  KV VANG.FTSE 
+DEV.W.U.ETF DLD IE00BKX55T58 IHR FONDSSPARPLAN PREIS        
+57,4500000 EUR STÜCK                9,5735 NAME
+06.09./06.09. Zins/Divid. + 0,76
+NAME DEPOT      123456789 06.09.2019 WERTPAPIERZAHLUNG 
+FÜR KENN -NR.  A143JM VANG.USD CORP.B.U.ETF DLD 
+IE00BZ163K21 00860000074842990010 POSTBANK
+06.09./09.09. Lastschrift - 250,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   09.09.19 
+000001228208900  WKN A1JX51 GESCH.ART  KV VANGUARD 
+FTSE EMU.ETF DLD IE00B3VVMM84 IHR FONDSSPARPLAN 
+PREIS        50,3000000 EUR STÜCK                4,9702 NAME
+23.09./24.09. Lastschrift - 300,90
+POSTBANK DEPOT     123456789 WERTP. ABRECHN.   24.09.19 
+000001344413400  WKN A2DWBY GESCH.ART  KV ISHSIII-
+M.W.S.C.U.ETF DLA IE00BF4RFH31 IHR FONDSSPARPLAN PREIS         
+4,6520000 EUR STÜCK               64,4884 NAME
+26.09./26.09. Gutschr.SEPA + 5.000,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage Vorname Nachname
+26.09./26.09. Gutschr.SEPA + 2.500,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage Vorname Nachname
+30.09./30.09. Rechnungsabschluss - siehe Hinweis 
+Abschlusssaldo per 30.09.2019 Haben 7.500,76 EUR
+2/3
+
+Auszug Jahr Seite von IBAN Übertrag
+001 2019 3 3 DE00 0000 0000 0000 0000 00 EUR + 7.500,76
+Buchung/Wert Vorgang/Buchungsinformation Soll Haben
+01.10./01.10. D Gut SEPA + 960,00
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Geldanlage ETF-Sparplaene Vorname Nachname
+01.10./01.10. D Gut SEPA + 5,40
+Vorname Nachname Referenz NOTPROVIDED Verwendungszweck 
+Gebuehren Sparplaene Vorname Nachname
+Kontonummer BLZ Summe Zahlungseingänge
+000 000 000 370 110 00 EUR + 11.572,46
+Sollzinssatz Anlagen Summe Zahlungsausgänge
+12,75 % p.a. 0 EUR - 3.106,30
+Neuer Kontostand
+EUR + 8.466,16
+Wichtige Hinweise
+Wir bitten Sie, den Kontoauszug unverzüglich zu überprüfen. Etwaige Einwendungen richten Sie bitte umgehend an Ihre 
+kontoführende Postbank.
+Genehmigung des Rechnungsabschlusses:
+Der Abschluss gilt als genehmigt, wenn Sie Ihre Einwendungen nicht binnen sechs Wochen seit Zugang dieses Abschlusses 
+abgesandt haben. Richten Sie etwaige Einwendungen bitte an Ihre kontoführende Postbank.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer 
+nicht gesondert ausgewiesen ist. Umsatzsteuer ID Nr.: DE811907980
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+dem "Informationsbogen für den Einleger" entnommen werden.
+3/3

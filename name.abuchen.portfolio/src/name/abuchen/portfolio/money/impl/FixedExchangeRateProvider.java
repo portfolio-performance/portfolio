@@ -23,11 +23,12 @@ public class FixedExchangeRateProvider implements ExchangeRateProvider
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         LocalDate date01011999 = LocalDate.of(1999, 1, 1); // date rate was fixed against EUR for most currencies
-        List<ExchangeRateTimeSeries> series = new ArrayList<ExchangeRateTimeSeries>();
+        List<ExchangeRateTimeSeries> series = new ArrayList<>();
         
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(13.7603), CurrencyUnit.EUR, "ATS", date01011999)); //$NON-NLS-1$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(40.3399), CurrencyUnit.EUR, "BEF", date01011999)); //$NON-NLS-1$
-        series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(1.9558), CurrencyUnit.EUR, "DEM", date01011999)); //$NON-NLS-1$
+        series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(1.95583), CurrencyUnit.EUR, "DEM", //$NON-NLS-1$
+                        date01011999));
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(166.386), CurrencyUnit.EUR, "ESP", date01011999)); //$NON-NLS-1$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(5.94573), CurrencyUnit.EUR, "FIM", date01011999)); //$NON-NLS-1$
         series.add(new FixedExchangeRateTimeSeries(this, 2, BigDecimal.valueOf(6.55957), CurrencyUnit.EUR, "FRF", date01011999)); //$NON-NLS-1$

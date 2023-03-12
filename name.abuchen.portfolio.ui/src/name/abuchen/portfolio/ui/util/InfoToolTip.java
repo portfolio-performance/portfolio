@@ -20,31 +20,42 @@ public final class InfoToolTip extends ToolTip
     private Control control;
     private Supplier<String> message;
 
-    private InfoToolTip(Control control, Supplier<String> message)
+    private InfoToolTip(Control control, int style, Supplier<String> message)
     {
-        super(control, ToolTip.NO_RECREATE, false);
+        super(control, style, false);
         this.control = control;
         this.message = message;
     }
 
-    public static void attach(Control control, String message)
+    public static InfoToolTip attach(Control control, String message)
     {
-        attach(control, () -> message);
+        return attach(control, () -> message);
     }
 
-    public static void attach(Control control, Supplier<String> message)
+    public static InfoToolTip attach(Control control, Supplier<String> message)
     {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
+        return attach(control, ToolTip.NO_RECREATE, message);
+    }
+
+    public static InfoToolTip attach(Control control, int style, Supplier<String> message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, style, message);
         tooltip.setPopupDelay(0);
         tooltip.activate();
+
+        return tooltip;
     }
 
     @Override
     protected Composite createToolTipContentArea(Event event, Composite parent)
     {
         parent.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
+        
+        if (message.get() == null || message.get().equals("")) //$NON-NLS-1$
+            return parent;
 
         Composite result = new Composite(parent, SWT.NONE);
+
         GridLayout layout = new GridLayout();
         result.setLayout(layout);
 
@@ -59,6 +70,7 @@ public final class InfoToolTip extends ToolTip
         gridData.widthHint = widthHint;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
+
         return result;
     }
 

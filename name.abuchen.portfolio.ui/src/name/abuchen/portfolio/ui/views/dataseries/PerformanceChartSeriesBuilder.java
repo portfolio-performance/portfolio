@@ -22,6 +22,9 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 
     public void build(DataSeries series, Interval reportingPeriod, Aggregation.Period aggregationPeriod)
     {
+        if (!series.isVisible())
+            return;
+
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
         if (series.getType() == DataSeries.Type.CLIENT)
@@ -33,7 +36,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             if (aggregationPeriod != null)
                 index = Aggregation.aggregate(index, aggregationPeriod);
 
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
+            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(), performanceIndexToDataSeries(index),
                             series.getLabel());
             lineSeries.setYAxisId(PerformanceChartView.TOTALS_YAXIS_INDEX);
             configure(series, lineSeries);
@@ -49,7 +52,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         switch ((ClientDataSeries) series.getInstance())
         {
             case TOTALS:
-                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), performanceIndexToDataSeries(index),
+                ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(), performanceIndexToDataSeries(index),
                                 series.getLabel());
                 configure(series, lineSeries);
                 lineSeries.setYAxisId(PerformanceChartView.TOTALS_YAXIS_INDEX);
@@ -57,7 +60,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             case DELTA_PERCENTAGE:
                 String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
                                 : Messages.LabelAggregationDaily;
-                IBarSeries barSeries = getChart().addDateBarSeries(index.getDates(), index.getDeltaPercentage(),
+                IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), index.getDates(), index.getDeltaPercentage(),
                                 aggreagtionPeriodLabel);
                 barSeries.setYAxisId(PerformanceChartView.DELTA_PERCENTAGE_YAXIS_INDEX);
                 // update label, e.g. 'daily' to 'weekly'

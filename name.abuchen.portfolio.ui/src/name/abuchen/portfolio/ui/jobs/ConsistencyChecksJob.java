@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ConsistencyChecksJob extends AbstractClientJob
 {
@@ -143,6 +144,8 @@ public class ConsistencyChecksJob extends AbstractClientJob
             tableArea.setLayout(layout);
 
             tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION);
+            CopyPasteSupport.enableFor(tableViewer);
+
             final Table table = tableViewer.getTable();
             table.setHeaderVisible(true);
             table.setLinesVisible(true);

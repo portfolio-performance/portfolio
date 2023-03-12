@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -488,7 +489,7 @@ public class GenericJSONQuoteFeedTest
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
         LocalDate date = feed.extractDate(object, Optional.empty());
 
-        assertEquals(null, date);
+        assertNull(date);
     }
 
     @Test

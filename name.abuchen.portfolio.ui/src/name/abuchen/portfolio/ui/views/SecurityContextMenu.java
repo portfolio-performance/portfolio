@@ -8,6 +8,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -144,7 +145,7 @@ public class SecurityContextMenu
         {
             manager.add(new OpenDialogAction(owner, Messages.InvestmentPlanMenuCreate) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(PortfolioTransaction.class) //
+                            .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY) //
                             .with(security));
 
             manager.add(new Separator());

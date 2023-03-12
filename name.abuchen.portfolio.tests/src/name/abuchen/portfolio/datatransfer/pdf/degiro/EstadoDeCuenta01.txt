@@ -1,0 +1,399 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.4
+-----------------------------------------
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Estado de cuenta de 01-01-2020 a 10-11-2022
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+07-11-2022 09:59 02-11-2022 INDITEX ES0148396007 Dividendo EUR -317,70 EUR 534,43
+07-11-2022 09:59 02-11-2022 INDITEX ES0148396007 Retención del dividendo EUR 60,36 EUR 852,13
+07-11-2022 07:28 02-11-2022 INDITEX ES0148396007 Dividendo EUR 317,70 EUR 791,77
+07-11-2022 07:28 02-11-2022 INDITEX ES0148396007 Retención del dividendo EUR -60,36 EUR 474,07
+04-11-2022 18:19 04-11-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 534,43
+408,01 EUR
+04-11-2022 18:19 04-11-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -408,01 EUR 126,42
+04-11-2022 10:35 02-11-2022 INDITEX ES0148396007 Dividendo EUR 317,70 EUR 534,43
+04-11-2022 10:35 02-11-2022 INDITEX ES0148396007 Retención del dividendo EUR -60,36 EUR 216,73
+04-11-2022 09:47 02-11-2022 INDITEX ES0148396007 Dividendo EUR 174,74 EUR 277,09
+04-11-2022 09:47 02-11-2022 INDITEX ES0148396007 Retención del dividendo EUR -33,20 EUR 102,35
+04-11-2022 07:34 03-11-2022 Ingreso Cambio de Divisa EUR 9,13 EUR 135,55
+04-11-2022 07:34 03-11-2022 Retirada Cambio de Divisa 0,9773 USD -8,92 USD 0,00
+03-11-2022 07:06 02-11-2022 LOWES COMPANIES INC. US5486611073 Dividendo USD 10,50 USD 8,92
+03-11-2022 07:06 02-11-2022 LOWES COMPANIES INC. US5486611073 Retención del dividendo USD -1,58 USD -1,58
+02-11-2022 16:50 02-11-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 126,42
+8,58 EUR
+02-11-2022 16:50 02-11-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -8,58 EUR 117,84
+02-11-2022 07:33 01-11-2022 Ingreso Cambio de Divisa EUR 8,58 EUR 126,42
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 1 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+02-11-2022 07:33 01-11-2022 Retirada Cambio de Divisa 0,9901 USD -8,50 USD 0,00
+01-11-2022 07:04 31-10-2022 JP MORGAN CHASE & CO. US46625H1005 Dividendo USD 10,00 USD 8,50
+01-11-2022 07:04 31-10-2022 JP MORGAN CHASE & CO. US46625H1005 Retención del dividendo USD -1,50 USD -1,50
+03-10-2022 17:49 03-10-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 117,84
+26,99 EUR
+03-10-2022 17:49 03-10-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -26,99 EUR 90,85
+01-10-2022 09:31 30-09-2022 Flatex Interest EUR -2,15 EUR 117,84
+01-10-2022 08:36 30-09-2022 Ingreso Cambio de Divisa EUR 26,99 EUR 119,99
+01-10-2022 08:36 30-09-2022 Retirada Cambio de Divisa 0,9827 USD -26,52 USD 0,00
+30-09-2022 07:25 29-09-2022 T. ROWE PRICE GROUP I US74144T1088 Dividendo USD 31,20 USD 26,52
+30-09-2022 07:25 29-09-2022 T. ROWE PRICE GROUP I US74144T1088 Retención del dividendo USD -4,68 USD -4,68
+14-09-2022 16:33 14-09-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 93,00
+6,33 EUR
+14-09-2022 16:33 14-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -6,33 EUR 86,67
+14-09-2022 07:34 13-09-2022 Ingreso Cambio de Divisa EUR 6,33 EUR 93,00
+14-09-2022 07:34 13-09-2022 Retirada Cambio de Divisa 0,9995 USD -6,33 USD 0,00
+13-09-2022 07:20 12-09-2022 3M COMPANY COMMON STOC US88579Y1010 Dividendo USD 7,45 USD 6,33
+13-09-2022 07:20 12-09-2022 3M COMPANY COMMON STOC US88579Y1010 Retención del dividendo USD -1,12 USD -1,12
+08-09-2022 17:03 08-09-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 86,67
+57,45 EUR
+08-09-2022 17:03 08-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -57,45 EUR 29,22
+08-09-2022 07:37 07-09-2022 Ingreso Cambio de Divisa EUR 57,45 EUR 86,67
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 2 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+08-09-2022 07:37 07-09-2022 Retirada Cambio de Divisa 1,0031 USD -57,63 USD 0,00
+07-09-2022 07:44 06-09-2022 JOHNSON & JOHNSON COMM US4781601046 Dividendo USD 67,80 USD 57,63
+07-09-2022 07:44 06-09-2022 JOHNSON & JOHNSON COMM US4781601046 Retención del dividendo USD -10,17 USD -10,17
+05-09-2022 16:48 05-09-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 29,22
+Bank: 2.029,5 EUR
+05-09-2022 16:48 05-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.029,50 EUR 2.058,72
+05-09-2022 09:00 05-09-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -4,05 EUR 29,22
+05-09-2022 09:00 05-09-2022 INDITEX ES0148396007 Costes de transacción y/o externos de DEGIRO EUR -1,00 EUR 33,27
+05-09-2022 09:00 05-09-2022 INDITEX ES0148396007 Compra 95 INDITEX@21,31 EUR (ES0148396007) EUR -2.024,45 EUR 34,27
+03-09-2022 02:25 03-09-2022 flatex Deposit EUR 2.000,00 EUR 2.058,72
+05-08-2022 16:48 05-08-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 58,72
+8,68 EUR
+05-08-2022 16:48 05-08-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -8,68 EUR 50,04
+05-08-2022 10:33 04-08-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 58,72
+Bank: 1.982,7 EUR
+05-08-2022 10:33 04-08-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.982,70 EUR 2.041,42
+05-08-2022 07:33 04-08-2022 Ingreso Cambio de Divisa EUR 8,68 EUR 58,72
+05-08-2022 07:33 04-08-2022 Retirada Cambio de Divisa 1,0272 USD -8,92 USD 0,00
+04-08-2022 16:36 04-08-2022 T. ROWE PRICE GROUP I US74144T1088 Ingreso Cambio de Divisa 1,0171 USD 2.016,00 USD 8,92
+04-08-2022 16:36 04-08-2022 T. ROWE PRICE GROUP I US74144T1088 Retirada Cambio de Divisa EUR -1.982,20 EUR 50,04
+04-08-2022 16:36 04-08-2022 T. ROWE PRICE GROUP I US74144T1088 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 2.032,24
+04-08-2022 16:36 04-08-2022 T. ROWE PRICE GROUP I US74144T1088 Compra 16 T. ROWE PRICE GROUP I@126 USD USD -2.016,00 USD -2.007,08
+(US74144T1088)
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 3 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+04-08-2022 07:23 03-08-2022 LOWES COMPANIES INC. US5486611073 Dividendo USD 10,50 USD 8,92
+04-08-2022 07:23 03-08-2022 LOWES COMPANIES INC. US5486611073 Retención del dividendo USD -1,58 USD -1,58
+03-08-2022 02:24 03-08-2022 flatex Deposit EUR 2.000,00 EUR 2.032,74
+02-08-2022 17:18 02-08-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 32,74
+8,26 EUR
+02-08-2022 17:18 02-08-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -8,26 EUR 24,48
+02-08-2022 11:03 01-08-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 32,74
+Bank: 4.629,5 EUR
+02-08-2022 11:03 01-08-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4.629,50 EUR 4.662,24
+02-08-2022 07:32 01-08-2022 Ingreso Cambio de Divisa EUR 8,26 EUR 32,74
+02-08-2022 07:32 01-08-2022 Retirada Cambio de Divisa 1,0288 USD -8,50 USD 0,00
+01-08-2022 15:12 01-08-2022 VANGUARD FTSE ALL-WORLD UCITS ETF - (... IE00BK5BQT80 Compra 47 Vanguard FTSE All-World UCITS ETF - (USD) EUR -4.629,50 EUR 24,48
+Accumulating@98,5 EUR (IE00BK5BQT80)
+01-08-2022 07:11 31-07-2022 JP MORGAN CHASE & CO. US46625H1005 Dividendo USD 10,00 USD 8,50
+01-08-2022 07:11 31-07-2022 JP MORGAN CHASE & CO. US46625H1005 Retención del dividendo USD -1,50 USD -1,50
+28-07-2022 11:47 27-07-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 4.653,98
+Bank: 5.103,02 EUR
+28-07-2022 11:47 27-07-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5.103,02 EUR 9.757,00
+27-07-2022 15:46 27-07-2022 JOHNSON & JOHNSON COMM US4781601046 Ingreso Cambio de Divisa 1,0113 USD 5.160,00 USD 0,00
+27-07-2022 15:46 27-07-2022 JOHNSON & JOHNSON COMM US4781601046 Retirada Cambio de Divisa EUR -5.102,52 EUR 4.653,98
+27-07-2022 15:46 27-07-2022 JOHNSON & JOHNSON COMM US4781601046 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 9.756,50
+27-07-2022 15:46 27-07-2022 JOHNSON & JOHNSON COMM US4781601046 Compra 30 JOHNSON & JOHNSON COMM@172 USD USD -5.160,00 USD -5.160,00
+(US4781601046)
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 4 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+26-07-2022 07:54 26-07-2022 flatex Deposit EUR 5.000,00 EUR 9.757,00
+07-07-2022 10:33 06-07-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 4.757,00
+Bank: 631,07 EUR
+07-07-2022 10:33 06-07-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 631,07 EUR 5.388,07
+06-07-2022 16:14 06-07-2022 3M COMPANY COMMON STOC US88579Y1010 Ingreso Cambio de Divisa 1,0150 USD 640,00 USD 0,00
+06-07-2022 16:14 06-07-2022 3M COMPANY COMMON STOC US88579Y1010 Retirada Cambio de Divisa EUR -630,57 EUR 4.757,00
+06-07-2022 16:14 06-07-2022 3M COMPANY COMMON STOC US88579Y1010 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 5.387,57
+06-07-2022 16:14 06-07-2022 3M COMPANY COMMON STOC US88579Y1010 Compra 5 3M COMPANY COMMON STOC@128 USD USD -640,00 USD -640,00
+(US88579Y1010)
+06-07-2022 09:48 05-07-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 5.388,07
+Bank: 2.002 EUR
+06-07-2022 09:48 05-07-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.002,00 EUR 7.390,07
+05-07-2022 17:18 05-07-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 5.388,07
+Bank: 5 EUR
+05-07-2022 17:18 05-07-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5,00 EUR 5.393,07
+05-07-2022 15:38 05-07-2022 VANGUARD FTSE ALL-WORLD UCITS ETF - (... IE00BK5BQT80 Compra 22 Vanguard FTSE All-World UCITS ETF - (USD) EUR -2.002,00 EUR 5.388,07
+Accumulating@91 EUR (IE00BK5BQT80)
+05-07-2022 08:32 30-06-2022 Giro Exchange Connection Fee 2022 EUR -2,50 EUR 7.390,07
+05-07-2022 08:32 30-06-2022 Giro Exchange Connection Fee 2022 EUR -2,50 EUR 7.392,57
+03-07-2022 02:19 03-07-2022 flatex Deposit EUR 2.000,00 EUR 7.395,07
+02-07-2022 06:20 30-06-2022 Flatex Interest EUR -5,31 EUR 5.395,07
+29-06-2022 10:18 28-06-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 5.400,38
+Bank: 7.352,77 EUR
+29-06-2022 10:18 28-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 7.352,77 EUR 12.753,15
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 5 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+28-06-2022 17:26 28-06-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 5.400,38
+28-06-2022 17:26 28-06-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 8 Source S&P 500 ETF@700 EUR (IE00B3YCGJ38) EUR -5.600,00 EUR 5.400,88
+28-06-2022 15:30 28-06-2022 LOWES COMPANIES INC. US5486611073 Ingreso Cambio de Divisa 1,0504 USD 1.840,00 USD 0,00
+28-06-2022 15:30 28-06-2022 LOWES COMPANIES INC. US5486611073 Retirada Cambio de Divisa EUR -1.751,77 EUR 11.000,88
+28-06-2022 15:30 28-06-2022 LOWES COMPANIES INC. US5486611073 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 12.752,65
+28-06-2022 15:30 28-06-2022 LOWES COMPANIES INC. US5486611073 Compra 10 LOWES COMPANIES INC.@184 USD USD -1.840,00 USD -1.840,00
+(US5486611073)
+28-06-2022 10:27 28-06-2022 flatex Deposit EUR 5.000,00 EUR 12.753,15
+28-06-2022 10:18 27-06-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 7.753,15
+Bank: 7.428,71 EUR
+28-06-2022 10:18 27-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 7.428,71 EUR 15.181,86
+27-06-2022 15:37 27-06-2022 JP MORGAN CHASE & CO. US46625H1005 Ingreso Cambio de Divisa 1,0555 USD 1.170,00 USD 0,00
+27-06-2022 15:37 27-06-2022 JP MORGAN CHASE & CO. US46625H1005 Retirada Cambio de Divisa EUR -1.108,53 EUR 7.753,15
+27-06-2022 15:37 27-06-2022 JP MORGAN CHASE & CO. US46625H1005 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 8.861,68
+27-06-2022 15:37 27-06-2022 JP MORGAN CHASE & CO. US46625H1005 Compra 10 JP MORGAN CHASE & CO.@117 USD USD -1.170,00 USD -1.170,00
+(US46625H1005)
+27-06-2022 15:36 27-06-2022 T. ROWE PRICE GROUP I US74144T1088 Ingreso Cambio de Divisa 1,0554 USD 1.210,00 USD 0,00
+27-06-2022 15:36 27-06-2022 T. ROWE PRICE GROUP I US74144T1088 Retirada Cambio de Divisa EUR -1.146,53 EUR 8.862,18
+27-06-2022 15:36 27-06-2022 T. ROWE PRICE GROUP I US74144T1088 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 10.008,71
+27-06-2022 15:36 27-06-2022 T. ROWE PRICE GROUP I US74144T1088 Compra 10 T. ROWE PRICE GROUP I@121 USD USD -1.210,00 USD -1.210,00
+(US74144T1088)
+27-06-2022 15:30 27-06-2022 JOHNSON & JOHNSON COMM US4781601046 Ingreso Cambio de Divisa 1,0557 USD 5.460,00 USD 0,00
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 6 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+27-06-2022 15:30 27-06-2022 JOHNSON & JOHNSON COMM US4781601046 Retirada Cambio de Divisa EUR -5.172,15 EUR 10.009,21
+27-06-2022 15:30 27-06-2022 JOHNSON & JOHNSON COMM US4781601046 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 15.181,36
+27-06-2022 15:30 27-06-2022 JOHNSON & JOHNSON COMM US4781601046 Compra 30 JOHNSON & JOHNSON COMM@182 USD USD -5.460,00 USD -5.460,00
+(US4781601046)
+24-06-2022 07:51 24-06-2022 flatex Deposit EUR 5.000,00 EUR 15.181,86
+22-06-2022 16:47 22-06-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 10.181,86
+Bank: 10.224,65 EUR
+22-06-2022 16:47 22-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 10.224,65 EUR 20.406,51
+22-06-2022 09:04 22-06-2022 VANGUARD FTSE ALL-WORLD UCITS ETF - (... IE00BK5BQT80 Compra 115 Vanguard FTSE All-World UCITS ETF - (USD) EUR -10.224,65 EUR 10.181,86
+Accumulating@88,91 EUR (IE00BK5BQT80)
+21-06-2022 06:39 21-06-2022 flatex Deposit EUR 5.000,00 EUR 20.406,51
+19-06-2022 12:12 19-06-2022 flatex Deposit EUR 5.000,00 EUR 15.406,51
+16-06-2022 16:10 16-06-2022 flatex Deposit EUR 5.000,00 EUR 10.406,51
+15-06-2022 19:00 15-06-2022 flatex Deposit EUR 5.000,00 EUR 5.406,51
+07-06-2022 16:17 07-06-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 406,51
+Bank: 3.642,4 EUR
+07-06-2022 16:17 07-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 3.642,40 EUR 4.048,91
+07-06-2022 09:05 07-06-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 406,51
+07-06-2022 09:05 07-06-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 2 Source S&P 500 ETF@728,38 EUR EUR -1.456,76 EUR 407,01
+(IE00B3YCGJ38)
+07-06-2022 09:05 07-06-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 3 Source S&P 500 ETF@728,38 EUR EUR -2.185,14 EUR 1.863,77
+(IE00B3YCGJ38)
+03-06-2022 02:40 03-06-2022 flatex Deposit EUR 4.000,00 EUR 4.048,91
+02-06-2022 16:47 02-06-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 48,91
+Bank: 5.621,72 EUR
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 7 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+02-06-2022 16:47 02-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5.621,72 EUR 5.670,63
+02-06-2022 09:47 02-06-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -11,22 EUR 48,91
+02-06-2022 09:47 02-06-2022 INDITEX ES0148396007 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 60,13
+02-06-2022 09:47 02-06-2022 INDITEX ES0148396007 Compra 255 INDITEX@22 EUR (ES0148396007) EUR -5.610,00 EUR 60,63
+27-05-2022 18:03 27-05-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 5.670,63
+21,21 EUR
+27-05-2022 18:03 27-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -21,21 EUR 5.649,42
+27-05-2022 07:35 26-05-2022 Ingreso Cambio de Divisa EUR 21,21 EUR 5.670,63
+27-05-2022 07:35 26-05-2022 Retirada Cambio de Divisa 1,0758 USD -22,82 USD 0,00
+26-05-2022 08:06 25-05-2022 ISHARES GLOBAL WATER UCITS ETF USD IE00B1TXK627 Dividendo USD 22,82 USD 22,82
+(D...
+25-05-2022 08:01 25-05-2022 flatex Deposit EUR 5.000,00 EUR 5.649,42
+18-05-2022 16:47 18-05-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 649,42
+Bank: 4.386,5 EUR
+18-05-2022 16:47 18-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4.386,50 EUR 5.035,92
+18-05-2022 14:12 18-05-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 649,42
+18-05-2022 14:12 18-05-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 6 Source S&P 500 ETF@731 EUR (IE00B3YCGJ38) EUR -4.386,00 EUR 649,92
+17-05-2022 07:38 17-05-2022 flatex Deposit EUR 5.000,00 EUR 5.035,92
+06-05-2022 17:32 06-05-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 35,92
+Bank: 4.770 EUR
+06-05-2022 17:32 06-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4.770,00 EUR 4.805,92
+06-05-2022 13:14 06-05-2022 ISHARES GLOBAL WATER UCITS ETF USD IE00B1TXK627 Compra 90 iShares Global Water UCITS ETF USD EUR -4.770,00 EUR 35,92
+(D... (Dist)@53 EUR (IE00B1TXK627)
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 8 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+03-05-2022 03:49 03-05-2022 flatex Deposit EUR 4.000,00 EUR 4.805,92
+02-05-2022 18:17 02-05-2022 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: EUR 805,92
+267,05 EUR
+02-05-2022 18:17 02-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -267,05 EUR 538,87
+02-05-2022 07:40 02-05-2022 INDITEX ES0148396007 Dividendo EUR 329,69 EUR 805,92
+02-05-2022 07:40 02-05-2022 INDITEX ES0148396007 Retención del dividendo EUR -62,64 EUR 476,23
+27-04-2022 17:32 27-04-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 538,87
+Bank: 4.500,5 EUR
+27-04-2022 17:32 27-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4.500,50 EUR 5.039,37
+27-04-2022 13:24 27-04-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 538,87
+27-04-2022 13:24 27-04-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 6 Source S&P 500 ETF@750 EUR (IE00B3YCGJ38) EUR -4.500,00 EUR 539,37
+27-04-2022 11:43 27-04-2022 flatex Deposit EUR 5.000,00 EUR 5.039,37
+12-04-2022 17:17 12-04-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 39,37
+Bank: 11.309,67 EUR
+12-04-2022 17:17 12-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 11.309,67 EUR 11.349,04
+12-04-2022 09:05 12-04-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 39,37
+12-04-2022 09:05 12-04-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 10 Source S&P 500 ETF@766,74 EUR EUR -7.667,40 EUR 39,87
+(IE00B3YCGJ38)
+12-04-2022 09:00 12-04-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -7,27 EUR 7.707,27
+12-04-2022 09:00 12-04-2022 INDITEX ES0148396007 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 7.714,54
+12-04-2022 09:00 12-04-2022 INDITEX ES0148396007 Compra 184 INDITEX@19,75 EUR (ES0148396007) EUR -3.634,00 EUR 7.715,04
+04-04-2022 11:03 01-04-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 11.349,04
+Bank: 2,5 EUR
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 9 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+04-04-2022 11:03 01-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2,50 EUR 11.351,54
+03-04-2022 02:18 03-04-2022 flatex Deposit EUR 4.000,00 EUR 11.349,04
+02-04-2022 02:30 31-03-2022 Flatex Interest EUR -4,45 EUR 7.349,04
+01-04-2022 23:24 31-03-2022 Giro Exchange Connection Fee 2022 EUR -2,50 EUR 7.353,49
+30-03-2022 16:32 30-03-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 7.355,99
+Bank: 2.668,32 EUR
+30-03-2022 16:32 30-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.668,32 EUR 10.024,31
+30-03-2022 09:00 30-03-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -1,70 EUR 7.355,99
+30-03-2022 09:00 30-03-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -3,62 EUR 7.357,69
+30-03-2022 09:00 30-03-2022 INDITEX ES0148396007 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 7.361,31
+30-03-2022 09:00 30-03-2022 INDITEX ES0148396007 Compra 40 INDITEX@21,3 EUR (ES0148396007) EUR -852,00 EUR 7.361,81
+30-03-2022 09:00 30-03-2022 INDITEX ES0148396007 Compra 85 INDITEX@21,3 EUR (ES0148396007) EUR -1.810,50 EUR 8.213,81
+29-03-2022 07:59 29-03-2022 flatex Deposit EUR 5.000,00 EUR 10.024,31
+17-03-2022 16:32 17-03-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 5.024,31
+Bank: 8.537,54 EUR
+17-03-2022 16:32 17-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 8.537,54 EUR 13.561,85
+17-03-2022 10:04 17-03-2022 flatex Deposit EUR 5.000,00 EUR 5.024,31
+17-03-2022 10:03 17-03-2022 INDITEX ES0148396007 Spanish Transaction Tax EUR -17,04 EUR 24,31
+17-03-2022 10:03 17-03-2022 INDITEX ES0148396007 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 41,35
+17-03-2022 10:03 17-03-2022 INDITEX ES0148396007 Compra 400 INDITEX@21,3 EUR (ES0148396007) EUR -8.520,00 EUR 41,85
+15-03-2022 16:47 15-03-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 8.561,85
+Bank: 3.575,9 EUR
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 10 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+15-03-2022 16:47 15-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 3.575,90 EUR 12.137,75
+15-03-2022 09:05 15-03-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 8.561,85
+15-03-2022 09:05 15-03-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 5 Source S&P 500 ETF@715,08 EUR EUR -3.575,40 EUR 8.562,35
+(IE00B3YCGJ38)
+15-03-2022 08:02 15-03-2022 flatex Deposit EUR 4.000,00 EUR 12.137,75
+10-03-2022 16:10 10-03-2022 flatex Deposit EUR 4.000,00 EUR 8.137,75
+03-03-2022 02:39 03-03-2022 flatex Deposit EUR 4.000,00 EUR 4.137,75
+02-03-2022 17:47 02-03-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 137,75
+Bank: 2.432,5 EUR
+02-03-2022 17:47 02-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.432,50 EUR 2.570,25
+02-03-2022 09:07 02-03-2022 ISHARES GLOBAL WATER UCITS ETF USD IE00B1TXK627 Compra 45 iShares Global Water UCITS ETF USD EUR -2.430,00 EUR 137,75
+(D... (Dist)@54 EUR (IE00B1TXK627)
+02-03-2022 08:42 28-02-2022 Giro Exchange Connection Fee 2022 EUR -2,50 EUR 2.567,75
+21-02-2022 16:32 21-02-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 2.570,25
+Bank: 3.625,5 EUR
+21-02-2022 16:32 21-02-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 3.625,50 EUR 6.195,75
+21-02-2022 10:05 21-02-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 2.570,25
+21-02-2022 10:05 21-02-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 5 Source S&P 500 ETF@725 EUR (IE00B3YCGJ38) EUR -3.625,00 EUR 2.570,75
+03-02-2022 10:17 02-02-2022 Transferir desde su Cuenta de Efectivo en flatexDEGIRO EUR 6.195,75
+Bank: 3.807,25 EUR
+03-02-2022 10:17 02-02-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 3.807,25 EUR 10.003,00
+02-02-2022 17:24 02-02-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Costes de transacción y/o externos de DEGIRO EUR -0,50 EUR 6.195,75
+02-02-2022 17:24 02-02-2022 SOURCE S&P 500 ETF IE00B3YCGJ38 Compra 5 Source S&P 500 ETF@761,35 EUR EUR -3.806,75 EUR 6.196,25
+(IE00B3YCGJ38)
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 11 /12
+Sr. XXX XXX XXXXX
+MyAddress 111
+1213DD A City
+Netherlands
+Nombre de usuario:
+*******dba
+Fecha Hora Fecha valor Producto ISIN Descripción Tipo Variación Saldo
+31-01-2022 22:40 31-01-2022 flatex Deposit EUR 6.000,00 EUR 10.003,00
+31-01-2022 22:30 31-01-2022 flatex Deposit EUR 4.000,00 EUR 4.003,00
+31-01-2022 22:10 31-01-2022 flatex Deposit EUR 1,00 EUR 3,00
+01-01-2022 23:00 03-01-2022 Flatex Interest Income EUR 0,00 EUR 2,00
+21-12-2021 16:30 21-12-2021 flatex Deposit EUR 1,00 EUR 2,00
+20-12-2021 16:47 20-12-2021 Transferir a su Cuenta de Efectivo en flatexDEGIRO Bank: 1 EUR 1,00
+EUR
+20-12-2021 16:47 20-12-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -1,00 EUR 0,00
+20-12-2021 02:53 18-12-2021 Ingreso EUR 1,00 EUR 1,00
+02-10-2021 14:10 30-09-2021 Flatex Interest Income EUR 0,00 EUR 0,00
+02-07-2021 00:51 30-06-2021 Flatex Interest Income EUR 0,00 EUR 0,00
+02-04-2021 14:40 31-03-2021 Flatex Interest Income EUR 0,00 EUR 0,00
+31-12-2020 03:12 31-12-2020 Flatex Interest Income EUR 0,00 EUR 0,00
+flatex DEGIRO Bank Dutch Branch, operando bajo el nombre de www.degiro.es Estado de cuenta
+DEGIRO, es la filial holandesa de flatexDEGIRO Bank AG. clientes@degiro.es 2022-11-10
+flatexDEGIRO Bank AG está supervisada principalmente por el
+regulador alemán (BaFin) y registrada en DNB en Holanda. Amstelplein 1 1096 HA Página 12 /12

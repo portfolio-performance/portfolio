@@ -1,0 +1,84 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Herrn Max Mustermann Depotnummer: 0000000000
+Musterstraße 1
+12345 Frankfurt am Main IBAN: DE13 1234 1234 1234 1234 12
+Hamburg, im Oktober 2020
+Depotauszug MAX HEINR. SUTOR OHG
+ HERMANNSTRASSE 46
+ 20095 HAMBURG
+Sehr geehrter Herr Mustermann,
+ INFO@SUTORBANK.DE
+Sie erhalten heute von uns den Depotauszug per 30.09.2020 zu nachfolgendem Vertrag: WWW.SUTORBANK.DE
+ 
+Sutor fairriester 2.0 Nr. 0000000000
+ GESCHÄFTSLEITUNG
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen ROBERT FREITAG
+THOMAS MEIER
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie erfolgt
+automatisch vorbehaltlich Irrtum. MITGLIED IM EINLAGEN-
+ SICHERUNGSFONDS DES
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach Maßgabe BUNDESVERBANDES
+DEUTSCHER BANKEN
+des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie bitte dem
+„Informationsbogen für den Einleger“, der auf www.sutorbank.de/agb als PDF hinterlegt ist.
+ UNABHÄNGIG.
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig mit,
+PRODUKTNEUTRAL.
+anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen. INHABERGEFÜHRT.
+ 
+Mit freundlichen Grüßen
+FINANZAMT HAMBURG
+Ihre SUTOR BANK
+ STNR. 2761000074
+ 
+ 
+Anlagen AMTSGERICHT HAMBURG
+HRA25379
+weiss auf weiss
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 8
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Übersicht mit Bewertung zum 30.09.2020
+Max Mustermann
+"fairriester-Portfolio 12" Nr. 0000000000 / IBAN: DE13 1234 1234 1234 1234 12
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Xtrackers MSCI World Min Vol ETF IE00BL25JN58 Vereinigtes Königreich Wertpapierrechnung 1,80 % 8,0960  Anteile 33,8510 US$* 234,08 EUR
+Xtr II iBoxx Euroz Gov Bd 1-3 ETF LU0925589839 Deutschland Girosammelverwahrung 97,00 % 87,9791  Anteile 144,1275 EUR 12.680,21 EUR
+iShares Edge MSCI EM Min Vol ETF IE00B8KGV557 Irland Wertpapierrechnung 0,30 % 1,5742  Anteile 28,6845 US$* 38,57 EUR
+Amundi Solution MSCI Europe Min Vol LU1681041627 Deutschland Girosammelverwahrung 0,90 % 1,1509  Anteile 101,5600 EUR 116,89 EUR
+Vanguard EUR Eurozone Gov Bond ETF IE00BH04GL39 Vereinigtes Königreich Wertpapierrechnung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+* Währungskurs: 1,1708 US$
+Kurswert Gesamt 13.069,75 EUR
+Geldsaldo -0,01 EUR
+Erstellt im Oktober 2020 Seite 1 von 8
+Umsätze vom 01.07.2020 bis 30.09.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+01.07.2020 01.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 26,7524 -719,05
+12:46 OTC IE00BH04GL39 26,8780 EUR
+01.07.2020 01.07.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 1,4517 -145,32
+12:53 OTC LU1681041627 100,1000 EUR
+01.07.2020 01.07.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 1,9784 1,1200 -48,44
+12:56 OTC IE00B8KGV557 27,4228 US$
+01.07.2020 01.07.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -34,7017 1,1200 1.000,97
+13:20 OTC IE00BL25JN58 32,3064 US$
+02.07.2020 02.07.2020 Kauf Kauf Vanguard EUR Eurozone Gov Bond ETF 25,3618 -683,50
+15:20 OTC IE00BH04GL39 26,9500 EUR
+11.06.2020 11.06.2020 Gebühren Kontoführungs-u.Depotgebühren 1. Hj. 2020 - -18,00
+08.01.2020 08.01.2020 Gebühr anteil.Verwaltgebühr/Vertriebskosten2.Hj.2019 - -0,92
+02.03.2020 02.03.2020 Einzahlung automatischer Lastschrifteinzug - 175,00

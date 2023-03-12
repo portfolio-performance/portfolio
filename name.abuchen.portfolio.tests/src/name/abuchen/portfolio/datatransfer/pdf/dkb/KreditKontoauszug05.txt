@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.4
+-----------------------------------------
+Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                 
+FlatEx Str. 3              
+01111 FlatExCity               
+Abrechnung: November 2022
+Ihre Abrechnung vom 21.10.2022 bis 22.11.2022 Abrechnungsdatum: 22. November 2022
+DKB-VISA-Card: 1111 00XX XXXX 1111
+Karteninhaber: Max Mustermann 
+Seite 1 von 1
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+Beleg BuchungVerwendungszweck EUR
+21.10.22 Saldo letzte Abrechnung 1000,11+
+16.11.22 17.11.22 PIN-Gebühr 5,00 -
+Neuer Saldo 1111,11+
+Sehr geehrter Herr Max Mustermann,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut unverzüglich
+nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden.
+Das Guthaben wird mit der weiteren Verwendung der Hinweis:
+Kreditkarte verrechnet. Über Zinsen und Gebühren informiert unser Preis- und
+Leistungsverzeichnis, das Sie online unter www.DKB.de
+Der monatliche Verfügungsrahmen (Kartenlimit) Ihrer abrufen können.
+DKB-VISA-Card beträgt 20.000 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
+Kreditkartenkonto ein Guthaben vorhanden ist, sind
+Kartenumsätze über den monatlichen Verfügungsrahmen
+hinaus in Höhe des jeweiligen Guthabens möglich.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den 
+Sie auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+ 

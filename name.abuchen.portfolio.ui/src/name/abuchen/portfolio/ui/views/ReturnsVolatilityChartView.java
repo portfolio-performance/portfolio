@@ -133,7 +133,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
             manager.add(new LabelOnly(Messages.LabelPerformanceMetric));
 
-            Action ttwror = new SimpleAction(Messages.ColumnTWROR, a -> {
+            Action ttwror = new SimpleAction(Messages.ColumnTTWROR, a -> {
                 this.useIRR = false;
 
                 IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -277,13 +277,17 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         Interval interval = getReportingPeriod().toInterval(LocalDate.now());
 
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
+
+            if (!series.isVisible())
+                return;
+
             PerformanceIndex index = cache.lookup(series, interval);
 
             double risk = this.riskMetric.getRisk(index);
             double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
 
-            ILineSeries lineSeries = chart.addScatterSeries(new double[] { risk }, new double[] { retrn },
-                            series.getLabel());
+            ILineSeries lineSeries = chart.addScatterSeries(series.getUUID(), new double[] { risk },
+                            new double[] { retrn }, series.getLabel());
 
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);

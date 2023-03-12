@@ -34,6 +34,11 @@ public interface UIConstants
         {
             String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$
         }
+
+        interface Global // NOSONAR
+        {
+            String DISCREET_MODE = "global/discreet-mode"; //$NON-NLS-1$
+        }
     }
 
     interface Context // NOSONAR
@@ -72,6 +77,7 @@ public interface UIConstants
      */
     interface Command // NOSONAR
     {
+        String OPEN_BROWSER = "name.abuchen.portfolio.ui.command.openBrowser"; //$NON-NLS-1$
         String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
@@ -84,7 +90,7 @@ public interface UIConstants
     {
         String PART = "name.abuchen.portfolio.ui.param.part"; //$NON-NLS-1$
         String FILE = "name.abuchen.portfolio.ui.param.file"; //$NON-NLS-1$
-        String EXTENSION = "name.abuchen.portfolio.ui.param.extension"; //$NON-NLS-1$
+        String FILE_TYPE = "name.abuchen.portfolio.ui.param.file-type"; //$NON-NLS-1$
         String ENCRYPTION_METHOD = "name.abuchen.portfolio.ui.param.encryptionmethod"; //$NON-NLS-1$
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
         String NAME = "name.abuchen.portfolio.ui.param.name"; //$NON-NLS-1$
@@ -118,6 +124,17 @@ public interface UIConstants
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
 
         /**
+         * Preference key to display the currency code also for the reporting
+         * currency.
+         */
+        String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
+
+        /**
+         * Add "p.a." to annualized return rates 
+         */
+        String DISPLAY_PER_ANNUM = "DISPLAY_PER_ANNUM"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */
@@ -148,6 +165,9 @@ public interface UIConstants
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
+
+        String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
 
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
@@ -158,6 +178,8 @@ public interface UIConstants
 
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
 
+        String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
+
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
         String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$
 
@@ -165,11 +187,48 @@ public interface UIConstants
          * Preference key whether to store settings (standard calendar)
          */
         String CALENDAR = "CALENDAR"; //$NON-NLS-1$
+
+        /**
+         * Preference key for preset time in new transactions.
+         */
+        String PRESET_VALUE_TIME = "PRESET_VALUE_TIME"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the mode of the backup
+         */
+        String BACKUP_MODE = "BACKUP_MODE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the backup folder relative to the data file
+         */
+        String BACKUP_FOLDER_RELATIVE = "BACKUP_FOLDER_RELATIVE"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the absolute backup
+         */
+        String BACKUP_FOLDER_ABSOLUTE = "BACKUP_FOLDER_ABSOLUTE"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to import PDF files
+         */
+        String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to import CSV files
+         */
+        String CSV_IMPORT_PATH = "CSV_IMPORT_PATH"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
+        String DISABLE_CSS_STYLING = "org.eclipse.e4.ui.css.disabled"; //$NON-NLS-1$
+        
+        String HEADING1 = "heading1"; //$NON-NLS-1$
+        String HEADING2 = "heading2"; //$NON-NLS-1$
+        String KPI = "kpi"; //$NON-NLS-1$
+        String TITLE = "title"; //$NON-NLS-1$
+        String DATAPOINT = "datapoint"; //$NON-NLS-1$
     }
 
     interface Tag // NOSONAR

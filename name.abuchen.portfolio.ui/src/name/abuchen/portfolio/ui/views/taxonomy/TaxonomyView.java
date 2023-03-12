@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -24,9 +27,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
@@ -167,6 +172,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
 
+    @Inject
+    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES)
+    boolean enableExperimentalFeatures;
+
     @Override
     protected String getDefaultTitle()
     {
@@ -174,9 +183,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     }
 
     @Inject
-    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy parameter)
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy taxonomy,
+                    ExchangeRateProviderFactory factory)
     {
-        this.taxonomy = parameter;
+        this.taxonomy = taxonomy;
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
@@ -188,7 +198,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
-        this.model = make(TaxonomyModel.class, taxonomy);
+        this.model = new TaxonomyModel(factory, getClient(), taxonomy);
 
         IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
@@ -242,9 +252,50 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
         toolBar.add(new Separator());
 
+        addSearchButton(toolBar);
+
+        toolBar.add(new Separator());
+
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
         addConfigButton(toolBar);
+    }
+
+    private void addSearchButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
+        {
+            @Override
+            protected Control createControl(Composite parent)
+            {
+                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
+                search.setMessage(Messages.LabelSearch);
+                search.setSize(300, SWT.DEFAULT);
+
+                search.addModifyListener(e -> {
+                    String filterText = Pattern.quote(search.getText().trim());
+                    if (filterText.length() == 0)
+                    {
+                        model.setFilterPattern(null);
+                        model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                    }
+                    else
+                    {
+                        Pattern p = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        model.setFilterPattern(p);
+                        model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                    }
+                });
+
+                return search;
+            }
+
+            @Override
+            protected int computeWidth(Control control)
+            {
+                return control.computeSize(100, SWT.DEFAULT, true).x;
+            }
+        });
     }
 
     private void addExportButton(ToolBarManager toolBar)
@@ -255,24 +306,27 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
+        if (enableExperimentalFeatures)
+        {
+            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
 
-            String source = taxonomy.getSource();
+                String source = taxonomy.getSource();
 
-            for (TaxonomySource ts : TaxonomySource.values())
-            {
-                Action action = new SimpleAction(ts.getLabel(), a -> {
-                    if (ts.getIdentifier().equals(source))
-                        taxonomy.setSource(null);
-                    else
-                        taxonomy.setSource(ts.getIdentifier());
+                for (TaxonomySource ts : TaxonomySource.values())
+                {
+                    Action action = new SimpleAction(ts.getLabel(), a -> {
+                        if (ts.getIdentifier().equals(source))
+                            taxonomy.setSource(null);
+                        else
+                            taxonomy.setSource(ts.getIdentifier());
 
-                    model.getClient().touch();
-                });
-                action.setChecked(ts.getIdentifier().equals(source));
-                manager.add(action);
-            }
-        }));
+                        model.getClient().touch();
+                    });
+                    action.setChecked(ts.getIdentifier().equals(source));
+                    manager.add(action);
+                }
+            }));
+        }
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));

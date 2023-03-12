@@ -1,0 +1,223 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 102 38 010
+Herrn Telefon: 04106 - 708 25 00
+Max Mustermann Telefax: 04106 - 708 25 85
+Straße 1 E-Mail: www.comdirect.de/kontakt
+12345 Ort (E-Mail über Kontaktformular)
+Kundennummer: 102 0000000
+Finanzreport Nr. 9 per 01.10.2018
+Sehr geehrter Herr Mustermann,
+ 
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Konten und Ihr
+Depot.
+Für Fragen zum Finanzreport oder unseren Leistungen stehen Ihnen unsere Kundenbetreuer
+telefonisch unter 04106 - 708 25 00 rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Aktuelle Informationen:
+Jetzt Energiekosten vergleichen, Anbieter wechseln und gezielt Geld sparen:
+Mit dem neuen comdirect sparCheck können Sie einfach anhand Ihrer Postleitzahl überprüfen,
+ob Sie zu viel für Strom und Gas bezahlen und binnen weniger Minuten den Anbieter wechseln.
+Der comdirect sparCheck ist für Sie komplett kostenlos und Ihre Daten werden nicht werblich
+genutzt. Mehr Informationen finden Sie unter www.comdirect.de/sparcheck
+Sichern Sie Ihren Kindern einen perfekten Start in die Zukunft: Jetzt JuniorDepot oder
+JuniorGiro eröffnen und tolle Prämie sichern. Mehr Informationen unter
+www.comdirect.de/zukunft
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 2
+Kundennummer 102 0000000
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto DE18 2004 1133 0000 0000 00 +4.830,37
+Tagesgeld PLUS-Konto DE18 2004 1133 0000 0000 00 +0,14
+Visa Prepaid-Karte 0000 +368,31
+Gesamtsaldo 01.10.2018 +5.198,82
+ 
+Girokonto Dispositionskredit girocard Tages-/WochenlimitEUR 0 EUR 1.000/EUR 2.000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.09.2018 +4.477,95
+04.09.2018 Lastschrift / Max Mustermann Scalable Capital Monatliche Einzahl -1.500,00
+04.09.2018 Belastung ung
+HE218246B131 End-to-End-Ref.:
+7636/5145 UMTOJWIG2HD11OK9EDSPQF
+CORE / Mandatsref.:
+NUZNZ7LP2DLFWFUNF3YSYE
+Gläubiger-ID:
+DE63MUC00001787612
+05.09.2018 Übertrag / Max Mustermann 4263540XXXXX0000 -300,00
+05.09.2018 Überweisung Ueberweisung von
+H0218248F1742 Girokonto auf Visa-Karte
+633/2 End-to-End-Ref.: nicht
+angegeben
+30.10.2017 Auszahlung BANK Auszahlung -50,00
+30.10.2017 1DB173030000 Bank//Ort/DE
+0000/00000 0000-00-00TT00:00:00 KFN 0 VJ 0000
+26.03.2018 Kartenverfügun Kartenzahlung -9,00
+26.03.2018 g Markts Ort Straße//Ort
+00000000s000 0000-00-00T00:00:00 KFN 0
+0411/722
+29.09.2014 Gebühr Barauszahlung BARGELDAUSZAHLUNGSGEB. -5,90
+29.09.2014 114092956162601
+05.09.2018 Entgelte Entgelt für Änderung der -5,90
+05.09.2018 3RF18248J0000 PIN bei der VISA-Karte
+909/255 ZUORDN. 118 9900160 20
+23.10.2015 Gebühren/Spesen Entgelt für Änderung der -5,90
+22.10.2015 4SE10000J0000810/000 PIN bei der VISA-Karte
+ZUORDN. 000 0000000 00
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 3
+Kundennummer 102 0000000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+14.09.2018 Kontoübertrag Max Mustermann Uebertrag auf Girokonto +10.000,00
+14.09.2018 I6218256L11000 DE77200411330000000000 End-to-End-Ref.: nicht
+76/1 COBADEHD001 angegeben
+17.09.2018 Lastschrift / REWE Kartenzahlung -68,88
+17.09.2018 Belastung REWE SAGT DANKE. 42600000//Ort
+77B18260C2035 2018-09-15T18:32:49 KFN 0 VJ 2112
+760/24504
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 4
+Kundennummer 102 0000000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+21.09.2018 Übertrag / Firma Verwendungszweck 20.00 +20,00
+21.09.2018 Überweisung End-to-End-Ref.:
+HO218264G310 3620043175000000
+8996/17200
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 5
+Kundennummer 102 0000000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Neuer Saldo 01.10.2018 +4.830,37
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.09.2018 +10.000,00
+30.07.2018 Kontoübertrag Max Mustermann Uebertrag auf Tagesgeld PLUS-Konto +2.000,00
+30.07.2018 IQ218210J0000 DE18200411330000000000 End-to-End-Ref.: nicht
+308/1 COBADEHD001 angegeben
+14.09.2018 Übertrag / Max Mustermann Uebertrag auf Girokonto -10.000,00
+14.09.2018 Überweisung DE18200411330000000000 End-to-End-Ref.: nicht
+I6218256L00000 COBADEHD001 angegeben
+76/2
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 6
+Kundennummer 102 0000000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+31.12.2015 Kontoabschluss Abschluss Zinsen Kto -0,07
+31.12.2015 6BF1600000000000/000 383096500EUR
+28.09.2018 Kontoabschluss Abschluss Zinsen Kto 000000005EUR +0,14
+30.09.2018 1PF18271L0000 von 30.06.2018 bis 30.09.2018
+052/2794 Habenzinsen
+0,010% ab 30.06. 0,19 EUR
+vom 30.06.2018 bis 30.09.2018
+Kapitalertragsteuer 0,05- EUR
+Solidaritätszuschlag 0,00 EUR
+Sonderentgelte
+Versandpauschale 0,70- EUR
+Abschlussrechnung 0,56- EUR
+Saldo nach Abschluss 0,56- EUR
+Neuer Saldo 01.10.2018 +0,56-
+Visa Prepaid-Karte 0000 Visa Limit Verfügungslimit am GeldautomatEUR 0/Monat EUR 600/Tag
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 03.09.2018 +120,33
+05.09.2018 Guthabenübertr UEBERTRAG AUF VISA-KARTE +300,00
+05.09.2018 ag
+1180905480000
+01
+26.03.2019 Guthabenübertr UEBERTRAG AUF GIROKONTO -100,00
+26.03.2019 ag
+1190326500000
+01
+18.09.2018 Visa-Umsatz Lidl Vertriebs GmbH & Co.Ort000 -2,18
+17.09.2018 1180918490000
+01
+27.07.2018 Auslandsentgelt 1.75 PROZ.AUSLANDSENTGELT -0,45
+27.07.2018 0000000000000
+01
+23.07.2019 Gutschrift Firma Ort 9 007 +71,93
+22.07.2019 1190723500000
+01
+A30.09.2019 Visa-Umsatz Firma Ort 000 -3,94
+A 119093157242901
+28.09.2019
+28.10.2019 Barauszahlung ATMS Bank Country City 000 Betrag: -70,00 PEN Kurs: -19,21
+24.10.2019 119102909170000 3,6438
+01.01.2020 Bar BARGELDEINZAHLUNG KARTE 0 +5.432,10
+01.01.2020 00A00000000 EINZAHLAUTOMAT 000000
+355/1 EINZAHLUNG 01.01.2020 00:00
+Ort Straße
+Neuer Saldo 01.10.2018 +368,31
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 7
+Kundennummer 102 0000000
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste aus Aktien (Verrechnungssaldo) +0,00
+Gewinne/Verluste Sonstige (Verrechnungssaldo) +0,50
+Eingereichter Freibetrag 0,00
+In Anspruch genommener Freibetrag 0,00
+Verbleibender Freibetrag 0,00
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,13
+Abgeführter Solidaritätszuschlag 0,00
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dieses ist keine Steuerbescheinigung.
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 6,50 % p. a. (gültig ab: 03.04.2017)
+Zinssatz für geduldete Überziehungen: 11,00 % p. a. (gültig ab: 03.04.2017)
+Verrechnungskonto/Tagesgeld PLUS-Konto/O&F-Konto
+Zinssatz für geduldete Überziehungen: 11,00 % p. a. (gültig ab: 03.04.2017)
+Zinsgleitklausel für variable Sollzinssätze:
+Die Bank wird variable Sollzinssätze entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Europäischen Zentralbank
+(nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten Bankarbeitstag vor dem 15. eines Kalendermonats von der
+Bank eine Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung
+festgestellt wird, erhöht die Bank den variablen Sollzinssatz entsprechend. Die Bank verpflichtet sich dagegen zur Senkung des variablen
+Sollzinssatzes um die Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die
+Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne gesonderte Erklärung gegenüber dem Kontoinhaber bei
+der comdirect bank AG wirksam. Die comdirect bank AG wird den Kontoinhaber in regelmäßigen Zeitabständen im Finanzreport unterrichten.
+Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite der comdirect bank AG bzw. in anderen öffentlich zugänglichen
+Medien (insbesondere www.bundesbank.de) einsehen.
+Wichtige Hinweise
+1. Ihre individuellen Vergünstigungen
+Informieren Sie sich jetzt über unser attraktives Preismodell und profitieren Sie von vielen individuellen Vergünstigungen.
+Details finden Sie unter www.comdirect.de/konditionen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen gegen den Rechnungsabschluss
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieses Rechnungsabschlusses sind gem. Nr. 7.2 unserer allgemeinen
+Geschäftsbedingungen spätestens vor Ablauf von 6 Wochen nach Zugang des Rechnungsabschlusses zu erheben. Sofern Sie
+Ihre Einwendungen schriftlich geltend machen, richten Sie diese bitte unter Angabe Ihrer Kundennummer an die comdirect bank
+AG, Innenrevision, 25449 Quickborn. Es genügt die Absendung innerhalb der 6-Wochen-Frist. Das Unterlassen rechtzeitiger
+Einwendungen gilt als Genehmigung.
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 9 per 01.10.2018 - Seite 8
+Kundennummer 102 0000000
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Übersicht Ihrer Kontodaten IBAN BIC
+Girokonto DE18 2004 1133 0000 0000 00 COBADEHD001
+Tagesgeld PLUS-Konto DE18 2004 1133 0000 0000 00
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn

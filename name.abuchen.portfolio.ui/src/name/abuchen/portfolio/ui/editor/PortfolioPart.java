@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -14,6 +15,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -25,6 +27,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -39,7 +42,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -47,6 +49,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
@@ -54,6 +57,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
+import name.abuchen.portfolio.ui.survey.Survey;
+import name.abuchen.portfolio.ui.survey.SurveyReminder;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -87,6 +93,9 @@ public class PortfolioPart implements ClientInputListener
 
     @Inject
     ClientInputFactory clientInputFactory;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @PostConstruct
     public void createComposite(Composite parent)
@@ -237,7 +246,7 @@ public class PortfolioPart implements ClientInputListener
         ProgressBar bar = null;
 
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
         container.setLayout(new FormLayout());
 
         Label image = new Label(container, SWT.NONE);
@@ -279,10 +288,21 @@ public class PortfolioPart implements ClientInputListener
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);
-        data.left = new FormAttachment(50, -100);
-        data.width = 200;
+        data.left = new FormAttachment(0, 10);
+        data.right = new FormAttachment(100, -10);
         label.setLayoutData(data);
 
+        if (Survey.isActive())
+        {
+            Composite reminder = new SurveyReminder(container);
+            
+            data = new FormData();
+            data.top = new FormAttachment(0, 10);
+            data.right = new FormAttachment(100, -10);
+            data.width = 300;
+            reminder.setLayoutData(data);
+        }
+        
         return bar;
     }
 
@@ -412,9 +432,14 @@ public class PortfolioPart implements ClientInputListener
         this.clientInput.save(shell);
     }
 
-    public void doSaveAs(Shell shell, String extension, String encryptionMethod)
+    public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags)
     {
-        this.clientInput.doSaveAs(shell, extension, encryptionMethod);
+        this.clientInput.doSaveAs(shell, extension, flags);
+    }
+
+    public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
+    {
+        this.clientInput.doExportAs(shell, extension, flags);
     }
 
     public ClientInput getClientInput()
@@ -427,9 +452,20 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getClient();
     }
 
+    /**
+     * Returns the preferences store per data file.
+     */
     public IPreferenceStore getPreferenceStore()
     {
         return clientInput.getPreferenceStore();
+    }
+
+    /**
+     * Returns the eclipse preferences which exist per installation.
+     */
+    public IEclipsePreferences getEclipsePreferences()
+    {
+        return clientInput.getEclipsePreferences();
     }
 
     public List<ReportingPeriod> getReportingPeriods()
@@ -480,7 +516,8 @@ public class PortfolioPart implements ClientInputListener
 
     /* package */ void markDirty()
     {
-        clientInput.markDirty();
+        if (clientInput != null)
+            clientInput.markDirty();
     }
 
     public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
@@ -503,7 +540,7 @@ public class PortfolioPart implements ClientInputListener
 
         try
         {
-            createView(item.getViewClass(), parameter);
+            createView(item.getViewClass(), parameter, item.hideInformationPane());
 
             this.selectedItem = item;
 
@@ -512,11 +549,11 @@ public class PortfolioPart implements ClientInputListener
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            createView(ExceptionView.class, e);
+            createView(ExceptionView.class, e, true);
         }
     }
 
-    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter, boolean hideInformationPane)
     {
         IEclipseContext viewContext = this.context.createChild(clazz.getName());
         viewContext.set(Client.class, this.clientInput.getClient());
@@ -547,7 +584,11 @@ public class PortfolioPart implements ClientInputListener
         AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
-        underConstruction.createViewControl(book);
+        underConstruction.createViewControl(book, hideInformationPane);
+
+        // explicitly style control after creation because on Windows the styles
+        // are not always applied immediately
+        stylingEngine.style(underConstruction.getControl());
 
         view = underConstruction;
         book.showPage(view.getControl());

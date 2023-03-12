@@ -1,0 +1,127 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 01.07.2010
+PLZ Ort Auszug-Nr  6Blatt-Nr  1 von  2
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Vermögensberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Dauerauftragsgutschrift, Ref: EU-0135070934 02.06.2010 02.06.2010 75,00EUR
+von: Vorname Nachname 
+Kto-Nr: 219690    BLZ: DE 76069611
+SPARPLAN LUKAS             
+B:0000008900
+Wertpapiere, Ref: AB-0135789540 07.06.2010 09.06.2010 -75,00 EUR
+LU0397221945 DB X-TR.PTF.TOT.RET.IN.1C
+O:000636655:1 Nom:.57942 Whg:EUR
+Ansparplan
+Zins-/Dividendenzahlung, Ref: DZ-0137822819 18.06.2010 27.01.2010 83,20EUR
+DE0007236101 SIEMENS AG NA
+DZ:354718  
+Erträgniszahlung  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0137822850 18.06.2010 27.01.2010  -23,14 EUR
+DE0007236101 SIEMENS AG NA  
+KEST/SOLI: 21,51  
+KIST: 1,63  
+ 
+DZ:354718
+ 
+ 
+Zins-/Dividendenzahlung, Ref: DZ-0137830757 18.06.2010 27.01.2010 -83,20 EUR
+ 
+DE0007236101 SIEMENS AG NA
+ 
+DZ:354718  
+Erträgniszahlung /Storno  
+ 
+Steuerbuchung Abgeltungsteuer, Ref: H-0137830810  18.06.2010 18.06.2010 23,14EUR
+DE0007236101 SIEMENS AG NA  
+KEST/SOLI: -21,51  
+KIST: -1,63/Storno  
+DZ:354718  
+ 
+Wertpapiere, Ref: AB-0138439309  22.06.2010 24.06.2010 -2.971,87 EUR
+US8740391003 TAIWAN SEMICON.MA NU. ADR5
+ 
+O:000668598:1 Nom:350 Whg:EUR
+ 
+Kauf
+ 
+ 
+Flatrate, Ref: KA-0139816662 30.06.2010 30.06.2010 -75,00 EUR
+Gebühren 01.06.2010 - 30.06.2010
+Volumen Fee, Ref: KA-0139816664 30.06.2010 30.06.2010 -29,55 EUR
+Gebühren Depot Konto/Depot-Nr. 01.04.2010 - 30.06.2010
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2319673   (10) V 1.19.1.0                                  
+Kontoauszug
+Konto-Nr Konto/Depot-Nr. EUR
+IBAN DE24 1011 0600 6017 4394 00
+Herrn Nachname, VornameKontokorrentkonto
+Vorname Nachname
+Straße Datum 01.07.2010
+PLZ Ort Auszug-Nr  6Blatt-Nr  2 von  2
+ Betreuer Betreuer-Nachname, Betreuer-Vorname
+ Abteilung Vermögensberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Haben-Zinsen Kontoabschluss, Ref: KA-0139907281 30.06.2010 30.06.2010 4,61EUR
+Habenzinsen 
+Steuerbuchung Abgeltungsteuer, Ref: H-0139925023 30.06.2010 30.06.2010 -1,28 EUR
+Steuern auf Kontoabschluss
+KEST: 1,13 SOLI: 0,06
+KIST: 0,09
+K:0008150446
+letzter Auszug: 01.06.2010 alter Saldo:  9.760,65EUR
+Umsatz: -3.073,09 EUR
+Limit:  0,00 Saldo:  6.687,56EUR
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+KTO_AUSZ  0000#6767669580#0000026624  VJ2319673   (10) V 1.19.1.0

@@ -200,7 +200,7 @@ public class BollingerBands
 
     private boolean checkListIsValidForBollingerBands(List<SecurityPrice> filteredPrices)
     {
-        return filteredPrices.size() < calculatedMinimumDays ? false : true;
+        return filteredPrices.size() >= calculatedMinimumDays;
     }
 
     private List<SecurityPrice> getFilteredList(LocalDate isBefore, LocalDate isAfter)

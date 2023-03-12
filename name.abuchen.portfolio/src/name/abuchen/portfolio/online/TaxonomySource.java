@@ -2,8 +2,10 @@ package name.abuchen.portfolio.online;
 
 public enum TaxonomySource
 {
-    ETF_DATA_COUNTRY_ALLOCATION("etf-data.com$country-allocation", "Country Allocation (etf-data.com)"), //$NON-NLS-1$ //$NON-NLS-2$
-    ETF_DATA_SECTOR_ALLOCATION("etf-data.com$sector-allocation", "Sector Allocation (etf-data.com)"); //$NON-NLS-1$ //$NON-NLS-2$
+    EOD_HISTORICAL_DATA_COUNTRY_ALLOCATION("eodhistoricaldata.com$country-allocation", //$NON-NLS-1$
+                    "Country Allocation (eodhistoricaldata.com)"), //$NON-NLS-1$
+    EOD_HISTORICAL_DATA_SECTOR_ALLOCATION("eodhistoricaldata.com$sector-allocation", //$NON-NLS-1$
+                    "Sector Allocation (eodhistoricaldata.com)"); //$NON-NLS-1$
 
     private final String identifier;
     private final String label;

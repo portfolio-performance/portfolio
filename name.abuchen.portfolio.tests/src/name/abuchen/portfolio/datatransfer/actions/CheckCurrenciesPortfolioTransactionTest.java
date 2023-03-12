@@ -46,7 +46,8 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.setType(Type.DELIVERY_INBOUND);
         t.setMonetaryAmount(Money.of("EUR", 1_00));
         t.setSecurity(security);
-        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5)));
+        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00),
+                        BigDecimal.valueOf(0.5)));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
 
@@ -60,7 +61,8 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.setType(Type.DELIVERY_INBOUND);
         t.setMonetaryAmount(Money.of("EUR", 1_00));
         t.setSecurity(security);
-        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00)));
+        t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("EUR", 2_00),
+                        BigDecimal.valueOf(0.5)));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
 
@@ -70,7 +72,8 @@ public class CheckCurrenciesPortfolioTransactionTest
         Portfolio portfolio = new Portfolio();
         Security security = new Security("", "USD");
 
-        Unit unit = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00), BigDecimal.valueOf(0.5));
+        Unit unit = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("USD", 2_00),
+                        BigDecimal.valueOf(0.5));
 
         PortfolioTransaction t = new PortfolioTransaction();
         t.setType(Type.DELIVERY_INBOUND);
@@ -82,7 +85,8 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.removeUnit(unit);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
 
-        Unit other = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("JPY", 2_00), BigDecimal.valueOf(0.5));
+        Unit other = new Unit(Unit.Type.GROSS_VALUE, Money.of("EUR", 1_00), Money.of("JPY", 2_00),
+                        BigDecimal.valueOf(0.5));
         t.addUnit(other);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));
     }
@@ -145,7 +149,7 @@ public class CheckCurrenciesPortfolioTransactionTest
         t.addUnit(tax);
         t.addUnit(tax2);
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.OK));
-        
+
         t.removeUnit(fee);
         t.addUnit(new Unit(Unit.Type.FEE, Money.of("EUR", 5_00), Money.of("JPY", 10_00), BigDecimal.valueOf(0.5)));
         assertThat(action.process(t, portfolio).getCode(), is(Status.Code.ERROR));

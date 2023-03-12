@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.beans.BeanInfo;
@@ -51,10 +50,9 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(12));
+        assertThat(skipped, equalTo(13));
 
         Security target = source.deepCopy();
-
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
 
         // compare
@@ -200,15 +198,60 @@ public class SecurityTest
         Security security = new Security();
 
         security.setName("Apple ORD");
-        assertEquals(security.getExternalIdentifier(), "Apple ORD");
+        assertThat(security.getExternalIdentifier(), is("Apple ORD"));
 
         security.setWkn("865985");
-        assertEquals(security.getExternalIdentifier(), "865985");
+        assertThat(security.getExternalIdentifier(), is("865985"));
 
         security.setTickerSymbol("AAPL");
-        assertEquals(security.getExternalIdentifier(), "AAPL");
+        assertThat(security.getExternalIdentifier(), is("AAPL"));
+
+        // In some countries there is no ISIN or WKN, only the ticker symbol.
+        // If historical prices are retrieved from the stock exchange,
+        // the ticker symbol is expanded. (UMAX --> UMAX.AX)
+        security.setTickerSymbol("AAPL.BA");
+        assertThat(security.getExternalIdentifier(), is("AAPL"));
 
         security.setIsin("US0378331005");
-        assertEquals(security.getExternalIdentifier(), "US0378331005");
+        assertThat(security.getExternalIdentifier(), is("US0378331005"));
+    }
+
+    @Test
+    public void testgetLatestNPricesOfDate()
+    {
+        Security security = new Security();
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-21"), 1));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-22"), 2));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-23"), 3));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2019-02-24"), 4));
+
+        List<SecurityPrice> prices = security.getLatestNPricesOfDate(LocalDate.parse("2019-02-23"), 2);
+        assertThat(prices.size(), is(2));
+        assertThat(prices.get(0).getValue(), is(2l));
+        assertThat(prices.get(1).getValue(), is(3l));
+
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2019-02-21"), 2);
+        assertThat(prices.size(), is(1));
+        assertThat(prices.get(0).getValue(), is(1l));
+
+        // test with start date before date of first available price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2018-05-05"), 2);
+        assertThat(prices.size(), is(0));
+
+        // test request portion of prices and start date after date of last
+        // price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2020-02-02"), 2);
+        assertThat(prices.size(), is(2));
+        assertThat(prices.get(0).getValue(), is(3l));
+        assertThat(prices.get(1).getValue(), is(4l));
+
+        // test request more prices than available and start date after date of
+        // last price
+        prices = security.getLatestNPricesOfDate(LocalDate.parse("2020-02-02"), 40);
+        assertThat(prices.size(), is(4));
+        assertThat(prices.get(0).getValue(), is(1l));
+        assertThat(prices.get(1).getValue(), is(2l));
+        assertThat(prices.get(2).getValue(), is(3l));
+        assertThat(prices.get(3).getValue(), is(4l));
     }
 }

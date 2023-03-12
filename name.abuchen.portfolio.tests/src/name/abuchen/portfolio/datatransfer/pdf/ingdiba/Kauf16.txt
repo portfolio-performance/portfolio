@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.0
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Maxima Musterfrau
+Frau Direkt-Depot Nr.: 0123456789
+Maxima Musterfrau Datum: 10.02.2023
+Straße 0 Seite: 1 von 1
+12345 Musteria
+Wertpapierabrechnung Kauf aus Wiederanlage Fondsausschüttung
+Ordernummer 12345678.001
+ISIN (WKN) LU0629459743 (A1JA1R)
+Wertpapierbezeichnung UBS(L)FS-MSCI World Soc. Resp.
+Namens-Anteile (USD) A-dis o.N
+Nominale Stück 10,68328
+Kurs (Festpreisgeschäft) EUR 115,56
+Handelsplatz Direktgeschäft Inl.
+Ausführungstag / -zeit 10.02.2023 um 09:04:29 Uhr
+Kurswert EUR 1234,56
+Zwischensumme EUR 1234,56
+Endbetrag zu Ihren Lasten EUR 1234,56
+Abrechnungs-IBAN DE00 0000 0000 0000 0000 00
+Valuta 14.02.2023
+Wertpapiere zugunsten Girosammelverwahrung.
+Ihren Ertrag haben wir für Sie wiederangelegt.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD0123456789_T

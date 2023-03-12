@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -9,7 +12,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
@@ -26,12 +29,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public String getPDFAuthor()
-    {
-        return ""; //$NON-NLS-1$
-    }
-
-    @Override
     public String getLabel()
     {
         return "Credit Suisse AG"; //$NON-NLS-1$
@@ -39,7 +36,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Ihr Kauf|Ihr Verkauf");
+        DocumentType type = new DocumentType("(Ihr Kauf|Ihr Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -56,79 +53,89 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^Ihr (?<type>Verkauf) .*$")
+                .match("^Ihr (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Verkauf"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // 900 Registered Shs Iron Mountain Inc USD 0.01
                 // Valor 26754105, IRM, ISIN US46284V1017
                 // Kurswert USD 27,270.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^(?<shares>[.,\\d]+) (?<name>.*) [\\w]{3} [.,\\d]+$")
+                .section("name", "isin", "currency").optional()
+                .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [\\w]{3} [\\.,\\d]+$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
-                .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
-
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
                 // Landesbank Girozentrale 2014-10.4.24 Reg-S
                 // Subord.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Kurswert USD 183,000.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^[\\w]{3} (?<shares>[.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
-                .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                    /***
-                     * Workaround for bonds 
-                     */
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
+
+                // Ausführungszeit
+                // 103 14800075391312 18:32:46 XNYS USD 30.30
+                .section("time").optional()
+                .find("Ausf.hrungszeit")
+                .match("^.* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) [\\w]{3,4} .*$")
+                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                 // Datum 08.06.2020
                 .section("date")
-                .match("^Datum (?<date>\\d+.\\d+.\\d{4})$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                .match("^Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    if (type.getCurrentContext().get("time") != null)
+                        t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                    else
+                        t.setDate(asDate(v.get("date")));
+                })
 
                 // Belastung USD 27,734.70
                 // Gutschrift EUR 28,744.30
                 .section("currency", "amount")
-                .match("^(Belastung|Gutschrift) (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .match("^(Belastung|Gutschrift) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
-                /***
-                 * If we have the "Internet-Vergünstigung",
-                 * we add up it from the amount and reset it.
-                 * The "Internet discount" is then posted as a fee refund.
-                 * 
-                 * If changes are made in this area, 
-                 * the fee refund function must be adjusted.
-                 * addFeeReturnBlock(type);
-                 */
+                // If we have the "Internet-Vergünstigung",
+                // we add up it from the amount and reset it.
+                // The "Internet discount" is then posted as a fee refund.
+
                 // Internet-Vergünstigung USD - 41.81
                 // Internet-Vergünstigung USD 44.69
                 .section("feeRefund", "currency").optional()
-                .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) ([-\\s]+)?(?<feeRefund>[.,\\d]+)$")
+                .match("^Internet\\-Verg.nstigung (?<currency>[\\w]{3}) (\\- )?(?<feeRefund>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(convertAmount(v.get("feeRefund"))));
+                    t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(v.get("feeRefund")));
                 })
 
-                .wrap(t -> new BuySellEntryItem(t));
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -142,45 +149,69 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^Ertragsabrechnung .*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
+                // 900 REGISTERED SHS IRON MOUNTAIN INC
+                // Valor 26754105, IRM, ISIN US46284V1017
+                // Bruttoertrag USD 556.65
+                .section("name", "isin", "currency").optional()
+                .match("^[\\.,\\d]+ (?<name>.*)$")
+                .match("^.* ISIN (?<isin>[\\w]{12})$")
+                .match("^Bruttoertrag (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
                 // USD 200,000 6.25 % FIXED RATE NOTES NORDDEUTSCHE
                 // LANDESBANK GIROZENTRALE 2014-10.4.24 REG-S
                 // SUBORD.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Bruttoertrag USD 6,250.00
-                .section("shares", "name", "isin", "currency")
-                .match("^[\\w]{3} (?<shares>[.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
-                .match("^Bruttoertrag (?<currency>[\\w]{3}) [.,\\d]+$")
-                .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
+                .match("^Bruttoertrag (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                    /***
-                     * Workaround for bonds 
-                     */
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
-                // Coupon-Verfall 10.04.2021
+                // Valuta 12.04.2021
                 .section("date")
-                .match("^Coupon-Verfall (?<date>\\d+.\\d+.\\d{4})$")
+                .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Bruttoertrag USD 6,250.00
                 .section("currency", "amount")
-                .match("^Gutschrift (?<currency>[\\w]{3}) (?<amount>[.,\\d]+)$")
+                .match("^Gutschrift (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(convertAmount(v.get("amount"))));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
+
+                // Semesterzinsen
+                // Quartalsdividende
+                .section("note").optional()
+                .match("^(?<note>(Semesterzinsen|Quartalsdividende))$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
@@ -192,11 +223,6 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeReturnBlock(DocumentType type)
     {
-        /***
-         * If changes are made in this area,
-         * the buy/sell transaction function must be adjusted.
-         * addBuySellTransaction();
-         */
         Block block = new Block("^Ihr (Kauf|Verkauf) .*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
@@ -210,44 +236,52 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // 900 Registered Shs Iron Mountain Inc USD 0.01
                 // Valor 26754105, IRM, ISIN US46284V1017
                 // Kurswert USD 27,270.00
-                .section("shares", "name", "currency", "isin").optional()
-                .match("^(?<shares>[.,\\d]+) (?<name>.*) [\\w]{3} [.,\\d]+$")
+                .section("name", "currency", "isin").optional()
+                .match("^[\\.,\\d]+ (?<name>.*) [\\w]{3} [\\.,\\d]+$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
                 // Landesbank Girozentrale 2014-10.4.24 Reg-S
                 // Subord.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Kurswert USD 183,000.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^[\\w]{3} (?<shares>[.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [.,\\d]+$")
-                .assign((t, v) -> {
-                    v.put("shares", convertAmount(v.get("shares")));
+                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // Datum 08.06.2020
                 .section("date")
-                .match("^Datum (?<date>\\d+.\\d+.\\d{4})$")
+                .match("^Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // Internet-Vergünstigung USD - 41.81
                 // Internet-Vergünstigung USD 44.69
                 .section("currency", "amount").optional()
-                .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) ([-\\s]+)?(?<amount>[.,\\d]+)$")
+                .match("^Internet-Verg.nstigung (?<currency>[\\w]{3}) (-\\ )?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    v.put("amount", convertAmount(v.get("amount")));
-
-                    t.setCurrencyCode(v.get("currency"));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
@@ -262,12 +296,14 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                 // Eidgenössische Umsatzabgabe USD 40.91
-                .section("tax", "currency").optional()
-                .match("^Eidgen.ssische Umsatzabgabe (?<currency>[\\w]{3}) ([-\\s]+)?(?<tax>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("tax", convertAmount(v.get("tax")));
-                    processTaxEntries(t, v, type);   
-                });
+                .section("currency", "tax").optional()
+                .match("^Eidgen.ssische Umsatzabgabe (?<currency>[\\w]{3}) (\\- )?(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Quellensteuer USD - 167.00
+                .section("currency", "withHoldingTax").optional()
+                .match("^Quellensteuer (?<currency>[\\w]{3}) (\\- )?(?<withHoldingTax>[\\.,\\d]+)$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -275,62 +311,35 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
         transaction
                 // Kommission Schweiz/Ausland USD 463.60
                 .section("currency", "fee").optional()
-                .match("^Kommission Schweiz\\/Ausland (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                })
+                .match("^Kommission Schweiz\\/Ausland (?<currency>[\\w]{3}) (\\- )?(?<fee>[\\.,\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kommission Schweiz USD 1,413.65
                 .section("currency", "fee").optional()
-                .match("^Kommission Schweiz (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                })
+                .match("^Kommission Schweiz (?<currency>[\\w]{3}) (\\- )?(?<fee>[\\.,\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // Kosten und Abgaben Ausland USD 2.00
                 .section("currency", "fee").optional()
-                .match("^Kosten und Abgaben (?<currency>[\\w]{3}) ([-\\s]+)?(?<fee>[.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("fee", convertAmount(v.get("fee")));
-                    processFeeEntries(t, v, type);   
-                });
+                .match("^Kosten und Abgaben (?<currency>[\\w]{3}) (\\- )?(?<fee>[\\.,\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
-    private void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
+    @Override
+    protected long asAmount(String value)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-            PDFExtractorUtils.checkAndSetTax(tax, ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 
-    private void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
+    @Override
+    protected long asShares(String value)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee, 
-                            (name.abuchen.portfolio.model.Transaction) t, type);
-        }
-        else
-        {
-            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-            PDFExtractorUtils.checkAndSetFee(fee,
-                            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction(), type);
-        }
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 
-    private String convertAmount(String inputAmount)
+    @Override
+    protected BigDecimal asExchangeRate(String value)
     {
-        String amount = inputAmount.replace(",", "");
-        return amount.replace(".", ",");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
     }
 }

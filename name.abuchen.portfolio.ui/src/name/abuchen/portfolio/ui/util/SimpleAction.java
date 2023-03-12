@@ -27,6 +27,20 @@ public class SimpleAction extends Action
         this.runnable = runnable;
     }
 
+    public SimpleAction(String text, String toolTipText, Runnable runnable)
+    {
+        super(text);
+        setToolTipText(toolTipText);
+        this.runnable = runnable;
+    }
+
+    public SimpleAction(String text, int style, String toolTipText, Runnable runnable)
+    {
+        super(text, style);
+        setToolTipText(toolTipText);
+        this.runnable = runnable;
+    }
+
     public SimpleAction(String text, ImageDescriptor imageDescriptor, Runnable runnable)
     {
         super(text, imageDescriptor);

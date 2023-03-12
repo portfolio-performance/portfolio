@@ -1,0 +1,41 @@
+```PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+V 999/111 1 105
+Klaus Mustermann
+Hauptstr. 999
+99999 Sonstwo
+26. November 2021
+Ihr Depot Nr. 999 1111105 01
+Ertragsgutschrift
+Stück WKN ISIN
+175,000000 847415 DE0008474156
+DWS EUROPEAN OPPORTUNITIES INHABER-ANTEIL.LD
+Ausschüttung pro Stück 1,9600000000 EUR Zahlbar 26.11.2021
+Geschäftsjahr 2020 / 2021
+Bruttoertrag 343,00 EUR
+Kapitalertragsteuer (KESt) - 58,70 EUR
+Solidaritätszuschlag auf KESt - 3,22 EUR
+Kirchensteuer auf KESt - 5,28 EUR
+Gutschrift mit Wert 26.11.2021 275,80 EUR
+Steuerliche Bemessungsgrundlagen zur Ertragsgutschrift - keine Steuerbescheinigung
+Steuerpflichtige Ausschüttung 343,00 EUR
+Abzüglich Teilfreistellung von Erträgen 102,90 EUR
+KESt-pflichtiger Kapitalertrag 240,10 EUR
+Vorsitzender des Aufsichtsrats: Paul Achleitner
+Vorstand: Christian Sewing (Vorsitzender), Karl von Rohr, Fabrizio Campelli, Bernd Leukert, Stuart Lewis, James von Moltke, Alexander von zur Mühlen,
+Christiana Riley, Rebecca Short, Stefan Simon
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de 1/2
+TRINCM0001 ERTR 20211126 15973595
+Wir überweisen den Betrag von 275,80 EUR auf Ihr Konto 1111105 01.
+Wiederanlagerabatt 2% bis 28.01.2022
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Hinweise zur Umrechnung von Fremdwährungen in Euro:
+Sollten in dieser Abrechnung Fremdwährung in EURO umgerechnet worden sein, rechnen wir die dafür
+in Rechnung gestellten Entgelte unter dem Vorbehalt der laufenden Auswertung einer aktuellen
+Entscheidung des Bundesgerichtshofs ab und werden gegebenenfalls unberechtigte Beträge
+zurückerstatten, ohne dass Sie deshalb zunächst widersprechen müssten.
+2/2
+```

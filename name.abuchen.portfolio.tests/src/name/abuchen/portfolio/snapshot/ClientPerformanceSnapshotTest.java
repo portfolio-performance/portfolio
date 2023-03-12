@@ -13,10 +13,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;

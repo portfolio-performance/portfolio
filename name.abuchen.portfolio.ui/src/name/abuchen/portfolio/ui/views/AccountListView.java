@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
@@ -41,11 +42,13 @@ import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
@@ -54,8 +57,8 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.AccountBalancePane;
+import name.abuchen.portfolio.ui.views.panes.AccountTransactionsPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
-import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 
 public class AccountListView extends AbstractFinanceView implements ModificationListener
 {
@@ -162,6 +165,16 @@ public class AccountListView extends AbstractFinanceView implements Modification
     }
 
     @Override
+    protected void notifyViewCreationCompleted()
+    {
+        resetInput();
+        accounts.refresh();
+
+        if (accounts.getTable().getItemCount() > 0)
+            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         if (element instanceof AccountTransaction)
@@ -190,6 +203,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         ColumnEditingSupport.prepare(accounts);
         ColumnViewerToolTipSupport.enableFor(accounts, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(accounts);
 
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
@@ -238,14 +252,12 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         addAttributeColumns(accountColumns);
 
-        accountColumns.createColumns();
+        accountColumns.createColumns(true);
 
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
 
         accounts.setContentProvider(ArrayContentProvider.getInstance());
-        resetInput();
-        accounts.refresh();
 
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
 
@@ -282,6 +294,16 @@ public class AccountListView extends AbstractFinanceView implements Modification
         manager.add(new SimpleAction(Messages.AccountMenuImportPDF, a -> ImportPDFHandler.runImport(getPart(),
                         Display.getDefault().getActiveShell(), getClient(), account, null)));
 
+        manager.add(new Separator());
+
+        if (LogoManager.instance().hasCustomLogo(account, getClient().getSettings()))
+        {
+            manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                LogoManager.instance().clearCustomLogo(account, getClient().getSettings());
+                markDirty();
+            }));
+        }
+
         manager.add(new SimpleAction(
                         account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate, a -> {
                             account.setRetired(!account.isRetired());
@@ -306,7 +328,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(TransactionsPane.class));
+        pages.add(make(AccountTransactionsPane.class));
         pages.add(make(AccountBalancePane.class));
     }
 
@@ -317,7 +339,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
             return;
 
         List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
+        Collections.sort(tx, Transaction.BY_DATE);
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)

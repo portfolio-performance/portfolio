@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class AssetPosition
 {
@@ -15,7 +16,7 @@ public class AssetPosition
         @Override
         public int compare(AssetPosition p1, AssetPosition p2)
         {
-            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
+            return TextUtil.compare(p1.getDescription(), p2.getDescription());
         }
     }
 

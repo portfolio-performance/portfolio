@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - feature_java17
   pull_request:
       types: [opened, synchronize, reopened]
 
@@ -13,22 +14,23 @@ jobs:
     if: github.ref != 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Cache Maven repository
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-maven-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
+          ${{ runner.os }}-mvn-
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
       with:
-        java-version: 11
+        java-version: 17
+        distribution: zulu
     - name: Build with Maven
       run: |
         mvn verify \
@@ -40,22 +42,23 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Cache Maven repository
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-maven-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
+          ${{ runner.os }}-mvn-
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
       with:
-        java-version: 11
+        java-version: 17
+        distribution: zulu
     - name: Build with Maven
       run: |
         mvn verify sonar:sonar \
@@ -64,31 +67,3 @@ jobs:
         --file portfolio-app/pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  legacy-build:
-    name: Legacy Build with Java 8
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Cache Maven repository
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-legacy-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-legacy-
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: setup x86 target platform
-      uses: canastro/copy-file-action@master
-      with:
-        source: "portfolio-app/releng/x86/x86-target-definition.target"
-        target: "portfolio-target-definition/portfolio-target-definition.target"
-    - name: Build with Maven
-      run: |
-        mvn -Denforcer.skip=true verify \
-        --batch-mode \
-        --file portfolio-app/pom.xml \
-        -pl :portfolio-target-definition,:name.abuchen.portfolio,:name.abuchen.portfolio.tests -am -amd

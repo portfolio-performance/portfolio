@@ -3,6 +3,11 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -19,11 +24,13 @@ import com.google.common.collect.Lists;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
@@ -42,6 +49,22 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private TimelineChart chart;
     private DataSeriesConfigurator configurator;
     private StatementOfAssetsSeriesBuilder seriesBuilder;
+    private ChartViewConfig chartViewConfig;
+
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        if (chart != null)
+            chart.redraw();
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) ChartViewConfig config)
+    {
+        this.chartViewConfig = config;
+    }
 
     @Override
     protected String getDefaultTitle()
@@ -99,7 +122,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         chart = new TimelineChart(composite);
         chart.getTitle().setVisible(false);
+
         chart.getToolTip().reverseLabels(true);
+        chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
 
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
 
@@ -107,6 +132,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
+        if (chartViewConfig != null)
+        {
+            // do *not* update reporting period as it changes the default for
+            // all other views as well --> unexpected UX
+            configurator.activate(chartViewConfig.getUUID());
+        }
+
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
 

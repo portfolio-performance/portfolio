@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -29,16 +30,20 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.QuotesContextMenu;
@@ -72,6 +77,13 @@ public class HistoricalPricesPane implements InformationPanePage
     }
 
     @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(prices).export(getLabel(), security)));
+    }
+
+    @Override
     public void setInput(Object input)
     {
         security = Adaptor.adapt(Security.class, input);
@@ -93,20 +105,15 @@ public class HistoricalPricesPane implements InformationPanePage
 
         prices = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnEditingSupport.prepare(prices);
+        CopyPasteSupport.enableFor(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(HistoricalPricesPane.class.getSimpleName(), preferences,
                         prices, layout);
 
         prices.setUseHashlookup(true);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new DateLabelProvider(e -> ((SecurityPrice) e).getDate())
         {
-            @Override
-            public String getText(Object element)
-            {
-                return Values.Date.format(((SecurityPrice) element).getDate());
-            }
-
             @Override
             public Color getBackground(Object element)
             {
@@ -132,9 +139,15 @@ public class HistoricalPricesPane implements InformationPanePage
                 return hasMissing ? Colors.theme().warningBackground() : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "date").addListener((e, o, n) -> client.markDirty()) //$NON-NLS-1$
-                        .attachTo(column);
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "date") //$NON-NLS-1$
+                        .addListener((e, o, n) -> {
+                            SecurityPrice price = (SecurityPrice) e;
+                            security.removePrice(price);
+                            security.addPrice(price);
+
+                            client.markDirty();
+                        }).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);

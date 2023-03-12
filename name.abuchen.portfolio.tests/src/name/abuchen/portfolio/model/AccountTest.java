@@ -33,11 +33,11 @@ public class AccountTest
     @Test
     public void testAddTransaction()
     {
-        assertEquals(account.getTransactions().size(), 0);
+        assertEquals(0, account.getTransactions().size());
 
         account.addTransaction(transaction);
 
-        assertEquals(account.getTransactions().size(), 1);
+        assertEquals(1, account.getTransactions().size());
         assertTrue(account.getTransactions().contains(transaction));
     }
 

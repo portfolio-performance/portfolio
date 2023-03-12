@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import name.abuchen.portfolio.TestUtilities;
+import name.abuchen.portfolio.junit.TestUtilities;
 
 @RunWith(Parameterized.class)
 public class TaxonomyLoadingTest

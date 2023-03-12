@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.52.1-SNAPSHOT</version>
+		<version>0.61.4-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -101,7 +101,7 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2021 Andreas Buchen. All rights reserved.</value>
+							<value>Copyright 2012 - 2023 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
@@ -109,7 +109,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>da</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -188,6 +188,28 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/config</outputDirectory>
+									<resources>
+										<resource>
+											<directory>src/main/config</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.6.0</version>
@@ -210,7 +232,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>sign-macos-distro</id>
+								<id>sign-macos-distro-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -226,7 +248,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>build-dmg-distro</id>
+								<id>build-dmg-distro-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -242,7 +264,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>rename-dmg</id>
+								<id>rename-dmg-x86_64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -252,9 +274,89 @@
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
 										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
-										<argument>PortfolioPerformance-${project.version}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>sign-macos-distro-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${project.basedir}/signing/codesign-macos-product.sh</executable>
+									<workingDirectory>/tmp</workingDirectory>
+									<arguments>
+										<argument>${project.basedir}</argument>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-dmg-distro-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/sindresorhus/create-dmg -->
+									<executable>create-dmg</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>rename-dmg-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>mv</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>notarize</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/mitchellh/gon -->
+									<executable>gon</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${basedir}/target/config/notarization-config.json</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-installer</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>makensis</executable>
+									<workingDirectory>${project.basedir}/installer</workingDirectory>
+									<arguments>
+										<argument>-DSOFTWARE_VERSION=${project.version}</argument>
+										<argument>${project.basedir}/installer/installer.nsi</argument>
+									</arguments>
+									<skip>${installer.skip}</skip>
 								</configuration>
 							</execution>
 						</executions>
@@ -273,8 +375,18 @@
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-x86_64.dmg</file>
+											<classifier>x86_64</classifier>
 											<type>dmg</type>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-aarch64.dmg</file>
+											<classifier>aarch64</classifier>
+											<type>dmg</type>
+										</artifact>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-setup.exe</file>
+											<type>exe</type>
 										</artifact>
 									</artifacts>
 								</configuration>
