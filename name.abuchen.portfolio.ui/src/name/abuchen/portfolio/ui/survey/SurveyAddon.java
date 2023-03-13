@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -94,7 +95,7 @@ public class SurveyAddon
                     updateStatusAndUI(isActive);
                 }
                 
-                schedule(Duration.ofHours(12).toMillis());
+                schedule(Duration.ofHours(24).toMillis());
                 
                 return Status.OK_STATUS;
             }
@@ -140,7 +141,7 @@ public class SurveyAddon
         parameter.setName(UIConstants.Parameter.URL);
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(UIConstants.Parameter.URL, "https://www.portfolio-performance.info/survey"); //$NON-NLS-1$
+        parameters.put(UIConstants.Parameter.URL, "https://www.portfolio-performance.info/survey?lang=" + Locale.getDefault().getLanguage()); //$NON-NLS-1$
         ParameterizedCommand command = commandService.createCommand(UIConstants.Command.OPEN_BROWSER, parameters);
 
         // create tool item
