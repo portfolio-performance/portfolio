@@ -199,7 +199,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
                 // 100
                 BigDecimal alignFactor = new BigDecimal(100).multiply(Values.Quote.getBigDecimalFactor()).divide(eoniaPrices.stream()
                                 .filter(pair -> pair.getLeft().isAfter(LocalDate.of(2019, 10, 01).minusDays(1)))
-                                .findFirst().get().getRight(), 20, RoundingMode.HALF_EVEN);
+                                .findFirst().orElseThrow().getRight(), 20, RoundingMode.HALF_EVEN);
                 List<LatestSecurityPrice> pricesToAdd = eoniaPrices.stream()
                                 .filter(pair -> pair.getLeft().isBefore(LocalDate.of(2019, 10, 01)))
                                 .map(pair -> new Pair<>(pair.getLeft(), pair.getRight().multiply(alignFactor)))
@@ -364,7 +364,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             if (!interestRateString.equals("NaN")) //$NON-NLS-1$
             {
                 BigDecimal interestRate = new BigDecimal(interestRateString);
-                dataSeries.add(new Pair<LocalDate, BigDecimal>(date, interestRate));
+                dataSeries.add(new Pair<>(date, interestRate));
             }
         }
 
@@ -375,7 +375,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
             // EONIA is an over-night index, so it has modified duration 0 and
             // we can calculate the quote for one
             // more day given the current interest rate.
-            dataSeries.add(new Pair<LocalDate, BigDecimal>(lastQuoteDate, new BigDecimal(0)));
+            dataSeries.add(new Pair<>(lastQuoteDate, new BigDecimal(0)));
         }
         ExtractedData extractedData = new ExtractedData();
         extractedData.dataSeries = dataSeries;
