@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.survey;
 
 public class Survey
 {
-    private static boolean isActice = true;
+    private static boolean isActive = true;
 
     private Survey()
     {
@@ -10,11 +10,11 @@ public class Survey
 
     public static boolean isActive()
     {
-        return isActice;
+        return isActive;
     }
 
     /* package */ static void setActive(boolean isActive)
     {
-        isActice = isActive;
+        Survey.isActive = isActive;
     }
 }
