@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -36,8 +37,10 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -195,6 +198,62 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 transactionAmount2 = -transactionAmount2;
             return Long.compare(transactionAmount1, transactionAmount2);
         }));
+        transactionsColumns.addColumn(column);
+
+        column = new Column("fees", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
+        Function<AccountTransaction, Money> getFees = tx -> {
+            // fees are stored with the portfolio transaction (for example
+            // purchase and sale)
+            CrossEntry entry = tx.getCrossEntry();
+            if (entry != null && entry.getCrossTransaction(tx) instanceof PortfolioTransaction)
+                return entry.getCrossTransaction(tx).getUnitSum(Unit.Type.FEE);
+
+            return tx.getUnitSum(Unit.Type.FEE);
+        };
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Money.format(getFees.apply((AccountTransaction) e), client.getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(element -> getFees.apply((AccountTransaction) element)).attachTo(column);
+        column.setVisible(false);
+        transactionsColumns.addColumn(column);
+
+        column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
+        Function<AccountTransaction, Money> getTaxes = tx -> {
+            // taxes are stored with the portfolio transaction (for example
+            // purchase and sale)
+            CrossEntry entry = tx.getCrossEntry();
+            if (entry != null && entry.getCrossTransaction(tx) instanceof PortfolioTransaction)
+                return entry.getCrossTransaction(tx).getUnitSum(Unit.Type.TAX);
+
+            return tx.getUnitSum(Unit.Type.TAX);
+        };
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Money.format(getTaxes.apply((AccountTransaction) e), client.getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(element -> getTaxes.apply((AccountTransaction) element)).attachTo(column);
+        column.setVisible(false);
         transactionsColumns.addColumn(column);
 
         column = new Column("3", Messages.Balance, SWT.RIGHT, 80); //$NON-NLS-1$
