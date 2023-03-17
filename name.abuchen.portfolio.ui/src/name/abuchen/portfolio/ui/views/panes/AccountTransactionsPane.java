@@ -365,8 +365,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
         transactionsColumns.addColumn(column);
-		
-		column = new Column("9", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
+
+        column = new Column("9", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
