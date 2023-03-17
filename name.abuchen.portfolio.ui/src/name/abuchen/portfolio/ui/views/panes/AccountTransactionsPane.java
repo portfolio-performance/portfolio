@@ -38,6 +38,8 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -362,6 +364,31 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((AccountTransaction) e).getSource()).attachTo(column); // $NON-NLS-1$
+        transactionsColumns.addColumn(column);
+		
+		column = new Column("9", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return Values.Money.format(Money.of(t.getCurrencyCode(), t.getTaxes()), client.getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter
+                        .create(element -> ((TransactionPair<?>) element).getTransaction() instanceof AccountTransaction
+                                        ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction())
+                                                        .getUnitSum(Unit.Type.TAX)
+                                        : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction())
+                                                        .getUnitSum(Unit.Type.TAX))
+                        .attachTo(column);
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns(true);

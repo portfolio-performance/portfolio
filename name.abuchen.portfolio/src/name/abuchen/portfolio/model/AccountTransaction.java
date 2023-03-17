@@ -84,6 +84,12 @@ public class AccountTransaction extends Transaction
         return getAmount() + (type.isCredit() ? taxAndFees : -taxAndFees);
     }
 
+    public long getTaxes()
+    {
+        long tax = getUnitSum(Unit.Type.TAX).getAmount();
+        return tax;
+    }
+
     /**
      * Returns the gross value, i.e. the value before taxes are applied. At the
      * moment, only dividend transactions are supported.
