@@ -22,10 +22,12 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MParameter;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -89,14 +91,14 @@ public class SurveyAddon
             protected IStatus run(IProgressMonitor monitor)
             {
                 boolean isActive = checkIfSurveyIsActive();
-                
+
                 if (isActive != Survey.isActive())
                 {
                     updateStatusAndUI(isActive);
                 }
-                
+
                 schedule(Duration.ofHours(24).toMillis());
-                
+
                 return Status.OK_STATUS;
             }
 
@@ -115,7 +117,7 @@ public class SurveyAddon
             return false;
         }
     }
-    
+
     protected void updateStatusAndUI(boolean isActive)
     {
         Display.getDefault().asyncExec(() -> {
@@ -123,8 +125,15 @@ public class SurveyAddon
             Survey.setActive(isActive);
             preferences.putBoolean(UIConstants.Preferences.ENABLE_SURVEY_REMINDER, Survey.isActive());
 
+            modelService.findElements(application, UIConstants.PartStack.MAIN, MPartStack.class).forEach(partStack -> {
+                CTabFolder folder = (CTabFolder) partStack.getWidget();
+                int height = folder.getTabHeight();
+                if (height < 22)
+                    folder.setTabHeight(22);
+            });
+
             modelService.findElements(application, MHandledToolItem.class, EModelService.IN_PART,
-                            e -> e.getTags().contains(SURVEY_TAG))
+                            e -> e.getTags().contains(SURVEY_TAG)) //
                             .forEach(item -> item.setVisible(Survey.isActive()));
         });
     }
@@ -141,7 +150,8 @@ public class SurveyAddon
         parameter.setName(UIConstants.Parameter.URL);
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(UIConstants.Parameter.URL, "https://www.portfolio-performance.info/survey?lang=" + Locale.getDefault().getLanguage()); //$NON-NLS-1$
+        parameters.put(UIConstants.Parameter.URL,
+                        "https://www.portfolio-performance.info/survey?lang=" + Locale.getDefault().getLanguage()); //$NON-NLS-1$
         ParameterizedCommand command = commandService.createCommand(UIConstants.Command.OPEN_BROWSER, parameters);
 
         // create tool item
