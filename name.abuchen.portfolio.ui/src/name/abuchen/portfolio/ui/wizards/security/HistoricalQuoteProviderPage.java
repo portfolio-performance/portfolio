@@ -130,6 +130,12 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONFactorPropertyName()
+    {
+        return GenericJSONQuoteFeed.FACTOR_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
     protected String getJSONVolumePathPropertyName()
     {
         return GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_HISTORIC;
@@ -238,6 +244,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                             getModel().getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.HIGH_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.FACTOR_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_HISTORIC));
         else

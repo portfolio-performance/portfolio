@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -500,7 +501,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
-        long result = feed.extractValue(object);
+        long result = feed.extractValue(object, BigDecimal.ONE);
 
         assertEquals(expected, result);
     }
@@ -513,7 +514,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC);
-        long result = feed.extractValue(object);
+        long result = feed.extractValue(object, BigDecimal.ONE);
 
         assertEquals(0, result);
     }
