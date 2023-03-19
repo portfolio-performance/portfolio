@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -15,6 +17,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -36,6 +39,7 @@ public class ExportSelectionPage extends AbstractWizardPage
 {
     private Client client;
 
+    private Button convertCurrenciesButton;
     private TreeViewer treeViewer;
 
     protected ExportSelectionPage(Client client)
@@ -58,15 +62,28 @@ public class ExportSelectionPage extends AbstractWizardPage
         return parentItem == null ? null : (Class<?>) parentItem.getData();
     }
 
+    public boolean convertCurrencies()
+    {
+        return convertCurrenciesButton.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NULL);
+        Composite superContainer = new Composite(parent, SWT.NULL);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(superContainer);
+
+        convertCurrenciesButton = new Button(superContainer, SWT.CHECK);
+        convertCurrenciesButton.setText(Messages.ExportWizardCurrencyConversionQuotes);
+
+        Composite container = new Composite(superContainer, SWT.NULL);
         setControl(container);
 
         container.setLayout(new FillLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 
         Composite treeComposite = new Composite(container, SWT.NONE);
+
         TreeColumnLayout layout = new TreeColumnLayout();
         treeComposite.setLayout(layout);
         treeViewer = new TreeViewer(treeComposite, SWT.BORDER | SWT.SINGLE);
@@ -82,8 +99,8 @@ public class ExportSelectionPage extends AbstractWizardPage
         treeViewer.setContentProvider(new ExportItemsContentProvider());
         treeViewer.setLabelProvider(new ExportItemsLabelProvider(client));
         treeViewer.setInput(client);
-        treeViewer.setExpandedElements(
-                        new Object[] { AccountTransaction.class, PortfolioTransaction.class, Security.class });
+        treeViewer.setExpandedElements((Object[]) new Object[] { AccountTransaction.class, PortfolioTransaction.class,
+                        Security.class });
 
         // wiring
         setPageComplete(false);
