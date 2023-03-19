@@ -412,6 +412,7 @@ public class Messages extends NLS
     public static String ErrorKeyAlreadyUsed;
     public static String ExportWizardAccountTransactions;
     public static String ExportWizardAllTransactionsAktienfreundeNet;
+    public static String ExportWizardCurrencyConversionQuotes;
     public static String ExportWizardDescription;
     public static String ExportWizardErrorExporting;
     public static String ExportWizardHistoricalQuotes;

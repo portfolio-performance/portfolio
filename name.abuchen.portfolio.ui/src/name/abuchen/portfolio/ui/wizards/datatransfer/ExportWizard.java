@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -21,6 +22,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -67,6 +70,16 @@ public class ExportWizard extends Wizard
 
         try
         {
+            Optional<CurrencyConverter> converter;
+            if(exportPage.convertCurrencies())
+            {
+                converter = Optional.of(new CurrencyConverterImpl(factory, client.getBaseCurrency()));
+            }
+            else
+            {
+                converter = Optional.empty();
+            }
+            
             // account transactions
             if (exportItem == AccountTransaction.class)
             {
@@ -99,7 +112,7 @@ public class ExportWizard extends Wizard
                 if (Messages.ExportWizardSecurityMasterData.equals(exportItem))
                     new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
-                    new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
+                    new CSVExporter().exportMergedSecurityPrices(converter, file, client.getSecurities());
                 else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
                     new AktienfreundeNetExporter().exportAllTransactions(file, client);
                 else if (Messages.ExportWizardVINISApp.equals(exportItem))
@@ -109,11 +122,11 @@ public class ExportWizard extends Wizard
             // historical quotes
             else if (exportItem == SecurityPrice.class)
             {
-                new CSVExporter().exportSecurityPrices(file, client.getSecurities());
+                new CSVExporter().exportSecurityPrices(converter, file, client.getSecurities());
             }
             else if (exportClass == SecurityPrice.class)
             {
-                new CSVExporter().exportSecurityPrices(file, (Security) exportItem);
+                new CSVExporter().exportSecurityPrices(converter, file, (Security) exportItem);
             }
             else
             {

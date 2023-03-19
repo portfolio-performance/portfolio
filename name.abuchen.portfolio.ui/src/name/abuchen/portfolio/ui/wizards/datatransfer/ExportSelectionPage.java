@@ -15,6 +15,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -36,6 +39,7 @@ public class ExportSelectionPage extends AbstractWizardPage
 {
     private Client client;
 
+    private Button convertCurrenciesButton;
     private TreeViewer treeViewer;
 
     protected ExportSelectionPage(Client client)
@@ -57,16 +61,35 @@ public class ExportSelectionPage extends AbstractWizardPage
         TreeItem parentItem = treeViewer.getTree().getSelection()[0].getParentItem();
         return parentItem == null ? null : (Class<?>) parentItem.getData();
     }
+    
+    public boolean convertCurrencies()
+    {
+        return convertCurrenciesButton.getSelection();
+    }
 
     @Override
     public void createControl(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NULL);
+        Composite superConatainer = new Composite(parent, SWT.NULL);
+        GridLayout superLayout = new GridLayout(1, false);
+        superConatainer.setLayout(superLayout);
+        
+        convertCurrenciesButton = new Button(superConatainer, SWT.CHECK);
+        convertCurrenciesButton.setText(Messages.ExportWizardCurrencyConversionQuotes);
+        
+        Composite container = new Composite(superConatainer, SWT.NULL);
         setControl(container);
 
         container.setLayout(new FillLayout());
+        GridData containerLayoutData = new GridData();
+        containerLayoutData.verticalAlignment = GridData.FILL;
+        containerLayoutData.horizontalAlignment = GridData.FILL;
+        containerLayoutData.grabExcessHorizontalSpace = true;
+        containerLayoutData.grabExcessVerticalSpace = true;
+        container.setLayoutData(containerLayoutData);
 
         Composite treeComposite = new Composite(container, SWT.NONE);
+        
         TreeColumnLayout layout = new TreeColumnLayout();
         treeComposite.setLayout(layout);
         treeViewer = new TreeViewer(treeComposite, SWT.BORDER | SWT.SINGLE);
