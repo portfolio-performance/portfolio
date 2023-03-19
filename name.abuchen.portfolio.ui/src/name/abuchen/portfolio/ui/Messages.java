@@ -764,6 +764,8 @@ public class Messages extends NLS
     public static String LabelJSONPathToDate;
     public static String LabelJSONDateFormat;
     public static String LabelJSONDateFormatHint;
+    public static String LabelJSONFactor;
+    public static String LabelJSONFactorHint;
     public static String LabelJSONPathToLow;
     public static String LabelJSONPathToHigh;
     public static String LabelJSONPathToVolume;
