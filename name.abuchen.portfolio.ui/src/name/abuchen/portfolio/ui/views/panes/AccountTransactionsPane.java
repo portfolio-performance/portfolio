@@ -109,9 +109,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        if (element instanceof AccountTransaction)
+        if (element instanceof AccountTransaction t)
         {
-            AccountTransaction t = (AccountTransaction) element;
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().updateFrom(t);
             view.markDirty();
@@ -265,6 +264,12 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 Money balance = transaction2balance.get(e);
                 return balance != null ? Values.Money.format(balance, client.getBaseCurrency()) : null;
             }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
         });
 
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -322,9 +327,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             public Long getValue(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
-                if (t.getCrossEntry() instanceof BuySellEntry)
+                if (t.getCrossEntry() instanceof BuySellEntry entry)
                 {
-                    return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
+                    return entry.getPortfolioTransaction().getShares();
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
@@ -355,9 +360,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         column = new CalculatedQuoteColumn("6", client, e -> { //$NON-NLS-1$
             AccountTransaction t = (AccountTransaction) e;
-            if (t.getCrossEntry() instanceof BuySellEntry)
+            if (t.getCrossEntry() instanceof BuySellEntry entry)
             {
-                PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
+                PortfolioTransaction pt = entry.getPortfolioTransaction();
                 return pt.getGrossPricePerShare();
             }
             else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
@@ -551,16 +556,14 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     private Action createEditAction(Account account, AccountTransaction transaction)
     {
         // buy / sell
-        if (transaction.getCrossEntry() instanceof BuySellEntry)
+        if (transaction.getCrossEntry() instanceof BuySellEntry entry)
         {
-            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
             return new OpenDialogAction(view, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
+        else if (transaction.getCrossEntry() instanceof AccountTransferEntry entry)
         {
-            AccountTransferEntry entry = (AccountTransferEntry) transaction.getCrossEntry();
             return new OpenDialogAction(view, Messages.MenuEditTransaction) //
                             .type(AccountTransferDialog.class, d -> d.setEntry(entry));
         }
@@ -608,28 +611,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)
         {
-            switch (t.getType())
-            {
-                case DEPOSIT:
-                case INTEREST:
-                case DIVIDENDS:
-                case TAX_REFUND:
-                case SELL:
-                case TRANSFER_IN:
-                case FEES_REFUND:
-                    balance.add(t.getMonetaryAmount());
-                    break;
-                case REMOVAL:
-                case FEES:
-                case INTEREST_CHARGE:
-                case TAXES:
-                case BUY:
-                case TRANSFER_OUT:
-                    balance.subtract(t.getMonetaryAmount());
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
+            if (t.getType().isCredit())
+                balance.add(t.getMonetaryAmount());
+            else
+                balance.subtract(t.getMonetaryAmount());
 
             transaction2balance.put(t, balance.toMoney());
         }
