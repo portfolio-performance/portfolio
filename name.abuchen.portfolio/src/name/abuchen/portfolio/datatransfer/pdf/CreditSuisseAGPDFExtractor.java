@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -61,29 +62,40 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // 900 Registered Shs Iron Mountain Inc USD 0.01
                 // Valor 26754105, IRM, ISIN US46284V1017
                 // Kurswert USD 27,270.00
-                .section("shares", "name", "isin", "currency").optional()
+                .section("name", "isin", "currency").optional()
                 .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [\\w]{3} [\\.,\\d]+$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
                 // Landesbank Girozentrale 2014-10.4.24 Reg-S
                 // Subord.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Kurswert USD 183,000.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^[\\w]{3} (?<shares>[\\.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // Ausführungszeit
                 // 103 14800075391312 18:32:46 XNYS USD 30.30
@@ -147,29 +159,40 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // 900 REGISTERED SHS IRON MOUNTAIN INC
                 // Valor 26754105, IRM, ISIN US46284V1017
                 // Bruttoertrag USD 556.65
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^(?<shares>[\\.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // USD 200,000 6.25 % FIXED RATE NOTES NORDDEUTSCHE
                 // LANDESBANK GIROZENTRALE 2014-10.4.24 REG-S
                 // SUBORD.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Bruttoertrag USD 6,250.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^[\\w]{3} (?<shares>[\\.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Bruttoertrag (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // Valuta 12.04.2021
                 .section("date")
@@ -213,29 +236,40 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 // 900 Registered Shs Iron Mountain Inc USD 0.01
                 // Valor 26754105, IRM, ISIN US46284V1017
                 // Kurswert USD 27,270.00
-                .section("shares", "name", "currency", "isin").optional()
-                .match("^(?<shares>[\\.,\\d]+) (?<name>.*) [\\w]{3} [\\.,\\d]+$")
+                .section("name", "currency", "isin").optional()
+                .match("^[\\.,\\d]+ (?<name>.*) [\\w]{3} [\\.,\\d]+$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
                 // Landesbank Girozentrale 2014-10.4.24 Reg-S
                 // Subord.
                 // Valor 24160639, NDKH, ISIN XS1055787680
                 // Kurswert USD 183,000.00
-                .section("shares", "name", "isin", "currency").optional()
-                .match("^[\\w]{3} (?<shares>[\\.,\\d]+) (?<name>.*)$")
+                .section("name", "isin", "currency").optional()
+                .match("^[\\w]{3} [\\.,\\d]+ (?<name>.*)$")
                 .match("^.* ISIN (?<isin>[\\w]{12})$")
                 .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> {
-                    // Percentage quotation, workaround for bonds
-                    t.setShares((asShares(v.get("shares")) / 100));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                .oneOf(
+                                // USD 200,000 6.25 % Fixed Rate Notes Norddeutsche
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                        })
+                                ,
+                                // 900 Registered Shs Iron Mountain Inc USD 0.01
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^(?<shares>[\\.,\\d]+) .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // Datum 08.06.2020
                 .section("date")
@@ -294,18 +328,18 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
     }
 }

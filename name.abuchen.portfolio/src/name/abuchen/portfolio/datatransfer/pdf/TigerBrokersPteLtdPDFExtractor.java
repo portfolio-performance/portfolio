@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -170,30 +171,32 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> buyBlock = new Transaction<>();
-        buyBlock.subject(() -> {
+        Transaction<BuySellEntry> buyBlock_Format01 = new Transaction<>();
+        buyBlock_Format01.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
             return entry;
         });
 
-        Block firstRelevantLineForBuyBlock = new Block("^Settlement Fee: \\-[\\.,\\d]+$", "^Platform Fee: \\-[\\.,\\d]+$");
-        type.addBlock(firstRelevantLineForBuyBlock);
-        firstRelevantLineForBuyBlock.set(buyBlock);
+        Block firstRelevantLineForBuyBlock_Format01 = new Block("^Settlement Fee: \\-[\\.,\\d]+$", "^Platform Fee: \\-[\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForBuyBlock_Format01);
+        firstRelevantLineForBuyBlock_Format01.setMaxSize(3);
+        firstRelevantLineForBuyBlock_Format01.set(buyBlock_Format01);
 
-        buyBlock
+        buyBlock_Format01
+                // @formatter:off
                 // Settlement Fee: -0.14
                 // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
                 // Platform Fee: -1.00
+                // @formatter:on
                 .section("tickerSymbol", "date", "time", "shares", "amount")
                 .match("^Settlement Fee: \\-[\\.,\\d]+$")
                 .match("^(?<tickerSymbol>[\\w]{2,4}) "
                                 + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), "
                                 + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* "
-                                + "(?<shares>[\\.,\\d]+) "
-                                + "[\\.,\\d]+ "
-                                + "[\\.,\\d]+ "
-                                + "(?<amount>[\\.,\\d]+).*$")
+                                + "(?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ "
+                                + "(?<amount>[\\.,\\d]+) "
+                                + "Commission: \\-[\\.,\\d]+ \\-[\\.,\\d]+ (\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$")
                 .match("^Platform Fee: \\-[\\.,\\d]+$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
@@ -214,12 +217,60 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode() != null)
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                         return new BuySellEntryItem(t);
                     return null;
                 });
 
-        addFeesSectionsTransaction(buyBlock, type);
+        addFeesSectionsTransaction(buyBlock_Format01, type);
+
+        Transaction<BuySellEntry> buyBlock_Format02 = new Transaction<>();
+        buyBlock_Format02.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLineForBuyBlock_Format02 = new Block("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$");
+        type.addBlock(firstRelevantLineForBuyBlock_Format02);
+        firstRelevantLineForBuyBlock_Format02.set(buyBlock_Format02);
+
+        buyBlock_Format02
+                // @formatter:off
+                // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
+                // @formatter:on
+                .section("tickerSymbol", "date", "time", "shares", "amount").optional()
+                .match("^(?<tickerSymbol>[\\w]{2,4}) "
+                                + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), "
+                                + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* "
+                                + "(?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ "
+                                + "(?<amount>[\\.,\\d]+) "
+                                + "Commission: \\-[\\.,\\d]+(\\s)?Platform Fee: \\-[\\.,\\d]+ (\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    Security securityData = getSecurity(context, v.get("tickerSymbol"));
+                    if (securityData != null)
+                    {
+                        v.put("name", securityData.getName());
+                        v.put("tickerSymbol", securityData.getTickerSymbol());
+                        v.put("currency", asCurrencyCode(securityData.getCurrency()));
+                    }
+
+                    t.setDate(asDate(v.get("date"), v.get("time")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
+                .wrap(t -> {
+                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                        return new BuySellEntryItem(t);
+                    return null;
+                });
+
+        addFeesSectionsTransaction(buyBlock_Format02, type);
 
         Transaction<AccountTransaction> dividendBlock = new Transaction<>();
         dividendBlock.subject(() -> {
@@ -233,8 +284,10 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         firstRelevantLineForDividendBlock.set(dividendBlock);
 
         dividendBlock
+                // @formatter:off
                 // 2022-03-24 VT Cash Dividend 0.2572 USD per Share (Ordinary Dividend) 17.75
                 // 2022-12-22 VT Cash Dividend 0.6381 USD per Share (Ordinary Dividend) 44.03 USD
+                // @formatter:on
                 .section("date", "tickerSymbol", "perShare", "note", "amount")
                 .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) "
                                 + "(?<tickerSymbol>[\\w]{2,4}) "
@@ -274,7 +327,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     {
                         tax = Money.of(asCurrencyCode(securityDividendeTax.getCurrency()), asAmount(securityDividendeTax.getTax()));
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
 
                     // Dividends are stated in gross.
@@ -303,7 +356,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         firstRelevantLineForDepositBlock.set(depositBlock);
 
         depositBlock
+                // @formatter:off
                 // 2022-03-02 Deposit DR-3649942 30,000.00
+                // @formatter:on
                 .section("date", "note", "amount")
                 .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Deposit (?<note>.*) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -325,9 +380,12 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
+                // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
+                // @formatter:on
                 .section("fee").optional()
-                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+.*$")
+                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-(?<fee>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     v.put("currency", asCurrencyCode(context.get("currency")));
@@ -335,7 +393,45 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     processFeeEntries(t, v, type);
                 })
 
+                // @formatter:off
+                // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
+                // @formatter:on
+                .section("fee").optional()
+                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-[\\.,\\d]+ \\-(?<fee>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
+                    processFeeEntries(t, v, type);
+                })
+
+                // @formatter:off
+                // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
+                // @formatter:on
+                .section("fee").optional()
+                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-[\\.,\\d]+([\\s])?Platform Fee: \\-(?<fee>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
+                    processFeeEntries(t, v, type);
+                })
+
+                // @formatter:off
+                // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
+                // @formatter:on
+                .section("fee").optional()
+                .match("^[\\w]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* Commission: \\-[\\.,\\d]+([\\s])?Platform Fee: \\-[\\.,\\d]+ \\-(?<fee>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
+                    processFeeEntries(t, v, type);
+                })
+
+                // @formatter:off
                 // Settlement Fee: -0.14
+                // @formatter:on
                 .section("fee").optional()
                 .match("^Settlement Fee: \\-(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -345,7 +441,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     processFeeEntries(t, v, type);
                 })
 
+                // @formatter:off
                 // Platform Fee: -1.00
+                // @formatter:on
                 .section("fee").optional()
                 .match("^Platform Fee: \\-(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -476,18 +574,18 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
     }
 }

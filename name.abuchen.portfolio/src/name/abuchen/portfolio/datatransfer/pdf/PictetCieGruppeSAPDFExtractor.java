@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -100,7 +101,8 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         .match("^(Purchase|Sale) [\\w]{3} (\\-)?(?<shares>[\\.'\\d]+) (?<name>.*) at [\\.'\\d]+%$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            t.setShares((asShares(v.get("shares")) / 100));
+                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                         })
                         )
 
@@ -231,18 +233,18 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

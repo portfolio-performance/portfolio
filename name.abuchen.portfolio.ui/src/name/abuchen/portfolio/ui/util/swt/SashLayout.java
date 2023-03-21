@@ -263,7 +263,7 @@ public class SashLayout extends Layout
 
         int availableSize = (isHorizontal ? bounds.width : bounds.height) - SASH_WIDTH;
 
-        int fixedSize = Math.max(0, getLayoutData(children.get(isBeginning ? 0 : 1)).size);
+        int fixedSize = Math.min(Math.max(0, getLayoutData(children.get(isBeginning ? 0 : 1)).size), availableSize);
         int remaining = Math.max(0, availableSize - fixedSize);
 
         int pos = isHorizontal ? bounds.x : bounds.y;

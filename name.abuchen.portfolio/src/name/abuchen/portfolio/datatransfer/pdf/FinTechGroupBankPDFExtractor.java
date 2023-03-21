@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -79,10 +80,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Stornierung Wertpapierabrechnung Kauf Fonds
                 .section("type").optional()
                 .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Storno") || v.get("type").equals("Stornierung"))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // @formatter:off
                 // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
@@ -109,13 +108,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)([\\s]+)? (?<notation>St\\.|[\\w]{3}).*$")
+                .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)([\\s]+)? (?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -191,13 +195,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // @formatter:off
@@ -333,7 +337,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     // If the taxes are negative, then this is a tax
                     // refund and has been marked so. 
                     // Finally, we remove the flag.
@@ -341,10 +345,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                     {
-                        if (t.getPortfolioTransaction().getNote() == null || !t.getPortfolioTransaction().getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new BuySellEntryItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        BuySellEntryItem item = new BuySellEntryItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });
@@ -424,6 +427,24 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // Kurs          : 114,4700 USD            Kurswert      :             528,10 EUR
+                // Devisenkurs   : 1,083790                Provision     :               5,90 EUR
+                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<currency>[\\w]{3})$")
+                .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
+
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // @formatter:off
@@ -715,13 +736,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // @formatter:off
@@ -736,13 +757,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -868,13 +889,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // @formatter:off
@@ -893,13 +914,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -1253,13 +1274,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("shares", "notation")
-                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St.|Stk\\.|[\\w]{3})) .*$")
+                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})) .*$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            if (v.get("notation") != null && !v.get("notation").startsWith("Stk") && !v.get("notation").startsWith("St"))
-                                                t.setShares((asShares(v.get("shares")) / 100));
+                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                            {
+                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                            }
                                             else
+                                            {
                                                 t.setShares(asShares(v.get("shares")));
+                                            }
                                         })
                                 ,
                                 // @formatter:off
@@ -1381,13 +1407,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Stk./Nominale   : 25.000,000000 EUR    Einbeh. Steuer* :              0,00 EUR
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>St\\.|[\\w]{3}).*$")
+                .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -1570,13 +1601,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|[\\w]{3})).*$")
+                .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
-                        t.setShares((asShares(v.get("shares")) / 100));
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
                     else
+                    {
                         t.setShares(asShares(v.get("shares")));
+                    }
                 })
 
                 // @formatter:off
@@ -2258,13 +2294,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("shares", "notation")
-                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St.|Stk\\.|[\\w]{3})) .*$")
+                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})) .*$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            if (v.get("notation") != null && !v.get("notation").startsWith("Stk") && !v.get("notation").startsWith("St"))
-                                                t.setShares((asShares(v.get("shares")) / 100));
+                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                            {
+                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                            }
                                             else
+                                            {
                                                 t.setShares(asShares(v.get("shares")));
+                                            }
                                         })
                                 ,
                                 // @formatter:off
@@ -2381,7 +2422,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2407,7 +2448,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2432,7 +2473,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetTax(tax, t, type);
+                        checkAndSetTax(tax, t, type.getCurrentContext());
                     }
                 })
 
@@ -2484,7 +2525,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetFee(fee, t, type);   
+                        checkAndSetFee(fee, t, type.getCurrentContext());   
                     }
                 })
 
@@ -2509,7 +2550,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
                         }
 
-                        checkAndSetFee(fee, t, type);   
+                        checkAndSetFee(fee, t, type.getCurrentContext());   
                     }
                 })
 

@@ -77,6 +77,7 @@ public interface UIConstants
      */
     interface Command // NOSONAR
     {
+        String OPEN_BROWSER = "name.abuchen.portfolio.ui.command.openBrowser"; //$NON-NLS-1$
         String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
@@ -164,6 +165,7 @@ public interface UIConstants
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
 
@@ -220,6 +222,8 @@ public interface UIConstants
     interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
+        String DISABLE_CSS_STYLING = "org.eclipse.e4.ui.css.disabled"; //$NON-NLS-1$
+        
         String HEADING1 = "heading1"; //$NON-NLS-1$
         String HEADING2 = "heading2"; //$NON-NLS-1$
         String KPI = "kpi"; //$NON-NLS-1$

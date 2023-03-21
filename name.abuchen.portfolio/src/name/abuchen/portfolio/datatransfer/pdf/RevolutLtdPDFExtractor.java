@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.math.BigDecimal;
 import java.util.Locale;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -146,18 +147,18 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "UK");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "UK");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "UK");
     }
 }

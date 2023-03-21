@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class YearXTest
         String code = "Y2019";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), YearX.class);
+        assertEquals(YearX.class, period.getClass());
     }
 
     @Test
@@ -31,7 +32,7 @@ public class YearXTest
 
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getCode(), code);
+        assertEquals(code, period.getCode());
     }
 
     @Test
@@ -44,7 +45,7 @@ public class YearXTest
         // The input of toInterval will be ignored
         Interval result = period.toInterval(LocalDate.of(2020, 12, 31));
 
-        assertEquals(result, Interval.of(intervalStart, intervalEnd));
+        assertEquals(Interval.of(intervalStart, intervalEnd), result);
     }
 
     @Test
@@ -55,7 +56,7 @@ public class YearXTest
         ReportingPeriod notEqualSameClass = ReportingPeriod.from("Y2020");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualSameClass);
         assertNotEquals(equal1, notEqualDifferentClass);
 

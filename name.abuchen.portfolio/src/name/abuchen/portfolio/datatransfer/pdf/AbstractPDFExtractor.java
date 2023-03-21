@@ -16,7 +16,9 @@ import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
@@ -31,6 +33,8 @@ import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
+    protected final static String FAILURE = "FAILURE"; //$NON-NLS-1$
+
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
@@ -212,7 +216,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected long asShares(String value, String language, String country)
     {
-        return PDFExtractorUtils.asShares(value, language, country);
+        return ExtractorUtils.asShares(value, language, country);
     }
 
     protected String asCurrencyCode(String currency)
@@ -237,9 +241,14 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    protected PDFExchangeRate asExchangeRate(Map<String, String> data)
+    protected long asAmount(String value, String language, String country)
     {
-        return new PDFExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    protected ExtrExchangeRate asExchangeRate(Map<String, String> data)
+    {
+        return new ExtrExchangeRate(asExchangeRate(data.get("exchangeRate")), //$NON-NLS-1$
                         asCurrencyCode(data.get("baseCurrency")), //$NON-NLS-1$
                         asCurrencyCode(data.get("termCurrency"))); //$NON-NLS-1$
     }
@@ -263,29 +272,29 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected LocalDateTime asDate(String value, Locale... hints)
     {
-        return PDFExtractorUtils.asDate(value, hints);
+        return ExtractorUtils.asDate(value, hints);
     }
 
     protected LocalTime asTime(String value)
     {
-        return PDFExtractorUtils.asTime(value);
+        return ExtractorUtils.asTime(value);
     }
 
     protected LocalDateTime asDate(String date, String time)
     {
-        return PDFExtractorUtils.asDate(date, time);
+        return ExtractorUtils.asDate(date, time);
     }
 
     protected void processTaxEntries(Object t, Map<String, String> v, DocumentType type)
     {
         Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))); //$NON-NLS-1$ //$NON-NLS-2$
-        PDFExtractorUtils.checkAndSetTax(tax, t, type);
+        ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
     }
 
     protected void processFeeEntries(Object t, Map<String, String> v, DocumentType type)
     {
         Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))); //$NON-NLS-1$ //$NON-NLS-2$
-        PDFExtractorUtils.checkAndSetFee(fee, t, type);
+        ExtractorUtils.checkAndSetFee(fee, t, type.getCurrentContext());
     }
 
     /**
@@ -311,14 +320,14 @@ public abstract class AbstractPDFExtractor implements Extractor
                     throw new IllegalArgumentException(
                                     "processing of withholding taxes must be done before creditable withholding taxes"); //$NON-NLS-1$
 
-                PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
                 data.getTransactionContext().putBoolean(taxType, true);
                 return;
 
             case "creditableWithHoldingTax": //$NON-NLS-1$
                 if (!data.getTransactionContext().getBoolean("withHoldingTax")) //$NON-NLS-1$
                 {
-                    PDFExtractorUtils.checkAndSetTax(tax, t, type);
+                    ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
                     data.getTransactionContext().putBoolean(taxType, true);
                 }
                 return;

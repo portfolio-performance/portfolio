@@ -2,6 +2,7 @@
 	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
 		<language identifier="cs" poeditor="cs" />
+		<language identifier="da" poeditor="da" />>
 		<language identifier="de" poeditor="de" />
 		<language identifier="es" poeditor="es" />
 		<language identifier="fr" poeditor="fr" />
@@ -55,6 +56,7 @@
 				<string>AboutTextOtherSoftware</string>
 				<string>AboutTextTranslationDevelopers</string>
 				<string>AboutTextDeveloped</string>
+				<string>SurveyIcon</string>
 			</excludes>
 		</artifact>
 		<artifact>

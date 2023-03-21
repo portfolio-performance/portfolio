@@ -17,7 +17,7 @@ public class PreviousTradingDayTest
     public void testSerializationDeserializationRoundtrip() throws IOException
     {
         PreviousTradingDay previousDay = new PreviousTradingDay();
-        assertEquals(ReportingPeriod.from(previousDay.getCode()), previousDay);
+        assertEquals(previousDay, ReportingPeriod.from(previousDay.getCode()));
     }
 
     @Test

@@ -1,15 +1,16 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -22,18 +23,27 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class TargobankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String regexName = "Wertpapier (?<name>.*)"; //$NON-NLS-1$
-    private static final String regexWknAndIsin = "WKN / ISIN (?<wkn>\\S*) / (?<isin>\\S*)"; //$NON-NLS-1$
-    private static final String regexAmountAndCurrency = "Konto-Nr. \\w* (?<amount>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
-    private static final String regexDate = "Schlusstag( / Handelszeit)? (?<date>\\d{2}.\\d{2}.\\d{4})( / (?<time>\\d{2}:\\d{2}:\\d{2}))?"; //$NON-NLS-1$
-    private static final String regexTime = "(Schlusstag / )?Handelszeit ((?<date>\\d{2}.\\d{2}.\\d{4}) / )?(?<time>\\d{2}:\\d{2}:\\d{2})"; //$NON-NLS-1$
-    private static final String regexShares = "St.ck (?<shares>(\\d+.)?\\d+(,\\d+)?)"; //$NON-NLS-1$
-    private static final String regexFees = "Provision (?<fee>(\\d+\\.)?\\d+(,\\d+)?) (?<currency>\\w{3}+)"; //$NON-NLS-1$
-    private static final String regexTaxes = "Gesamtsumme Steuern (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
-    private static final String regexwithHoldingTaxDivDoc = ".*Ausl.ndische Quellensteuer .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
-    private static final String regexwithHoldingTaxTaxDoc = "Anrechenbare ausl.ndische Quellensteuer (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$"; //$NON-NLS-1$
+    /**
+     * @formatter:off
+     * Information:
+     * Targobank AG always creates two documents per transaction.
+     * 
+     * 1. Transaction, e.g. sale or dividend
+     * 2. tax statement 
+     * 
+     * To offset the taxes due with the transaction, we use the ex-tag as a 
+     * transaction date, which we later replace again with the payment date in
+     * postProcessing().
+     * 
+     * The reason for this is that sometimes the transaction
+     * date is different between the taxes document and the transaction.
+     * 
+     * @Override public List<Item> postProcessing(List<Item> items)
+     * @formatter:on
+     */
 
     private static final String TO_BE_DELETED = "to_be_deleted"; //$NON-NLS-1$
     private static final String ATTRIBUTE_PAY_DATE = "pay_date"; //$NON-NLS-1$
@@ -46,10 +56,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Targobank"); //$NON-NLS-1$
         addBankIdentifier("TARGOBANK AG"); //$NON-NLS-1$
 
-        addBuyTransaction();
-        addSellTransaction();
-        addDividendTransaction();
-        addDividendTransactionFromTaxDocument();
+        addBuySellTransaction();
+        addTaxTreatmentForBuySellTransaction();
+        addDividendeTransaction();
+        addTaxTreatmentForDividendeTransaction();
     }
 
     @Override
@@ -58,413 +68,530 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         return "Targobank AG"; //$NON-NLS-1$
     }
 
-    @SuppressWarnings("nls")
-    private void addBuyTransaction()
+    private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Kauf");
+        DocumentType type = new DocumentType("Effektenabrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Transaktionstyp )?Kauf");
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Transaktionstyp (Kauf|Verkauf)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^Transaktionstyp (?<type>(Kauf|Verkauf))$")
+                .assign((t, v) -> {
+                    if (v.get("type").equals("Verkauf"))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
+                // @formatter:off
+                // Wertpapier FanCy shaRe. nAmE X0-X0
+                // WKN / ISIN ABC123 / DE0000ABC123
+                // Kurs 12,34 EUR
+                // @formatter:on
+                .section("name", "wkn", "isin", "currency")
+                .match("^Wertpapier (?<name>.*)$")
+                .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^(Kurs|Preis vom) .* (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // Stück 987,654
+                // @formatter:on
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                .oneOf(
+                                // @formatter:off
+                                // Schlusstag / Handelszeit 02.01.2020 / 13:01:00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // @formatter:off
+                                // Schlusstag 10.01.2020
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
+
+                // @formatter:off
+                // Konto-Nr. 0101753165 1.008,91 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .match("^Konto\\-Nr\\. .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addTaxTreatmentForBuySellTransaction()
+    {
+        DocumentType type = new DocumentType("Effektenabrechnung \\(Steuerbeilage\\) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.TAXES);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Transaktionstyp Verkauf$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // @formatter:off
+                // Wertpapier FanCy shaRe. nAmE X0-X0
+                // WKN / ISIN ABC123 / DE0000ABC123
+                // Kurs 12,34 EUR
+                // @formatter:on
+                .section("name", "wkn", "isin", "currency")
+                .match("^Wertpapier (?<name>.*)$")
+                .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^(Kurs|Preis vom) .* (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // Stück 987,654
+                // @formatter:on
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                .oneOf(
+                                // @formatter:off
+                                // Schlusstag / Handelszeit 26.05.2020 / 20:32:00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // @formatter:off
+                                // Schlusstag 10.01.2020
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
+
+                // @formatter:off
+                // Gesamtsumme Steuern 823,76 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .match("^Gesamtsumme Steuern (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                .wrap(TransactionItem::new);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^(Ertragsgutschrift|Dividendengutschrift) .*$");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
+        pdfTransaction
+                // @formatter:off
+                // Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
+                // WKN / ISIN A12CX1 / IE00BKX55T58
+                // Ausschüttung pro Stück 0,293466 USD
+                // @formatter:on
+                .section("name", "wkn", "isin", "currency")
+                .match("^Wertpapier (?<name>.*)$")
+                .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .match("^(Aussch.ttung|Dividende) pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("name", "wkn", "isin").optional() //
-                        .match(regexName) //
-                        .match(regexWknAndIsin) //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                // @formatter:off
+                // Stück 81
+                // @formatter:on
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("time").optional() //
-                        .match(regexTime) //
-                        .assign((t, v) -> {
-                            type.getCurrentContext().put("time", v.get("time"));
-                        })
+                // @formatter:of
+                // Temporarily set the ex-day as the transaction day 
+                // and will be corrected to the payDay in the postProcessing(). 
+                // (See information on top)
+                // @formatter:on
 
-                        .section("date").optional() //
-                        .match(regexDate) //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                            {
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            }
-                            else
-                            {
-                                t.setDate(asDate(v.get("date")));
-                            }
-                        })
+                // @formatter:off
+                // Ex-Tag 11.06.2020
+                // @formatter:on
+                .section("date")
+                .match("^Ex\\-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        .section("amount", "currency") //
-                        .match(regexAmountAndCurrency).assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                // @formatter:off
+                // Zahlbar 24.06.2020
+                // @formatter:on
+                .section("payDate")
+                .match("^Zahlbar (?<payDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    t.getSecurity().getAttributes() //
+                                    .put(new AttributeType(ATTRIBUTE_PAY_DATE), asDate(v.get("payDate")));
+                })
 
-                        .section("fee", "currency").optional() //
-                        .match(regexFees) //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                // @formatter:off
+                // Konto-Nr. 1234567890 21,18 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .match("^Konto\\-Nr\\. .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                        .section("shares").optional() //
-                        .match(regexShares) //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // @formatter:off
+                // Bruttoertrag 23,77 USD
+                // Devisenkurs zur Handelswährung USD/EUR 1,1223
+                // Bruttoertrag in EUR 21,18 EUR
+                // @formatter:on
+                .section("fxGross", "fxCurrency", "termCurrency", "baseCurrency", "exchangeRate", "gross", "currency").optional()
+                .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                .match("^Devisenkurs zur Handelsw.hrung (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Bruttoertrag in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
-                        .wrap(t -> {
-                            if (t.getPortfolioTransaction().getShares() == 0)
-                                throw new IllegalArgumentException(Messages.PDFMsgMissingShares);
-                            return new BuySellEntryItem(t);
-                        });
+                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                })
+
+                .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
-
     }
 
-    @SuppressWarnings("nls")
-    private void addSellTransaction()
+    private void addTaxTreatmentForDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Verkauf");
+        DocumentType type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
         this.addDocumentTyp(type);
 
-        Block block = new Block("(Transaktionstyp )?Verkauf");
+        Block block = new Block("^(Ertragsgutschrift|Dividendengutschrift) .*$");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.TAXES);
+            return entry;
+        });
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
+        pdfTransaction
+                // @formatter:off
+                // Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
+                // WKN / ISIN A12CX1 / IE00BKX55T58
+                // Ausschüttung pro Stück 0,293466 USD
+                // @formatter:on
+                .section("name", "wkn", "isin")
+                .match("^Wertpapier (?<name>.*)$")
+                .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("name", "wkn", "isin") //
-                        .match(regexName) //
-                        .match(regexWknAndIsin) //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                // @formatter:off
+                // Stück 81
+                // @formatter:on
+                .section("shares")
+                .match("^St.ck (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("time").optional() //
-                        .match(regexTime) //
-                        .assign((t, v) -> {
-                            type.getCurrentContext().put("time", v.get("time"));
-                        })
+                // @formatter:of
+                // Temporarily set the ex-day as the transaction day 
+                // and will be corrected to the payDay in the postProcessing(). 
+                // (See information on top)
+                // @Formatter:on
 
-                        .section("date").optional() //
-                        .match(regexDate) //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                            {
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            }
-                            else
-                            {
-                                t.setDate(asDate(v.get("date")));
-                            }
-                        })
+                // @formatter:off
+                // Ex-Tag 11.06.2020
+                // @formatter:on
+                .section("date")
+                .match("^Ex\\-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        .section("amount", "currency").optional() //
-                        .match(regexAmountAndCurrency) //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                // @formatter:off
+                // Belastung Ihres Kontos NUMMER mit Wertstellung zum 24. Juni 2020.
+                // @formatter:on
+                .section("payDate").optional()
+                .match("^Belastung Ihres Kontos .* (?<payDate>[\\d]{2}\\. .* [\\d]{4})\\.$")
+                .assign((t, v) -> {
+                    t.getSecurity().getAttributes() //
+                                    .put(new AttributeType(ATTRIBUTE_PAY_DATE), asDate(v.get("payDate")));
+                })
 
-                        .section("fee", "currency").optional() //
-                        .match(regexFees) //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                // @formatter:off
+                // Gesamtsumme Steuern 5,59 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .match("^Gesamtsumme Steuern (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
 
-                        .section("tax", "currency").optional() //
-                        .match(regexTaxes) //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
-                        })
+                // @formatter:off
+                // Anrechenbare ausländische Quellensteuer 3,67 EUR
+                // @formatter:on
+                .section("amount", "currency").optional()
+                .match("^Anrechenbare ausl.ndische Quellensteuer (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> { 
+                    if (t.getMonetaryAmount().isZero())
+                    {
+                        t.setAmount(asAmount(v.get("amount")));
+                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    }
+                    else
+                    {
+                        Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                        t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                    }
+                })
 
-                        .section("shares").optional() //
-                        .match(regexShares) //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .wrap(t -> {
-                            if (t.getPortfolioTransaction().getShares() == 0)
-                                throw new IllegalArgumentException(Messages.PDFMsgMissingShares);
-                            return new BuySellEntryItem(t);
-                        });
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+                    if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                    return item;
+                });
 
         block.set(pdfTransaction);
-
     }
 
-    @SuppressWarnings("nls")
-    private void addDividendTransaction()
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        DocumentType ertrag = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) \\d.*");
-        this.addDocumentTyp(ertrag);
-
-        Block block = new Block("(Ertragsgutschrift|Dividendengutschrift).*");
-        ertrag.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
-
-                        .section("name", "wkn", "isin", "currency", "shares") //
-                        .match("Wertpapier (?<name>.*)") //
-                        .match("WKN / ISIN (?<wkn>\\S*) / (?<isin>\\S*)").match("St.ck (?<shares>[\\d.]+(,\\d+)?)") //
-                        .match("(Aussch.ttung|Dividende) pro St.ck ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
-
-                        .section("amount", "currency") //
-                        .match(regexAmountAndCurrency) //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        // use document date to having matching dates from
-                        // dividend and tax document
-                        .section("date") //
-                        .match("(Ertragsgutschrift|Dividendengutschrift) (?<date>\\d+.\\d+.\\d{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // store real date in attribute
-                        .section("date") //
-                        .match("Zahlbar (?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> {
-                            t.getSecurity().getAttributes().put(new AttributeType(ATTRIBUTE_PAY_DATE),
-                                            asDate(v.get("date")));
-                        })
-                        
-                        .section("tax", "currency").optional() //
-                        .match(regexwithHoldingTaxDivDoc) //
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
-                        })
-
-                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional() //
-                        .match("Bruttoertrag (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}+)") //
-                        .match("Devisenkurs zur Handelsw.hrung (\\w{3}+)/(\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)") //
-                        .match("Bruttoertrag in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-
-                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                            {
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
-
-                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                                asAmount(v.get("fxAmount")));
-                                Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-
-                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                                t.addUnit(grossValue);
-                            }
-                        })
-
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
-
+        transaction
+                // @formatter:off
+                // 15 % Ausländische Quellensteuer (US) 3,67 EUR
+                // @formatter:on
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^[\\d]+ % Ausl.ndische Quellensteuer.* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
-    @SuppressWarnings("nls")
-    private void addDividendTransactionFromTaxDocument()
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-
-        DocumentType type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) .*");
-
-        this.addDocumentTyp(type);
-        Block block = new Block("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) .*");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
-
-                        .section("name", "wkn", "isin", "shares") //
-                        .match("Wertpapier (?<name>.*)") //
-                        .match("WKN / ISIN (?<wkn>\\S*) / (?<isin>\\S*)") //
-                        .match("St.ck (?<shares>[\\d.]+(,\\d+)?)") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
-
-                        .section("amount", "currency") //
-                        .match("Ertr.ge/Verluste (?<amount>[\\d.\\s]*,[\\d\\s]+) (?<currency>[A-Z\\s]*)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        // if it exists, add Teilfreistellungsbetrag to amount
-                        .section("amount").optional() //
-                        .match("Teilfreistellung .* - (?<amount>[\\d.\\s]*,[\\d\\s]+) ([A-Z\\s]*)$") //
-                        .assign((t, v) -> {
-                            t.setAmount(t.getAmount() + asAmount(v.get("amount")));
-                        })
-
-                        .section("tax", "currency") //
-                        .match(regexTaxes) //
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
-                            t.setAmount(t.getAmount() - asAmount(v.get("tax")));
-                        })
-                        
-                        .section("tax", "currency").optional() //
-                        .match(regexwithHoldingTaxTaxDoc) //
-                        .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
-                            t.setAmount(t.getAmount() - asAmount(v.get("tax")));
-                        })
-
-                        // use document date to having matching dates from
-                        // dividend and tax document
-                        .section("date") //
-                        .match("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) (?<date>\\d+.\\d+.\\d{4}+)$")
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // store real date in attribute
-                        .section("date").optional() // example: "27. April 2020"
-                        .match("Belastung Ihres Kontos .* mit Wertstellung zum (?<date>\\d+. \\w+ \\d{4}).$")
-                        .assign((t, v) -> {
-                            t.getSecurity().getAttributes().put(new AttributeType(ATTRIBUTE_PAY_DATE),
-                                            asDate(v.get("date")));
-                        })
-
-                        .wrap(TransactionItem::new));
-
+        transaction
+                // @formatter:off
+                // Provision 8,90 EUR
+                // @formatter:on
+                .section("fee", "currency").optional()
+                .match("^Provision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
     public List<Item> postProcessing(List<Item> items)
     {
+        // Filter transactions by sell transactions
+        List<Item> sellTransactionList = items.stream() //
+                        .filter(item -> !item.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .map(BuySellEntryItem.class::cast) //
+                        .filter(i -> i.getSubject() instanceof BuySellEntry) //
+                        .filter(i -> PortfolioTransaction.Type.SELL //
+                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .collect(Collectors.toList());
 
-        // group dividends transactions by date and security
-        Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
+        // Filter transactions by taxes transactions
+        List<Item> taxTransactionList = items.stream() //
+                        .filter(item -> !item.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> AccountTransaction.Type.DIVIDENDS
-                                        .equals(((AccountTransaction) i.getSubject()).getType()))
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> AccountTransaction.Type.TAXES //
+                                        .equals((((AccountTransaction) i.getSubject()).getType()))) //
+                        .collect(Collectors.toList());
+
+        // Group sell and tax transactions together and group by date and
+        // security
+        Map<LocalDateTime, Map<Security, List<Item>>> sellTaxTransactions = Stream
+                        .concat(sellTransactionList.stream(), taxTransactionList.stream())
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
-        // iterate transactions and combine data from dividend and tax document
-        // k is date and v is security
-        dividends.forEach((k, v) -> {
-            // key is security and transactions are the single transactions
-            v.forEach((key, transactions) -> {
-                if (transactions.size() == 1)
-                {
-                    // set correct date stored in attribute, if given in
-                    // security, leave "wrong" date otherwise
-                    AccountTransaction a1 = (AccountTransaction) transactions.get(0).getSubject();
-                    if (a1.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_PAY_DATE)) != null)
-                    {
-                        a1.setDateTime((LocalDateTime) a1.getSecurity().getAttributes()
-                                        .get(new AttributeType(ATTRIBUTE_PAY_DATE)));
-                    }
-                }
-                else if (transactions.size() == 2)
-                {
-                    // get both transactions and make the tax document a1
-                    // the tax document must have a tax unit
-                    AccountTransaction a1 = (AccountTransaction) transactions.get(0).getSubject();
-                    AccountTransaction a2;
+        // Group dividend and taxes transactions together and group by date and
+        // security
+        Map<LocalDateTime, Map<Security, List<Item>>> dividendTaxTransactions = items.stream() //
+                        .filter(item -> !item.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(TransactionItem.class::cast) //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> AccountTransaction.Type.DIVIDENDS //
+                                        .equals(((AccountTransaction) i.getSubject()).getType()) || //
+                                        AccountTransaction.Type.TAXES //
+                                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
-                    if (a1.getUnit(Unit.Type.TAX).isPresent())
+        sellTaxTransactions.forEach((k, v) -> {
+            v.forEach((security, transactions) -> {
+
+                // @formatter:off
+                // It is possible that several sell transactions exist on
+                // the same day without one or with several taxes transactions.
+                // 
+                // We simplify here only one sell transaction with one
+                // related taxes transaction.
+                // @formatter:on
+
+                if (transactions.size() == 2)
+                {
+                    BuySellEntry sellTransaction = null;
+                    AccountTransaction taxTransaction = null;
+
+                    // Which transaction is the taxes and which the sell?
+                    if (transactions.get(0).getSubject() instanceof BuySellEntry
+                                    && transactions.get(1).getSubject() instanceof AccountTransaction)
                     {
-                        a2 = (AccountTransaction) transactions.get(1).getSubject();
+                        sellTransaction = (BuySellEntry) transactions.get(0).getSubject();
+                        taxTransaction = (AccountTransaction) transactions.get(1).getSubject();
+                    }
+                    else if (transactions.get(1).getSubject() instanceof BuySellEntry
+                                    && transactions.get(0).getSubject() instanceof AccountTransaction)
+                    {
+                        sellTransaction = (BuySellEntry) transactions.get(1).getSubject();
+                        taxTransaction = (AccountTransaction) transactions.get(0).getSubject();
+                    }
+
+                    // Check if there is a sell transaction and a tax
+                    // transaction
+                    if (AccountTransaction.Type.TAXES.equals(taxTransaction.getType()) && PortfolioTransaction.Type.SELL
+                                    .equals(sellTransaction.getPortfolioTransaction().getType()))
+                    {
+                        // Subtract the taxes from the tax transaction from the
+                        // total amount
+                        sellTransaction.setMonetaryAmount(sellTransaction.getPortfolioTransaction().getMonetaryAmount()
+                                        .subtract(taxTransaction.getMonetaryAmount()));
+
+                        // Add taxes as tax unit
+                        sellTransaction.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX, taxTransaction.getMonetaryAmount()));
+
+                        // Combine at sources file
+                        sellTransaction.setSource(sellTransaction.getSource() + "; " + taxTransaction.getSource());
+
+                        // Combine at notes
+                        sellTransaction.setNote(concat(sellTransaction.getNote(), taxTransaction.getNote()));
+
+                        // Set note that the tax transaction will be deleted
+                        taxTransaction.setNote(TO_BE_DELETED);
                     }
                     else
                     {
-                        a1 = (AccountTransaction) transactions.get(1).getSubject();
-                        a2 = (AccountTransaction) transactions.get(0).getSubject();
+                        // do nothing because no tax transaction is present
                     }
-
-                    // the dividend document might have a gross_value unit,
-                    // which needs to be copied over
-                    Optional<Unit> unitGross = a2.getUnit(Unit.Type.GROSS_VALUE);
-                    if (unitGross.isPresent())
-                    {
-                        a1.addUnit(unitGross.get());
-                    }
-                    // set correct date stored in attribute
-                    a1.setDateTime((LocalDateTime) a1.getSecurity().getAttributes()
-                                    .get(new AttributeType(ATTRIBUTE_PAY_DATE)));
-
-                    // combine document notes and mark transaction 2 to be
-                    // deleted
-                    a1.setSource(concat(a2.getSource(), a1.getSource()));
-                    a1.setNote(concat(a2.getNote(), a1.getNote()));
-                    a2.setNote(TO_BE_DELETED);
                 }
             });
         });
 
-        // group sell transactions by date and security
-        Map<LocalDateTime, Map<Security, List<Item>>> sells = items.stream().filter(BuySellEntryItem.class::isInstance) //
-                        .map(BuySellEntryItem.class::cast) //
-                        .filter(i -> i.getSubject() instanceof BuySellEntry)
-                        .filter(i -> PortfolioTransaction.Type.SELL
-                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType())))
-                        .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
+        dividendTaxTransactions.forEach((k, v) -> {
+            v.forEach((security, transactions) -> {
+                AccountTransaction dividendTransaction = (AccountTransaction) transactions.get(0).getSubject();
 
-        // iterate transactions and combine data from dividend and tax document
-        // k is date and v is security
-        sells.forEach((k, v) -> {
-            // key is security and transactions are the single transactions
-            v.forEach((key, transactions) -> {
+                // @formatter:off
+                // It is possible that several dividend transactions exist on
+                // the same day without one or with several taxes transactions.
+                // 
+                // We simplify here only one dividend transaction with one
+                // related taxes transaction.
+                // @formatter:on
+
                 if (transactions.size() == 2)
                 {
-                    // get both transactions and make the tax document a1
-                    // the tax document must have a tax unit
-                    BuySellEntry a1 = (BuySellEntry) transactions.get(0).getSubject();
-                    BuySellEntry a2;
+                    AccountTransaction taxTransaction = (AccountTransaction) transactions.get(1).getSubject();
 
-                    if (a1.getPortfolioTransaction().getUnit(Unit.Type.TAX).isPresent())
+                    // Which transaction is the taxes and which the dividend?
+                    if (!AccountTransaction.Type.TAXES.equals(taxTransaction.getType()))
                     {
-                        a2 = (BuySellEntry) transactions.get(1).getSubject();
+                        dividendTransaction = (AccountTransaction) transactions.get(1).getSubject();
+                        taxTransaction = (AccountTransaction) transactions.get(0).getSubject();
+                    }
+
+                    // Check if there is a dividend transaction and a tax
+                    // transaction
+                    if (AccountTransaction.Type.TAXES.equals(taxTransaction.getType())
+                                    && AccountTransaction.Type.DIVIDENDS.equals(dividendTransaction.getType()))
+                    {
+                        // @formatter:off
+                        // Sometimes taxes (e.g., creditable withholding taxes)
+                        // are included in the dividend document.
+                        //
+                        // Should that be the case, we subtract them from the taxes document.
+                        // @formatter:on
+                        if (dividendTransaction.getUnit(Unit.Type.TAX).isPresent())
+                        {
+                            Money tax = Money.of(dividendTransaction.getUnitSum(Unit.Type.TAX).getCurrencyCode(),
+                                            dividendTransaction.getUnitSum(Unit.Type.TAX).getAmount());
+
+                            if (tax.isGreaterOrEqualThan(taxTransaction.getMonetaryAmount()))
+                                taxTransaction.setMonetaryAmount(taxTransaction.getMonetaryAmount().subtract(tax));
+                        }
+
+                        // Subtract the taxes from the tax transaction from the
+                        // total amount
+                        dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount()
+                                        .subtract(taxTransaction.getMonetaryAmount()));
+
+                        // Add taxes as tax unit
+                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxTransaction.getMonetaryAmount()));
+
+                        // Combine at sources file
+                        dividendTransaction
+                                        .setSource(dividendTransaction.getSource() + "; " + taxTransaction.getSource());
+
+                        // Combine at notes
+                        dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxTransaction.getNote()));
+
+                        // Set note that the tax transaction will be deleted
+                        taxTransaction.setNote(TO_BE_DELETED);
                     }
                     else
                     {
-                        a1 = (BuySellEntry) transactions.get(1).getSubject();
-                        a2 = (BuySellEntry) transactions.get(0).getSubject();
+                        // do nothing because no tax transaction is present
                     }
+                }
 
-                    // copy tax unit from a1 over to a2 and mark a1 to be
-                    // deleted
-                    // subtract tax from amount to have correct net amount
-                    Optional<Unit> unitTax = a1.getPortfolioTransaction().getUnit(Unit.Type.TAX);
-                    if (unitTax.isPresent())
-                    {
-                        Money tax = unitTax.get().getAmount();
-                        a2.setAmount(a2.getPortfolioTransaction().getAmount() - tax.getAmount());
-                        a2.getPortfolioTransaction().addUnit(unitTax.get());
-
-                    }
-                    // combine document notes and mark transaction 1 to be
-                    // deleted
-                    a1.setSource(concat(a2.getSource(), a1.getSource()));
-                    a2.setNote(concat(a2.getNote(), a1.getNote()));
-                    a1.setNote(TO_BE_DELETED);
+                // Set the correct transaction date
+                if (dividendTransaction.getSecurity().getAttributes()
+                                .get(new AttributeType(ATTRIBUTE_PAY_DATE)) != null)
+                {
+                    dividendTransaction.setDateTime((LocalDateTime) dividendTransaction.getSecurity().getAttributes()
+                                    .get(new AttributeType(ATTRIBUTE_PAY_DATE)));
                 }
             });
         });
@@ -478,21 +605,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
             {
                 AccountTransaction a = (AccountTransaction) o;
                 if (TO_BE_DELETED.equals(a.getNote()))
-                {
                     iter.remove();
-                }
-            }
-            else if (o instanceof BuySellEntry)
-            {
-                BuySellEntry a = (BuySellEntry) o;
-                if (TO_BE_DELETED.equals(a.getNote()))
-                {
-                    iter.remove();
-                }
             }
         }
-        return items;
 
+        return items;
     }
 
     private String concat(String first, String second)

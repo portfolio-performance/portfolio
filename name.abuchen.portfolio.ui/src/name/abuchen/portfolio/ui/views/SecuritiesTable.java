@@ -47,6 +47,8 @@ import org.eclipse.swt.widgets.Shell;
 import com.google.common.collect.Streams;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -882,6 +884,7 @@ public final class SecuritiesTable implements ModificationListener
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void fillContextMenu(IMenuManager manager)
     {
         IStructuredSelection selection = (IStructuredSelection) securities.getSelection();
@@ -901,10 +904,14 @@ public final class SecuritiesTable implements ModificationListener
 
             manager.add(new Separator());
             new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+        }
 
-            manager.add(new Separator());
-            manager.add(new BookmarkMenu(view.getPart(), security));
+        manager.add(new Separator());
+        manager.add(new BookmarkMenu(view.getPart(), selection.toList()));
 
+        if (selection.size() == 1)
+        {
+            Security security = (Security) selection.getFirstElement();
             if (security.getOnlineId() == null)
             {
                 manager.add(new Separator());
@@ -922,6 +929,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         }
 
+        manager.add(new Separator());
         // update quotes for multiple securities
         if (selection.size() > 1)
         {
@@ -957,6 +965,36 @@ public final class SecuritiesTable implements ModificationListener
 
         if (watchlist == null)
         {
+            if (selection.size() == 1)
+                manager.add(new SimpleAction(Messages.LabelDuplicateSecurity, a -> {
+                    Security source = (Security) selection.getFirstElement();
+                    Security target = source.deepCopy();
+
+                    // add security
+                    getClient().addSecurity(target);
+
+                    // copy attributes
+                    target.setAttributes(source.getAttributes().copy());
+
+                    // copy taxonomy assignments
+                    getClient().getTaxonomies().stream().forEach(taxonomy -> taxonomy.foreach(new Taxonomy.Visitor()
+                    {
+                        @Override
+                        public void visit(Classification classification, Assignment assignment)
+                        {
+                            if (assignment.getInvestmentVehicle() == source)
+                            {
+                                Assignment newAssignment = assignment.copyWith(target);
+                                List<Assignment> children = classification.getAssignments();
+                                newAssignment.setRank(children.get(children.size() - 1).getRank() + 1);
+                                classification.addAssignment(newAssignment);
+                            }
+                        }
+                    }));
+
+                    markDirty();
+                }));
+
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSingleSecurity,
                             Messages.SecurityMenuDeleteMultipleSecurity,
                             MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,

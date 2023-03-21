@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -108,13 +110,13 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Limit 40,99 EUR AN
@@ -122,7 +124,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3})( .*)?$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+                .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 
@@ -183,12 +185,13 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Aussch.ttung|Dividendengutschrift) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 .wrap(TransactionItem::new);
@@ -282,7 +285,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // fee = fee - discount
                         fee = fee.subtract(discount);
 
-                        checkAndSetFee(fee, t, type);
+                        checkAndSetFee(fee, t, type.getCurrentContext());
                     }
                 });
     }

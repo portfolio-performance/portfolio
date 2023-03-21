@@ -1,0 +1,17 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.3
+-----------------------------------------
+Zusammenfassung
+Zu Beginn €9,047.03
+XXXXXXXXXXX
+Einzahlungen €24.32
+Datum 02/14/2023 - 02/28/2023 Auszahlungen €0
+Referenznummer GGXXXXXX Ergebnis €9,071.35
+Zusätzliches Einkommen
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+02/19/2023 Go & Grow Zinsen €1.62 €9,056.75
+02/20/2023 Go & Grow Zinsen €1.62 €9,058.37
+02/21/2023 Go & Grow Zinsen €1.63 €9,060
+02/22/2023 Go & Grow Zinsen €1.62 €9,061.62
+Gesamt
+€9,071.35

@@ -1,0 +1,76 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=111111111
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Kapitalrückzahlung ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 99
+ADRESSZEILE4=12345 Musterhause
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+Musterst. 99 BELEGNUMMER=45
+12345 Musterstadt 111111000 42739637 / 03.10.2022 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 03.10.2022
+Ihr Depotbestand:
+Gattungsbezeichnung ISIN
+Garmin Ltd. Namens-Aktien SF 0,10 CH0114405324
+Nominal
+STK 15,000
+Verwahrart
+Girosammelverwahrung
+Kapitalrückzahlung:
+Ausschüttungsbetrag pro Stück
+USD 0,730000
+Barausgleich USD 10,95
+Kapitalertragsteuer USD 2,74-
+Solidaritätszuschlag USD 0,16-
+Ausmachender Betrag USD 8,05
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+30.09.2022 111111111 EUR/USD 0,98128 EUR 8,21
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Barausgleich (aus Kapitalmaßnahme) EUR 11,16
+Aktienverlusttopf EUR 9.999,99 9.999,44
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 500,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 11,16
+Es folgt Seite 2
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/ABREEREIKAPMKPRD/GDBVKAPU/000045/041022/003350
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=259333000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+259333000 42739637 2 ADRESSZEILE3=Muster Str. 99
+ADRESSZEILE4=12345 Musterhaften
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=45
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 111,11 SEITENNUMMER=2
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 11,11 STEUERERSTATTUNG=N
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt am Main V Steuernummer: 047/220/06016.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/ABREEREIKAPMKPRD/GDBVKAPU/000045/041022/003350

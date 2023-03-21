@@ -18,10 +18,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -164,38 +160,26 @@ public class ImportPDFHandler
 
         try
         {
+            Map<File, List<Exception>> errors = new HashMap<>();
+            Map<Extractor, List<Extractor.Item>> result = new HashMap<>();
+            
             IRunnableWithProgress operation = monitor -> {
-
                 PDFImportAssistant assistent = new PDFImportAssistant(client, files);
-
-                Map<File, List<Exception>> errors = new HashMap<>();
-
-                Map<Extractor, List<Extractor.Item>> result = assistent.run(monitor, errors);
-
-                // if we just run this async, then the main window on macOS does
-                // not regain focus and the menus are not usable
-                new Job("") //$NON-NLS-1$
-                {
-                    @Override
-                    protected IStatus run(IProgressMonitor monitor)
-                    {
-                        shell.getDisplay().asyncExec(() -> {
-                            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
-                                            result, errors);
-                            if (account != null)
-                                wizard.setTarget(account);
-                            if (portfolio != null)
-                                wizard.setTarget(portfolio);
-                            Dialog wizwardDialog = new WizardDialog(shell, wizard);
-                            wizwardDialog.open();
-                        });
-                        return Status.OK_STATUS;
-                    }
-                }.schedule(50);
+                result.putAll(assistent.run(monitor, errors));
             };
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
 
+            shell.getDisplay().asyncExec(() -> {
+                ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
+                                result, errors);
+                if (account != null)
+                    wizard.setTarget(account);
+                if (portfolio != null)
+                    wizard.setTarget(portfolio);
+                Dialog wizardDialog = new WizardDialog(shell, wizard);
+                wizardDialog.open();
+            });
         }
         catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
         {

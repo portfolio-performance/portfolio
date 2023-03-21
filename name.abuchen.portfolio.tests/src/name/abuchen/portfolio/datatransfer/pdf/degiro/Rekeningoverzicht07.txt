@@ -1,0 +1,398 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.0
+-----------------------------------------
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Rekeningoverzicht van 01-01-2021 t/m 14-02-2023
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+04-01-2023 05:37 03-01-2023 Overboeking van uw geldrekening bij flatexDEGIRO Bank 5 EUR 1.426,00
+EUR
+04-01-2023 05:37 03-01-2023 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5,00 EUR 1.431,00
+03-01-2023 14:00 31-12-2022 DEGIRO Aansluitingskosten 2023 (NYSE Arca - NYA) EUR -2,50 EUR 1.426,00
+03-01-2023 14:00 31-12-2022 DEGIRO Aansluitingskosten 2023 (NASDAQ - NDQ) EUR -2,50 EUR 1.428,50
+02-01-2023 08:01 02-01-2023 Flatex Interest Income EUR 0,00 EUR 1.431,00
+29-12-2022 16:48 29-12-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 1.431,00
+328,78 EUR
+29-12-2022 16:48 29-12-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -328,78 EUR 1.102,22
+29-12-2022 07:34 28-12-2022 Valuta Creditering EUR 328,78 EUR 1.431,00
+29-12-2022 07:34 28-12-2022 Valuta Debitering 1,0639 USD -349,78 USD 0,00
+29-12-2022 03:53 28-12-2022 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 499,68 USD 349,78
+29-12-2022 03:53 28-12-2022 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -149,90 USD -149,90
+23-12-2022 16:49 23-12-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 1.102,22
+528,85 EUR
+23-12-2022 16:49 23-12-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -528,85 EUR 573,37
+23-12-2022 07:31 22-12-2022 Valuta Creditering EUR 528,85 EUR 1.102,22
+23-12-2022 07:31 22-12-2022 Valuta Debitering 1,0622 USD -561,74 USD 0,00
+23-12-2022 04:04 22-12-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 802,48 USD 561,74
+23-12-2022 04:04 22-12-2022 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -240,74 USD -240,74
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 1 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+01-10-2022 15:01 30-09-2022 Flatex Interest EUR -0,01 EUR 573,37
+29-09-2022 16:49 29-09-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 573,38
+306,39 EUR
+29-09-2022 16:49 29-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -306,39 EUR 266,99
+29-09-2022 08:19 28-09-2022 Valuta Creditering EUR 306,39 EUR 573,38
+29-09-2022 08:19 28-09-2022 Valuta Debitering 0,9760 USD -299,02 USD 0,00
+29-09-2022 05:13 28-09-2022 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 427,18 USD 299,02
+29-09-2022 05:13 28-09-2022 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -128,16 USD -128,16
+23-09-2022 16:49 23-09-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 266,99
+253,97 EUR
+23-09-2022 16:49 23-09-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -253,97 EUR 13,02
+23-09-2022 07:33 22-09-2022 Valuta Creditering EUR 253,97 EUR 266,99
+23-09-2022 07:33 22-09-2022 Valuta Debitering 0,9861 USD -250,45 USD 0,00
+23-09-2022 05:31 22-09-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 357,79 USD 250,45
+23-09-2022 05:31 22-09-2022 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -107,34 USD -107,34
+01-07-2022 15:00 30-06-2022 Flatex Interest EUR -2,72 EUR 13,02
+30-06-2022 18:20 01-07-2022 Processed Flatex Withdrawal EUR 2.900,00 EUR 15,74
+30-06-2022 18:20 01-07-2022 flatex terugstorting EUR -2.900,00 EUR -2.884,26
+30-06-2022 10:18 29-06-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 15,74
+266,98 EUR
+30-06-2022 10:18 29-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -266,98 EUR -251,24
+30-06-2022 09:35 30-06-2022 Processed Flatex Withdrawal EUR -2.900,00 EUR 15,74
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 2 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+29-06-2022 08:30 28-06-2022 Valuta Creditering EUR 266,98 EUR 2.915,74
+29-06-2022 08:30 28-06-2022 Valuta Debitering 1,0547 USD -281,59 USD 0,00
+29-06-2022 04:35 28-06-2022 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 402,27 USD 281,59
+29-06-2022 04:35 28-06-2022 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -120,68 USD -120,68
+27-06-2022 18:48 27-06-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 2.648,76
+497,44 EUR
+27-06-2022 18:48 27-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -497,44 EUR 2.151,32
+27-06-2022 07:30 24-06-2022 Valuta Creditering EUR 497,44 EUR 2.648,76
+27-06-2022 07:30 24-06-2022 Valuta Debitering 1,0582 USD -526,37 USD 0,00
+26-06-2022 06:41 24-06-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 751,95 USD 526,37
+26-06-2022 06:41 24-06-2022 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -225,58 USD -225,58
+02-04-2022 09:20 31-03-2022 Flatex Interest EUR -2,29 EUR 2.151,32
+30-03-2022 16:32 30-03-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 2.153,61
+239,54 EUR
+30-03-2022 16:32 30-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -239,54 EUR 1.914,07
+30-03-2022 07:33 29-03-2022 Valuta Creditering EUR 239,54 EUR 2.153,61
+30-03-2022 07:33 29-03-2022 Valuta Debitering 1,1113 USD -266,21 USD 0,00
+29-03-2022 07:03 28-03-2022 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 380,30 USD 266,21
+29-03-2022 07:03 28-03-2022 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -114,09 USD -114,09
+25-03-2022 16:47 25-03-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 1.914,07
+81,33 EUR
+25-03-2022 16:47 25-03-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -81,33 EUR 1.832,74
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 3 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+25-03-2022 07:32 24-03-2022 Valuta Creditering EUR 81,33 EUR 1.914,07
+25-03-2022 07:32 24-03-2022 Valuta Debitering 1,1025 USD -89,67 USD 0,00
+25-03-2022 06:14 24-03-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 128,11 USD 89,67
+25-03-2022 06:14 24-03-2022 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -38,43 USD -38,44
+04-02-2022 10:16 03-02-2022 Overboeking van uw geldrekening bij flatexDEGIRO Bank 5 EUR 1.832,74
+EUR
+04-02-2022 10:16 03-02-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 5,00 EUR 1.837,74
+03-02-2022 10:06 31-01-2022 DEGIRO Aansluitingskosten 2022 (NYSE Arca - NYA) EUR -2,50 EUR 1.832,74
+03-02-2022 10:06 31-01-2022 DEGIRO Aansluitingskosten 2022 (NASDAQ - NDQ) EUR -2,50 EUR 1.835,24
+05-01-2022 12:24 31-12-2021 Rente USD -0,01 USD -0,01
+04-01-2022 02:57 03-01-2022 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 1.837,74
+343,98 EUR
+04-01-2022 02:57 03-01-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -343,98 EUR 1.493,76
+01-01-2022 07:36 31-12-2021 Valuta Creditering EUR 343,98 EUR 1.837,74
+01-01-2022 07:36 31-12-2021 Valuta Debitering 1,1401 USD -392,18 USD 0,00
+31-12-2021 08:18 30-12-2021 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 461,39 USD 392,18
+31-12-2021 08:18 30-12-2021 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -69,21 USD -69,21
+30-12-2021 22:40 31-12-2021 Flatex Interest EUR -0,86 EUR 1.493,76
+24-12-2021 17:16 24-12-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 1.494,62
+898,93 EUR
+24-12-2021 17:16 24-12-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -898,93 EUR 595,69
+24-12-2021 08:34 23-12-2021 Valuta Creditering EUR 898,93 EUR 1.494,62
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 4 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+24-12-2021 08:34 23-12-2021 Valuta Debitering 1,1356 USD -1.020,82 USD 0,00
+24-12-2021 05:20 23-12-2021 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 1.200,97 USD 1.020,82
+24-12-2021 05:20 23-12-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -180,15 USD -180,15
+17-12-2021 17:46 17-12-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 595,69
+20,12 EUR
+17-12-2021 17:46 17-12-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 20,12 EUR 615,81
+17-12-2021 07:37 16-12-2021 Valuta Debitering EUR -20,12 EUR 595,69
+17-12-2021 07:37 16-12-2021 Valuta Creditering 1,1319 USD 22,78 USD 0,00
+16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -10,45 USD -22,78
+16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -5,99 USD -12,33
+16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -4,47 USD -6,34
+16-12-2021 18:26 22-10-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -1,87 USD -1,87
+01-10-2021 21:20 30-09-2021 Flatex Interest EUR -3,53 EUR 615,81
+01-10-2021 14:34 30-09-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 619,34
+284,73 EUR
+01-10-2021 14:34 30-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -284,73 EUR 334,61
+30-09-2021 07:31 29-09-2021 Valuta Debitering EUR 284,73 EUR 619,34
+30-09-2021 07:31 29-09-2021 Valuta Debitering 1,1610 USD -330,57 USD 0,00
+30-09-2021 05:08 29-09-2021 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 388,90 USD 330,57
+30-09-2021 05:08 29-09-2021 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -58,33 USD -58,33
+27-09-2021 10:16 24-09-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 334,61
+329,06 EUR
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 5 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+27-09-2021 10:16 24-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -329,06 EUR 5,55
+24-09-2021 07:33 23-09-2021 Valuta Debitering EUR 329,06 EUR 334,61
+24-09-2021 07:33 23-09-2021 Valuta Debitering 1,1750 USD -386,66 USD 0,00
+24-09-2021 04:07 23-09-2021 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 454,89 USD 386,66
+24-09-2021 04:07 23-09-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -68,23 USD -68,23
+13-09-2021 11:47 10-09-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 5,55
+38.100 EUR
+13-09-2021 11:47 10-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -38.100,00 EUR -38.094,45
+10-09-2021 12:16 09-09-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 5,55
+38.100 EUR
+10-09-2021 12:16 09-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 38.100,00 EUR 38.105,55
+10-09-2021 02:58 10-09-2021 Processed Flatex Withdrawal EUR 38.100,00 EUR 5,55
+10-09-2021 02:58 10-09-2021 flatex terugstorting EUR -38.100,00 EUR -38.094,45
+09-09-2021 11:34 08-09-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 5,55
+38.016,62 EUR
+09-09-2021 11:34 08-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -38.016,62 EUR -38.011,07
+08-09-2021 16:13 08-09-2021 Processed Flatex Withdrawal EUR -38.100,00 EUR 5,55
+08-09-2021 16:11 08-09-2021 VANGUARD TOTAL STOCK M US9229087690 Valuta Debitering 1,1828 USD -26.803,05 USD 0,00
+08-09-2021 16:11 08-09-2021 VANGUARD TOTAL STOCK M US9229087690 Valuta Creditering EUR 22.661,03 EUR 38.105,55
+08-09-2021 16:11 08-09-2021 VANGUARD TOTAL STOCK M US9229087690 DEGIRO Transactiekosten en/of kosten van derden EUR -0,39 EUR 15.444,52
+08-09-2021 16:11 08-09-2021 VANGUARD TOTAL STOCK M US9229087690 DEGIRO Transactiekosten en/of kosten van derden EUR -0,50 EUR 15.444,91
+08-09-2021 16:11 08-09-2021 VANGUARD TOTAL STOCK M US9229087690 Verkoop 115 @ 233,07 USD USD 26.803,05 USD 26.803,05
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 6 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+08-09-2021 14:59 08-09-2021 VANGUARD FTSE AW IE00B3RBWM25 Verkoop 148 @ 103,76 EUR EUR 15.356,48 EUR 15.445,41
+13-08-2021 14:30 16-08-2021 Processed Flatex Withdrawal EUR 47.250,00 EUR 88,93
+13-08-2021 14:30 16-08-2021 flatex terugstorting EUR -47.250,00 EUR -47.161,07
+13-08-2021 10:46 12-08-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 88,93
+47.305,2 EUR
+13-08-2021 10:46 12-08-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -47.305,20 EUR -47.216,27
+12-08-2021 16:53 12-08-2021 Processed Flatex Withdrawal EUR -47.250,00 EUR 88,93
+12-08-2021 16:50 12-08-2021 VANGUARD FTSE AW IE00B3RBWM25 Verkoop 260 @ 102,82 EUR EUR 26.733,20 EUR 47.338,93
+12-08-2021 16:50 12-08-2021 VANGUARD FTSE AW IE00B3RBWM25 Verkoop 200 @ 102,86 EUR EUR 20.572,00 EUR 20.605,73
+03-08-2021 11:32 02-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 33,73
+1.216,27 EUR
+03-08-2021 11:32 02-08-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.216,27 EUR 1.250,00
+02-08-2021 11:16 30-07-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 33,73
+688,57 EUR
+02-08-2021 11:16 30-07-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 688,57 EUR 722,30
+31-07-2021 09:01 30-07-2021 iDEAL Deposit EUR 1.250,00 EUR 33,73
+31-07-2021 09:01 30-07-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -1.216,27
+30-07-2021 13:57 30-07-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 14 @ 100,26 EUR EUR -1.403,64 EUR 33,73
+30-07-2021 13:57 30-07-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 5 @ 100,24 EUR EUR -501,20 EUR 1.437,37
+30-07-2021 13:35 30-07-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.938,57
+05-07-2021 16:10 02-07-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 688,57
+280,28 EUR
+05-07-2021 16:10 02-07-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -280,28 EUR 408,29
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 7 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+02-07-2021 12:16 01-07-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 688,57
+841,45 EUR
+02-07-2021 12:16 01-07-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 841,45 EUR 1.530,02
+02-07-2021 10:30 01-07-2021 Valuta Debitering EUR 280,28 EUR 688,57
+02-07-2021 10:30 01-07-2021 Valuta Debitering 1,1862 USD -332,46 USD 0,00
+02-07-2021 05:40 30-06-2021 Flatex Interest EUR -0,26 EUR 408,29
+01-07-2021 18:27 30-06-2021 iDEAL Deposit EUR 1.250,00 EUR 408,55
+01-07-2021 18:27 30-06-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -841,45
+01-07-2021 16:46 30-06-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 408,55
+536,93 EUR
+01-07-2021 16:46 30-06-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 536,93 EUR 945,48
+01-07-2021 12:23 30-06-2021 VANGUARD FTSE AW IE00B3RBWM25 Dividend USD 332,46 USD 332,46
+01-07-2021 08:43 30-06-2021 Valuta Debitering EUR 315,33 EUR 408,55
+01-07-2021 08:43 30-06-2021 Valuta Debitering 1,1869 USD -374,26 USD 0,00
+30-06-2021 15:07 30-06-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 17 @ 99,63 EUR EUR -1.693,71 EUR 93,22
+30-06-2021 15:04 30-06-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.786,93
+30-06-2021 08:49 29-06-2021 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 440,30 USD 374,26
+30-06-2021 08:49 29-06-2021 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -66,04 USD -66,04
+29-06-2021 11:16 28-06-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 536,93
+467,31 EUR
+29-06-2021 11:16 28-06-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -467,31 EUR 69,62
+26-06-2021 09:11 25-06-2021 Valuta Debitering EUR 467,31 EUR 536,93
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 8 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+26-06-2021 09:11 25-06-2021 Valuta Debitering 1,1948 USD -558,35 USD 0,00
+25-06-2021 07:39 24-06-2021 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 656,88 USD 558,35
+25-06-2021 07:39 24-06-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -98,53 USD -98,53
+03-06-2021 11:46 02-06-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 69,62
+1.180,38 EUR
+03-06-2021 11:46 02-06-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.180,38 EUR 1.250,00
+02-06-2021 13:29 01-06-2021 iDEAL Deposit EUR 1.250,00 EUR 69,62
+02-06-2021 13:29 01-06-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -1.180,38
+02-06-2021 11:46 01-06-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 69,62
+77,89 EUR
+02-06-2021 11:46 01-06-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 77,89 EUR 147,51
+01-06-2021 10:58 01-06-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 13 @ 96,79 EUR EUR -1.258,27 EUR 69,62
+01-06-2021 10:55 01-06-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.327,89
+30-04-2021 10:58 29-04-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 77,89
+1.172,11 EUR
+30-04-2021 10:58 29-04-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.172,11 EUR 1.250,00
+29-04-2021 10:15 29-04-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 77,89
+178,89 EUR
+29-04-2021 10:15 29-04-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 178,89 EUR 256,78
+29-04-2021 02:40 28-04-2021 iDEAL Deposit EUR 1.250,00 EUR 77,89
+29-04-2021 02:40 28-04-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -1.172,11
+28-04-2021 13:28 28-04-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 14 @ 96,5 EUR EUR -1.351,00 EUR 77,89
+28-04-2021 13:26 28-04-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.428,89
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 9 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+06-04-2021 13:46 06-04-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 178,89
+1.070,82 EUR
+06-04-2021 13:46 06-04-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.070,82 EUR 1.249,71
+02-04-2021 09:33 01-04-2021 Valuta Debitering EUR 151,09 EUR 178,89
+02-04-2021 09:33 01-04-2021 Valuta Debitering 1,1789 USD -178,13 USD 0,00
+01-04-2021 21:00 31-03-2021 Flatex Interest EUR -0,29 EUR 27,80
+01-04-2021 15:26 31-03-2021 VANGUARD FTSE AW IE00B3RBWM25 Dividend USD 178,13 USD 178,13
+01-04-2021 13:15 01-04-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 28,09
+162,24 EUR
+01-04-2021 13:15 01-04-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 162,24 EUR 190,33
+01-04-2021 08:40 31-03-2021 iDEAL Deposit EUR 1.250,00 EUR 28,09
+01-04-2021 08:40 31-03-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -1.221,91
+31-03-2021 15:22 31-03-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 18 @ 94,53 EUR EUR -1.701,54 EUR 28,09
+31-03-2021 15:21 31-03-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.729,63
+31-03-2021 08:27 30-03-2021 Valuta Debitering EUR 317,39 EUR 479,63
+31-03-2021 08:27 30-03-2021 Valuta Debitering 1,1727 USD -372,20 USD 0,00
+31-03-2021 04:12 30-03-2021 VANGUARD TOTAL STOCK M US9229087690 Dividend USD 437,88 USD 372,20
+31-03-2021 04:12 30-03-2021 VANGUARD TOTAL STOCK M US9229087690 Dividendbelasting USD -65,68 USD -65,68
+29-03-2021 12:32 29-03-2021 Overboeking naar uw geldrekening bij flatexDEGIRO Bank: EUR 162,24
+143,04 EUR
+29-03-2021 12:32 29-03-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -143,04 EUR 19,20
+26-03-2021 09:32 25-03-2021 Valuta Debitering EUR 143,04 EUR 162,24
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 10 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+26-03-2021 09:32 25-03-2021 Valuta Debitering 1,1775 USD -168,44 USD 0,00
+26-03-2021 04:26 25-03-2021 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 198,16 USD 168,44
+26-03-2021 04:26 25-03-2021 VANGUARD TOTAL INTERNA US9219097683 Dividendbelasting USD -29,72 USD -29,72
+03-03-2021 12:01 03-03-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 19,20
+1.230,8 EUR
+03-03-2021 12:01 03-03-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.230,80 EUR 1.250,00
+02-03-2021 07:43 01-03-2021 iDEAL Deposit EUR 1.250,00 EUR 19,20
+02-03-2021 07:43 01-03-2021 Reservation iDEAL / Sofort Deposit EUR -1.250,00 EUR -1.230,80
+01-03-2021 12:02 01-03-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 19,20
+21,08 EUR
+01-03-2021 12:02 01-03-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 21,08 EUR 40,28
+26-02-2021 16:14 26-02-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 14 @ 89,42 EUR EUR -1.251,88 EUR 19,20
+26-02-2021 16:13 26-02-2021 Reservation iDEAL / Sofort Deposit EUR 1.250,00 EUR 1.271,08
+02-02-2021 13:17 02-02-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 21,08
+728,92 EUR
+02-02-2021 13:17 02-02-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 728,92 EUR 750,00
+01-02-2021 12:30 01-02-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 21,08
+506,68 EUR
+01-02-2021 12:30 01-02-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 506,68 EUR 527,76
+31-01-2021 13:18 31-12-2020 DEGIRO Aansluitingskosten 2021 (NYSE Arca - NYA) EUR -2,50 EUR 21,08
+31-01-2021 13:18 31-12-2020 DEGIRO Aansluitingskosten 2021 (NASDAQ - NDQ) EUR -2,50 EUR 23,58
+30-01-2021 06:42 29-01-2021 iDEAL Deposit EUR 750,00 EUR 26,08
+30-01-2021 06:42 29-01-2021 Reservation iDEAL / Sofort Deposit EUR -750,00 EUR -723,92
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 11 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.
+nameholder
+street
+postalcode city
+Netherlands
+Gebruikersnaam: *********
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+29-01-2021 14:33 29-01-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 14 @ 87,9 EUR EUR -1.230,60 EUR 26,08
+29-01-2021 14:28 29-01-2021 Reservation iDEAL / Sofort Deposit EUR 750,00 EUR 1.256,68
+04-01-2021 12:16 04-01-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 506,68
+45,98 EUR
+04-01-2021 12:16 04-01-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 45,98 EUR 552,66
+01-01-2021 08:13 31-12-2020 Valuta Debitering EUR 475,06 EUR 506,68
+01-01-2021 08:13 31-12-2020 Valuta Debitering 1,2228 USD -580,92 USD 0,00
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2023-02-14
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 12 /12
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.

@@ -843,7 +843,10 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.feed = feed;
         answer.feedURL = feedURL;
-        answer.prices = new ArrayList<>(prices);
+
+        // cannot use Stream#toList b/c it returns an unmodifiable list
+        answer.prices = new ArrayList<>(
+                        prices.stream().map(p -> new SecurityPrice(p.getDate(), p.getValue())).toList());
 
         answer.latestFeed = latestFeed;
         answer.latestFeedURL = latestFeedURL;

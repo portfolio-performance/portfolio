@@ -16,7 +16,6 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -90,72 +89,71 @@ public class DADATBankenhausPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(7));
+        assertThat(results.size(), is(14));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check cancellation (Storno) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        BuySellEntryItem cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
+        
+        // check cancellation (Storno) transaction
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
         // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
-
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
         // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
-
-        // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
         // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
         // check cancellation (Storno) transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("StornoKontoauszug01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
+
+        // check cancellation (Storno) transaction
+        cancellation = (BuySellEntryItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
+
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
     }
 
     @Test

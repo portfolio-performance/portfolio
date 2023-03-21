@@ -214,6 +214,12 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONFactorPropertyName()
+    {
+        return GenericJSONQuoteFeed.FACTOR_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
     protected String getJSONVolumePathPropertyName()
     {
         return GenericJSONQuoteFeed.VOLUME_PROPERTY_NAME_LATEST;

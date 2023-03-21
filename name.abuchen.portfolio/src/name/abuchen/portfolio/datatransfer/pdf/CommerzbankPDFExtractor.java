@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 
 import java.math.BigDecimal;
@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -237,13 +239,13 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
-                    
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(stripBlanks(v.get("fxGross"))));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // USD 7 ,219127 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
@@ -255,7 +257,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(.* [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+|Abrechnung) (?<note1>[\\D]+)$")
                 .assign((t, v) -> t.setNote(stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"))))
 
-                .conclude(PDFExtractorUtils.fixGrossValueA())
+                .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap(TransactionItem::new);
 
@@ -429,7 +431,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                 Money fee = Money.of(asCurrencyCode(v.get("currency")),
                                                 fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
-                                checkAndSetFee(fee, t, type);
+                                checkAndSetFee(fee, t, type.getCurrentContext());
                             }
                         });
     }

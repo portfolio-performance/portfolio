@@ -36,6 +36,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.survey.Survey;
+import name.abuchen.portfolio.ui.survey.SurveyReminder;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -160,6 +162,12 @@ public class WelcomePart
         Composite translation = new Composite(composite, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(translation);
         GridLayoutFactory.fillDefaults().margins(5, 5).numColumns(1).applyTo(translation);
+        
+        if (Survey.isActive())
+        {
+            Composite reminder = new SurveyReminder(translation);
+            GridDataFactory.fillDefaults().hint(400, SWT.DEFAULT).applyTo(reminder);
+        }
 
         addSectionLabel(translation, Messages.IntroLabelTranslation);
 

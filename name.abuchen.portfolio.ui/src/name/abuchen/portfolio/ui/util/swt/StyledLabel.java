@@ -19,6 +19,9 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -178,6 +181,8 @@ public class StyledLabel extends Canvas // NOSONAR
         addListener(SWT.Dispose, this::handleDispose);
         addListener(SWT.MouseDown, this::openBrowser);
         addListener(SWT.MouseMove, this::updateCursor);
+        
+        initAccessibility();
     }
 
     public void setText(String text)
@@ -296,5 +301,23 @@ public class StyledLabel extends Canvas // NOSONAR
             return null;
 
         return String.valueOf(style.data);
+    }
+    
+    private void initAccessibility()
+    {
+        getAccessible().addAccessibleControlListener(new AccessibleControlAdapter()
+        {
+            @Override
+            public void getRole(AccessibleControlEvent e)
+            {
+                e.detail = ACC.ROLE_LABEL;
+            }
+
+            @Override
+            public void getValue(AccessibleControlEvent e)
+            {
+                e.result = textLayout.getText();
+            }
+        });
     }
 }

@@ -7,9 +7,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,129 +17,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.TypedMap;
 
-/* package */final class PDFParser
+/* package */ final class PDFParser
 {
-    /* package */static class DocumentContext implements Map<String, String>
-    {
-        private Map<String, Object> backingMap = new HashMap<>();
-
-        @Override
-        public int size()
-        {
-            return backingMap.size();
-        }
-
-        @Override
-        public boolean isEmpty()
-        {
-            return backingMap.isEmpty();
-        }
-
-        @Override
-        public boolean containsKey(Object key)
-        {
-            return backingMap.containsKey(key);
-        }
-
-        @Override
-        public boolean containsValue(Object value)
-        {
-            return backingMap.containsValue(value);
-        }
-
-        @Override
-        public String get(Object key)
-        {
-            Object v = backingMap.get(key);
-            return v == null ? null : v instanceof String ? (String) v : String.valueOf(v); // NOSONAR
-        }
-
-        @Override
-        public String put(String key, String value)
-        {
-            Object v = backingMap.put(key, value);
-            return v == null ? null : v instanceof String ? (String) v : String.valueOf(v); // NOSONAR
-        }
-
-        @Override
-        public String remove(Object key)
-        {
-            Object v = backingMap.remove(key);
-            return v == null ? null : v instanceof String ? (String) v : String.valueOf(v); // NOSONAR
-        }
-
-        public <T> void putType(T value)
-        {
-            backingMap.put(value.getClass().getName(), value);
-        }
-
-        public <T> Optional<T> getType(Class<T> key)
-        {
-            Object v = backingMap.get(key.getName());
-            return key.isInstance(v) ? Optional.of(key.cast(v)) : Optional.empty();
-        }
-
-        public void removeType(Class<?> key)
-        {
-            backingMap.remove(key.getName());
-        }
-
-        public boolean getBoolean(String key)
-        {
-            Object answer = backingMap.get(key);
-
-            if (answer == null)
-                return false;
-
-            if (answer instanceof Boolean)
-                return (Boolean) answer;
-
-            if (answer instanceof String)
-                return Boolean.getBoolean((String) answer);
-
-            throw new IllegalArgumentException(key);
-        }
-
-        public void putBoolean(String key, boolean value)
-        {
-            backingMap.put(key, value);
-        }
-
-        @Override
-        public void putAll(Map<? extends String, ? extends String> m)
-        {
-            backingMap.putAll(m);
-        }
-
-        @Override
-        public void clear()
-        {
-            backingMap.clear();
-        }
-
-        @Override
-        public Set<String> keySet()
-        {
-            return backingMap.keySet();
-        }
-
-        @Override
-        public Collection<String> values()
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Set<Entry<String, String>> entrySet()
-        {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    /* package */static class DocumentType
+    /* package */ static class DocumentType
     {
         private List<Pattern> mustInclude = new ArrayList<>();
 
@@ -311,7 +195,7 @@ import name.abuchen.portfolio.model.TypedMap;
     /* package */static class Transaction<T>
     {
         private Supplier<T> supplier;
-        private Function<T, Item> wrapper;
+        private BiFunction<T, TypedMap, Item> wrapper;
         private List<Section<T>> sections = new ArrayList<>();
         private List<Consumer<T>> concludes = new ArrayList<>();
 
@@ -340,9 +224,10 @@ import name.abuchen.portfolio.model.TypedMap;
         }
 
         /**
-         * The document must contain at most one of the sections. The sections are
-         * matched in order of the definition and the first matching section is
-         * used. If no section is matching, parsing continues with the next sections.
+         * The document must contain at most one of the sections. The sections
+         * are matched in order of the definition and the first matching section
+         * is used. If no section is matching, parsing continues with the next
+         * sections.
          */
         @SafeVarargs
         public final Transaction<T> optionalOneOf(Function<Section<T>, Transaction<T>>... alternatives)
@@ -351,7 +236,8 @@ import name.abuchen.portfolio.model.TypedMap;
         }
 
         @SafeVarargs
-        private final Transaction<T> internalOneOf(boolean isOptional, Function<Section<T>, Transaction<T>>... alternatives)
+        private final Transaction<T> internalOneOf(boolean isOptional,
+                        Function<Section<T>, Transaction<T>>... alternatives)
         {
             List<Section<T>> subSections = new ArrayList<>();
             for (Function<Section<T>, Transaction<T>> function : alternatives)
@@ -383,7 +269,7 @@ import name.abuchen.portfolio.model.TypedMap;
                             errors.add(ignore.getMessage());
                         }
                     }
-                    
+
                     if (!isOptional)
                         throw new IllegalArgumentException(MessageFormat.format(
                                         Messages.MsgErrorNoneOfSubSectionsMatched, String.valueOf(subSections.size()),
@@ -401,6 +287,11 @@ import name.abuchen.portfolio.model.TypedMap;
         }
 
         public Transaction<T> wrap(Function<T, Item> wrapper)
+        {
+            return wrap((t, c) -> wrapper.apply(t));
+        }
+
+        public Transaction<T> wrap(BiFunction<T, TypedMap, Item> wrapper)
         {
             this.wrapper = wrapper;
             return this;
@@ -421,7 +312,7 @@ import name.abuchen.portfolio.model.TypedMap;
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
-            Item item = wrapper.apply(target);
+            Item item = wrapper.apply(target, txContext);
             if (item != null)
                 items.add(item);
         }

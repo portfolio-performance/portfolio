@@ -11,7 +11,6 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class DescriptionWidget extends WidgetDelegate<Object>
 {
@@ -39,7 +38,7 @@ public class DescriptionWidget extends WidgetDelegate<Object>
         description = new StyledLabel(container, SWT.WRAP);
         description.setForeground(Colors.HEADINGS);
         description.setBackground(container.getBackground());
-        description.setText(TextUtil.tooltip(getWidget().getLabel()));
+        description.setText(getWidget().getLabel());
         description.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
 
         return container;
@@ -60,7 +59,7 @@ public class DescriptionWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object data)
     {
-        description.setText(TextUtil.tooltip(getWidget().getLabel()));
+        description.setText(getWidget().getLabel());
         description.requestLayout();
     }
 }

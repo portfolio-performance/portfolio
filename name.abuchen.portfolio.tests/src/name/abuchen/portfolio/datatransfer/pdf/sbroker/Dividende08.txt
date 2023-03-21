@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+~$~|ER01|746015||||||||ERTRAEGE.D230201.AFP||||20230201||1457|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg
+Depotnummer 1234567890
+Sebastian XXX
+Abrechnungsnr. 1234567890
+Datum 01.02.2023
+Herrn
+Sebastian XXX
+XXX
+Musterstr. 1
+12345 XXX
+Gutschrift
+Kapitalrückzahlung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 57 2020 BULKERS LTD. BMG9156K1018 (A2PNW9)
+REGISTERED SHARES DL 1
+Zahlbarkeitstag 31.01.2023 Auszahlung pro Stück 0,89065 NOK
+Bestandsstichtag 19.01.2023 Herkunftsland Bermuda
+Ex-Tag 20.01.2023
+Devisenkurs EUR / NOK 10,8774
+Devisenkursdatum 01.02.2023
+Kurswert 50,77 NOK 4,67+ EUR
+Umrechnung in EUR 4,67 EUR
+Verrechneter Sparer-Pauschbetrag 4,67 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 4,67+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Jahressteuerbescheinigung folgt.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 2.306,26 0,00 862,29 1,74 0,00
+Ertrag 0,00 0,00 4,67- 0,00 0,00
+Nachher 2.306,26 0,00 857,62 1,74 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+5500.02012140.0004228ER01
+SBRO_ER01_v10.8P.ERTRAEGE.D230201.AFP_1457

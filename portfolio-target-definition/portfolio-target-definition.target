@@ -45,10 +45,12 @@
 		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_da.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.0.0"/>
-		<repository location="https://download.eclipse.org/swtchart/integration/develop/repository"/>
+		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository"/>
+		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
+		<unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.14.0.202301260747"/>
 	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
 		<dependencies>

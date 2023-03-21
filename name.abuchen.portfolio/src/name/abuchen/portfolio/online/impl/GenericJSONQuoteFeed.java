@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -44,12 +46,14 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     public static final String CLOSE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-CLOSE"; //$NON-NLS-1$
     public static final String HIGH_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-HIGH"; //$NON-NLS-1$
     public static final String LOW_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-LOW"; //$NON-NLS-1$
+    public static final String FACTOR_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-FACTOR"; //$NON-NLS-1$
     public static final String VOLUME_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-VOLUME"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-LATEST"; //$NON-NLS-1$
     public static final String DATE_FORMAT_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-FORMAT-LATEST"; //$NON-NLS-1$
     public static final String CLOSE_PROPERTY_NAME_LATEST = "GENERIC-JSON-CLOSE-LATEST"; //$NON-NLS-1$
     public static final String HIGH_PROPERTY_NAME_LATEST = "GENERIC-JSON-HIGH-LATEST"; //$NON-NLS-1$
     public static final String LOW_PROPERTY_NAME_LATEST = "GENERIC-JSON-LOW-LATEST"; //$NON-NLS-1$
+    public static final String FACTOR_PROPERTY_NAME_LATEST = "GENERIC-JSON-FACTOR-LATEST"; //$NON-NLS-1$
     public static final String VOLUME_PROPERTY_NAME_LATEST = "GENERIC-JSON-VOLUME-LATEST"; //$NON-NLS-1$
 
     private final PageCache<String> cache = new PageCache<>();
@@ -103,6 +107,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                         isLatest ? HIGH_PROPERTY_NAME_LATEST : HIGH_PROPERTY_NAME_HISTORIC);
         Optional<String> lowProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? LOW_PROPERTY_NAME_LATEST : LOW_PROPERTY_NAME_HISTORIC);
+        Optional<String> factorProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? FACTOR_PROPERTY_NAME_LATEST : FACTOR_PROPERTY_NAME_HISTORIC);
         Optional<String> volumeProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? VOLUME_PROPERTY_NAME_LATEST : VOLUME_PROPERTY_NAME_HISTORIC);
 
@@ -155,7 +161,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
             if (json != null)
                 newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), data,
-                                dateFormatProperty, lowProperty, highProperty, volumeProperty));
+                                dateFormatProperty, lowProperty, highProperty, factorProperty, volumeProperty));
 
             if (newPricesByDate.size() > sizeBefore)
                 failedAttempts = 0;
@@ -197,7 +203,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     protected List<LatestSecurityPrice> parse(String url, String json, String datePath, String closePath,
                     QuoteFeedData data, Optional<String> dateFormat, Optional<String> lowPath,
-                    Optional<String> highPath, Optional<String> volumePath)
+                    Optional<String> highPath, Optional<String> factorString, Optional<String> volumePath)
     {
         try
         {
@@ -237,6 +243,16 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                                 Messages.MsgErrorNumberOfDateAndCloseRecordsDoNotMatch, dates.size(), close.size())));
                 return Collections.emptyList();
             }
+            
+            BigDecimal factor;
+            if(factorString.isPresent())
+            {
+                factor = new BigDecimal(factorString.get());
+            }
+            else
+            {
+                factor = BigDecimal.ONE;
+            }
 
             List<LatestSecurityPrice> prices = new ArrayList<>();
 
@@ -252,13 +268,13 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                 // close
                 object = close.get(index);
-                price.setValue(this.extractValue(object));
+                price.setValue(this.extractValue(object, factor));
 
                 if (price.getDate() != null && price.getValue() > 0)
                 {
                     if(high.isPresent())
                     {
-                        price.setHigh(this.extractValue(high.get().get(index)));
+                        price.setHigh(this.extractValue(high.get().get(index), factor));
                     }
                     else
                     {
@@ -266,7 +282,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                     }
                     if(low.isPresent())
                     {
-                        price.setLow(this.extractValue(low.get().get(index)));
+                        price.setLow(this.extractValue(low.get().get(index), factor));
                     }
                     else
                     {
@@ -293,12 +309,13 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         }
     }
 
-    /* testing */ long extractValue(Object object) throws ParseException
+    /* testing */ long extractValue(Object object, BigDecimal factor) throws ParseException
     {
         if (object instanceof Number)
-            return Values.Quote.factorize(((Number) object).doubleValue());
+            return new BigDecimal(object.toString()).multiply(factor).multiply(Values.Quote.getBigDecimalFactor())
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
         else if (object instanceof String)
-            return YahooHelper.asPrice((String) object);
+            return YahooHelper.asPrice((String) object, factor);
         return 0;
     }
 

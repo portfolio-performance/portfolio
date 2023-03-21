@@ -65,6 +65,11 @@ public class AssertImportActions
     {
         for (Extractor.Item item : items)
         {
+            // do not apply further checks if the item is a (permanent) failure
+            // as the transactions most likely has further errors
+            if (item.isFailure())
+                continue;
+
             for (ImportAction action : actions)
             {
                 ImportAction.Status status = item.apply(action, context);

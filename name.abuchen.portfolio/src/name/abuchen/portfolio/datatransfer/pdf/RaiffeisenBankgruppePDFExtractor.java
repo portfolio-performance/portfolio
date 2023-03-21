@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -133,13 +134,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Limit bestens
@@ -242,12 +243,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
                                         .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Bruttoertrag: 119,37 USD 
@@ -260,13 +262,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 

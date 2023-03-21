@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -146,7 +147,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                     t.setSecurity(getOrCreateSecurity(v));
 
                                                     Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
-                                                    checkAndSetTax(tax, t, type);
+                                                    checkAndSetTax(tax, t, type.getCurrentContext());
                                                 })
                                         ,
                                         section -> section
@@ -246,9 +247,10 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return new NonImportableItem("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            TransactionItem item = new TransactionItem(t);
+                            if (t.getCurrencyCode() != null || t.getAmount() == 0)
+                                item.setFailureMessage("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            return item;
                         }));
 
         // @formatter:off
@@ -361,18 +363,18 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
     }
 }

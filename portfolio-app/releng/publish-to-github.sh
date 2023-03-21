@@ -6,12 +6,7 @@ if [ -z $PCK_VERSION ]; then
   exit 1
 fi
 
-github-release release \
-    --user buchen \
-    --repo portfolio \
-    --tag ${PCK_VERSION} \
-    --name ${PCK_VERSION} \
-    --pre-release
+gh release create --repo buchen/portfolio --draft --title ${PCK_VERSION} ${PCK_VERSION}
 
 BASE=$(pwd)/../../portfolio-product/target/products/
 BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/target/products/

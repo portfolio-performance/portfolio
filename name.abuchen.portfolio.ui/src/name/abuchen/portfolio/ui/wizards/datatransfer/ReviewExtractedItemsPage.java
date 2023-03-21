@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -55,7 +54,6 @@ import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
-import name.abuchen.portfolio.datatransfer.actions.MarkNonImportableAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -358,7 +356,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         image = Images.ERROR;
                         break;
                     case OK:
-                        image = Images.CHECK;
+                        image = Images.OK;
                         break;
                     default:
                 }
@@ -737,17 +735,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
+        allEntries.addAll(entries);
+        extractionErrors.addAll(errors);
+
         checkEntries(entries);
 
-        allEntries.addAll(entries);
         tableViewer.setInput(allEntries);
-
-        // additionally add the non-importable items as extraction errors
-        extractionErrors.addAll(entries.stream().filter(e -> e.getItem() instanceof NonImportableItem)
-                        .map(e -> new IOException(e.getItem().getTypeInformation())).toList());
-
-        extractionErrors.addAll(errors);
-        errorTableViewer.setInput(extractionErrors);
 
         for (ExtractedEntry entry : entries)
         {
@@ -778,23 +771,31 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
-        actions.add(new MarkNonImportableAction());
 
         List<Exception> allErrors = new ArrayList<>(extractionErrors);
 
         for (ExtractedEntry entry : entries)
         {
             entry.clearStatus();
-            for (ImportAction action : actions)
-            {
-                ImportAction.Status actionStatus = entry.getItem().apply(action, this);
-                entry.addStatus(actionStatus);
-                if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
-                {
-                    allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
-                                    + entry.getItem().toString()));
-                }
 
+            if (entry.getItem().isFailure())
+            {
+                entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
+                allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
+            }
+            else
+            {
+                for (ImportAction action : actions)
+                {
+                    ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                    entry.addStatus(actionStatus);
+                    if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                    {
+                        allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
+                                        + entry.getItem().toString()));
+                    }
+                    
+                }
             }
         }
 

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.60.3-SNAPSHOT</version>
+		<version>0.61.5-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -109,7 +109,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>da</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>

@@ -31,6 +31,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         store.setDefault(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
         store.setDefault(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, false);
+        store.setDefault(UIConstants.Preferences.ENABLE_SURVEY_REMINDER, false);
         store.setDefault(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS,
                         Platform.getOS().equals(Platform.OS_LINUX) || (Platform.getOS().equals(Platform.OS_MACOSX)
                                         && Platform.getOSArch().equals(Platform.ARCH_X86_64)

@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -213,13 +215,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Ausserbörslich: SE SAV - AT Funds Kurswert: USD 177,3844
@@ -233,17 +235,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+                .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(BuySellEntryItem::new);
 
@@ -376,13 +378,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^[\\.,\\d]+ STK ([\\s]+)?[\\.,\\d]+ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                 .match("^USD Devisenkurs Mitte (?<exchangeRate>[\\.,\\d]+) Umgerechneter Kurswert [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 //  Limit:                                       Bestens                               Beratungsfreies Geschäft 
@@ -568,13 +570,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Wertpapier : MORGAN ST., DEAN W. DL-01 Dividende Brutto : USD 3,00
@@ -589,17 +591,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
-                .conclude(PDFExtractorUtils.fixGrossValueA())
+                .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap(TransactionItem::new);
 
@@ -688,13 +690,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Brutto (?<fxCurrency>[\\w]{3}) .* (?<fxGross>[\\.,\\d]+) [\\s]+(?<gross>[\\.,\\d]+).*$")
                 .match("^Devisenkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<exchangeRate>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("baseCurrency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 //  Ausschüttung 
@@ -965,7 +967,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
 
     @Override
@@ -995,7 +997,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
@@ -1025,6 +1027,6 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return PDFExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

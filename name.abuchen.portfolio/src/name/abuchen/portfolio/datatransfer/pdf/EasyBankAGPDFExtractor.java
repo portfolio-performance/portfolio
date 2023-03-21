@@ -1,12 +1,14 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -15,6 +17,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
@@ -122,13 +125,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
                 .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 .optionalOneOf(
@@ -192,7 +195,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 // Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG  
                 // AKTIEN O.N.
                 // Dividende: 1,9 EUR 
-                .section("isin", "name", "name1", "currency")
+                .section("isin", "name", "name1", "currency").optional()
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
                 .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
@@ -203,18 +206,45 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // Titel: DE000A14J587  t h y s s e n k r u p p AG                    
+                // Medium Term Notes v.15(25)
+                // Kup. 25.2.2023/GZJ Endfälligkeit 25.2.2025
+                // Zinsertrag für 365 Tage: 50,-- EUR 
+                .section("isin", "name", "name1", "currency").optional()
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
+                .match("^(?<name1>.*)$")
+                .match("^Zinsertrag f.r [\\d]+ Tage: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    if (!v.get("name1").startsWith("Kup."))
+                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
+
                 .oneOf(
-                                // 100 Stk
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^(?<shares>[\\.,\\d]+) Stk.*$")
-                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                                ,
                                 // Bestand: Stk 1.200
                                 section -> section
                                         .attributes("shares")
                                         .match("^Bestand: Stk (?<shares>[\\.,\\d]+).*$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // 100 Stk
+                                // 2.000 EUR
+                                section -> section
+                                        .attributes("shares", "notation")
+                                        .match("^(?<shares>[\\.,\\d]+) (?<notation>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            // Percentage quotation, workaround for bonds
+                                            if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stk"))
+                                            {
+                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                            }
+                                            else
+                                            {
+                                                t.setShares(asShares(v.get("shares")));
+                                            }
+                                        })
                         )
 
                 .oneOf(
@@ -251,13 +281,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Dividende: 1 USD
@@ -271,15 +301,20 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
+
+                // Zinssatz: 2,5 % von 25.2.2022 bis 24.2.2023
+                .section("note").optional()
+                .match("^Zinssatz: (?<note>.* [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} .* [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
+                .assign((t, v) -> t.setNote(v.get("note")))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)

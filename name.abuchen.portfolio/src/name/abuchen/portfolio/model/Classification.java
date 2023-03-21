@@ -86,6 +86,16 @@ public class Classification implements Named
 
             return data.get(key);
         }
+        
+        public Assignment copyWith(InvestmentVehicle vehicle)
+        {
+            Assignment copy = new Assignment(vehicle);
+            copy.setWeight(this.getWeight());
+            copy.setRank(this.getRank());
+            if (this.data != null)
+                copy.data = new HashMap<>(this.data);
+            return copy;
+        }
 
         /* protobuf only */ List<PKeyValue> getData()
         {
@@ -524,11 +534,7 @@ public class Classification implements Named
 
         for (Assignment assignment : assignments)
         {
-            Assignment a = new Assignment(assignment.getInvestmentVehicle());
-            a.setWeight(assignment.getWeight());
-            a.setRank(assignment.getRank());
-            if (assignment.data != null)
-                a.data = new HashMap<>(assignment.data);
+            Assignment a = assignment.copyWith(assignment.getInvestmentVehicle());
             copy.addAssignment(a);
         }
 

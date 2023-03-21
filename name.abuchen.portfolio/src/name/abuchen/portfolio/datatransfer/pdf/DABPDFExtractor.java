@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -192,16 +194,16 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Kurswert ([\\s]+)?(?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)([\\-\\s]+)?$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
-                    
+
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                .conclude(PDFExtractorUtils.fixGrossValueBuySell())
+                .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document,
@@ -332,13 +334,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^ausl.ndische Dividende (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                                         .match("^Devisenkurs: (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-                                            
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // 01.12.2021 1234567891 EUR/JPY 127,99 EUR 3,59
@@ -348,13 +350,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
                                         .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
-                                            
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // 07.02.2017 1234567 EUR/USD 1,0797 EUR 11,06
@@ -364,13 +366,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+$")
                                         .match("^Ertrag f.r [\\d]{4} (?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
-                                            
+
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
-                                            
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Brutto in USD 281,25 USD
@@ -384,12 +386,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Netto in [\\w]{3} zugunsten .*$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // Brutto in USD 600,00 USD
@@ -403,12 +406,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .match("^Netto zugunsten .*$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // 30.06.2021 5325658010 USD 20,49
@@ -419,17 +423,17 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         .match("^Ertrag f.r [\\d]{4}\\/[\\d]{2} (?<currency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+).*$")
                                         .match("^Devisenkurs: (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("baseCurrency")), gross);
-                                            
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
-                .conclude(PDFExtractorUtils.fixGrossValueA())
+                .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap(t -> {
                     // If we have multiple entries in the document, then
@@ -671,13 +675,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .match("^zu versteuern \\(negativ\\) .*$")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 .wrap(t -> {
@@ -701,10 +705,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
             }
         });
         this.addDocumentTyp(type);
-
+        
+        // OLD FORMAT
+        
         // SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
         // SEPA-Lastschrift Max Mustermann 15.07.19 300,00
-        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) [^Lastschrift].*$");
+        Block depositBlock_Format01 = new Block("^(SEPA-Gutschrift|SEPA-Lastschrift) (?!.*Lastschrift).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -715,7 +721,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("note", "date", "amount")
-                .match("^(?<note>(SEPA\\-Gutschrift|SEPA-Lastschrift)) [^Lastschrift].* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .match("^(?<note>(SEPA\\-Gutschrift|SEPA\\-Lastschrift)) (?!.*Lastschrift).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -732,23 +738,27 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                     return null;
                 }));
 
-        // 23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
-        Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* [\\.,\\d]+ [\\w]{3}$");
-        type.addBlock(depositBlock_Format02);
-        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+        // SEPA-Überweisung MUSTERMANN, MAX 05.07.19 15.000,00  // no minus sign!
+        // SEPA-Dauerauftrag MUSTERMANN, MAX 15.07.19 300,00    // no minus sign!
+        Block removalBlock_Format01 = new Block("^(SEPA\\-.berweisung|SEPA\\-Dauerauftrag) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
+        type.addBlock(removalBlock_Format01);
+        removalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.DEPOSIT);
+                    transaction.setType(AccountTransaction.Type.REMOVAL);
                     return transaction;
                 })
 
                 .section("note", "date", "amount")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?<note>(SEPA\\-.berweisung|SEPA\\-Dauerauftrag)) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
                     t.setDateTime(asDate(v.get("date")));
+
                     t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(v.get("note"));
                 })
 
@@ -757,6 +767,114 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 }));
+        // Belastung Porto 05.04.16 0,70  // no minus sign!
+        Block feesBlock_Format01 = new Block("^Belastung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
+        type.addBlock(feesBlock_Format01);
+        feesBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction transaction = new AccountTransaction();
+                    transaction.setType(AccountTransaction.Type.FEES);
+                    return transaction;
+                })
+
+                .section("note", "date", "amount")
+                .match("^Belastung (?<note>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    t.setDateTime(asDate(v.get("date")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                }));
+
+        // NEW (Smartbroker) FORMAT
+        
+        // 23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
+        Block depositBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(depositBlock_Format02);
+        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
+                        })
+
+                        .section("note", "date", "amount")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // 23.09.2022 23.09.2022 SEPA-Überweisung Entsparen -2.000,00 EUR
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA\\-.berweisung .* -[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.REMOVAL);
+                            return transaction;
+                        })
+
+                        .section("note", "date", "amount")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+        
+        // 23.09.2022 23.09.2022 Sollzinsen -100,00 EUR
+        Block interestChargeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Sollzinsen -[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(interestChargeBlock);
+        interestChargeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return transaction;
+                        })
+
+                        .section("note", "date", "amount")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Sollzinsen) -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
         Block feesBlock = new Block("^SEPA-Lastschrift Lastschrift Managementgeb.hr .*$");

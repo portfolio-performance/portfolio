@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf;
+package name.abuchen.portfolio.datatransfer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Transaction;
@@ -26,7 +25,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-public class PDFExtractorUtils
+public class ExtractorUtils
 {
     private static final DateTimeFormatter[] DATE_FORMATTER_GERMANY = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
@@ -73,45 +72,43 @@ public class PDFExtractorUtils
                     DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss a", Locale.UK) }; //$NON-NLS-1$
 
-    private PDFExtractorUtils()
+    private ExtractorUtils()
     {
     }
 
-    public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentType type)
+    public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentContext context)
     {
-        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross,
-                            (name.abuchen.portfolio.model.Transaction) transaction, type);
-        else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetGrossUnit(gross, fxGross,
-                            ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction tx)
+            ExtractorUtils.checkAndSetGrossUnit(gross, fxGross, tx, context);
+        else if (transaction instanceof BuySellEntry buysell)
+            ExtractorUtils.checkAndSetGrossUnit(gross, fxGross, buysell.getPortfolioTransaction(), context);
         else
             throw new UnsupportedOperationException();
     }
 
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, name.abuchen.portfolio.model.Transaction t,
-                    DocumentType type)
+                    DocumentContext context)
     {
         if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
             return;
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = context.getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
             t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, rate.get().getRate(gross.getCurrencyCode())));
     }
 
-    public static void checkAndSetTax(Money tax, Object transaction, DocumentType type)
+    public static void checkAndSetTax(Money tax, Object transaction, DocumentContext context)
     {
-        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetTax(tax, (name.abuchen.portfolio.model.Transaction) transaction, type);
-        else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetTax(tax, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction tx)
+            ExtractorUtils.checkAndSetTax(tax, tx, context);
+        else if (transaction instanceof BuySellEntry buySell)
+            ExtractorUtils.checkAndSetTax(tax, buySell.getPortfolioTransaction(), context);
         else
             throw new UnsupportedOperationException();
     }
 
-    public static void checkAndSetTax(Money tax, name.abuchen.portfolio.model.Transaction t, DocumentType type)
+    public static void checkAndSetTax(Money tax, name.abuchen.portfolio.model.Transaction t, DocumentContext context)
     {
         if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
         {
@@ -119,7 +116,7 @@ public class PDFExtractorUtils
             return;
         }
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = context.getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
         {
@@ -133,17 +130,17 @@ public class PDFExtractorUtils
         }
     }
 
-    public static void checkAndSetFee(Money fee, Object transaction, DocumentType type)
+    public static void checkAndSetFee(Money fee, Object transaction, DocumentContext context)
     {
-        if (transaction instanceof name.abuchen.portfolio.model.Transaction)
-            PDFExtractorUtils.checkAndSetFee(fee, (name.abuchen.portfolio.model.Transaction) transaction, type);
-        else if (transaction instanceof BuySellEntry)
-            PDFExtractorUtils.checkAndSetFee(fee, ((BuySellEntry) transaction).getPortfolioTransaction(), type);
+        if (transaction instanceof name.abuchen.portfolio.model.Transaction tx)
+            ExtractorUtils.checkAndSetFee(fee, tx, context);
+        else if (transaction instanceof BuySellEntry buysell)
+            ExtractorUtils.checkAndSetFee(fee, buysell.getPortfolioTransaction(), context);
         else
             throw new UnsupportedOperationException();
     }
 
-    public static void checkAndSetFee(Money fee, name.abuchen.portfolio.model.Transaction t, DocumentType type)
+    public static void checkAndSetFee(Money fee, name.abuchen.portfolio.model.Transaction t, DocumentContext context)
     {
         if (fee.getCurrencyCode().equals(t.getCurrencyCode()))
         {
@@ -151,7 +148,7 @@ public class PDFExtractorUtils
             return;
         }
 
-        Optional<PDFExchangeRate> rate = type.getCurrentContext().getType(PDFExchangeRate.class);
+        Optional<ExtrExchangeRate> rate = context.getType(ExtrExchangeRate.class);
 
         if (rate.isPresent())
         {
@@ -232,7 +229,8 @@ public class PDFExtractorUtils
 
     public static LocalDateTime asDate(String value, Locale... hints)
     {
-        Locale[] locales = hints.length > 0 ? hints : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
+        Locale[] locales = hints.length > 0 ? hints
+                        : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
 
         for (Locale l : locales)
         {

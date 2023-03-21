@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetFee;
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -11,8 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.DocumentContext;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -68,6 +69,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Wertpapierabrechnung "
                         + "(Kauf|"
                         + "Kauf aus Sparplan|"
+                        + "Kauf aus Wiederanlage Fondsaussch.ttung|"
                         + "Bezug|"
                         + "Verkauf|"
                         + "Verk\\. Teil\\-\\/Bezugsr\\.)|"
@@ -85,6 +87,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
                         + "(Kauf|"
                         + "Kauf aus Sparplan|"
+                        + "Kauf aus Wiederanlage Fondsaussch.ttung|"
                         + "Bezug|"
                         + "Verkauf|"
                         + "Verk. Teil\\-\\/Bezugsr\\.)|"
@@ -189,12 +192,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Devisenkurs (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
                 .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Diese Order wurde mit folgendem Limit / -typ erteilt: 38,10 EUR
@@ -236,10 +240,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Sie erhalten eine neue Abrechnung.
                 .section("type").optional()
                 .match("^(?<type>Sie erhalten eine neue Abrechnung\\.)$")
-                .assign((t, v) -> {
-                    if (v.get("type").equals("Sie erhalten eine neue Abrechnung."))
-                        t.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                })
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 // ISIN (WKN) US5801351017 (856958)
                 // Wertpapierbezeichnung McDonald's Corp.
@@ -325,22 +327,21 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                     v.put("baseCurrency", asCurrencyCode(type.getCurrentContext().get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                     Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                     {
-                        if (t.getNote() == null || !t.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
-                            return new TransactionItem(t);
-                        else
-                            return new NonImportableItem(Messages.MsgErrorOrderCancellationUnsupported);
+                        TransactionItem item = new TransactionItem(t);
+                        item.setFailureMessage(ctx.getString(FAILURE));
+                        return item;
                     }
                     return null;
                 });
@@ -632,6 +633,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^B.rsenentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // Variables Transaktionsentgelt EUR 2,82
+                .section("currency", "fee").optional()
+                .match("^Variables Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
                 // Kurswert EUR 52,63
                 // Rabatt EUR - 2,63
                 // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
@@ -658,7 +664,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // fee = fee - discount
                         fee = fee.subtract(discount);
 
-                        checkAndSetFee(fee, t, type);
+                        checkAndSetFee(fee, t, type.getCurrentContext());
                     }
                 });
     }

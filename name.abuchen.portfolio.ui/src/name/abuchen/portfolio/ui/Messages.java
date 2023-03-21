@@ -593,6 +593,7 @@ public class Messages extends NLS
     public static String LabelCurrentWeek;
     public static String LabelDashboard;
     public static String LabelDataSeries;
+    public static String LabelDateExclusive;
     public static String LabelDateXToY;
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
@@ -714,6 +715,7 @@ public class Messages extends NLS
     public static String LabelReportingDialogTradingDays;
     public static String LabelReportingDialogUntil;
     public static String LabelReportingDialogDay;
+    public static String LabelReportingDialogHint;
     public static String LabelReportingDialogWeek;
     public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
@@ -744,6 +746,7 @@ public class Messages extends NLS
     public static String LabelSmallerSize;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
+    public static String LabelDuplicateSecurity;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
     public static String LabelGross;
@@ -762,6 +765,8 @@ public class Messages extends NLS
     public static String LabelJSONPathToDate;
     public static String LabelJSONDateFormat;
     public static String LabelJSONDateFormatHint;
+    public static String LabelJSONFactor;
+    public static String LabelJSONFactorHint;
     public static String LabelJSONPathToLow;
     public static String LabelJSONPathToHigh;
     public static String LabelJSONPathToVolume;
@@ -1189,6 +1194,9 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String SurveyIcon;
+    public static String SurveyReminder;
+    public static String SurveyTooltip;
     public static String EventWizardTitle;
     public static String EventWizardDescription;
     public static String EventWizardLabelMessage;
@@ -1215,6 +1223,21 @@ public class Messages extends NLS
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String TransactionFilter;
+    public static String TransactionFilterNone;
+    public static String TransactionFilterSecurityRelated;
+    public static String TransactionFilterBuyAndSell;
+    public static String TransactionFilterBuy;
+    public static String TransactionFilterSell;
+    public static String TransactionFilterDividend;
+    public static String TransactionFilterDepositAndRemoval;
+    public static String TransactionFilterDeposit;
+    public static String TransactionFilterRemoval;
+    public static String TransactionFilterInterest;
+    public static String TransactionFilterTaxes;
+    public static String TransactionFilterFees;
+    public static String TransactionFilterTransfers;
+    public static String TransactionFilterDeliveries;
     public static String Url;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;

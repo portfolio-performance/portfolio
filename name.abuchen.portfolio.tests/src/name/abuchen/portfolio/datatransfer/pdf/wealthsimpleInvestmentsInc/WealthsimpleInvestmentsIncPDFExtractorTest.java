@@ -17,7 +17,6 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -36,6 +35,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class WealthsimpleInvestmentsIncPDFExtractorTest
 {
     @Test
@@ -115,36 +115,35 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(security10.getCurrencyCode(), is("CAD"));
 
         // check 1st cancellation without ticker symbol transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 2nd cancellation without ticker symbol transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 3rd cancellation without ticker symbol transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check transaction
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(38L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(41L));
 
         Item item = iter.next();
 
@@ -1418,7 +1417,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check fee transaction
-        iter = results.stream().filter(TransactionItem.class::isInstance).skip(29).iterator();
+        iter = results.stream().filter(TransactionItem.class::isInstance).skip(32).iterator();
         item = iter.next();
 
         // assert transaction
@@ -1584,36 +1583,35 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(results.size(), is(80));
 
         // check 1st cancellation without ticker symbol transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 2nd cancellation without ticker symbol transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 3rd cancellation without ticker symbol transaction
-        Cancelations = (NonImportableItem) results.stream().filter(NonImportableItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement01.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check transaction
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(38L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(41L));
 
         Item item = iter.next();
 
@@ -2911,7 +2909,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check fee transaction
-        iter = results.stream().filter(TransactionItem.class::isInstance).skip(29).iterator();
+        iter = results.stream().filter(TransactionItem.class::isInstance).skip(32).iterator();
         item = iter.next();
 
         // assert transaction
@@ -3068,18 +3066,17 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(security8.getCurrencyCode(), is("CAD"));
 
         // check 1st cancellation without ticker symbol transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement02.txt"));
 
         // check transaction
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(8L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
 
         Item item = iter.next();
 
@@ -3455,7 +3452,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check fee transaction
-        iter = results.stream().filter(TransactionItem.class::isInstance).skip(7).iterator();
+        iter = results.stream().filter(TransactionItem.class::isInstance).skip(8).iterator();
         item = iter.next();
 
         // assert transaction
@@ -3531,18 +3528,17 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(results.size(), is(26));
 
         // check 1st cancellation without ticker symbol transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("DepotStatement02.txt"));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getSource(), is("DepotStatement02.txt"));
 
         // check transaction
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(8L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
 
         Item item = iter.next();
 
@@ -3926,7 +3922,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check fee transaction
-        iter = results.stream().filter(TransactionItem.class::isInstance).skip(7).iterator();
+        iter = results.stream().filter(TransactionItem.class::isInstance).skip(8).iterator();
         item = iter.next();
 
         // assert transaction

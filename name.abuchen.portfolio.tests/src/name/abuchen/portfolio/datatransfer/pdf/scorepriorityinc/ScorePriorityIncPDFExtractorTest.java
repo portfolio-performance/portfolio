@@ -15,7 +15,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -708,7 +707,7 @@ public class ScorePriorityIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(16));
+        assertThat(results.size(), is(17));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
@@ -748,21 +747,20 @@ public class ScorePriorityIncPDFExtractorTest
         assertThat(security6.getName(), is("Orion Office Reit Inc Com"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
+        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getWkn(), is("09609G100"));
         assertThat(security7.getName(), is("Bluebird Bio Inc"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check cancellation (CUSIP is to short) transaction
-        NonImportableItem Cancelations = (NonImportableItem) results.stream()
-                        .filter(NonImportableItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(Cancelations.getTypeInformation(), is("CUSIP is maybe incorrect. 2021-11-05T00:00 Tsvt"));
-        assertNull(Cancelations.getSecurity());
-        assertNull(Cancelations.getDate());
-        assertThat(Cancelations.getNote(), is("AccountStatement04.txt"));
+        assertThat(cancellation.getFailureMessage(), is("CUSIP is maybe incorrect. 2021-11-05T00:00 Tsvt"));
+        assertThat(cancellation.getSource(), is("AccountStatement04.txt"));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -883,7 +881,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
         // check fees transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
@@ -903,7 +901,7 @@ public class ScorePriorityIncPDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
         // check 3rd dividend transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));

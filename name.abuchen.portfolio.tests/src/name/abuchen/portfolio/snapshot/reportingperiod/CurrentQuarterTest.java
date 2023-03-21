@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class CurrentQuarterTest
         String code = "Q";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), CurrentQuarter.class); // NOSONAR
+        assertEquals(CurrentQuarter.class, period.getClass()); // NOSONAR
     }
 
     @Test
@@ -46,7 +47,7 @@ public class CurrentQuarterTest
 
         LocalDate expectedStartDate = LocalDate.of(2020, 12, 31);
         LocalDate expectedEndDate = LocalDate.of(2021, 3, 1).with(lastDayOfMonth());
-        assertEquals(result, Interval.of(expectedStartDate, expectedEndDate));
+        assertEquals(Interval.of(expectedStartDate, expectedEndDate), result);
     }
 
     @Test
@@ -60,7 +61,7 @@ public class CurrentQuarterTest
 
         LocalDate expectedStartDate = LocalDate.of(2021, 3, 31);
         LocalDate expectedEndDate = LocalDate.of(2021, 6, 1).with(lastDayOfMonth());
-        assertEquals(result, Interval.of(expectedStartDate, expectedEndDate));
+        assertEquals(Interval.of(expectedStartDate, expectedEndDate), result);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class CurrentQuarterTest
 
         LocalDate expectedStartDate = LocalDate.of(2021, 6, 30);
         LocalDate expectedEndDate = LocalDate.of(2021, 9, 1).with(lastDayOfMonth());
-        assertEquals(result, Interval.of(expectedStartDate, expectedEndDate));
+        assertEquals(Interval.of(expectedStartDate, expectedEndDate), result);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class CurrentQuarterTest
 
         LocalDate expectedStartDate = LocalDate.of(2021, 9, 30);
         LocalDate expectedEndDate = LocalDate.of(2021, 12, 1).with(lastDayOfMonth());
-        assertEquals(result, Interval.of(expectedStartDate, expectedEndDate));
+        assertEquals(Interval.of(expectedStartDate, expectedEndDate), result);
     }
 
     @Test
@@ -98,7 +99,7 @@ public class CurrentQuarterTest
         ReportingPeriod equal2 = ReportingPeriod.from("Q");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualDifferentClass);
 
         assertEquals(equal1, equal1);

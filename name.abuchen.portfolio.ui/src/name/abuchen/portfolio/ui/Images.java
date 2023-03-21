@@ -15,6 +15,8 @@ import org.osgi.framework.FrameworkUtil;
 @SuppressWarnings("restriction")
 public enum Images
 {
+    // logos
+    
     LOGO_16("pp_16.png"), //$NON-NLS-1$
     LOGO_32("pp_32.png"), //$NON-NLS-1$
     LOGO_48("pp_48.png"), //$NON-NLS-1$
@@ -22,10 +24,13 @@ public enum Images
     LOGO_256("pp_256.png"), //$NON-NLS-1$
     LOGO_512("pp_512.png"), //$NON-NLS-1$
 
+    // UX elements
+    
     BANNER("banner.png"), //$NON-NLS-1$
+    HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
+    HANDLE_WE("handle_we.png"), //$NON-NLS-1$
 
     // model items
-    POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
 
     SECURITY("security.png"), //$NON-NLS-1$
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
@@ -37,7 +42,7 @@ public enum Images
     BOOKMARK("bookmark.png"), //$NON-NLS-1$
     BOOKMARK_OPEN("bookmark_open.png"), //$NON-NLS-1$
 
-    // buttons
+    // tool bar
 
     PLUS("plus.png"), //$NON-NLS-1$
     CONFIG("config.png"), //$NON-NLS-1$
@@ -83,6 +88,7 @@ public enum Images
 
     TEXT("text.png"), //$NON-NLS-1$
 
+    OK("ok.png"),  //$NON-NLS-1$
     ERROR("error.png"), //$NON-NLS-1$
     WARNING("warning.png"), //$NON-NLS-1$
     INFO("info.png"), //$NON-NLS-1$
@@ -92,9 +98,9 @@ public enum Images
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
-    HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
-    HANDLE_WE("handle_we.png"), //$NON-NLS-1$
-
+    // 3rd party logos
+    
+    POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
     DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
     EODHISTORICALDATA_LOGO("eodhistoricaldata-logo.png"), //$NON-NLS-1$
     PORTFOLIO_REPORT_LOGO("portfolio-report.net-logo.png"); //$NON-NLS-1$

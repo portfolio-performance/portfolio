@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.60.3.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.61.5.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -49,6 +49,7 @@
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_pl"/>
       <feature id="org.eclipse.babel.nls_eclipse_zh"/>
+      <feature id="org.eclipse.babel.nls_eclipse_da"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>

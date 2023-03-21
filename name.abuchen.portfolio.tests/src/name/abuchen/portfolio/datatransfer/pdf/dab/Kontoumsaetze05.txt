@@ -1,0 +1,140 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.3.qualifier
+-----------------------------------------
+DAB, Landsberger Straße 300, 80687 München
+Ihr persönlicher
+Vermögensbericht
+Herr
+Max Mustermann
+Musterstrasse 4
+1234 Musterkon
+Schweiz
+Stammnummer 1234567
+Zeitraum 01.09.2022 bis 30.09.2022
+Referenzwährung Euro
+Erstellt am 17.10.2022 22:52 Uhr
+Smartbroker AG Inhalt Seite
+Ritterstr. 11
+10969 Berlin Vermögensübersicht 2
+Bestandsübersicht 3
+Transaktionsübersicht 4
+Max Mustermann | 1234567 | Erstellt: 17.10.2022 2
+Vermögensübersicht zum 30.09.2022
+Vermögensentwicklung seit Jahresbeginn
+10.000,00 5.000,00 -1.000,00 -10,00 %
+Gesamtwert* in EUR Gesamtwert* in EUR Gesamtergebnis* Portfolioperformance vor Steuern
+am 30.09.2022 am 31.12.2021 in EUR am 30.09.2022 (zeitgewichtet)
+* inkl. Stückzinsen
+Summe der Zuflüsse 7.000,00 EUR Summe der Abflüsse 1.000,00 EUR
+Steuern 0,00 EUR Gezahlte Gebühren -5,00 EUR
+Ausschüttungen/ -30,00 EUR
+Zinsen/Dividenden
+Benchmarkvergleich (zeitgewichtet) seit Jahresbeginn
+Prozent
+0,00%
+Benchmarkperformance -
+Benchmarkabweichung - -5,00%
+-10,00%
+-15,00%
+Q1 2022 Q2 Q3
+%,-01235PQacefilmnoprtPzortfolioperformance
+Portfoliostruktur
+Aktienfonds 11,000 EUR
+Kasse -1.000,00 EUR
+Kasse (-10,00 %)
+Aktienfonds (110,00 %)
+,-.01100AEKRUadefiknost %(),-100AKadefiknost
+Max Mustermann | 1234567| Erstellt: 17.10.2022 3
+Bestandsübersicht zum 30.09.2022
+Name/Kontonummer Stücke/ Marktwert/ Kurs Gewinn/Verlust Devisenkurs Stückzinsen Portfolio-
+Nominale Saldo absolut anteil
+ISIN/WKN/Kupon (p.a.) Fälligkeit Einstandswert ∅ Einstandskurs relativ ∅ Devisen- Erträge Kursgewinn
+(Kaufwährung) einstand absolut
+Liquidität -1.000,00 - -10,00 %
+Kasse -1.000,00 - -10,00 %
+0123456789 (EUR) -1.000,00 -1.000,00 - -10,00 %
+DE34701204000123456789 -
+Aktienanlagen & Zertikate 11.000,00 -1.000,00 - 110,00 %
+12.000,00 -9,09 % 0,00 -1.000,00
+Aktienfonds (000123456789 ) 11.000,00 -1.000,00 - 110,00 %
+12.000,00 -9,09 % 0,00 -1.000,00
+IS C.MSCI EMIMI U.ETF DLA 100,00 6.000,00 6,000 EUR -500,00 - 60,00 %
+IE00BKM4GZ66/A111X9 - 6.500 6,500 EUR -7,69 % 0,00 -500,00
+ISHSIII-CORE MSCI WLD DLA 100,00 5.000,00 5,000 EUR -500,00 - 50,00 %
+IE00B4L5Y983/A0RPWH - 5.500,00 5,500 EUR -9,09 % 0,00 -500,00
+Gesamt 11.000,00 -1.000,00 - 100,00 %
+12.000,00 -9,09 % 0,00 -1.000,00
+Legende:
+∅ Einstandskurs Berücksichtigung jeder bestandsändernden Transaktion inkl. Gebühren nach FiFo.
+Einstandswert ∅ Einstandskurs * Nominal/Stück inkl. Stückzinsen.
+Gewinn/Verlust absolut Differenz von Marktwert und Einstandswert plus den ausgeschütteten Bruttoerträgen.
+Gewinn/Verlust relativ Verhältnis von GuV (absolut) zum Einstandswert.
+Stückzinsen Ausweis der zum Bewertungstag aufgelaufenen Stückzinsansprüche.
+Erträge Summe aller Bruttoausschüttungen, Zinsen (abzüglich der gezahlten Stückzinsen) und Dividenden.
+Kursgewinn absolut Darstellung der reinen Kursentwicklung, ohne Berücksichtigung angefallener Gebühren.
+n.b. Wegen eines fehlenden oder veralteten Marktkurses nicht bewertbar.
+Max Mustermann | 1234567 | Erstellt: 17.10.2022 4
+Transaktionsübersicht
+vom 01.09.2022 bis 30.09.2022
+Kontotransaktionen für Konto 0123456789 (IBAN: DE34701204000123456789)
+Buchungstag Valutatag Buchungstext Verwendungszweck Betrag
+Saldo am 01.09.2022 15,00 EUR
+22.09.2022 22.09.2022 SEPA-Überweisung XXX -1.000,00 EUR
+27.09.2022 27.09.2022 SEPA-Überweisung YYY -100,00 EUR
+27.09.2022 27.09.2022 SEPA-Überweisung ZZZ 10,00 EUR
+28.09.2022 28.09.2022 SEPA-Überweisung AAA 100,00 EUR
+30.09.2022 30.09.2022 Sollzinsen -25,00 EUR
+Saldo am 30.09.2022 -1.000,00 EUR
+Depottransaktionen
+Buchungstag Transaktionsart Wertpapier Kurs Stückzinsen Gebühren Stücke/Nominale
+Valutatag Wertpapiertyp ISIN/WKN Devisenkurs Steuern Betrag
+Devisentermingeschäfte
+Zwischen dem 01.09.2022 und 30.09.2022 wurden keine Devisentermingeschäfte verbucht.
+Max Mustermann | 1234567 | Erstellt: 17.10.2022 5
+Gebühren im Zeitraum 01.09.2022-30.09.2022
+Gebührenübersicht 01.09.2022-30.09.2022 seit Jahresbeginn
+Angefallene Transaktionsgebühren 0,00 EUR 0,00 EUR
+Depotgebühren 0,00 EUR 0,00 EUR
+Verwaltungsgebühren 0,00 EUR 0,00 EUR
+Verwahrentgelt 0,00 EUR 0,00 EUR
+Ausgabeaufschläge 0,00 EUR 0,00 EUR
+Bonifikationen 0,00 EUR 0,00 EUR
+Bitte beachtenSie, dass separateHonorarenicht indemVermögensbericht ausgewiesenwurden.Diese könnenSiegemäßseparaterAufstellung Ihres Finanzintermediärs
+entnehmen.
+Steuerliche Information und Verlustverrechnungstöpfe zum 30.09.2022
+Für den gewählten Berichtszeitraum sind keine Steuerdaten verfügbar.
+Lombardkredite
+Für die in diesem Vermögensbericht enthaltenen Depots und Konten bestehen folgende Lombardkredite:
+Depot-/Kontonummer Anlagedatum Limitbetrag
+0123456789 01.01.2021 5.000,00 XXX
+Folgende Wertpapiere fallen nicht unter den Regelungsbereich der Richtlinie 2014/65 EU:
+Folgende Wertpapiere unterliegen nicht dem Schutz der MiFID II und ihrer Durchführungsbestimmungen:
+Depot-/Kontonummer Name ISIN / WKN
+Eigenkapitalinstrumente:
+Bei folgenden Wertpapieren handelt es sich um Eigenkapitalinstrumente:
+Depot-/Kontonummer Name ISIN / WKN
+005339714007 IS C.MSCI EMIMI U.ETF DLA IE00BKM4GZ66/A111X9
+005339714007 ISHSIII-CORE MSCI WLD DLA IE00B4L5Y983/A0RPWH
+Allgemeine Hinweise
+RECHNUNGSABSCHLUSS / SALDOMITTEILUNG
+Wichtiger Hinweis:
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie bis spätestens vor Ablauf von sechs Wochen nach dessen Zugang
+erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwen-
+dungen gilt als Genehmigung des Rechnungsabschlusses.
+Genehmigung von Belastungen aus Lastschriften
+Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht schon genehmigt, so müssen
+Max Mustermann | 1234567 | Erstellt: 17.10.2022 6
+Sie Einwendungen gegen die im Saldo dieses Rechnungsabschlusses enthaltene Belastungsbuchung spätestens vor Ablauf von sechs Wochen nach Zugang des
+Rechnungsabschlusses erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen
+rechtzeitiger Einwendungen gilt als Genehmigung der Belastungsbuchung.
+Ihre Einwendungen richten Sie bitte an den DAB Kundenservice, Landsberger Str. 300, 80687 München.
+Unterschiedliche Salden der Geldkonten innerhalb einer Währung entstehen durch die Differenz von Buchungsdatum und Valutadatum. Der Saldo kann auch
+noch nicht wertgestellte Beträge enthalten, über die bis zur Wertstellung noch nicht ohne Abzug von Sollzinsen verfügt werden kann.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetztes entschädigungsfähig. Nähere Informationen können dem Informationsbogen für
+den Einleger entnommen werden.
+Die Darstellung der Steuerinformationen erfolgt erst nach dem ersten steuerrelevanten Ertrag im laufenden Jahr.
+Gewinn- und Verlustrechnungen sowie Kursangaben ohne Gewähr!
+BNP Paribas S.A. Niederlassung Deutschland, Standort: München, Landsberger Str. 300, 80687 München, Sitz: Nürnberg, Handelsregister: Nürnberg, HRB 31129
+USt-IdNr. DE191528929 Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662
+042 449 Président du Conseil dA`dministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

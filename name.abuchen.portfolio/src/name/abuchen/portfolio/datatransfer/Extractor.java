@@ -65,6 +65,8 @@ public interface Extractor
         private Portfolio portfolioPrimary;
 
         private Portfolio portfolioSecondary;
+        
+        private String failureMessage;
 
         private boolean investmentPlanItem = false;
 
@@ -84,6 +86,21 @@ public interface Extractor
         public long getShares()
         {
             return 0; // NOSONAR
+        }
+
+        public String getFailureMessage()
+        {
+            return failureMessage;
+        }
+
+        public void setFailureMessage(String failureMessage)
+        {
+            this.failureMessage = failureMessage;
+        }
+        
+        public boolean isFailure()
+        {
+            return failureMessage != null;
         }
 
         public String getSource()
@@ -162,66 +179,6 @@ public interface Extractor
                             getTypeInformation(), getAmount() != null ? Values.Money.format(getAmount()) : "",
                             getSecurity() != null ? getSecurity().getName() : "",
                             getSource() != null ? getSource() : "");
-        }
-    }
-
-    /**
-     * Represents an item which cannot be imported because it is either not
-     * supported or not needed. It is used for documents that can be
-     * successfully parsed, but do not contain any transaction relevant to
-     * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
-     * can be parsed, but is of no further use to PP.
-     */
-    public static class NonImportableItem extends Item implements Annotated
-    {
-        private String typeInformation;
-        private String note;
-
-        public NonImportableItem(String typeInformation)
-        {
-            this.typeInformation = typeInformation;
-        }
-
-        @Override
-        public Annotated getSubject()
-        {
-            return this;
-        }
-
-        @Override
-        public Security getSecurity()
-        {
-            return null;
-        }
-
-        @Override
-        public String getTypeInformation()
-        {
-            return typeInformation;
-        }
-
-        @Override
-        public LocalDateTime getDate()
-        {
-            return null;
-        }
-
-        @Override
-        public Status apply(ImportAction action, Context context)
-        {
-            return action.process(this);
-        }
-
-        @Override
-        public void setNote(String note)
-        {
-            this.note = note;
-        }
-
-        @Override
-        public String getNote()
-        {
-            return note;
         }
     }
 

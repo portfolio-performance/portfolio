@@ -178,6 +178,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textJsonPathLow;
     private Label labelJsonPathHigh;
     private Text textJsonPathHigh;
+    private Label labelJsonFactor;
+    private Text textJsonFactor;
     private Label labelJsonPathVolume;
     private Text textJsonPathVolume;
     
@@ -224,6 +226,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     protected abstract String getJSONLowPathPropertyName();
 
     protected abstract String getJSONHighPathPropertyName();
+
+    protected abstract String getJSONFactorPropertyName();
 
     protected abstract String getJSONVolumePathPropertyName();
 
@@ -533,6 +537,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textJsonPathLow = disposeIf(textJsonPathLow);
         labelJsonPathHigh = disposeIf(labelJsonPathHigh);
         textJsonPathHigh = disposeIf(textJsonPathHigh);
+        labelJsonFactor = disposeIf(labelJsonFactor);
+        textJsonFactor = disposeIf(textJsonFactor);
         labelJsonPathVolume = disposeIf(labelJsonPathVolume);
         textJsonPathVolume = disposeIf(textJsonPathVolume);
         
@@ -673,6 +679,19 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco.setMarginWidth(2);
             deco.show();
 
+            labelJsonFactor = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonFactor.setText(Messages.LabelJSONFactor);
+
+            textJsonFactor = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonFactor);
+            textJsonFactor.addModifyListener(e -> onJsonFactorChanged());
+
+            deco = new ControlDecoration(textJsonFactor, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONFactorHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
             labelJsonPathVolume = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathVolume.setText(Messages.LabelJSONPathToVolume);
 
@@ -728,7 +747,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (feed != null)
             comboProvider.setSelection(new StructuredSelection(feed));
-        else
+        
+        // check if the feed was available for selection in drop down box
+        if (feed == null || comboProvider.getSelection().isEmpty())
             comboProvider.setSelection(new StructuredSelection(getAvailableFeeds().get(0)));
 
         createDetailDataWidgets(feed);
@@ -793,6 +814,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
             if (highPath != null)
                 textJsonPathHigh.setText(highPath);
+            
+            String factor = model.getFeedProperty(getJSONFactorPropertyName());
+            if (factor != null)
+                textJsonFactor.setText(factor);
 
             String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
             if (volumePath != null)
@@ -905,6 +930,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
             if (highPath != null)
                 textJsonPathHigh.setText(highPath);
+            
+            String factor = model.getFeedProperty(getJSONFactorPropertyName());
+            if (factor != null)
+                textJsonFactor.setText(factor);
 
             String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
             if (volumePath != null)
@@ -1066,6 +1095,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         String highPath = textJsonPathHigh.getText();
 
         model.setFeedProperty(getJSONHighPathPropertyName(), highPath.isEmpty() ? null : highPath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonFactorChanged()
+    {
+        String factor = textJsonFactor.getText();
+
+        model.setFeedProperty(getJSONFactorPropertyName(), factor.isEmpty() ? null : factor);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);

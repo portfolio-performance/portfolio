@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.pdf.PDFExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -25,6 +26,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addFeesWithSecurityTransaction();
         addDeliveryInOutBoundTransaction();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -260,13 +262,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // ISIN Anteilsbestand Betrag je Anteil Betrag
@@ -285,13 +287,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                             Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -434,13 +436,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("currency")));
                                             v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
 
-                                            PDFExchangeRate rate = asExchangeRate(v);
+                                            ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
                                 // ISIN Anteilsbestand Betrag je Anteil Betrag
@@ -452,14 +454,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         .match("^.* [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .match("^Zahlungsbetrag nach W.hrungskonvertierung .* (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            PDFExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(asExchangeRate(v));
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
 
                                             Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
                                             Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
 
-                                            type.getCurrentContext().putType(asExchangeRate(v));
-                                            checkAndSetGrossUnit(gross, fxGross, t, type);
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
@@ -467,7 +468,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("baseCurrency", "termCurrency", "exchangeRate").optional()
                 .match("^[\\.,\\d]+ (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<termCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    type.getCurrentContext().putType(asExchangeRate(v));
+                    ExtrExchangeRate rate = asExchangeRate(v);
+                    type.getCurrentContext().putType(rate);
                 })
 
                 .wrap(TransactionItem::new);
@@ -625,13 +627,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional()
                 .match("^[\\w]{12} (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    PDFExchangeRate rate = asExchangeRate(v);
+                    ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money gross = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
                     Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type);
+                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // Depotführungsentgelt inkl. 19% USt 12,00 EUR
@@ -702,6 +704,36 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        DocumentType type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 12.12.2022 020739500 12.12.2022 SEPA Lastschrift Einzug 200,00 EUR
+        // @formatter:on
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA Lastschrift Einzug [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.REMOVAL);
+                    return t;
+                })
+
+                .section("date", "note", "amount", "currency")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>[\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA Lastschrift Einzug (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
