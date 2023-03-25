@@ -195,7 +195,7 @@ public class SecurityListView extends AbstractFinanceView
                         newSecurity.setLatestFeed(QuoteFeed.MANUAL);
                         newSecurity.setCurrencyCode(null);
                         newSecurity.setTickerSymbol(region.getId());
-                        newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
+                        newSecurity.setName(region.getName() + " " + Messages.LabelSuffix_HICP); //$NON-NLS-1$
                         newSecurity.setCalendar(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
 
                         addNewSecurity(newSecurity);
