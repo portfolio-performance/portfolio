@@ -79,6 +79,7 @@ public class Messages extends NLS
     public static String CSVFormatNumberFrance;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
+    public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
     public static String CSVFormatYYYYMMDDSlashes;
     public static String CSVImportedSecurityLabel;

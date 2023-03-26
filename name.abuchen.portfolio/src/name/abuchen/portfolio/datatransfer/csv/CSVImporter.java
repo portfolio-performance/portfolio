@@ -278,7 +278,8 @@ public final class CSVImporter
                         new DateFieldFormat(Messages.CSVFormatDDMMMYYYY, "dd-MMM-yyyy"), // NOSONAR //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatMMMDDYYYY, "MMM dd, yyyy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_German, "dd-MMM-yyyy", Locale.GERMAN), //$NON-NLS-1$
-                        new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_English, "dd-MMM-yyyy", Locale.US) //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_English, "dd-MMM-yyyy", Locale.US), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatYYYYMM, "yyyy-MM") //$NON-NLS-1$
         ));
 
         /* package */ DateField(String code, String name)
