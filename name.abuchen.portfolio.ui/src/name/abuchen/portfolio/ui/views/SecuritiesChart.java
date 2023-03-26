@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -485,9 +484,9 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
-            if (focus instanceof Date)
+            if (focus instanceof Date focusDate)
             {
-                Instant instant = ((Date) focus).toInstant();
+                Instant instant = focusDate.toInstant();
                 ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
                 LocalDate date = zdt.toLocalDate();
 
@@ -496,10 +495,10 @@ public class SecuritiesChart
                 customTooltipEvents.stream() //
                                 .filter(t -> displayInterval.contains(t.getDateTime())) //
                                 .forEach(t -> {
-                                    if (t instanceof AccountTransaction)
-                                        addDividendTooltip(composite, (AccountTransaction) t);
-                                    else if (t instanceof PortfolioTransaction)
-                                        addInvestmentTooltip(composite, (PortfolioTransaction) t);
+                                    if (t instanceof AccountTransaction at)
+                                        addDividendTooltip(composite, at);
+                                    else if (t instanceof PortfolioTransaction pt)
+                                        addInvestmentTooltip(composite, pt);
                                 });
             }
         });
@@ -716,7 +715,7 @@ public class SecuritiesChart
                 chartConfig.add(ChartDetails.SCALING_LINEAR);
 
             ReadOnlyClient.unwrap(client).setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
-                            chartConfig.stream().map(ChartDetails::name).collect(Collectors.toList())));
+                            chartConfig.stream().map(ChartDetails::name).toList()));
 
             updateChart();
 
@@ -979,7 +978,7 @@ public class SecuritiesChart
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
 
         if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
-            addLimitLines(chartInterval, range);
+            addLimitLines(range);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -1003,7 +1002,7 @@ public class SecuritiesChart
             addExtremesMarkerLines(chartInterval);
     }
 
-    private void addLimitLines(ChartInterval chartInterval, ChartRange range)
+    private void addLimitLines(ChartRange range)
     {
         this.security.getAttributes().getMap().forEach((key, val) -> {
             // null OR not Limit Price --> ignore
@@ -1012,8 +1011,9 @@ public class SecuritiesChart
 
             LimitPrice limitAttribute = (LimitPrice) val;
 
-            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client) // unwrap because ReadOnlyClient only contains/provides default attributes
-                            .getSettings().getAttributeTypes()
+            // unwrap because ReadOnlyClient only contains/provides default
+            // attributes
+            Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client).getSettings().getAttributeTypes()
                             .filter(attr -> attr.getId().equals(key)).findFirst();
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
@@ -1095,21 +1095,24 @@ public class SecuritiesChart
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase, PlotSymbolType.TRIANGLE);
+        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase,
+                        PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
-                        .sorted(Transaction.BY_DATE).collect(Collectors.toList());
+                        .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale, PlotSymbolType.INVERTED_TRIANGLE);
+        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale,
+                        PlotSymbolType.INVERTED_TRIANGLE);
     }
 
-    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color, PlotSymbolType symbol)
+    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color,
+                    PlotSymbolType symbol)
     {
         if (transactions.isEmpty())
             return;
@@ -1129,7 +1132,7 @@ public class SecuritiesChart
         {
             Date[] dates = transactions.stream().map(PortfolioTransaction::getDateTime)
                             .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
-                            .collect(Collectors.toList()).toArray(new Date[0]);
+                            .toArray(size -> new Date[size]);
 
             double[] values = transactions.stream().mapToDouble(
                             t -> t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
@@ -1176,8 +1179,9 @@ public class SecuritiesChart
 
                         event.gc.setForeground(Colors.theme().defaultForeground());
 
-                        // If the label does not start in negative, then we print it.
-                        if (x - (textExtent.x / 2) >= 0) 
+                        // If the label does not start in negative, then we
+                        // print it.
+                        if (x - (textExtent.x / 2) >= 0)
                             event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
                     }
                 });
@@ -1191,7 +1195,7 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
                         .filter(t -> chartInterval.contains(t.getDateTime())).sorted(Transaction.BY_DATE)
-                        .collect(Collectors.toList());
+                        .toList();
 
         if (dividends.isEmpty())
             return;
@@ -1207,7 +1211,7 @@ public class SecuritiesChart
         {
             Date[] dates = dividends.stream().map(AccountTransaction::getDateTime)
                             .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
-                            .collect(Collectors.toList()).toArray(new Date[0]);
+                            .toArray(size -> new Date[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
             double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * (1 - 2 * 0.08), 0.00001);
@@ -1291,7 +1295,8 @@ public class SecuritiesChart
                                 lastWriteLabelLevel3 = (x + (textExtent.x / 2));
                             }
 
-                            // If the label does not start in negative, then we print it.
+                            // If the label does not start in negative, then we
+                            // print it.
                             if (x - (textExtent.x / 2) >= 0)
                                 event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
                         }
@@ -1337,9 +1342,9 @@ public class SecuritiesChart
                         .filter(p -> chartInterval.contains(p.getDate())) //
                         .min(Comparator.comparing(SecurityPrice::getValue));
 
-        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, // 
+        max.ifPresent(high -> addExtremeMarker(high, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerHigh, colorHigh));
-        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, // 
+        min.ifPresent(low -> addExtremeMarker(low, PlotSymbolType.DIAMOND, //
                         Messages.LabelChartDetailMarkerLow, colorLow));
     }
 
@@ -1382,9 +1387,10 @@ public class SecuritiesChart
                     else
                         y = y + inner.getSymbolSize();
 
-                    // If the label does not start in negative, then we print it.
-                    if (x - (textExtent.x / 2) >= 0) 
-                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);   
+                    // If the label does not start in negative, then we print
+                    // it.
+                    if (x - (textExtent.x / 2) >= 0)
+                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
                 });
             }
         }
@@ -1462,7 +1468,7 @@ public class SecuritiesChart
                                         : chartInterval.getStart())
                         .distinct() //
                         .sorted() //
-                        .collect(Collectors.toList());
+                        .toList();
 
         // calculate FIFO purchase price for each event - separate lineSeries
         // per holding period
@@ -1554,7 +1560,7 @@ public class SecuritiesChart
                                         : chartInterval.getStart())
                         .distinct() //
                         .sorted() //
-                        .collect(Collectors.toList());
+                        .toList();
 
         // calculate floating avg purchase price for each event - separate
         // lineSeries
