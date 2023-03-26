@@ -1,0 +1,16 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+
+Zusammenfassung
+Zu Beginn 3.820,63 €
+Christian xxxxxx
+Einzahlungen 10,27 €
+Datum 03/11/2023 - 03/25/2023 Auszahlungen 0 €
+Referenznummer xxxxxxxx Ergebnis 3.830,9 €
+Cash Reserve
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+03/11/2023 Go & Grow Zinsen 0,68 € 3.821,31 €
+03/12/2023 Go & Grow Zinsen 0,68 € 3.821,99 €
+03/13/2023 Go & Grow Zinsen 0,69 € 3.822,68 €
+Gesamt 3.830,9 €
