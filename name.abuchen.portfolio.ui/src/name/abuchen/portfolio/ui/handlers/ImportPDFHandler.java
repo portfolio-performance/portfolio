@@ -40,6 +40,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
@@ -86,19 +87,13 @@ public class ImportPDFHandler
 
     public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
-        String importPath = part.getEclipsePreferences().get(UIConstants.Preferences.PDF_IMPORT_PATH, null);
-
-        if (importPath != null && !Files.isDirectory(Paths.get(importPath)))
-            importPath = null;
-
-        if (importPath == null)
-            importPath = System.getProperty("user.home"); //$NON-NLS-1$
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.PDF_IMPORT_PATH);
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
         fileDialog.setFilterExtensions(new String[] { "*.pdf;*.zip" }); //$NON-NLS-1$
-        fileDialog.setFilterPath(importPath);
+        fileDialog.setFilterPath(helper.getPath());
         fileDialog.open();
 
         String[] filenames = fileDialog.getFileNames();
@@ -106,7 +101,7 @@ public class ImportPDFHandler
         if (filenames.length == 0)
             return;
 
-        part.getEclipsePreferences().put(UIConstants.Preferences.PDF_IMPORT_PATH, fileDialog.getFilterPath());
+        helper.savePath(fileDialog.getFilterPath());
 
         List<File> files = new ArrayList<>();
         List<File> filesToDelete = new ArrayList<>();
@@ -162,7 +157,7 @@ public class ImportPDFHandler
         {
             Map<File, List<Exception>> errors = new HashMap<>();
             Map<Extractor, List<Extractor.Item>> result = new HashMap<>();
-            
+
             IRunnableWithProgress operation = monitor -> {
                 PDFImportAssistant assistent = new PDFImportAssistant(client, files);
                 result.putAll(assistent.run(monitor, errors));
@@ -171,8 +166,7 @@ public class ImportPDFHandler
             new ProgressMonitorDialog(shell).run(true, true, operation);
 
             shell.getDisplay().asyncExec(() -> {
-                ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
-                                result, errors);
+                ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
                 if (account != null)
                     wizard.setTarget(account);
                 if (portfolio != null)

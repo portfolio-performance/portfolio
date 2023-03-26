@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 
@@ -68,24 +67,18 @@ public class ImportCSVHandler
             return;
         }
 
-        String importPath = part.getEclipsePreferences().get(UIConstants.Preferences.CSV_IMPORT_PATH, null);
-
-        if (importPath != null && !Files.isDirectory(Paths.get(importPath)))
-            importPath = null;
-
-        if (importPath == null)
-            importPath = System.getProperty("user.home"); //$NON-NLS-1$
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.CSV_IMPORT_PATH);
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
         fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
         fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-        fileDialog.setFilterPath(importPath);
+        fileDialog.setFilterPath(helper.getPath());
         String fileName = fileDialog.open();
 
         if (fileName == null)
             return;
 
-        part.getEclipsePreferences().put(UIConstants.Preferences.CSV_IMPORT_PATH, fileDialog.getFilterPath());
+        helper.savePath(fileDialog.getFilterPath());
 
         IPreferenceStore preferences = part.getPreferenceStore();
 

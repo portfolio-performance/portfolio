@@ -28,18 +28,23 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.FilePathHelper;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ExportWizard extends Wizard
 {
+    private final PortfolioPart part;
     private final Client client;
     private final ExchangeRateProviderFactory factory;
 
     private ExportSelectionPage exportPage;
 
-    public ExportWizard(Client client, ExchangeRateProviderFactory factory)
+    public ExportWizard(PortfolioPart part, Client client, ExchangeRateProviderFactory factory)
     {
+        this.part = part;
         this.client = client;
         this.factory = factory;
     }
@@ -145,37 +150,47 @@ public class ExportWizard extends Wizard
 
     private File getFile(Object exportItem)
     {
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.CSV_EXPORT_PATH);
+
         File file = null;
         if (exportItem instanceof Class)
         {
             DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
-
             directoryDialog.setMessage(Messages.ExportWizardSelectDirectory);
+            directoryDialog.setFilterPath(helper.getPath());
 
             String dir = directoryDialog.open();
             if (dir != null)
+            {
                 file = new File(dir);
+                helper.savePath(directoryDialog.getFilterPath());
+            }
         }
         else
         {
             String name = null;
-            if (exportItem instanceof Account)
-                name = ((Account) exportItem).getName();
-            else if (exportItem instanceof Portfolio)
-                name = ((Portfolio) exportItem).getName();
-            else if (exportItem instanceof Security)
-                name = ((Security) exportItem).getIsin();
-            else if (exportItem instanceof String)
-                name = (String) exportItem;
+            if (exportItem instanceof Account account)
+                name = account.getName();
+            else if (exportItem instanceof Portfolio portfolio)
+                name = portfolio.getName();
+            else if (exportItem instanceof Security security)
+                name = security.getIsin();
+            else if (exportItem instanceof String string)
+                name = string;
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             dialog.setOverwrite(true);
             if (name != null)
                 dialog.setFileName(TextUtil.sanitizeFilename(name + ".csv")); //$NON-NLS-1$
+            dialog.setFilterPath(helper.getPath());
+
             String fileName = dialog.open();
 
             if (fileName != null)
+            {
                 file = new File(fileName);
+                helper.savePath(dialog.getFilterPath());
+            }
         }
         return file;
     }

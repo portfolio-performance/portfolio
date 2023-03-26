@@ -209,6 +209,11 @@ public interface UIConstants
         String BACKUP_FOLDER_ABSOLUTE = "BACKUP_FOLDER_ABSOLUTE"; //$NON-NLS-1$
 
         /**
+         * Preference for directory from which to open data files
+         */
+        String DEFAULT_OPEN_PATH = "DEFAULT_OPEN_PATH"; //$NON-NLS-1$
+
+        /**
          * Preference for directory from which to import PDF files
          */
         String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
@@ -217,6 +222,12 @@ public interface UIConstants
          * Preference for directory from which to import CSV files
          */
         String CSV_IMPORT_PATH = "CSV_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to export CSV files
+         */
+        String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
+
     }
 
     interface CSS // NOSONAR
