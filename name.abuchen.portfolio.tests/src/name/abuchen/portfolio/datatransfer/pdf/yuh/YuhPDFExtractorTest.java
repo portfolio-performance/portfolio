@@ -161,6 +161,34 @@ public class YuhPDFExtractorTest
     }
 
     @Test
+    public void testZahlungsverkehr04()
+    {
+        YuhPDFExtractor extractor = new YuhPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-04T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(605.66))));
+        assertThat(transaction.getSource(), is("Zahlungsverkehr04.txt"));
+        assertThat(transaction.getNote(), is("Referenz: 567891234"));
+    }
+
+    @Test
     public void testZinsabrechnung01()
     {
         YuhPDFExtractor extractor = new YuhPDFExtractor(new Client());
@@ -207,5 +235,48 @@ public class YuhPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.59))));
         assertThat(transaction.getSource(), is("Zinsabrechnung01.txt"));
         assertThat(transaction.getNote(), is("Zinsabrechnung 05.09.2022 - 31.12.2022"));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        Client client = new Client();
+
+        YuhPDFExtractor extractor = new YuhPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH0012032048"));
+        assertThat(security.getName(), is("ROCHE GS"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-20T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(4.0542)));
+        assertThat(transaction.getSource(), is("Dividende01.txt"));
+        assertThat(transaction.getNote(), is("Referenz: 312345678"));
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(25.03))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(38.51))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(13.48))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 }
