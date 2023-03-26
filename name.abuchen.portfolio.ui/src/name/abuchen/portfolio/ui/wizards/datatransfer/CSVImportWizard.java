@@ -12,6 +12,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
@@ -187,7 +188,11 @@ public class CSVImportWizard extends Wizard
     {
         Security security = target != null ? target : selectSecurityPage.getSelectedSecurity();
 
-        List<SecurityPrice> prices = importer.createItems(new ArrayList<>()).get(0).getSecurity().getPrices();
+        List<Item> imported = importer.createItems(new ArrayList<>());
+        if (imported.isEmpty())
+            return false; // No valid quotes could be parsed.
+
+        List<SecurityPrice> prices = imported.get(0).getSecurity().getPrices();
 
         boolean isDirty = false;
         for (SecurityPrice p : prices)
