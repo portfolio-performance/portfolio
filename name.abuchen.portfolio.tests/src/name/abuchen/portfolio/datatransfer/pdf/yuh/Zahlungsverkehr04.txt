@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: CH1234567891234567891
+Herrn Max MUSTERMANN
+Musterstr. 11
+DE-12345 Musterstadt
+Gland, 04.01.2023
+Zahlungsverkehr - Belastung Unsere Referenz: 567891234 
+Gemäss Ihrem Auftrag haben wir folgende Buchung zu Lasten Ihres Kontos vorgenommen:
+Kontonummer 891234567
+Valutadatum 04.01.2023
+Auszahlung EUR 605.66
+Total EUR 605.66
+Begünstigter Max Mustermann
+DE23456789123456789123
+BNP PARIBAS S.A. NIEDERLASSUNG DEUT
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
