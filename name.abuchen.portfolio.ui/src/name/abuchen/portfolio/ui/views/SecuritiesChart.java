@@ -24,6 +24,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -31,7 +32,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -756,7 +756,7 @@ public class SecuritiesChart
             customTooltipEvents.clear();
             chart.resetAxes();
             chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-            messagePainter.setMessage(""); //$NON-NLS-1$
+            messagePainter.setMessage(null);
 
             if (security == null)
             {
@@ -782,7 +782,12 @@ public class SecuritiesChart
             ChartInterval chartInterval = chartIntervalOrMessage.getInterval();
             ChartRange range = ChartRange.createFor(prices, chartInterval);
             if (range == null)
+            {
+                messagePainter.setMessage(
+                                MessageFormat.format(Messages.SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod,
+                                                intervalOption.getTooltip()));
                 return;
+            }
 
             // prepare value arrays
             LocalDate[] dates = new LocalDate[range.size];
@@ -1665,18 +1670,11 @@ public class SecuritiesChart
         @Override
         public void paintControl(PaintEvent e)
         {
-            if (message == null || message.isEmpty())
+            if (message == null)
                 return;
 
             if (font == null)
-            {
-                Font f = e.gc.getFont();
-                FontData[] fds = f.getFontData();
-                for (FontData fd : fds)
-                    fd.setHeight(20);
-
-                font = new Font(e.display, fds);
-            }
+                font = FontDescriptor.createFrom(e.gc.getFont()).increaseHeight(5).createFont(e.display);
 
             e.gc.setFont(font);
 

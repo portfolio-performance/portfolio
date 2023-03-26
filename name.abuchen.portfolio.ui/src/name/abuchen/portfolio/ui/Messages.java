@@ -1098,6 +1098,7 @@ public class Messages extends NLS
     public static String PresetsPrefPageTitle;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
+    public static String SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod;
     public static String SecuritiesChart_NoDataMessage_NoSecuritySelected;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
