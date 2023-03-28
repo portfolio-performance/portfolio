@@ -235,12 +235,24 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> v.getTransactionContext().put(FAILURE,
                                 Messages.MsgErrorOrderCancellationUnsupported))
 
+                // @formatter:off
                 // If we have a positive amount and a gross reinvestment,
                 // there is a tax refund.
                 // If the amount is negative, then it is taxes.
+                // @formatter:on
+
+                // @formatter:off
+                // Ertragsthesaurierung
+                // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+                // 15.01.2018 00/0000/000 EUR/USD 1,19265 EUR 0,65
+                //
+                // Storno - Ertragsthesaurierung
+                // Wert Konto-Nr. Betrag zu Ihren Gunsten
+                // 15.01.2018 00/0000/000 EUR 0,05
+                // @formatter:on
                 .section("type", "sign").optional()
-                .match("^(?<type>Ertragsthesaurierung)$")
-                .match("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren (?<sign>(Gunsten|Lasten))")
+                .match("^(Storno \\- )?(?<type>Ertragsthesaurierung)$")
+                .match("^Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("Ertragsthesaurierung") && v.get("sign").equals("Gunsten"))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
@@ -309,45 +321,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                                 // @formatter:off
-                                // This is for the "Ertragsthesaurierung"
-                                // 
-                                // Ertragsthesaurierung
-                                // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
-                                // 15.01.2018 00/0000/000 EUR/USD 1,19265 EUR 0,65
-                                // @formatter:on
-                                section -> section
-                                        .attributes("currency", "amount")
-                                        .match("^Ertragsthesaurierung$")
-                                        .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        })
-                                ,
-                                // @formatter:off
                                 // Wert Konto-Nr. Betrag zu Ihren Gunsten
                                 // 17.11.2014 10/0000/000 EUR 12,70
                                 //
                                 // Wert Konto-Nr. Betrag zu Ihren Lasten
                                 // 15.06.2016 00/0000/000 EUR 20,24
-                                // @formatter:on
-                                section -> section
-                                        .attributes("currency", "amount")
-                                        .find("Wert Konto\\-Nr\\. Betrag zu Ihren (Gunsten|Lasten)")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                        })
-                                ,
-                                // @formatter:off
+                                //
                                 // Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
                                 // 15.12.2014 12/3456/789 EUR/USD 1,24495 EUR 52,36
                                 // @formatter:on
                                 section -> section
                                         .attributes("currency", "amount")
-                                        .find("Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren (Gunsten|Lasten)")
+                                        .find("Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (Gunsten|Lasten)")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
@@ -446,7 +431,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // Ertrag für 2017 USD 54,16
                 // @formatter:on
                 .section("note1", "note2", "note3", "note4").optional()
-                .match("^(?<note1>Ertragsthesaurierung)$")
+                .match("^(Storno \\- )?(?<note1>Ertragsthesaurierung)$")
                 .match("^Ertrag (?<note2>f.r [\\d]{4}(\\/[\\d]{2})?) (?<note3>[\\w]{3}) (?<note4>[\\.,\\d]+)$")
                 .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")"))
 
