@@ -3,6 +3,12 @@ workspace
 .metadata/*
 .recommenders/*
 .DS_Store
+**/.settings/**
+**/.classpath
+**/.project
+**/.metadata/**
+.classpath
+.project
 
 ### IntelliJ IDEA ###
 .idea
