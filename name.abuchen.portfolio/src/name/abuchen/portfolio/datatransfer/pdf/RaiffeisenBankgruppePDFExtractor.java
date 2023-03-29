@@ -43,7 +43,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)");
+        DocumentType type = new DocumentType("(Kauf|Verkauf|R.cknahme Fonds)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -53,16 +53,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^(Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf|R.cknahme Fonds).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^(Gesch.ftsart:|Wertpapier Abrechnung) (?<type>(Kauf|Verkauf)) .*$")
+                .match("^(Gesch.ftsart:|Wertpapier Abrechnung) (?<type>(Kauf|Verkauf|R.cknahme Fonds)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Fonds"))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -121,13 +121,24 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
-                // @formatter:off
-                // Handelszeit: 03.05.2021 13:45:18
-                // Schlusstag/-Zeit 09.11.2021 09:58:45 Auftraggeber Muster
-                // @formatter:on
-                .section("date", "time")
-                .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                .oneOf(
+                                // @formatter:off
+                                // Handelszeit: 03.05.2021 13:45:18
+                                // Schlusstag/-Zeit 09.11.2021 09:58:45 Auftraggeber Muster
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // @formatter:off
+                                // Handelszeit: 27.03.2023 
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Handelszeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
 
                 // @formatter:off
                 // Zu Lasten IBAN AT99 9999 9000 0011 1110 -107,26 EUR  
@@ -162,11 +173,23 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 })
 
                 // @formatter:off
+                // Geschäftsart: Rücknahme Fonds Auftrags-Nr.: 47199493 - 27.03.2023
+                // @formatter:on
+                .section("note").optional()
+                .match("^.*(?<note>Auftrags\\-Nr\\.: [\\d]+).*$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // @formatter:off
                 // Limit bestens
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .assign((t, v) -> {
+                    if (t.getNote() == null)
+                        t.setNote(trim(v.get("note")));
+                    else
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                })
 
                 .wrap(BuySellEntryItem::new);
 
