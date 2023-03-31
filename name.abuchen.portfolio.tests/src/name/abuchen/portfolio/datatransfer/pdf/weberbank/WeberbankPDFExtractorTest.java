@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.weberbank;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class WeberbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NO0010081235"));
         assertThat(security.getWkn(), is("A0B733"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NEL ASA NAVNE-AKSJER NK -,20"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -94,6 +96,7 @@ public class WeberbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92556V1061"));
         assertThat(security.getWkn(), is("A2QAME"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VIATRIS INC. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -140,6 +143,7 @@ public class WeberbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLE INC. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

@@ -318,10 +318,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() == null)
-                                                t.setNote(trim(v.get("note")));
-                                        })
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
                                 ,
                                 // @formatter:off
                                 //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -331,10 +328,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("note1", "note2")
                                         .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
                                         .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() == null)
-                                                t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")));
-                                        })
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                         )
 
                 .wrap((t, ctx) -> {

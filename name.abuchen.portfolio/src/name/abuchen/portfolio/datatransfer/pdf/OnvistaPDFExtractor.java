@@ -752,7 +752,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     type.getCurrentContext().remove("negative");
 
                     TransactionItem item = new TransactionItem(t);
-                    if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
                         item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                     return item;
                 });

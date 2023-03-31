@@ -312,17 +312,23 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "amount").optional()
                 .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    t.setType(AccountTransaction.Type.TAXES);
+                    if (v.getTransactionContext().get(FAILURE) == null)
+                        t.setType(AccountTransaction.Type.TAXES);
 
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // @formatter:off
                 // Brutto USD 62,04
                 // Umg. z. Dev.-Kurs (1,049623) EUR 50,24
+                //
+                // Brutto USD - 54,00
+                // Umg. z. Dev.-Kurs (1,084805) EUR - 37,33
+                // @formatter:on
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
-                .match("^Brutto (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)")
-                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .match("^Brutto (?<fxCurrency>[\\w]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$")
+                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) (\\- )?[\\.,\\d]+$")
                 .assign((t, v) -> {
                     v.put("baseCurrency", asCurrencyCode(type.getCurrentContext().get("currency")));
                     v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));

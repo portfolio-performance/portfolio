@@ -50,7 +50,9 @@ public class BankSLMPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("472672"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Nokia Corp Inhaber-Aktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -143,7 +145,9 @@ public class BankSLMPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("135186"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Bank SLM AG Namen-Aktien nom CHF 100.00"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -185,7 +189,9 @@ public class BankSLMPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("24476758"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS Group AG Namen-Aktien nom CHF 0.10"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -227,7 +233,9 @@ public class BankSLMPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("2489948"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG Namen-Aktien nom CHF 0.10"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -269,7 +277,9 @@ public class BankSLMPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("472672"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Nokia Corp Inhaber-Aktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -364,6 +374,7 @@ public class BankSLMPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0001351862"));
         assertThat(security.getWkn(), is("135186"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Bank SLM AG Namen-Aktien nom CHF 100.00"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -406,6 +417,7 @@ public class BankSLMPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FI0009000681"));
         assertThat(security.getWkn(), is("472672"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Nokia Corp Inhaber-Aktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

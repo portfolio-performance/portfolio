@@ -32,7 +32,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class vbankagPDFExtractorTest
+public class VBankAGPDFExtractorTest
 {
     @Test
     public void testWertpapierKauf01()
@@ -52,6 +52,7 @@ public class vbankagPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0S9GB0"));
         assertThat(security.getWkn(), is("A0S9GB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deut. Börse Commodities GmbH Xetra-Gold IHS 2007(09/Und)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +96,7 @@ public class vbankagPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0070176184"));
         assertThat(security.getWkn(), is("986333"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Alger-Alger Amer.Ass.Gwth Fd Bearer Shares A o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -190,6 +192,7 @@ public class vbankagPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
         assertThat(security.getWkn(), is("747206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Wirecard AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -233,6 +236,7 @@ public class vbankagPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0834815366"));
         assertThat(security.getWkn(), is("A1J4YZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("OptoFlex Inhaber-Ant. P o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

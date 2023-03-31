@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -25,6 +27,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -63,43 +66,57 @@ public class ScorePriorityIncPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
         assertThat(security1.getWkn(), is("64110L106"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Netflix Inc Com"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
         assertThat(security2.getWkn(), is("003260106"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Aberdeen Std Platinum Etf Tr Physcl Platm Shs"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
         assertThat(security3.getWkn(), is("067901108"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Barrick Gold Corp Com"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
         assertThat(security4.getWkn(), is("922908363"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Vanguard Index Fds S P 500 Etf Shs"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
         assertThat(security5.getWkn(), is("756109104"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Realty Income C"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
         assertThat(security6.getWkn(), is("902494103"));
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Tyson Foods Inc"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security7.getIsin());
         assertThat(security7.getWkn(), is("81369Y605"));
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("Select Sector S"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -364,67 +381,89 @@ public class ScorePriorityIncPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
         assertThat(security1.getWkn(), is("902494103"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Tyson Foods Inc CL A"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
         assertThat(security2.getWkn(), is("75886F107"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Regeneron Pharmaceuticals Com"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
         assertThat(security3.getWkn(), is("46090E103"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Invesco QQQ Tr Unit Ser 1"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
         assertThat(security4.getWkn(), is("003260106"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Aberdeen Std Platinum Etf Tr Physcl Platm Shs"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
         assertThat(security5.getWkn(), is("067901108"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Barrick Gold Corp Com"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
         assertThat(security6.getWkn(), is("881624209"));
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Teva Pharmaceutical Inds Ltd Adr"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security7.getIsin());
         assertThat(security7.getWkn(), is("92204A306"));
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("Vanguard World Fds Energy Etf"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security8.getIsin());
         assertThat(security8.getWkn(), is("756109104"));
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("Realty Income C"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security9.getIsin());
         assertThat(security9.getWkn(), is("46434G103"));
+        assertNull(security9.getTickerSymbol());
         assertThat(security9.getName(), is("Ishares Inc"));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security10.getIsin());
         assertThat(security10.getWkn(), is("81369Y605"));
+        assertNull(security10.getTickerSymbol());
         assertThat(security10.getName(), is("Select Sector S"));
         assertThat(security10.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security11 = results.stream().filter(SecurityItem.class::isInstance).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security11.getIsin());
         assertThat(security11.getWkn(), is("58933Y105"));
+        assertNull(security11.getTickerSymbol());
         assertThat(security11.getName(), is("Merck & Co Inc New"));
         assertThat(security11.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -707,60 +746,80 @@ public class ScorePriorityIncPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(17));
+        assertThat(results.size(), is(16));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
         assertThat(security1.getWkn(), is("067901108"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Barrick Gold Corp Com"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
         assertThat(security2.getWkn(), is("02913V103"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("American Public Education Inc Com"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
         assertThat(security3.getWkn(), is("756109104"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Realty Income C"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
         assertThat(security4.getWkn(), is("29273V100"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Energy Transfer"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
         assertThat(security5.getWkn(), is("901384107"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("2seventy Bio Inc Common Stock"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
         assertThat(security6.getWkn(), is("68629Y103"));
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Orion Office Reit Inc Com"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
 
-        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security7.getWkn(), is("09609G100"));
-        assertThat(security7.getName(), is("Bluebird Bio Inc"));
-        assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
-
-        // check cancellation (CUSIP is to short) transaction
+        // check cancellation (Storno) (CUSIP is to short) transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is("CUSIP is maybe incorrect. 2021-11-05T00:00 Tsvt"));
-        assertThat(cancellation.getSource(), is("AccountStatement04.txt"));
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgErrorInvalidWKN, "Tsvt")));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2021-11-05T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("AccountStatement04.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(30.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(30.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()

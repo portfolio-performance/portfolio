@@ -386,7 +386,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                 .wrap((t, ctx) -> {
                     TransactionItem item = new TransactionItem(t);
-                    if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
                         item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                     return item;
                 });

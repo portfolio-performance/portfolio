@@ -54,6 +54,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US17275R1023"));
         assertThat(security.getWkn(), is("878841"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -145,6 +146,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -187,6 +189,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0J2060"));
         assertThat(security.getWkn(), is("A0J206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS-MSCI N. AMERIC.UCITS ETF BE.SH.(DT.ZT.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -278,6 +281,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1YZSC51"));
         assertThat(security.getWkn(), is("A0MZWQ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-CORE MSCI EUROPE U.ETF REG.SH.O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -320,6 +324,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008474156"));
         assertThat(security.getWkn(), is("847415"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS EUROPEAN OPPORTUNITIES INHABER-ANTEIL.LD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -362,6 +367,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3VVMM84"));
         assertThat(security.getWkn(), is("A1JX51"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE EMU.ETF DLD FUNDS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -407,6 +413,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -450,6 +457,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -493,6 +501,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -536,6 +545,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK1PV551"));
         assertThat(security.getWkn(), is("A1XEY2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WORLD 1D FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -579,6 +589,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BL25JL35"));
         assertThat(security.getWkn(), is("A1103D"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WRLD QUAL.1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -622,6 +633,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BTJRMP35"));
         assertThat(security.getWkn(), is("A12GVR"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI EM.MKTS 1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -665,6 +677,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -708,6 +721,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -751,6 +765,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -794,6 +809,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007448508"));
         assertThat(security.getWkn(), is("744850"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

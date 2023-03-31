@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -56,90 +57,152 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("ZFL"));
         assertThat(security1.getName(), is("BMO Long Federal Bond ETF"));
         assertThat(security1.getCurrencyCode(), is("CAD"));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("QTIP"));
         assertThat(security2.getName(), is("Mackenzie Financial Corp"));
         assertThat(security2.getCurrencyCode(), is("CAD"));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("ZAG"));
         assertThat(security3.getName(), is("BMO AGGREGATE BOND INDEX ETF"));
         assertThat(security3.getCurrencyCode(), is("CAD"));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
+        assertNull(security4.getWkn());
         assertThat(security4.getTickerSymbol(), is("XSH"));
         assertThat(security4.getName(), is("iShares Core Canadian ST Corp"));
         assertThat(security4.getCurrencyCode(), is("CAD"));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
+        assertNull(security5.getWkn());
         assertThat(security5.getTickerSymbol(), is("GLDM"));
         assertThat(security5.getName(), is("World Gold Trust"));
         assertThat(security5.getCurrencyCode(), is("CAD"));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
+        assertNull(security6.getWkn());
         assertThat(security6.getTickerSymbol(), is("EEMV"));
         assertThat(security6.getName(), is("iShares MSCI Emerg Min Vol ETF"));
         assertThat(security6.getCurrencyCode(), is("CAD"));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security7.getIsin());
+        assertNull(security7.getWkn());
         assertThat(security7.getTickerSymbol(), is("ACWV"));
         assertThat(security7.getName(), is("iShares Edge MSCI Min Vol Global ETF"));
         assertThat(security7.getCurrencyCode(), is("CAD"));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security8.getIsin());
+        assertNull(security8.getWkn());
         assertThat(security8.getTickerSymbol(), is("VTI"));
         assertThat(security8.getName(), is("Vanguard Total Stock Market ETF"));
         assertThat(security8.getCurrencyCode(), is("CAD"));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security9.getIsin());
+        assertNull(security9.getWkn());
         assertThat(security9.getTickerSymbol(), is("XIC"));
         assertThat(security9.getName(), is("iShares Core S&P/TSX Capped Composite Index ETF"));
         assertThat(security9.getCurrencyCode(), is("CAD"));
 
         Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security10.getIsin());
+        assertNull(security10.getWkn());
         assertThat(security10.getTickerSymbol(), is("XEF"));
         assertThat(security10.getName(), is("iShares Core MSCI EAFE IMI Index ETF"));
         assertThat(security10.getCurrencyCode(), is("CAD"));
 
-        // check 1st cancellation without ticker symbol transaction
+        // check 1st cancellation (Storno) (without tickerSymbol) transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
-        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
 
-        // check 2nd cancellation without ticker symbol transaction
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-07-10T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(14.0853)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DepotStatement01.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of("CAD", Values.Amount.factorize(1.36))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of("CAD", Values.Amount.factorize(1.36))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+
+        // check 2nd cancellation (Storno) (without tickerSymbol) transaction
         cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
-        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
 
-        // check 3rd cancellation without ticker symbol transaction
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-06-09T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(14.3972)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DepotStatement01.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of("CAD", Values.Amount.factorize(0.88))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of("CAD", Values.Amount.factorize(0.88))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+
+        // check 3rd cancellation (Storno) (without tickerSymbol) transaction
         cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
-        assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-05-11T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(14.3972)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DepotStatement01.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of("CAD", Values.Amount.factorize(1.27))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of("CAD", Values.Amount.factorize(1.27))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
 
         // check transaction
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1536,51 +1599,65 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement01.txt"), errors);
 
+        assertThat(errors, empty());
+        assertThat(results.size(), is(80));
+
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("ZFL"));
         assertThat(security1.getName(), is("BMO Long Federal Bond ETF"));
         assertThat(security1.getCurrencyCode(), is("CAD"));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("QTIP"));
         assertThat(security2.getName(), is("Mackenzie Financial Corp"));
         assertThat(security2.getCurrencyCode(), is("CAD"));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("ZAG"));
         assertThat(security3.getName(), is("BMO AGGREGATE BOND INDEX ETF"));
         assertThat(security3.getCurrencyCode(), is("CAD"));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
+        assertNull(security4.getWkn());
         assertThat(security4.getTickerSymbol(), is("XSH"));
         assertThat(security4.getName(), is("iShares Core Canadian ST Corp"));
         assertThat(security4.getCurrencyCode(), is("CAD"));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
+        assertNull(security5.getWkn());
         assertThat(security5.getTickerSymbol(), is("GLDM"));
         assertThat(security5.getName(), is("World Gold Trust"));
         assertThat(security5.getCurrencyCode(), is("CAD"));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security9.getIsin());
+        assertNull(security9.getWkn());
         assertThat(security9.getTickerSymbol(), is("XIC"));
         assertThat(security9.getName(), is("iShares Core S&P/TSX Capped Composite Index ETF"));
         assertThat(security9.getCurrencyCode(), is("CAD"));
 
         Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security10.getIsin());
+        assertNull(security10.getWkn());
         assertThat(security10.getTickerSymbol(), is("XEF"));
         assertThat(security10.getName(), is("iShares Core MSCI EAFE IMI Index ETF"));
         assertThat(security10.getCurrencyCode(), is("CAD"));
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(80));
 
         // check 1st cancellation without ticker symbol transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
@@ -1588,7 +1665,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-07-10T00:00")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
         assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 2nd cancellation without ticker symbol transaction
@@ -1597,7 +1674,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
         assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check 3rd cancellation without ticker symbol transaction
@@ -1606,7 +1683,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-05-11T00:00")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
         assertThat(cancellation.getSource(), is("DepotStatement01.txt"));
 
         // check transaction
@@ -3019,48 +3096,64 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("EEMV"));
         assertThat(security1.getName(), is("iShares MSCI Emerg Min Vol ETF"));
         assertThat(security1.getCurrencyCode(), is("CAD"));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("ACWV"));
         assertThat(security2.getName(), is("iShares Edge MSCI Min Vol Global ETF"));
         assertThat(security2.getCurrencyCode(), is("CAD"));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("VTI"));
         assertThat(security3.getName(), is("Vanguard Total Stock Market ETF"));
         assertThat(security3.getCurrencyCode(), is("CAD"));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
+        assertNull(security4.getWkn());
         assertThat(security4.getTickerSymbol(), is("XIC"));
         assertThat(security4.getName(), is("iShares Core S&P/TSX Capped Composite Index ETF"));
         assertThat(security4.getCurrencyCode(), is("CAD"));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
+        assertNull(security5.getWkn());
         assertThat(security5.getTickerSymbol(), is("XEF"));
         assertThat(security5.getName(), is("iShares Core MSCI EAFE IMI Index ETF"));
         assertThat(security5.getCurrencyCode(), is("CAD"));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
+        assertNull(security6.getWkn());
         assertThat(security6.getTickerSymbol(), is("ZAG"));
         assertThat(security6.getName(), is("BMO AGGREGATE BOND INDEX ETF"));
         assertThat(security6.getCurrencyCode(), is("CAD"));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security7.getIsin());
+        assertNull(security7.getWkn());
         assertThat(security7.getTickerSymbol(), is("QTIP"));
         assertThat(security7.getName(), is("Mackenzie Financial Corp"));
         assertThat(security7.getCurrencyCode(), is("CAD"));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security8.getIsin());
+        assertNull(security8.getWkn());
         assertThat(security8.getTickerSymbol(), is("ZFL"));
         assertThat(security8.getName(), is("BMO Long Federal Bond ETF"));
         assertThat(security8.getCurrencyCode(), is("CAD"));
@@ -3071,7 +3164,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
         assertThat(cancellation.getSource(), is("DepotStatement02.txt"));
 
         // check transaction
@@ -3487,45 +3580,57 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement02.txt"), errors);
 
+        assertThat(errors, empty());
+        assertThat(results.size(), is(26));
+
         // check security
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("VTI"));
         assertThat(security3.getName(), is("Vanguard Total Stock Market ETF"));
         assertThat(security3.getCurrencyCode(), is("CAD"));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security4.getIsin());
+        assertNull(security4.getWkn());
         assertThat(security4.getTickerSymbol(), is("XIC"));
         assertThat(security4.getName(), is("iShares Core S&P/TSX Capped Composite Index ETF"));
         assertThat(security4.getCurrencyCode(), is("CAD"));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security5.getIsin());
+        assertNull(security5.getWkn());
         assertThat(security5.getTickerSymbol(), is("XEF"));
         assertThat(security5.getName(), is("iShares Core MSCI EAFE IMI Index ETF"));
         assertThat(security5.getCurrencyCode(), is("CAD"));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security6.getIsin());
+        assertNull(security6.getWkn());
         assertThat(security6.getTickerSymbol(), is("ZAG"));
         assertThat(security6.getName(), is("BMO AGGREGATE BOND INDEX ETF"));
         assertThat(security6.getCurrencyCode(), is("CAD"));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security7.getIsin());
+        assertNull(security7.getWkn());
         assertThat(security7.getTickerSymbol(), is("QTIP"));
         assertThat(security7.getName(), is("Mackenzie Financial Corp"));
         assertThat(security7.getCurrencyCode(), is("CAD"));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security8.getIsin());
+        assertNull(security8.getWkn());
         assertThat(security8.getTickerSymbol(), is("ZFL"));
         assertThat(security8.getName(), is("BMO Long Federal Bond ETF"));
         assertThat(security8.getCurrencyCode(), is("CAD"));
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(26));
 
         // check 1st cancellation without ticker symbol transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
@@ -3533,7 +3638,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged) -> 2020-06-09T00:00")));
+        assertThat(cancellation.getFailureMessage(), is(MessageFormat.format(Messages.MsgMissingTickerSymbol, "Mackenzie US TIPS Index ETF (CAD-Hedged)")));
         assertThat(cancellation.getSource(), is("DepotStatement02.txt"));
 
         // check transaction

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -445,18 +446,30 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("month", "day", "name")
-                .match("^(?<month>[\\w]{3,4}) (?<day>[\\d]{2}) (?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) .*$")
+                .section("month", "day", "name", "shares", "amount")
+                .match("^(?<month>[\\w]{3,4}) "
+                                + "(?<day>[\\d]{2}) "
+                                + "(?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) "
+                                + "(?<shares>[\\.,\\d]+) "
+                                + "shares [\\s\\–]{2,3} "
+                                + "\\p{Sc}(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     DocumentContext context = type.getCurrentContext();
 
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
+                    v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgMissingTickerSymbol, trim(v.get("name"))));
+
                     t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
-                    t.setNote(v.get("name") + " -> " + t.getDateTime());
+                    t.setShares(asShares(v.get("shares")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     TransactionItem item = new TransactionItem(t);
-                    item.setFailureMessage(MessageFormat.format(Messages.MsgMissingTickerSymbol, t.getNote()));
+                    item.setFailureMessage(ctx.getString(FAILURE));
                     return item;
                 }));
 

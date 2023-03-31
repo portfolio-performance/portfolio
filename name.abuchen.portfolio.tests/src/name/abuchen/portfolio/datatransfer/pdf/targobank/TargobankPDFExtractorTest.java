@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -53,6 +54,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0000ABC123"));
         assertThat(security.getWkn(), is("ABC123"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FanCy shaRe. nAmE X0-X0"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -96,6 +98,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0000ABC123"));
         assertThat(security.getWkn(), is("ABC123"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Muster AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -139,6 +142,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0000ZYX987"));
         assertThat(security.getWkn(), is("ZYX987"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("an0tHer vERy FNcY NaMe"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -182,6 +186,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("SE0006425815"));
         assertThat(security.getWkn(), is("A14TK6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PowerCell Sweden AB (publ) - Namn-Aktier SK-,022"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -225,6 +230,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("SE0006425815"));
         assertThat(security.getWkn(), is("A14TK6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PowerCell Sweden AB (publ) - Namn-Aktier SK-,022"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -268,6 +274,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("SE0006425815"));
         assertThat(security.getWkn(), is("A14TK6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PowerCell Sweden AB (publ) - Namn-Aktier SK-,022"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -312,6 +319,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("SE0006425815"));
         assertThat(security.getWkn(), is("A14TK6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PowerCell Sweden AB (publ) - Namn-Aktier SK-,022"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -354,6 +362,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55T58"));
         assertThat(security.getWkn(), is("A12CX1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -446,6 +455,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55T58"));
         assertThat(security.getWkn(), is("A12CX1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -488,6 +498,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55T58"));
         assertThat(security.getWkn(), is("A12CX1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -533,6 +544,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55T58"));
         assertThat(security.getWkn(), is("A12CX1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -769,6 +781,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55S42"));
         assertThat(security.getWkn(), is("A12CXZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -806,14 +819,37 @@ public class TargobankPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check tax transaction
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00BKX55S42"));
+        assertThat(security.getWkn(), is("A12CXZ"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check cancellation (Storno) (0,00) transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertThat(cancellation.getSource(), is("SteuermitteilungDividende02.txt"));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(61)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("SteuermitteilungDividende02.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -834,6 +870,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55S42"));
         assertThat(security.getWkn(), is("A12CXZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -857,14 +894,28 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check transaction
+        // check cancellation (Storno) (0,00) transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
-        assertThat(cancellation.getSource(), is("SteuermitteilungDividende02.txt"));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(61)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("SteuermitteilungDividende02.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -885,6 +936,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55S42"));
         assertThat(security.getWkn(), is("A12CXZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -936,6 +988,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0875160326"));
         assertThat(security.getWkn(), is("DBX0NK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1028,6 +1081,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0875160326"));
         assertThat(security.getWkn(), is("DBX0NK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1070,6 +1124,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0875160326"));
         assertThat(security.getWkn(), is("DBX0NK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1115,6 +1170,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0875160326"));
         assertThat(security.getWkn(), is("DBX0NK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1351,6 +1407,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1416,6 +1473,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1467,6 +1525,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1518,6 +1577,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1610,6 +1670,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1652,6 +1713,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1697,6 +1759,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0123456789"));
         assertThat(security.getWkn(), is("ABC0DE"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktiengesellschaft AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1933,6 +1996,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1975,6 +2039,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2017,6 +2082,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2059,6 +2125,7 @@ public class TargobankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

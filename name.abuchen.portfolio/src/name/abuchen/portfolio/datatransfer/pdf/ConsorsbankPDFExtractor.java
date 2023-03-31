@@ -735,7 +735,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
-                    if (t.getAmount() == 0)
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
                         item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                     return item;
                 }));

@@ -56,6 +56,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005194062"));
         assertThat(security.getWkn(), is("519406"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -162,6 +163,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CQ0U7Z4"));
         assertThat(security.getWkn(), is("CQ0U7Z"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CITI.GL.M. CALL19 MGA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -395,6 +397,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1MECS1"));
         assertThat(security.getWkn(), is("A1MECS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SOURCE PHY.MRKT.ETC00 XAU"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -439,6 +442,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0001234567"));
         assertThat(security.getWkn(), is("DS5WKN"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -483,6 +487,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000VN4LAU4"));
         assertThat(security.getWkn(), is("VN4LAU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VONT.FINL PR CALL17 DAX"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -610,6 +615,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000SKWM021"));
         assertThat(security.getWkn(), is("SKWM02"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SKW STAHL-METAL.HLDG.NA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -673,6 +679,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392495023"));
         assertThat(security.getWkn(), is("ETF114"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -716,6 +723,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0378438732"));
         assertThat(security.getWkn(), is("ETF001"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMST.-DAX TR UCITS ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -759,6 +767,8 @@ public class FinTechGroupBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -829,6 +839,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B2QWCY14"));
         assertThat(security.getWkn(), is("A0Q1YY"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -872,6 +883,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494992"));
         assertThat(security.getWkn(), is("ETF113"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -915,6 +927,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0328475792"));
         assertThat(security.getWkn(), is("DBX1A7"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DB X-TR.S.E.600U.E.(DR)1C"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -958,6 +971,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B2NPKV68"));
         assertThat(security.getWkn(), is("A0NECU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1001,6 +1015,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3S5XW04"));
         assertThat(security.getWkn(), is("A1JJTP"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR BARC.EO.GOV.BD ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1044,6 +1059,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0274211480"));
         assertThat(security.getWkn(), is("DBX1DA"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DB X-TRACK.DAX ETF(DR)1C"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1087,6 +1103,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B6YX5D40"));
         assertThat(security.getWkn(), is("A1JKS0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR S+P US DIV.ARIST.ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1130,6 +1147,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMS.-MSCI EM.M.T.U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1173,6 +1191,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BF2B0K52"));
         assertThat(security.getWkn(), is("A2DTF1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FRAN.LIB.Q EM EQ.UC.DLA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1216,6 +1235,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1275,14 +1295,38 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("LU0392494562"));
+        assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
         // check cancellation (Storno) transaction
         BuySellEntryItem cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("FinTechKaufStorno01.txt"));
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-04T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.06733)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("FinTechKaufStorno01.txt"));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getNote(), is("Transaktion-Nr.: 1350807964"));
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1303,6 +1347,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getWkn(), is("US9RGR"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1346,6 +1391,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009807008"));
         assertThat(security.getWkn(), is("980700"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1389,6 +1435,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B53HP851"));
         assertThat(security.getWkn(), is("A0YEDM"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSVII-FTSE 100 LS ACC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1432,6 +1479,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKWQ0D84"));
         assertThat(security.getWkn(), is("A1191N"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SSGA S.E.E.II-M.EU.CON.S."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1475,6 +1523,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008402215"));
         assertThat(security.getWkn(), is("840221"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1517,6 +1566,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("AB1234"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1559,6 +1609,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006335003"));
         assertThat(security.getWkn(), is("633500"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KRONES AG O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1601,6 +1652,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US8552441094"));
         assertThat(security.getWkn(), is("884437"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("STARBUCKS CORP."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1692,6 +1744,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
         assertThat(security.getWkn(), is("A0D94M"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ROYAL DUTCH SHELL A EO-07"));
 
         // check dividends transaction
@@ -1733,6 +1786,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("AB1234"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1775,6 +1829,8 @@ public class FinTechGroupBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CM31SV9"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1818,6 +1874,8 @@ public class FinTechGroupBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CK1Q3N7"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1861,6 +1919,8 @@ public class FinTechGroupBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CB81KN1"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1947,6 +2007,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000SG0WRD3"));
         assertThat(security.getWkn(), is("SG0WRD"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1991,6 +2052,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0585795898"));
         assertThat(security.getWkn(), is("UE5KPQ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS LDN CALL21 SQ3"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2054,12 +2116,16 @@ public class FinTechGroupBankPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0392494562"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0444605645"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("C-IBO.E.L.S.D.O.T.U.ETF I"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2124,6 +2190,8 @@ public class FinTechGroupBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008474503"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEKAFONDS CF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2650,6 +2718,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
         assertThat(security.getWkn(), is("A111X9"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2693,6 +2762,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0382221051"));
         assertThat(security.getWkn(), is("865177"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLIED MATERIALS INC."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2736,6 +2806,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B41RYL63"));
         assertThat(security.getWkn(), is("A1JJTM"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR BL.BA.EO AG.BD U.ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2779,6 +2850,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3WJKG14"));
         assertThat(security.getWkn(), is("A142N1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSV-S+500INF.T.SECT.DLA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2822,6 +2894,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009848119"));
         assertThat(security.getWkn(), is("984811"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS TOP DIVIDENDE LD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2886,6 +2959,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
         assertThat(security.getWkn(), is("A111X9"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS MSCI EM USD-AC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2928,6 +3002,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B945VV12"));
         assertThat(security.getWkn(), is("A1T8FS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANG.FTSE DEV.EU.UETF EOD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2970,6 +3045,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5949181045"));
         assertThat(security.getWkn(), is("870747"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3062,6 +3138,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B8GKDB10"));
         assertThat(security.getWkn(), is("A1T8FV"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VA.FTSE A.W.H.D.Y.UETFDLD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3154,6 +3231,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46284V1017"));
         assertThat(security.getWkn(), is("A14MS9"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IRON MOUNTAIN (NEW)DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3246,6 +3324,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5949181045"));
         assertThat(security.getWkn(), is("870747"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3338,6 +3417,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5949181045"));
         assertThat(security.getWkn(), is("870747"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3388,6 +3468,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0386882277"));
         assertThat(security.getWkn(), is("A0RLJD"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PICTET-GL.MEGAT.SEL.P EO"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3430,6 +3511,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BQ3D6V05"));
         assertThat(security.getWkn(), is("A12GPB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMGEST GROWTH ASIA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3533,6 +3615,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BFY0GT14"));
         assertThat(security.getWkn(), is("A2N6CW"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR MSCI WORLD ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3634,6 +3717,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK1PV551"));
         assertThat(security.getWkn(), is("A1XEY2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTRACKERS MSCI WORLD ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3767,6 +3851,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09075V1026"));
         assertThat(security.getWkn(), is("A2PSR2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3860,6 +3945,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09075V1026"));
         assertThat(security.getWkn(), is("A2PSR2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3903,6 +3989,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA03765K1049"));
         assertThat(security.getWkn(), is("A12HM0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APHRIA INC."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3947,6 +4034,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4581401001"));
         assertThat(security.getWkn(), is("855681"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("INTEL CORP.       DL-,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -4075,6 +4163,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A0S9GB0"));
         assertThat(security1.getWkn(), is("A0S9GB"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("DT.BOERSE COM. XETRA-GOLD"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4082,6 +4171,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("KYG9830T1067"));
         assertThat(security2.getWkn(), is("A2JNY1"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("XIAOMI CORP. CL.B"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4404,6 +4494,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88339J1051"));
         assertThat(security.getWkn(), is("A2ARCV"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("THE TRA.DESK A DL-,000001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4469,6 +4560,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US2561631068"));
         assertThat(security.getWkn(), is("A2JHLZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DOCUSIGN INC    DL-,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4513,6 +4605,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000MA5GEG8"));
         assertThat(security.getWkn(), is("MA5GEG"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MS CI.I. CALL23 ABL"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4577,6 +4670,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88579Y1010"));
         assertThat(security.getWkn(), is("851745"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3M CO.             DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
