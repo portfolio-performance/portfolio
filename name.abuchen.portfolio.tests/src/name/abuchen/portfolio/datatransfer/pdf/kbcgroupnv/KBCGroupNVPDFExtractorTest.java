@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.kbcgroupnv;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ public class KBCGroupNVPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0013654783"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PROSUS N.V. (AS)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

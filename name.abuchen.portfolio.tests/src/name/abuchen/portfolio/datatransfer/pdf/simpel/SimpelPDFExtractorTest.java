@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.simpel;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class SimpelPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A1QA38"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Standortfonds Österreich"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -89,6 +92,8 @@ public class SimpelPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A1Z882"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Standortfonds Deutschland"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -133,6 +138,8 @@ public class SimpelPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A1Z882"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Standortfonds Deutschland"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -176,6 +183,8 @@ public class SimpelPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A1QA38"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Standortfonds Österreich"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

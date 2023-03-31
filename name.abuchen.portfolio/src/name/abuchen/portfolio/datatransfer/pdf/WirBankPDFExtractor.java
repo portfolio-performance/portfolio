@@ -307,10 +307,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 // Type of dividend: Ordinary dividend
                 .section("note").optional()
                 .match("^(Dividendenart|Type of dividend): (?<note>.*)")
-                .assign((t, v) -> {
-                    if (t.getNote() == null)
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap((t, ctx) -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)

@@ -53,7 +53,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0RPWH"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI W o r l d U . E T F R e g i s t e r e d S h s USD ( A c c ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -96,7 +98,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0M16S"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("V e r m ö g e n s M a n a g e m e n t B a l a n c e I n h a b e r - A n t e i l e A ( E U R ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -139,7 +143,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("723610"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S i e m e n s AG N a m e n s - A k t i e n o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -182,7 +188,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A l l i a n z SE v i n k . N a m e n s - A k t i e n o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -225,7 +233,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0M16S"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("V e r m ö g e n s M a n a g e m e n t B a l a n c e I n h a b e r - A n t e i l e A ( E U R ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -268,7 +278,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0M16S"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("V e r m ö g e n s M a n a g e m e n t B a l a n c e I n h a b e r - A n t e i l e A ( E U R ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -311,7 +323,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A l l i a n z SE v i n k . N a m e n s - A k t i e n o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -354,7 +368,9 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A l l i a n z SE v i n k . N a m e n s - A k t i e n o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -399,6 +415,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0321021155"));
         assertThat(security.getWkn(), is("A0M16S"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VERMOEGENSMA.BALANCE A EO"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -442,6 +459,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0321021155"));
         assertThat(security.getWkn(), is("A0M16S"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VERMOEGENSMA.BALANCE A EO"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -485,6 +503,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE NA O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -527,6 +546,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0J2060"));
         assertThat(security.getWkn(), is("A0J206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs-MSCI N . America UCITS ETF Bearer Shares ( D t . Z e r t . ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -619,6 +639,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0DPMW9"));
         assertThat(security.getWkn(), is("A0DPMW"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares-MSCI Japan UETF DIS Bearer Shares ( D t . Z e r t . ) o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -711,6 +732,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US7960502018"));
         assertThat(security.getWkn(), is("881823"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Samsung E l e c t r o n i c s Co. L t d . R.Shs(NV)Pf(GDR144A)/25 SW 100"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -803,6 +825,7 @@ public class CommerzbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007236101"));
         assertThat(security.getWkn(), is("723610"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Siemens AG Namens-Aktien o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -844,6 +867,7 @@ public class CommerzbankPDFExtractorTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
         assertThat(security.getIsin(), is("US7960502018"));
         assertThat(security.getWkn(), is("881823"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SAMSUNG EL./25 GDRS NV PF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

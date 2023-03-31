@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -236,21 +239,25 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
+                            // if CUSIP lenght != 9
+                            if (trim(v.get("wkn")).length() < 9)
+                                v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgErrorInvalidWKN, trim(v.get("name"))));
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
-
-                            // if CUSIP lenght != 9
-                            if (v.get("wkn").length() < 9)
-                                t.setAmount(0L);
                         })
 
-                        .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
-                            if (t.getCurrencyCode() != null || t.getAmount() == 0)
-                                item.setFailureMessage("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
-                            return item;
+                        .wrap((t, ctx) -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                            {
+                                TransactionItem item = new TransactionItem(t);
+                                item.setFailureMessage(ctx.getString(FAILURE));
+                                return item;
+                            }
+                            return null;
                         }));
 
         // @formatter:off

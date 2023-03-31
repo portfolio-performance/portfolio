@@ -49,6 +49,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0446734526"));
         assertThat(security1.getWkn(), is("A0X97T"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UBS Msci Pacific exJap.U ETF A"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -56,6 +57,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B9M6SJ31"));
         assertThat(security2.getWkn(), is("A1W02Q"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("ISHS Gbl.Corp.Bd.EU Hgd.U.ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -131,6 +133,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B9M6SJ31"));
         assertThat(security2.getWkn(), is("A1W02Q"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("ISHS Gbl.Corp.Bd.EU Hgd.U.ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -195,6 +198,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0629459743"));
         assertThat(security1.getWkn(), is("A1JA1R"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UBS-MSCI WLD.SOC.RESP.A.D.E."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -202,6 +206,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU1048313891"));
         assertThat(security2.getWkn(), is("A110QD"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("UBS Emer.Mkt.Soc.Resp.UETFADIS"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -523,6 +528,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009779884"));
         assertThat(security.getWkn(), is("977988"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Amundi Aktien Rohstoffe"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -566,6 +572,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0048578792"));
         assertThat(security.getWkn(), is("973270"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -609,6 +616,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard FTSE AllWorld UETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -652,6 +660,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard FTSE AllWorld UETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -741,6 +750,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A1QA38"));
         assertThat(security.getWkn(), is("A2DHT6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Own 360 Standortfds Österr. A"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -784,6 +794,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0075056555"));
         assertThat(security1.getWkn(), is("986932"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("BGF World Mining Fund A2 USD"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -791,6 +802,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0009807016"));
         assertThat(security2.getWkn(), is("980701"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("hausInvest"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -798,6 +810,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0048578792"));
         assertThat(security3.getWkn(), is("973270"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -805,6 +818,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0114760746"));
         assertThat(security4.getWkn(), is("941034"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Templeton Growth (Euro) Fund"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -812,6 +826,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0088814487"));
         assertThat(security5.getWkn(), is("988525"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Fid Fd - Euro Blue Chip Fd A"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1101,6 +1116,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0009807016"));
         assertThat(security2.getWkn(), is("980701"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("hausInvest"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1108,6 +1124,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0048578792"));
         assertThat(security3.getWkn(), is("973270"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1115,6 +1132,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0114760746"));
         assertThat(security4.getWkn(), is("941034"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Templeton Growth (Euro) Fund"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1122,6 +1140,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0088814487"));
         assertThat(security5.getWkn(), is("988525"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Fid Fd - Euro Blue Chip Fd A"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1396,6 +1415,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0008488214"));
         assertThat(security1.getWkn(), is("848821"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UBS(D) Equity Fd.-Global Opp."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1403,6 +1423,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0049112450"));
         assertThat(security2.getWkn(), is("973285"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Fidelity Fd-Pacific Fund A USD"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1410,6 +1431,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0323578657"));
         assertThat(security3.getWkn(), is("A0M430"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("FvS SICAV-Multiple Opportun. R"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1417,6 +1439,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("DE000A0M8HD2"));
         assertThat(security4.getWkn(), is("A0M8HD"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Frankfurter Aktienfd.für Stift"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1424,6 +1447,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("GB00B39R2S49"));
         assertThat(security5.getWkn(), is("A0Q349"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("M&G Global Dividend Fund A EUR"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1562,6 +1586,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0008488214"));
         assertThat(security1.getWkn(), is("848821"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UBS(D) Equity Fd.-Global Opp."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1569,6 +1594,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0323578657"));
         assertThat(security3.getWkn(), is("A0M430"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("FvS SICAV-Multiple Opportun. R"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1576,6 +1602,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("DE000A0M8HD2"));
         assertThat(security4.getWkn(), is("A0M8HD"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Frankfurter Aktienfd.für Stift"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1583,6 +1610,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("GB00B39R2S49"));
         assertThat(security5.getWkn(), is("A0Q349"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("M&G Global Dividend Fund A EUR"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1710,6 +1738,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0227384020"));
         assertThat(security1.getWkn(), is("A0HF3W"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Nordea Stable Return BP EUR"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1717,6 +1746,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0325074333"));
         assertThat(security2.getWkn(), is("A0M5KA"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("JPM-HIGHB.US ST. A DIST EO"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1724,6 +1754,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0289228842"));
         assertThat(security3.getWkn(), is("A0MNZ3"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("JPM-Europe Eq Plus A dist-EUR"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1809,6 +1840,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0002635265"));
         assertThat(security1.getWkn(), is("263526"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("iShares Pfandbriefe (DE)"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1816,6 +1848,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B02KXM00"));
         assertThat(security2.getWkn(), is("A0DK61"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iShares EURO STOXX Small U ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1823,6 +1856,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00B0M63284"));
         assertThat(security3.getWkn(), is("A0HGV5"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ISHS-EUR.PROP.YLD.UC.ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1830,6 +1864,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("IE00B2QWCY14"));
         assertThat(security4.getWkn(), is("A0Q1YY"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("iShs S&P SmallCap 600 UCITS ET"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1837,6 +1872,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("IE00B3QL0Y14"));
         assertThat(security5.getWkn(), is("A1JJAD"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Global Short Fixed I.F.EUR Dis"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1844,6 +1880,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("IE00B42THM37"));
         assertThat(security6.getWkn(), is("A1JH9Z"));
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Emerging Mark.Value F.EUR Dis"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1851,6 +1888,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("IE00B5KQNG97"));
         assertThat(security7.getWkn(), is("A1C19C"));
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("HSBC S&P 500 ETF"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1858,6 +1896,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("IE00B945VV12"));
         assertThat(security8.getWkn(), is("A1T8FS"));
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("Vanguard FTSE Devel.Euro.UETF"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1865,6 +1904,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getIsin(), is("IE00B95PGT31"));
         assertThat(security9.getWkn(), is("A1T8FU"));
+        assertNull(security9.getTickerSymbol());
         assertThat(security9.getName(), is("Vanguard FTSE Japan UCITS ETF"));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1872,6 +1912,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security10.getIsin(), is("IE00B9M6SJ31"));
         assertThat(security10.getWkn(), is("A1W02Q"));
+        assertNull(security10.getTickerSymbol());
         assertThat(security10.getName(), is("ISHS Gbl.Corp.Bd.EU Hgd.U.ETF"));
         assertThat(security10.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2342,6 +2383,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0002635265"));
         assertThat(security1.getWkn(), is("263526"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("iShares Pfandbriefe (DE)"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2349,6 +2391,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B02KXM00"));
         assertThat(security2.getWkn(), is("A0DK61"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iShares EURO STOXX Small U ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2356,6 +2399,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00B0M63284"));
         assertThat(security3.getWkn(), is("A0HGV5"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ISHS-EUR.PROP.YLD.UC.ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2363,6 +2407,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("IE00B3QL0Y14"));
         assertThat(security5.getWkn(), is("A1JJAD"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Global Short Fixed I.F.EUR Dis"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2370,6 +2415,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("IE00B42THM37"));
         assertThat(security6.getWkn(), is("A1JH9Z"));
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Emerging Mark.Value F.EUR Dis"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2377,6 +2423,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("IE00B945VV12"));
         assertThat(security8.getWkn(), is("A1T8FS"));
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("Vanguard FTSE Devel.Euro.UETF"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2384,6 +2431,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security10.getIsin(), is("IE00B9M6SJ31"));
         assertThat(security10.getWkn(), is("A1W02Q"));
+        assertNull(security10.getTickerSymbol());
         assertThat(security10.getName(), is("ISHS Gbl.Corp.Bd.EU Hgd.U.ETF"));
         assertThat(security10.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2816,6 +2864,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009807016"));
         assertThat(security.getWkn(), is("980701"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("hausInvest"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2900,6 +2949,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0075056555"));
         assertThat(security1.getWkn(), is("986932"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("BGF World Mining Fund A2 USD"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2907,6 +2957,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0009807016"));
         assertThat(security2.getWkn(), is("980701"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("hausInvest"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2914,6 +2965,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0048578792"));
         assertThat(security3.getWkn(), is("973270"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2921,6 +2973,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0114760746"));
         assertThat(security4.getWkn(), is("941034"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Templeton Growth (Euro) Fund"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2928,6 +2981,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0088814487"));
         assertThat(security5.getWkn(), is("988525"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Fid Fd - Euro Blue Chip Fd A"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3107,6 +3161,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0009807016"));
         assertThat(security2.getWkn(), is("980701"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("hausInvest"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3114,6 +3169,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0048578792"));
         assertThat(security3.getWkn(), is("973270"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3121,6 +3177,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0114760746"));
         assertThat(security4.getWkn(), is("941034"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Templeton Growth (Euro) Fund"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3128,6 +3185,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0088814487"));
         assertThat(security5.getWkn(), is("988525"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Fid Fd - Euro Blue Chip Fd A"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3296,6 +3354,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B2QWCY14"));
         assertThat(security.getWkn(), is("A0Q1YY"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs S&P SmallCap 600 UCITS ET"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3338,6 +3397,7 @@ public class FILFondbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0048578792"));
         assertThat(security.getWkn(), is("973270"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Fidelity F.- Europ.Growth F. A"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

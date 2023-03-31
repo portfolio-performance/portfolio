@@ -52,6 +52,7 @@ public class NIBCBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +96,7 @@ public class NIBCBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

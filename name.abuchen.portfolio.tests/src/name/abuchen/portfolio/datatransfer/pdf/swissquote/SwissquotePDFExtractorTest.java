@@ -53,6 +53,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLE ORD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -97,6 +99,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0001752309"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FISCHER N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -141,6 +145,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0010268606"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VESTAS WIND SYSTEMS ORD"));
         assertThat(security.getCurrencyCode(), is("DKK"));
 
@@ -236,6 +242,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0363463438"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IDORSIA N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -280,6 +288,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0010268606"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VESTAS WIND SYSTEMS ORD"));
         assertThat(security.getCurrencyCode(), is("DKK"));
 
@@ -375,6 +385,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US41753F1093"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HARVEST CAPITAL CREDIT ORD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -418,6 +430,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0025751329"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LOGITECH N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -461,6 +475,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard All World ETF Dist"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -504,6 +520,8 @@ public class SwissquotePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0371153492"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Landis+Gyr N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 

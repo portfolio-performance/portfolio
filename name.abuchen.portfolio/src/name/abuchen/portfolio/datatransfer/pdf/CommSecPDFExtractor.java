@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -36,14 +38,12 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("WE HAVE (SOLD|BOUGHT)", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group("currency"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -65,9 +65,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .match("^WE HAVE (?<type>SOLD) .*$")
                 .assign((t, v) -> {
                     if (v.get("type").equals("SOLD"))
-                    {
                         t.setType(PortfolioTransaction.Type.SELL);
-                    }
                 })
 
                 // COMPANY: QANTAS AIRWAYS LIMITED
@@ -77,9 +75,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .match("^COMPANY: (?<name>.*)$")
                 .match("^(?<tickerSymbol>[\\w]{3,4})$")
                 .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
-                .assign((t, v) -> {                    
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // COMPANY WISETECH GLOBAL LIMITED
                 // SECURITY ORDINARY FULLY PAID WTC
@@ -88,16 +84,12 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .match("^COMPANY (?<name>.*)$")
                 .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$")
                 .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
-                .assign((t, v) -> {                    
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                 // AS AT DATE: 20/04/2020 277 3.610000
                 .section("date")
                 .match("^AS AT DATE: (?<date>[\\d]+\\/[\\d]+\\/[\\d]{4}) .*$")
-                .assign((t, v) -> {
-                    t.setDate(asDate(v.get("date")));
-                })
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 .oneOf(
                                 // AS AT DATE: 20/04/2020 277 3.610000
@@ -123,6 +115,11 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(context.get("currency"));
                     t.setAmount(asAmount(v.get("amount")));
                 })
+
+                // ORDER NO: N118818020
+                .section("note").optional()
+                .match("^ORDER NO: (?<note>.*)$")
+                .assign((t, v) -> t.setNote("Order No: " + trim(v.get("note"))))
 
                 .wrap(BuySellEntryItem::new);
 

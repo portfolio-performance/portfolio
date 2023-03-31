@@ -29,7 +29,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class creditsuisseAGExtractorTest
+public class CreditSuisseAGExtractorTest
 {
     @Test
     public void testWertpapierKauf01()
@@ -48,6 +48,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46284V1017"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Registered Shs Iron Mountain Inc"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -110,6 +112,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS1055787680"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6.25 % Fixed Rate Notes Norddeutsche"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -172,6 +176,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Akt. -A- Royal Dutch Shell PLC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -214,6 +220,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88163VAD10"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6.15 % Notes Teva Pharmaceutical Finance"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -275,6 +283,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS1055787680"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6.25 % FIXED RATE NOTES NORDDEUTSCHE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -316,6 +326,8 @@ public class creditsuisseAGExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46284V1017"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("REGISTERED SHS IRON MOUNTAIN INC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

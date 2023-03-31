@@ -133,6 +133,12 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // STORNO VON 20210817  45747417
+                .section("type").optional()
+                .match("^(?<type>STORNO VON) .*$")
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorOrderCancellationUnsupported))
+
                 // 16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
                 // ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
                 // Kurs                     80,340000  KURSWERT               -98,01 EUR
@@ -174,12 +180,6 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
-
-                // STORNO VON 20210817  45747417
-                .section("type").optional()
-                .match("^(?<type>STORNO VON) .*$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
 
                 .wrap((t, ctx) -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
