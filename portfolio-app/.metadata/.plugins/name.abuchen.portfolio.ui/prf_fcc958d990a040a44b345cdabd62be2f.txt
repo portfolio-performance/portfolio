@@ -1,0 +1,9 @@
+#Fri Mar 24 16:42:05 CET 2023
+SecurityListView-newsash=200
+SecurityPriceChartPane=Y2
+StatementOfAssetsView-newsash=200
+AbstractHistoricView=L1Y0;L2Y0;L3Y0;
+name.abuchen.portfolio.ui.views.SecuritiesTable$picked=e966ceaf-bc36-4d9d-9d5d-95f7ebb56a6d
+name.abuchen.portfolio.ui.views.StatementOfAssetsViewer$picked=3def50fb-b771-4ae2-8350-4f812da6b95e
+PortfolioListView-newsash=200
+PortfolioListView@top2={"items"\:[{"id"\:"0","width"\:100},{"id"\:"1","width"\:160},{"id"\:"volume","width"\:100},{"id"\:"note","width"\:200}]}

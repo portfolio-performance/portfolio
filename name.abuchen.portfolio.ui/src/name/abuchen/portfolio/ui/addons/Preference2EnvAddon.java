@@ -61,7 +61,7 @@ public class Preference2EnvAddon
         Factory.getDividendFeed(DivvyDiaryDividendFeed.class).setApiKey(divvyDiaryApiKey);
         Factory.getSearchProvider(DivvyDiarySearchProvider.class).setApiKey(divvyDiaryApiKey);
     }
-
+    
     @Inject
     @Optional
     public void setEODHistoricalDataApiKey(
@@ -71,7 +71,7 @@ public class Preference2EnvAddon
                         .setApiKey(eodhistoricialdataApiKey);
         Factory.getSearchProvider(EODHistoricalDataSearchProvider.class).setApiKey(eodhistoricialdataApiKey);
     }
-
+    
     @Inject
     @Optional
     public void setDefaultCalendar(@Preference(value = UIConstants.Preferences.CALENDAR) String defaultCalendarCode)
