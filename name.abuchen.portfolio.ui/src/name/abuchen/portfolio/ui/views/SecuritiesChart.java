@@ -31,6 +31,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -1165,24 +1166,31 @@ public class SecuritiesChart
             if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
             {
                 customPaintListeners.add(event -> {
+                    Color defaultForeground = Colors.theme().defaultForeground();
+                    int symbolSize = border.getSymbolSize();
+
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
                     for (int index = 0; index < dates.length; index++)
                     {
+                        PortfolioTransaction t = transactions.get(index);
+                        if (t == null)
+                            continue;
+
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
-                        PortfolioTransaction t = transactions.get(index);
                         String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
                         Point textExtent = event.gc.textExtent(label);
 
-                        event.gc.setForeground(Colors.theme().defaultForeground());
-
                         // If the label does not start in negative, then we
                         // print it.
-                        if (x - (textExtent.x / 2) >= 0)
-                            event.gc.drawText(label, x - (textExtent.x / 2), y + border.getSymbolSize(), true);
+                        if (x - textExtent.x / 2 >= 0)
+                        {
+                            event.gc.setForeground(defaultForeground);
+                            event.gc.drawText(label, x - textExtent.x / 2, y + symbolSize, true);
+                        }
                     }
                 });
             }
@@ -1191,11 +1199,12 @@ public class SecuritiesChart
 
     private void addDividendMarkerLines(ChartInterval chartInterval)
     {
-        List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
-                        .filter(t -> t.getSecurity() == security)
-                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
-                        .filter(t -> chartInterval.contains(t.getDateTime())).sorted(Transaction.BY_DATE)
-                        .toList();
+        List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
+                        .filter(t -> t.getSecurity() == security) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .filter(t -> chartInterval.contains(t.getDateTime())) //
+                        .sorted(Transaction.BY_DATE) //
+                        .toList(); //
 
         if (dividends.isEmpty())
             return;
@@ -1246,59 +1255,50 @@ public class SecuritiesChart
             if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
             {
                 customPaintListeners.add(event -> {
+                    FontMetrics fontMetrics = event.gc.getFontMetrics();
+
+                    StringBuilder labelBuilder = new StringBuilder();
+
+                    // Three levels of the label
+                    int[] yPosLabels = new int[3];
+                    int[] lastWriteLabels = new int[3];
+                    Arrays.fill(lastWriteLabels, 0);
+
+                    int symbolSize = border.getSymbolSize();
+                    int labelHeight = fontMetrics.getHeight();
+                    int halfLabelHeight = labelHeight / 2;
+
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
-                    int yPosLabel = 0;
-                    int lastWriteLabelLevel1 = 0;
-                    int lastWriteLabelLevel2 = 0;
-                    int lastWriteLabelLevel3 = 0;
-
                     for (int index = 0; index < dates.length; index++)
                     {
-                        boolean freeSpaceForLabelLevel1 = true;
-                        boolean freeSpaceForLabelLevel2 = true;
-                        boolean freeSpaceForLabelLevel3 = true;
-
                         int x = xAxis.getPixelCoordinate(dates[index].getTime());
                         int y = yAxis.getPixelCoordinate(values[index]);
 
-                        String label = getDividendLabel(dividends.get(index));
-                        Point textExtent = event.gc.textExtent(label);
+                        labelBuilder.setLength(0);
+                        labelBuilder.append(getDividendLabel(dividends.get(index)));
 
-                        event.gc.setForeground(Colors.theme().defaultForeground());
+                        int labelWidth = event.gc.stringExtent(labelBuilder.toString()).x;
+                        int halfLabelWidth = labelWidth / 2;
 
-                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel1) <= 0)
-                            freeSpaceForLabelLevel1 = false;
+                        boolean labelPlaced = false;
 
-                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel2) <= 0)
-                            freeSpaceForLabelLevel2 = false;
-
-                        if (((x - (textExtent.x / 2)) - lastWriteLabelLevel3) <= 0)
-                            freeSpaceForLabelLevel3 = false;
-
-                        if (freeSpaceForLabelLevel1 || freeSpaceForLabelLevel2 || freeSpaceForLabelLevel3)
+                        for (int level = 0; level < 3 && !labelPlaced; level++)
                         {
-                            if (freeSpaceForLabelLevel1)
+                            // If the label has a free space and does not start
+                            // in the negative, we output it.
+                            boolean freeSpaceForLabel = (x - halfLabelWidth) - lastWriteLabels[level] > 0;
+                            if (freeSpaceForLabel)
                             {
-                                yPosLabel = y - textExtent.y - border.getSymbolSize();
-                                lastWriteLabelLevel1 = (x + (textExtent.x / 2));
-                            }
-                            if (freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
-                            {
-                                yPosLabel = yPosLabel - textExtent.y;
-                                lastWriteLabelLevel2 = (x + (textExtent.x / 2));
-                            }
-                            if (freeSpaceForLabelLevel3 && !freeSpaceForLabelLevel2 && !freeSpaceForLabelLevel1)
-                            {
-                                yPosLabel = yPosLabel - textExtent.y;
-                                lastWriteLabelLevel3 = (x + (textExtent.x / 2));
-                            }
+                                yPosLabels[level] = y - symbolSize - labelHeight * (level + 1);
+                                lastWriteLabels[level] = x + halfLabelWidth;
 
-                            // If the label does not start in negative, then we
-                            // print it.
-                            if (x - (textExtent.x / 2) >= 0)
-                                event.gc.drawText(label, x - (textExtent.x / 2), yPosLabel, true);
+                                event.gc.drawText(labelBuilder.toString(), x - halfLabelWidth,
+                                                yPosLabels[level] - halfLabelHeight, true);
+
+                                labelPlaced = true;
+                            }
                         }
                     }
                 });
