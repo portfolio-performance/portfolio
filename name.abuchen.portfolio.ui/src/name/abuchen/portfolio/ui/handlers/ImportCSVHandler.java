@@ -57,13 +57,13 @@ public class ImportCSVHandler
     {
         if (client.getAccounts().isEmpty())
         {
-            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgMissingAccount);
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
             return;
         }
 
         if (client.getPortfolios().isEmpty())
         {
-            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgMissingPortfolio);
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorPortfolioNotExist);
             return;
         }
 
