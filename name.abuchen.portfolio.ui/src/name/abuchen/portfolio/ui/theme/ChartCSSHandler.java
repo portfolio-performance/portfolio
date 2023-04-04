@@ -27,10 +27,9 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
     protected void applyCSSProperty(Control control, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (!(control instanceof Chart))
+        if (!(control instanceof Chart chart))
             return;
 
-        Chart chart = (Chart) control;
         if (AXIS_COLOR.equalsIgnoreCase(property) && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
         {
             Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
@@ -82,10 +81,9 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
     protected String retrieveCSSProperty(Control control, String property, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (!(control instanceof Chart))
+        if (!(control instanceof Chart chart))
             return null;
 
-        Chart chart = (Chart) control;
         if (AXIS_COLOR.equalsIgnoreCase(property))
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);

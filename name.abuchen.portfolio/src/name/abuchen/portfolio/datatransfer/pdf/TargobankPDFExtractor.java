@@ -601,9 +601,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         while (iter.hasNext())
         {
             Object o = iter.next().getSubject();
-            if (o instanceof AccountTransaction)
+            if (o instanceof AccountTransaction a)
             {
-                AccountTransaction a = (AccountTransaction) o;
                 if (TO_BE_DELETED.equals(a.getNote()))
                     iter.remove();
             }

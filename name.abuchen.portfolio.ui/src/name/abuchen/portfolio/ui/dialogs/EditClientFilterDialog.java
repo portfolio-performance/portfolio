@@ -80,9 +80,8 @@ public class EditClientFilterDialog extends Dialog
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            if (parentElement instanceof ClientFilterMenu.Item)
+            if (parentElement instanceof ClientFilterMenu.Item item)
             {
-                ClientFilterMenu.Item item = (ClientFilterMenu.Item) parentElement;
                 String[] uuids = item.getUUIDs().split(","); //$NON-NLS-1$
 
                 return Arrays.stream(uuids).map(uuid2object::get).filter(Objects::nonNull).toArray();

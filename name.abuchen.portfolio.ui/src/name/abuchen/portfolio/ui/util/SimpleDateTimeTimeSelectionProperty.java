@@ -26,17 +26,13 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty<Con
     @Override
     protected LocalTime doGetValue(Control source)
     {
-        if (source instanceof DateTime)
+        if (source instanceof DateTime dateTime)
         {
-            DateTime dateTime = (DateTime) source;
-
             // DateTime widget has zero-based months
             return LocalTime.of(dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
         }
-        else if (source instanceof CDateTime)
+        else if (source instanceof CDateTime dateTime)
         {
-            CDateTime dateTime = (CDateTime) source;
-
             Date date = dateTime.getSelection();
 
             if (date == null)
@@ -60,9 +56,8 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty<Con
     @Override
     protected void doSetValue(Control source, LocalTime date)
     {
-        if (source instanceof DateTime)
+        if (source instanceof DateTime dateTime)
         {
-            DateTime dateTime = (DateTime) source;
             dateTime.setTime(date.getHour(), date.getMinute(), date.getSecond());
         }
         else if (source instanceof CDateTime)

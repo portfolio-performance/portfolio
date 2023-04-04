@@ -63,9 +63,8 @@ public final class LogoManager
 
     private Image getLogoImage(Object object, ClientSettings settings)
     {
-        if (object instanceof Attributable)
+        if (object instanceof Attributable target)
         {
-            Attributable target = (Attributable) object;
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
             return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
         }

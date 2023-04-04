@@ -1305,9 +1305,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         if (i instanceof TransactionItem)
         {
             Annotated s = ((TransactionItem) i).getSubject();
-            if (s instanceof AccountTransaction)
+            if (s instanceof AccountTransaction a)
             {
-                AccountTransaction a = (AccountTransaction) s;
                 return AccountTransaction.Type.DIVIDENDS.equals(a.getType());
             }
         }

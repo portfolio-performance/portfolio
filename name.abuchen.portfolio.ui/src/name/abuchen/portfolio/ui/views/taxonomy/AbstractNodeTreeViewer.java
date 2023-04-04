@@ -261,10 +261,8 @@ import name.abuchen.portfolio.util.TextUtil;
         @Override
         public boolean validateDrop(Object target, int operation, TransferData transferType)
         {
-            if (!(target instanceof TaxonomyNode))
+            if (!(target instanceof TaxonomyNode targetNode))
                 return false;
-
-            TaxonomyNode targetNode = (TaxonomyNode) target;
 
             int location = determineLocation(this.getCurrentEvent());
 

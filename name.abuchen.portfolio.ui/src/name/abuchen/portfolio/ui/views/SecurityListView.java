@@ -373,10 +373,8 @@ public class SecurityListView extends AbstractFinanceView
         {
             for (Object attribute : security.getAttributes().getMap().values())
             {
-                if (!(attribute instanceof LimitPrice))
+                if (!(attribute instanceof LimitPrice limit))
                     continue;
-
-                LimitPrice limit = (LimitPrice) attribute;
 
                 SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                 if (latest != null && limit.isExceeded(latest))

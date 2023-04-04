@@ -495,10 +495,8 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount)
     {
-        if (amount instanceof Double)
+        if (amount instanceof Double d)
         {
-            Double d = (Double) amount;
-
             if (d.isNaN())
                 return null;
             else if (d.doubleValue() == 0d)

@@ -98,14 +98,12 @@ public final class TransactionsViewer implements ModificationListener
 
             Transaction tx = ((TransactionPair<?>) element).getTransaction();
 
-            if (tx instanceof PortfolioTransaction)
+            if (tx instanceof PortfolioTransaction t)
             {
-                PortfolioTransaction t = (PortfolioTransaction) tx;
                 return t.getType().isLiquidation() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
             }
-            else if (tx instanceof AccountTransaction)
+            else if (tx instanceof AccountTransaction t)
             {
-                AccountTransaction t = (AccountTransaction) tx;
                 return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
             }
 
