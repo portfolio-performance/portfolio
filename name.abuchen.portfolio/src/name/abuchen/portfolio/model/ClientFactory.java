@@ -1337,9 +1337,8 @@ public class ClientFactory
             for (AttributeType t : typesWithLimit)
             {
                 Object value = attributes.get(t);
-                if (value instanceof LimitPrice)
+                if (value instanceof LimitPrice lp)
                 {
-                    LimitPrice lp = (LimitPrice) value;
                     attributes.put(t, new LimitPrice(lp.getRelationalOperator(), lp.getValue() * 10000));
                 }
             }

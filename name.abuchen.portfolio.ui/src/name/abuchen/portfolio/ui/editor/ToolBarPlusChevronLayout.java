@@ -187,10 +187,8 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     {
         for (ContributionItem item : invisible)
         {
-            if (item instanceof DropDown)
+            if (item instanceof DropDown dropDown)
             {
-                DropDown dropDown = (DropDown) item;
-
                 if (dropDown.getMenuListener() != null)
                 {
                     MenuManager subMenu = new MenuManager(dropDown.getLabel());
@@ -205,9 +203,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 }
 
             }
-            else if (item instanceof ActionContributionItem)
+            else if (item instanceof ActionContributionItem action)
             {
-                ActionContributionItem action = (ActionContributionItem) item;
+                
 
                 // need to create a wrapper action because an action in the
                 // toolbar typically has no text (only the icon)

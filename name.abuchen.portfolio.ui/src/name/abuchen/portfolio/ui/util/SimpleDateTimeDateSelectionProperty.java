@@ -27,10 +27,8 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty<Con
     @Override
     protected LocalDate doGetValue(Control source)
     {
-        if (source instanceof DateTime)
+        if (source instanceof DateTime dateTime)
         {
-            DateTime dateTime = (DateTime) source;
-
             // DateTime widget has zero-based months
             return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
@@ -62,15 +60,13 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty<Con
     @Override
     protected void doSetValue(Control source, LocalDate date)
     {
-        if (source instanceof DateTime)
+        if (source instanceof DateTime dateTime)
         {
-            DateTime dateTime = (DateTime) source;
             // DateTime widget has zero-based months
             dateTime.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
         }
-        else if (source instanceof CDateTime)
+        else if (source instanceof CDateTime dateTime)
         {
-            CDateTime dateTime = (CDateTime) source;
             dateTime.setSelection(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
         }
         else

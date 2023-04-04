@@ -64,9 +64,8 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
     {
         super.update(rateOrValue);
 
-        if (rateOrValue instanceof Double)
+        if (rateOrValue instanceof Double rate)
         {
-            Double rate = (Double) rateOrValue;
             this.indicator.setText(!rate.isInfinite() ? Values.Percent2.format(rate) : "-"); //$NON-NLS-1$
             this.toolTip = defaultToolTip;
         }

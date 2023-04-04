@@ -72,10 +72,9 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
 
         String tooltip = toolTipProvider.apply(element);
 
-        if (!(element instanceof TrailProvider))
+        if (!(element instanceof TrailProvider t))
             return tooltip;
 
-        TrailProvider t = (TrailProvider) element;
         Optional<Trail> trail = t.explain(tooltip);
 
         if (!trail.isPresent() || trail.get().getRecord().isEmpty())

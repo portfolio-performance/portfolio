@@ -148,9 +148,8 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
 
         boolean isNegative = false;
 
-        if (value instanceof Money)
+        if (value instanceof Money money)
         {
-            Money money = (Money) value;
             indicator.setText(Values.Money.format(money, getDashboardData().getClient().getBaseCurrency()));
             isNegative = money.isNegative();
         }

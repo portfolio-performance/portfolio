@@ -248,14 +248,12 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof ClientPerformanceSnapshot.Category)
+                if (element instanceof ClientPerformanceSnapshot.Category cat)
                 {
-                    ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
                     return cat.getLabel();
                 }
-                else if (element instanceof ClientPerformanceSnapshot.Position)
+                else if (element instanceof ClientPerformanceSnapshot.Position pos)
                 {
-                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
                     return pos.getLabel();
                 }
                 return null;
@@ -268,10 +266,8 @@ public class PerformanceView extends AbstractHistoricView
                 {
                     return Images.CATEGORY.image();
                 }
-                else if (element instanceof ClientPerformanceSnapshot.Position)
+                else if (element instanceof ClientPerformanceSnapshot.Position position)
                 {
-                    ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
-
                     Security security = position.getSecurity();
                     if (security != null)
                     {
@@ -311,14 +307,12 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof ClientPerformanceSnapshot.Category)
+                if (element instanceof ClientPerformanceSnapshot.Category cat)
                 {
-                    ClientPerformanceSnapshot.Category cat = (ClientPerformanceSnapshot.Category) element;
                     return Values.Money.format(cat.getValuation(), getClient().getBaseCurrency());
                 }
-                else if (element instanceof ClientPerformanceSnapshot.Position)
+                else if (element instanceof ClientPerformanceSnapshot.Position pos)
                 {
-                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
                     return Values.Money.format(pos.getValue(), getClient().getBaseCurrency());
                 }
                 return null;
@@ -335,10 +329,8 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getToolTipText(Object element)
             {
-                if (!(element instanceof ClientPerformanceSnapshot.Position))
+                if (!(element instanceof ClientPerformanceSnapshot.Position position))
                     return null;
-
-                ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
 
                 return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).isPresent()
                                 ? ClientPerformanceSnapshot.Position.TRAIL_VALUE
@@ -353,9 +345,8 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                if (element instanceof ClientPerformanceSnapshot.Position)
+                if (element instanceof ClientPerformanceSnapshot.Position pos)
                 {
-                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
                     return Values.Money.formatNonZero(pos.getForexGain(), getClient().getBaseCurrency());
                 }
                 return null;
@@ -364,10 +355,8 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getToolTipText(Object element)
             {
-                if (!(element instanceof ClientPerformanceSnapshot.Position))
+                if (!(element instanceof ClientPerformanceSnapshot.Position position))
                     return null;
-
-                ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
 
                 return position.explain(ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN).isPresent()
                                 ? ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN
@@ -592,10 +581,8 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
-                if (t instanceof AccountTransaction)
+                if (t instanceof AccountTransaction at)
                 {
-                    AccountTransaction at = (AccountTransaction) t;
-
                     switch (at.getType())
                     {
                         case TAXES:
@@ -632,9 +619,8 @@ public class PerformanceView extends AbstractHistoricView
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
 
-                if (t instanceof AccountTransaction)
+                if (t instanceof AccountTransaction at)
                 {
-                    AccountTransaction at = (AccountTransaction) t;
                     switch (at.getType())
                     {
                         case FEES:

@@ -100,9 +100,8 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
                 {
                     return ((File) element).getName();
                 }
-                else if (element instanceof Exception)
+                else if (element instanceof Exception e)
                 {
-                    Exception e = (Exception) element;
                     String text = e.getMessage();
                     return text == null || text.isEmpty() ? e.getClass().getName() : text;
                 }
