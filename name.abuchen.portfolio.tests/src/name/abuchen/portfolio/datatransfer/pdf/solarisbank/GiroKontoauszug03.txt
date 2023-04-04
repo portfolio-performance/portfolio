@@ -1,0 +1,38 @@
+Herr Peter Pan Ausgestellt am
+Elfenstraße, 1 1 Nov. 2022
+88888, Musterstadt
+Deutschland Abrechnungszeitraum
+26 Okt. 2022 — 31 Okt. 2022
+Rechnungsabschluss
+Kontostand am 26 Okt. 2022
+0,00 EUR
+Tag der Tag der
+Buchung Wertstellung Typ Beschreibung Betrag
+Kd CUSTOMER_NO Wir sagen
+Danke. RG-Nr. INVOICENO
+19.10.2022 19.10.2022 SEPA-Lastschrift 11,99 EUR -11,99 EUR
+an Peter Pan
+DE28110101015031128865
+Monatlich/10 Kontostand am 31 Okt. 2022
+43,20 EUR
+IBAN: DE55 5555 5555 5555 5555 55
+BIC: SOBKDEB2XXX
+DEVISEN: EUR
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen, Berechnungen und den Abschlusssaldo im beiliegenden Kontoauszug, der zugleich
+einen Rechnungsabschluss darstellt. Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungsabschlüsse müssen schriftlich
+oder in Textform (z.B. an https://vivid.money/de-de/support) zugehen. Im Falle der Einwendung in Textform genügt
+zur Fristwahrung die rechtzeitige Absendung. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der
+einzelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen
+Kontostand entsprechen muss und bei Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer
+eingeräumten oder geduldeten Kontoüberziehung anfallen können. Gutschriften aus eingereichten Lastschriften und
+anderen Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung. Guthaben sind als Einlagen nach Maßgabe des
+Einlagensicherungsgesetzes (EinSiG) entschädigungsfähig. Nähere Informationen können dem Informationsbogen für
+den Einleger entnommen werden, den Sie gemeinsam mit unseren für den Geschäftsverkehr mit Ihnen geltenden
+Allgemeinen Geschäftsbedingungen und besonderen Bedingungen unter www.solarisbank.de/partner einsehen
+können.
+Mit freundlichen Grüßen
+Ihre Solarisbank
+Unterstützt von der Solarisbank AG
+Seite 2 von 2

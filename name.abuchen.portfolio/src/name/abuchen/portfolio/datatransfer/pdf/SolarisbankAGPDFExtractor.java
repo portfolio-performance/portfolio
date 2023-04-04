@@ -14,7 +14,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
     
     private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung).* (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
-    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung) (?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
+    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung|SEPA-Lastschrift) (?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
     
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
