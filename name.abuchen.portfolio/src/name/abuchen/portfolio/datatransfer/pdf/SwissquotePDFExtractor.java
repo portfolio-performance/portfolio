@@ -22,7 +22,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Swissquote"); //$NON-NLS-1$
+        addBankIdentifier("Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendsTransaction();
