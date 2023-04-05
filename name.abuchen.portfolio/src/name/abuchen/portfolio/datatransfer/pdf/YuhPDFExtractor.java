@@ -21,7 +21,7 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Yuh"); //$NON-NLS-1$^
+        addBankIdentifier("Yuh"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -52,24 +52,32 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // @formatter:off
                 // RICHEMONT N ISIN: CH0210483332 SIX Swiss Exchange 
                 // 1.0269 97.38 CHF 100.00
+                // @formatter:on
                 .section("name", "isin", "currency")
                 .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                 .match("^[\\.'\\d]+ [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // 1.0269 97.38 CHF 100.00
+                // @formatter:on
                 .section("shares")
                 .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\w]{3} [\\.'\\d]+$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Gemäss Ihrem Kaufauftrag vom 31.10.2022 haben wir folgende Transaktionen vorgenommen:
+                // @formatter:on
                 .section("date")
                 .match("^Gem.ss Ihrem Kaufauftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
+                // @formatter:off
                 // Zu Ihren Lasten CHF 100.10
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Zu Ihren Lasten (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
                 .assign((t, v) -> {
@@ -77,7 +85,9 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Kauf * Unsere Referenz: 312345678 
+                // @formatter:off
+                // Kauf * Unsere Referenz: 312345678
+                // @formatter:on
                 .section("note").optional()
                 .match("^.* (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -102,25 +112,33 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // @formatter:off
                 // ROCHE GS ISIN: CH0012032048NKN: 1203204 4.0542
                 // Anzahl 4.0542
                 // Dividende 9.5 CHF
+                // @formatter:on
                 .section("name", "isin", "currency")
                 .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                 .match("^Dividende [\\.'\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // Anzahl 4.0542
+                // @formatter:on
                 .section("shares")
                 .match("^Anzahl (?<shares>[\\.,'\\d]+)$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Valutadatum 20.03.2023
+                // @formatter:on
                 .section("date")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // @formatter:off
                 // Total CHF 25.03
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
                 .assign((t, v) -> {
@@ -128,7 +146,9 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Dividende Unsere Referenz: 312345678 
+                // @formatter:off
+                // Dividende Unsere Referenz: 312345678
+                // @formatter:on
                 .section("note").optional()
                 .match("^.* (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -161,16 +181,20 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Belastung"))
+                    if ("Belastung".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.REMOVAL);
                 })
 
+                // @formatter:off
                 // Valutadatum 27.10.2022
+                // @formatter:on
                 .section("date")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // @formatter:off
                 // Total EUR 1'000.00
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
                 .assign((t, v) -> {
@@ -178,7 +202,9 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Zahlungsverkehr - Gutschrift Unsere Referenz: 312345678 
+                // @formatter:off
+                // Zahlungsverkehr - Gutschrift Unsere Referenz: 312345678
+                // @formatter:on
                 .section("note").optional()
                 .match("^.* (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -203,13 +229,17 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // @formatter:off
                 // 30.12.2022 1.36 0.00 1.36 0.00 1.36
+                // @formatter:on
                 .section("date")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // @formatter:off
                 // IBAN : CH3308781000123456700 - Währung : CHF
                 // Total 1.36 0.00 1.36 0.00 1.36
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^IBAN : .* W.hrung : (?<currency>[\\w]{3})$")
                 .match("^Total .* (?<amount>[\\.'\\d]+)$")
@@ -218,7 +248,9 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // @formatter:off
                 // Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+                // @formatter:on
                 .section("note1", "note2", "note3").optional()
                 .match("^(?<note1>Zinsabrechnung) vom (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<note3>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> {
@@ -231,12 +263,16 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Abgabe (Eidg. Stempelsteuer) CHF 0.10
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // @formatter:off
                 // Verrechnungssteuer 35% (CH) CHF 13.48
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Verrechnungssteuer .* (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
@@ -245,7 +281,9 @@ public class YuhPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Kommission CHF 1.00
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
