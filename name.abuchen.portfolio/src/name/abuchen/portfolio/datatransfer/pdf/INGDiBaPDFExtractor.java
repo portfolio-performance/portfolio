@@ -52,6 +52,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
+        addBankIdentifier("ING-DiBa AG"); //$NON-NLS-1$
+
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
