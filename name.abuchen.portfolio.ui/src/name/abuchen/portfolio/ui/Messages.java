@@ -5,7 +5,6 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.ui.messages"; //$NON-NLS-1$
-    public static String LabelJSONFactorHint;
     public static String AboutTextOtherSoftware;
     public static String AboutTextTranslationDevelopers;
     public static String AboutTextDeveloped;
@@ -772,6 +771,8 @@ public class Messages extends NLS
     public static String LabelJSONPathToDate;
     public static String LabelJSONDateFormat;
     public static String LabelJSONDateFormatHint;
+    public static String LabelJSONFactor;
+    public static String LabelJSONFactorHint;
     public static String LabelJSONPathToLow;
     public static String LabelJSONPathToHigh;
     public static String LabelJSONPathToVolume;
@@ -1196,6 +1197,9 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String SurveyIcon;
+    public static String SurveyReminder;
+    public static String SurveyTooltip;
     public static String EventWizardTitle;
     public static String EventWizardDescription;
     public static String EventWizardLabelMessage;
@@ -1260,10 +1264,7 @@ public class Messages extends NLS
     public static String OptionDateIsInTheFuture;
     public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
-    public static String LabelJSONFactor;
-    public static String SurveyTooltip;
-    public static String SurveyIcon;
-    public static String SurveyReminder;
+        
     static
     {
         // initialize resource bundle
