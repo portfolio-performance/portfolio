@@ -54,6 +54,7 @@ public class WithoutTaxesFilterTest
                             .deposit_("2016-01-01", Values.Amount.factorize(100))
                             .tax_____("2016-01-02", Values.Amount.factorize(5))
                             .taxrefnd("2016-02-02", Values.Amount.factorize(5))
+                            .interest("2016-02-15", Values.Amount.factorize(6), Values.Amount.factorize(1))
                             .dividend("2016-03-01", Values.Amount.factorize(10), Values.Amount.factorize(1), security1) //
                             .addTo(client);
             a.setName(index);
@@ -84,8 +85,8 @@ public class WithoutTaxesFilterTest
 
         Account account = result.getAccounts().get(0);
 
-        // 6 regular transactions + 3 corrections for buy, sell, and dividend tx
-        assertThat(account.getTransactions().size(), is(9));
+        // 7 regular transactions + 4 corrections for buy, sell, interest, and dividend tx
+        assertThat(account.getTransactions().size(), is(11));
 
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
@@ -98,10 +99,10 @@ public class WithoutTaxesFilterTest
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.TAXES)
                         .findAny().isPresent(), is(false));
 
-        // expect 3 removals: for the tax transaction + part of buy + sell +
+        // expect 5 removals: for the tax transaction + part of buy + sell + interest +
         // dividend
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(4L));
+                        .count(), is(5L));
 
         // tax refund converted to deposit
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.TAX_REFUND)
@@ -110,7 +111,7 @@ public class WithoutTaxesFilterTest
                         .count(), is(2L));
 
         assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDate.parse("2016-09-03"))
-                        .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 + 250))));
+                        .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 + 250 + 6))));
 
         Portfolio portfolio = result.getPortfolios().get(0);
         assertThat(portfolio.getTransactions().size(), is(4));
