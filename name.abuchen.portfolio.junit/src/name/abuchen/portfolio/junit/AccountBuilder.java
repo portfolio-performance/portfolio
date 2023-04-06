@@ -53,11 +53,16 @@ public class AccountBuilder
         return transaction(Type.INTEREST, date, amount);
     }
 
+    public AccountBuilder interest(String date, long amount, long taxes)
+    {
+        return transaction(Type.INTEREST, date, amount, taxes, null);
+    }
+
     public AccountBuilder interest(LocalDateTime date, long amount)
     {
         return transaction(Type.INTEREST, date, amount);
     }
-    
+
     public AccountBuilder interest_charge(String date, long amount)
     {
         return transaction(Type.INTEREST_CHARGE, date, amount);
