@@ -774,31 +774,25 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                                 // @formatter:off
                                 // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
-                                // 2% für Währungsumrechnung 2,97 -
                                 // @formatter:on
                                 section -> section
-                                        .attributes("date", "note", "amount", "type", "fee")
+                                        .attributes("date", "note", "amount", "type")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
                                                         + "(?<note>.*) "
                                                         + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
                                                         + "(?<amount>[\\.,\\d]+)"
                                                         + "([\\s])?(?<type>([\\-|\\+]))$")
-                                        .match("^[\\.,\\d]+% f.r W.hrungsumrechnung (?<fee>[\\.,\\d]+)([\\s])?\\-$")
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
-
-                                            Money fee = Money.of(asCurrencyCode(context.get("currency")), asAmount(v.get("fee")));
-                                            Money amount = Money.of(asCurrencyCode(context.get("currency")), asAmount(v.get("amount")));
 
                                             // Is type is "-" change from DEPOSIT to REMOVAL
                                             if ("-".equals(trim(v.get("type"))))
                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                             t.setDateTime(asDate(v.get("date")));
-
-                                            // Subtract currency exchange fees from the amount
-                                            t.setMonetaryAmount(amount.subtract(fee));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
                                             if (trim(v.get("note")).endsWith(","))
