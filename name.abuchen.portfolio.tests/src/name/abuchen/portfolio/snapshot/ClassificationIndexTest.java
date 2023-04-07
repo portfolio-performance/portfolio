@@ -227,4 +227,40 @@ public class ClassificationIndexTest
         // dividend payment 15% * quote change 10%
         assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.15 * 1.1) - 1, 0.000000001d));
     }
+
+    @Test
+    public void testTaxesInInterestTransactions()
+    {
+        Client client = new Client();
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("test")
+                        .addTo(client);
+
+        new AccountBuilder() //
+                        .deposit_("2022-01-01", 1000_00)
+                        .interest("2022-12-24", 10_00)
+                        .interest("2022-12-25", 32_50, 7_50)
+                        .assign(taxonomy, "test", Classification.ONE_HUNDRED_PERCENT / 5)
+                        .addTo(client);
+
+        Classification testClassification = taxonomy.getClassificationById("test");
+        Interval repInterval = Interval.of(LocalDate.parse("2021-12-31"), LocalDate.parse("2022-12-31"));
+        PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(),
+                        testClassification, repInterval, new ArrayList<>());
+
+        long totals[] = index.getTotals();
+        assertThat(totals[totals.length - 9], is(200_00L));
+        assertThat(totals[totals.length - 8], is(202_00L));
+        assertThat(totals[totals.length - 7], is(208_50L));
+        assertThat(totals[totals.length - 1], is(208_50L));
+
+        long interest[] = index.getInterest();
+        assertThat(interest[interest.length - 8], is(2_00L));
+        assertThat(interest[interest.length - 7], is(8_00L));
+
+        long taxes[] = index.getTaxes();
+        assertThat(taxes[taxes.length - 8], is(0L));
+        assertThat(taxes[taxes.length - 7], is(0L));
+    }
 }
