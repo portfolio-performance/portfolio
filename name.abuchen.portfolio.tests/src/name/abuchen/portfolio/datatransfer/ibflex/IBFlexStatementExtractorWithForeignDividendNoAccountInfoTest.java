@@ -154,6 +154,7 @@ public class IBFlexStatementExtractorWithForeignDividendNoAccountInfoTest
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
         File tempFile = File.createTempFile("iBFlexStatementExtractorTest", null);
+        tempFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream(tempFile);
 
         IOUtils.copy(input, fos);
