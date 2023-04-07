@@ -2,7 +2,6 @@ package name.abuchen.portfolio.model;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
@@ -43,53 +42,6 @@ public class AccountTransaction extends Transaction
         public String toString()
         {
             return RESOURCES.getString("account." + name()); //$NON-NLS-1$
-        }
-    }
-
-    public static class AccountTransactionBuilder
-    {
-        private Type txType;
-        private LocalDateTime dateTime;
-        private String currencyCode;
-        private long amount;
-        private Security security;
-
-        public AccountTransactionBuilder(Type txType)
-        {
-            this.txType = txType;
-        }
-
-        public AccountTransactionBuilder transactionAt(LocalDateTime dateTime)
-        {
-            this.dateTime = dateTime;
-            return this;
-        }
-
-        public AccountTransactionBuilder withCurrency(String currencyCode)
-        {
-            this.currencyCode = currencyCode;
-            return this;
-        }
-
-        public AccountTransactionBuilder withAmountOf(long amount)
-        {
-            this.amount = amount;
-            return this;
-        }
-
-        public AccountTransactionBuilder forSecurity(Security security)
-        {
-            this.security = security;
-            return this;
-        }
-
-        public AccountTransaction build()
-        {
-            Objects.requireNonNull(dateTime, "dateTime is a required field"); //$NON-NLS-1$
-            Objects.requireNonNull(currencyCode, "currencyCode is a required field"); //$NON-NLS-1$
-            Objects.requireNonNull(amount, "amount is a required field"); //$NON-NLS-1$
-            Objects.requireNonNull(security, "security is a required field"); //$NON-NLS-1$
-            return new AccountTransaction(dateTime, currencyCode, amount, security, txType);
         }
     }
 
