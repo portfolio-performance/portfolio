@@ -138,9 +138,9 @@ public final class DataSeries implements Adaptable
 
         buf.append(label);
 
-        if (instance instanceof Classification)
+        if (instance instanceof Classification classification)
         {
-            Classification parent = ((Classification) instance).getParent();
+            Classification parent = classification.getParent();
 
             if (parent.getParent() != null)
                 buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$

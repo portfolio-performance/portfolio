@@ -249,13 +249,9 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 if (element instanceof ClientPerformanceSnapshot.Category cat)
-                {
                     return cat.getLabel();
-                }
                 else if (element instanceof ClientPerformanceSnapshot.Position pos)
-                {
                     return pos.getLabel();
-                }
                 return null;
             }
 
@@ -308,13 +304,9 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 if (element instanceof ClientPerformanceSnapshot.Category cat)
-                {
                     return Values.Money.format(cat.getValuation(), getClient().getBaseCurrency());
-                }
                 else if (element instanceof ClientPerformanceSnapshot.Position pos)
-                {
                     return Values.Money.format(pos.getValue(), getClient().getBaseCurrency());
-                }
                 return null;
             }
 
@@ -346,9 +338,7 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 if (element instanceof ClientPerformanceSnapshot.Position pos)
-                {
                     return Values.Money.formatNonZero(pos.getForexGain(), getClient().getBaseCurrency());
-                }
                 return null;
             }
 
@@ -375,8 +365,7 @@ public class PerformanceView extends AbstractHistoricView
         calculation.addSelectionChangedListener(event -> {
             Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
             setInformationPaneInput(selection);
-            if (selection instanceof ClientPerformanceSnapshot.Position
-                            && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
+            if (selection instanceof ClientPerformanceSnapshot.Position position && position.getSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getClient(),
                                 ((ClientPerformanceSnapshot.Position) selection).getSecurity()));
         });
@@ -494,7 +483,7 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
-                return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
+                return t instanceof AccountTransaction at ? at.getType().toString()
                                 : ((PortfolioTransaction) t).getType().toString();
             }
 
@@ -506,7 +495,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
-            return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
+            return t instanceof AccountTransaction at ? at.getType().toString()
                             : ((PortfolioTransaction) t).getType().toString();
         }));
         support.addColumn(column);
@@ -736,7 +725,7 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
 
             TransactionOwner<?> other = crossEntry.getCrossOwner(pair.getTransaction());
-            return other instanceof Account ? ((Account) other) : null;
+            return other instanceof Account account ? account : null;
         };
 
         column.setLabelProvider(new ColumnLabelProvider()
@@ -909,9 +898,9 @@ public class PerformanceView extends AbstractHistoricView
                 this.snapshot = null;
                 this.categories = new ClientPerformanceSnapshot.Category[0];
             }
-            else if (newInput instanceof ClientPerformanceSnapshot)
+            else if (newInput instanceof ClientPerformanceSnapshot s)
             {
-                this.snapshot = (ClientPerformanceSnapshot) newInput;
+                this.snapshot = s;
                 this.categories = snapshot.getCategories().toArray(new ClientPerformanceSnapshot.Category[0]);
             }
             else
@@ -929,9 +918,8 @@ public class PerformanceView extends AbstractHistoricView
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            if (parentElement instanceof ClientPerformanceSnapshot.Category)
-                return ((ClientPerformanceSnapshot.Category) parentElement).getPositions()
-                                .toArray(new ClientPerformanceSnapshot.Position[0]);
+            if (parentElement instanceof ClientPerformanceSnapshot.Category category)
+                return category.getPositions().toArray(new ClientPerformanceSnapshot.Position[0]);
             return new Object[0];
         }
 
@@ -953,8 +941,7 @@ public class PerformanceView extends AbstractHistoricView
         @Override
         public boolean hasChildren(Object element)
         {
-            return element instanceof ClientPerformanceSnapshot.Category
-                            && !((ClientPerformanceSnapshot.Category) element).getPositions().isEmpty();
+            return element instanceof ClientPerformanceSnapshot.Category category && !category.getPositions().isEmpty();
         }
 
         @Override

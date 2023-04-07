@@ -56,8 +56,8 @@ public class DataSeriesSelectionDialog extends Dialog
         @Override
         public Object[] getElements(Object inputElement)
         {
-            if (inputElement instanceof Node[])
-                return (Node[]) inputElement;
+            if (inputElement instanceof Node[] nodeArray)
+                return nodeArray;
             return new Object[0];
         }
 

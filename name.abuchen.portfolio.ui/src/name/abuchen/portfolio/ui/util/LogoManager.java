@@ -75,8 +75,8 @@ public final class LogoManager
     {
         if (object instanceof Account)
             return Images.ACCOUNT.image();
-        else if (object instanceof Security)
-            return ((Security) object).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+        else if (object instanceof Security security)
+            return security.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
         else if (object instanceof Portfolio)
             return Images.PORTFOLIO.image();
         else if (object instanceof InvestmentPlan)

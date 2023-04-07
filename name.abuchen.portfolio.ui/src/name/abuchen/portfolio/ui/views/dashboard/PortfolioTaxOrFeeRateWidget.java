@@ -69,9 +69,9 @@ public class PortfolioTaxOrFeeRateWidget extends AbstractIndicatorWidget<Object>
             this.indicator.setText(!rate.isInfinite() ? Values.Percent2.format(rate) : "-"); //$NON-NLS-1$
             this.toolTip = defaultToolTip;
         }
-        else if (rateOrValue instanceof Money)
+        else if (rateOrValue instanceof Money money)
         {
-            this.indicator.setText(Values.Money.format((Money) rateOrValue) + "*"); //$NON-NLS-1$
+            this.indicator.setText(Values.Money.format(money) + "*"); //$NON-NLS-1$
             this.toolTip = defaultToolTip + "\n\n* " + Messages.LabelPortfolioRateNotAvailable; //$NON-NLS-1$
         }
     }

@@ -55,11 +55,11 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
             for (IAxis axis : chart.getAxisSet().getAxes())
                 axis.getGrid().setForeground(newColor);
         }
-        else if (chart instanceof ScatterChart && HIGHLIGHT_COLOR.equalsIgnoreCase(property)
+        else if (chart instanceof ScatterChart scatterChart && HIGHLIGHT_COLOR.equalsIgnoreCase(property)
                         && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
         {
             Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
-            ((ScatterChart) chart).setHighlightColor(newColor);
+            scatterChart.setHighlightColor(newColor);
         }
         else if (BACKGROUND_COLOR.equalsIgnoreCase(property)
                         && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
@@ -94,10 +94,10 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
             return cssValueConverter.convert(chart.getAxisSet().getAxes()[0].getGrid().getForeground(), engine, null);
         }
-        else if (HIGHLIGHT_COLOR.equalsIgnoreCase(property) && chart instanceof ScatterChart)
+        else if (HIGHLIGHT_COLOR.equalsIgnoreCase(property) && chart instanceof ScatterChart scatterChart)
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
-            return cssValueConverter.convert(((ScatterChart) chart).getHighlightColor(), engine, null);
+            return cssValueConverter.convert(scatterChart.getHighlightColor(), engine, null);
         }
         else if (BACKGROUND_COLOR.equalsIgnoreCase(property))
         {

@@ -293,8 +293,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             setCommonParameters(column, col, direction);
 
-            if (labelProvider instanceof CellItemImageClickedListener)
-                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
+            if (labelProvider instanceof CellItemImageClickedListener listener)
+                setupImageClickedListener(col, listener);
 
             return tableColumn;
         }
@@ -457,8 +457,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             setCommonParameters(column, col, direction);
 
-            if (labelProvider instanceof CellItemImageClickedListener)
-                setupImageClickedListener(col, (CellItemImageClickedListener) labelProvider);
+            if (labelProvider instanceof CellItemImageClickedListener listener)
+                setupImageClickedListener(col, listener);
 
             return treeColumn;
         }

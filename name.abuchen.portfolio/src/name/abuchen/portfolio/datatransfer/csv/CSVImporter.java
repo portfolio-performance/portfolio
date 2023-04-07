@@ -146,10 +146,10 @@ public final class CSVImporter
 
         public String toPattern()
         {
-            if (format instanceof SimpleDateFormat)
-                return ((SimpleDateFormat) format).toPattern();
-            else if (format instanceof DecimalFormat)
-                return ((DecimalFormat) format).toPattern();
+            if (format instanceof SimpleDateFormat dateFormat)
+                return dateFormat.toPattern();
+            else if (format instanceof DecimalFormat decimalFormat)
+                return decimalFormat.toPattern();
             else if (format instanceof ISINFormat)
                 return Isin.PATTERN;
             else if (format instanceof EnumMapFormat)

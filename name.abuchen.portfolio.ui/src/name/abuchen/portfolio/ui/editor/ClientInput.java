@@ -633,11 +633,11 @@ public class ClientInput
             {
                 for (Job j : regularJobs)
                 {
-                    if (j instanceof AutoSaveJob)
+                    if (j instanceof AutoSaveJob job)
                     {
-                        ((AutoSaveJob) j).setDelay(getAutoSavePrefs());
-                        ((AutoSaveJob) j).schedule(getAutoSavePrefs());
-                        ((AutoSaveJob) j).wakeUp(getAutoSavePrefs());
+                        job.setDelay(getAutoSavePrefs());
+                        job.schedule(getAutoSavePrefs());
+                        job.wakeUp(getAutoSavePrefs());
                     }
                 }
             }

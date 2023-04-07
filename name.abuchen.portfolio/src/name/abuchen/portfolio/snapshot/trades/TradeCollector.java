@@ -254,8 +254,8 @@ public class TradeCollector
     private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate,
                     Portfolio newOwner, double weight)
     {
-        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry)
-            return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), newOwner, weight);
+        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
+            return splitBuySell(entry, newOwner, weight);
         else if (candidate.getTransaction() instanceof PortfolioTransaction)
             return splitPortfolioTransaction((Portfolio) candidate.getOwner(), candidate.getTransaction(), weight);
         else

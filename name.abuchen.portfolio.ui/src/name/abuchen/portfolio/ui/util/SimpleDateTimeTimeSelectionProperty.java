@@ -60,14 +60,13 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty<Con
         {
             dateTime.setTime(date.getHour(), date.getMinute(), date.getSecond());
         }
-        else if (source instanceof CDateTime)
+        else if (source instanceof CDateTime dateTime)
         {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, date.getHour());
             calendar.set(Calendar.MINUTE, date.getMinute());
             calendar.set(Calendar.SECOND, 0);
 
-            CDateTime dateTime = (CDateTime) source;
             dateTime.setSelection(calendar.getTime());
         }
         else

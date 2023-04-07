@@ -157,8 +157,8 @@ public final class EODHistoricalDataQuoteFeed implements QuoteFeed
         if (number == null)
             return LatestSecurityPrice.NOT_AVAILABLE;
 
-        if (number instanceof Number)
-            return Values.Quote.factorize(((Number) number).doubleValue());
+        if (number instanceof Number n)
+            return Values.Quote.factorize(n.doubleValue());
 
         throw new IllegalArgumentException(number.getClass().toString());
     }
@@ -168,8 +168,8 @@ public final class EODHistoricalDataQuoteFeed implements QuoteFeed
         if (number == null)
             return LatestSecurityPrice.NOT_AVAILABLE;
 
-        if (number instanceof Number)
-            return ((Number) number).longValue();
+        if (number instanceof Number n)
+            return n.longValue();
 
         throw new IllegalArgumentException(number.getClass().toString());
     }

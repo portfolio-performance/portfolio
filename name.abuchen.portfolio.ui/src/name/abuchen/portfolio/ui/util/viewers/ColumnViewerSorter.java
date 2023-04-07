@@ -286,10 +286,10 @@ public final class ColumnViewerSorter
 
             Widget widget;
 
-            if (viewerColumn instanceof TableViewerColumn)
-                widget = ((TableViewerColumn) viewerColumn).getColumn();
-            else if (viewerColumn instanceof TreeViewerColumn)
-                widget = ((TreeViewerColumn) viewerColumn).getColumn();
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
+                widget = tableViewerColumn.getColumn();
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
+                widget = treeViewerColumn.getColumn();
             else
                 throw new UnsupportedOperationException();
 
@@ -302,15 +302,15 @@ public final class ColumnViewerSorter
 
             boolean columnIsCurrentlySorted;
 
-            if (viewerColumn instanceof TableViewerColumn)
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
             {
-                columnIsCurrentlySorted = ((TableViewer) columnViewer).getTable()
-                                .getSortColumn() == ((TableViewerColumn) viewerColumn).getColumn();
+                columnIsCurrentlySorted = ((TableViewer) columnViewer).getTable().getSortColumn() == tableViewerColumn
+                                .getColumn();
             }
-            else if (viewerColumn instanceof TreeViewerColumn)
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
             {
-                columnIsCurrentlySorted = ((TreeViewer) columnViewer).getTree()
-                                .getSortColumn() == ((TreeViewerColumn) viewerColumn).getColumn();
+                columnIsCurrentlySorted = ((TreeViewer) columnViewer).getTree().getSortColumn() == treeViewerColumn
+                                .getColumn();
             }
             else
             {
@@ -327,15 +327,15 @@ public final class ColumnViewerSorter
         {
             this.direction = direction;
 
-            if (viewerColumn instanceof TableViewerColumn)
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
             {
-                TableColumn c = ((TableViewerColumn) viewerColumn).getColumn();
+                TableColumn c = tableViewerColumn.getColumn();
                 c.getParent().setSortColumn(c);
                 c.getParent().setSortDirection(direction);
             }
-            else if (viewerColumn instanceof TreeViewerColumn)
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
             {
-                TreeColumn c = ((TreeViewerColumn) viewerColumn).getColumn();
+                TreeColumn c = treeViewerColumn.getColumn();
                 c.getParent().setSortColumn(c);
                 c.getParent().setSortDirection(direction);
             }
@@ -375,10 +375,10 @@ public final class ColumnViewerSorter
             SortingContext.setSortDirection(direction);
 
             Object option = null;
-            if (viewerColumn instanceof TableViewerColumn)
-                option = ((TableViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
-            else if (viewerColumn instanceof TreeViewerColumn)
-                option = ((TreeViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
+                option = tableViewerColumn.getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
+                option = treeViewerColumn.getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
             SortingContext.setOption(option);
         }
     }

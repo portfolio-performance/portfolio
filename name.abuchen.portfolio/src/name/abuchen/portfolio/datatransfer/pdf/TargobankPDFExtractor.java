@@ -475,17 +475,17 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                     AccountTransaction taxTransaction = null;
 
                     // Which transaction is the taxes and which the sell?
-                    if (transactions.get(0).getSubject() instanceof BuySellEntry
-                                    && transactions.get(1).getSubject() instanceof AccountTransaction)
+                    if (transactions.get(0).getSubject() instanceof BuySellEntry entry
+                                    && transactions.get(1).getSubject() instanceof AccountTransaction tx)
                     {
-                        sellTransaction = (BuySellEntry) transactions.get(0).getSubject();
-                        taxTransaction = (AccountTransaction) transactions.get(1).getSubject();
+                        sellTransaction = entry;
+                        taxTransaction = tx;
                     }
-                    else if (transactions.get(1).getSubject() instanceof BuySellEntry
-                                    && transactions.get(0).getSubject() instanceof AccountTransaction)
-                    {
-                        sellTransaction = (BuySellEntry) transactions.get(1).getSubject();
-                        taxTransaction = (AccountTransaction) transactions.get(0).getSubject();
+                    else if (transactions.get(1).getSubject() instanceof BuySellEntry entry
+                                    && transactions.get(0).getSubject() instanceof AccountTransaction tx)
+                    { // NOSONAR
+                        sellTransaction = entry;
+                        taxTransaction = tx;
                     }
 
                     // Check if there is a sell transaction and a tax

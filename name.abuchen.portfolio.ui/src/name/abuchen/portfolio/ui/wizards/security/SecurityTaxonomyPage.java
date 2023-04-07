@@ -273,8 +273,8 @@ public class SecurityTaxonomyPage extends AbstractPage
         // invalid bindings and error messages
         for (ValidationStatusProvider validator : validators)
         {
-            if (validator instanceof Binding)
-                bindings.getBindingContext().removeBinding((Binding) validator);
+            if (validator instanceof Binding binding)
+                bindings.getBindingContext().removeBinding(binding);
             else
                 bindings.getBindingContext().removeValidationStatusProvider(validator);
         }

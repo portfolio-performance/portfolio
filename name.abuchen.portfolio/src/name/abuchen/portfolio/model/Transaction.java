@@ -186,9 +186,9 @@ public abstract class Transaction implements Annotated, Adaptable
             if (compareTo != 0)
                 return compareTo;
 
-            if (t1 instanceof AccountTransaction && t2 instanceof AccountTransaction)
+            if (t1 instanceof AccountTransaction at1 && t2 instanceof AccountTransaction at2)
             {
-                compareTo = ((AccountTransaction) t1).getType().compareTo(((AccountTransaction) t2).getType());
+                compareTo = at1.getType().compareTo(at2.getType());
                 if (compareTo != 0)
                     return compareTo;
             }

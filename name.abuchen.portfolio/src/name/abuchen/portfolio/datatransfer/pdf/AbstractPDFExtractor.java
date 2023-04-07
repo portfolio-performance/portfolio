@@ -33,7 +33,7 @@ import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    protected final static String FAILURE = "FAILURE"; //$NON-NLS-1$
+    protected static final String FAILURE = "FAILURE"; //$NON-NLS-1$
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
@@ -110,10 +110,10 @@ public abstract class AbstractPDFExtractor implements Extractor
             {
                 Annotated subject = item.getSubject();
 
-                if (subject instanceof Transaction)
-                    ((Transaction) subject).setSource(filename);
-                else if (subject instanceof CrossEntry)
-                    ((CrossEntry) subject).setSource(filename);
+                if (subject instanceof Transaction tx)
+                    tx.setSource(filename);
+                else if (subject instanceof CrossEntry entry)
+                    entry.setSource(filename);
                 else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else

@@ -205,11 +205,10 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
         for (Transaction t : transactions)
         {
-            if (t instanceof AccountTransaction)
-                answer.add(new TransactionPair<AccountTransaction>(lookupOwner(client, (AccountTransaction) t),
-                                (AccountTransaction) t));
+            if (t instanceof AccountTransaction at)
+                answer.add(new TransactionPair<>(lookupOwner(client, at), at));
             else
-                answer.add(new TransactionPair<PortfolioTransaction>(lookupOwner(client, (PortfolioTransaction) t),
+                answer.add(new TransactionPair<>(lookupOwner(client, (PortfolioTransaction) t),
                                 (PortfolioTransaction) t));
         }
 

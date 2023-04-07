@@ -32,9 +32,9 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty<Con
             // DateTime widget has zero-based months
             return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
         }
-        else if (source instanceof CDateTime)
+        else if (source instanceof CDateTime dateTime)
         {
-            Date date = ((CDateTime) source).getSelection();
+            Date date = dateTime.getSelection();
 
             // CDateTime supports "deleting" the date. The 'delete' button
             // cannot be removed. PP always needs a date, however. Therefore the

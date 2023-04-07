@@ -112,8 +112,8 @@ public class TransactionCurrencyCheck implements Check
         @Override
         public String getLabel()
         {
-            String type = pair.getTransaction() instanceof AccountTransaction ? ((AccountTransaction) pair
-                            .getTransaction()).getType().toString() : ((PortfolioTransaction) pair.getTransaction())
+            String type = pair.getTransaction() instanceof AccountTransaction at ? at.getType().toString()
+                            : ((PortfolioTransaction) pair.getTransaction())
                             .getType().toString();
             return MessageFormat.format(Messages.IssueTransactionMissingCurrencyCode, type);
         }

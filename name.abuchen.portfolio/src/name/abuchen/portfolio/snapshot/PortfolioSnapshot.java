@@ -121,7 +121,7 @@ public class PortfolioSnapshot
      */
     public Portfolio unwrapPortfolio()
     {
-        return portfolio instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) portfolio).unwrap() : portfolio;
+        return portfolio instanceof ReadOnlyPortfolio readOnly ? readOnly.unwrap() : portfolio;
     }
 
     public CurrencyConverter getCurrencyConverter()

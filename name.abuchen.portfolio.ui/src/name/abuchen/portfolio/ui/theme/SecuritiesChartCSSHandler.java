@@ -15,9 +15,9 @@ public class SecuritiesChartCSSHandler implements ICSSPropertyHandler
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof SecuritiesChartElementAdapter)
+        if (element instanceof SecuritiesChartElementAdapter adapter)
         {
-            SecuritiesChart chart = ((SecuritiesChartElementAdapter) element).getSecuritiesChart();
+            SecuritiesChart chart = adapter.getSecuritiesChart();
 
             switch (property)
             {

@@ -994,7 +994,7 @@ public class ClientFactory
 
         for (Object element : category.getElements())
         {
-            Assignment assignment = element instanceof Account ? new Assignment((Account) element)
+            Assignment assignment = element instanceof Account account ? new Assignment(account)
                             : new Assignment((Security) element);
             assignment.setRank(rank++);
 
@@ -1239,8 +1239,8 @@ public class ClientFactory
             for (AttributeType t : typesWithQuotes)
             {
                 Object value = attributes.get(t);
-                if (value instanceof Long)
-                    attributes.put(t, ((Long) value).longValue() * decimalPlacesAdded);
+                if (value instanceof Long l)
+                    attributes.put(t, l.longValue() * decimalPlacesAdded);
             }
         });
     }
