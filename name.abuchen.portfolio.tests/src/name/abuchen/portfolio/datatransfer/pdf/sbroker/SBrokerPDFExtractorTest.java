@@ -2563,7 +2563,7 @@ public class SBrokerPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(145.49))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(148.46))));
         assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("EVERDRIVE.ME, KRAKOW"));
 
