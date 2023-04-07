@@ -273,7 +273,7 @@ import name.abuchen.portfolio.util.Dates;
      * 
      * @param years
      *            between first and last dividend payments
-     * @return
+     * @return yield from 0.0 to 1.0
      */
     double calculateYieldOnCost(int years, LocalDate now)
     {
@@ -298,7 +298,7 @@ import name.abuchen.portfolio.util.Dates;
                             .sum() //
                             : sum.getAmount() * Values.AmountFraction.factor() / years;
 
-            return diviSum * 100.0 / fifoCosts;
+            return diviSum / fifoCosts;
         }
         return 0.0;
     }

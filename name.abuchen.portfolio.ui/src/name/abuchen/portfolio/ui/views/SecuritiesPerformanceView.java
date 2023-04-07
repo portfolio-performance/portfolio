@@ -897,7 +897,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             @Override
             public String getText(Object r)
             {
-                return Values.PercentPlain2.formatNonZero(((SecurityPerformanceRecord) r).getDividendYieldOnCost());
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getDividendYieldOnCost());
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dividendYieldOnCost")); //$NON-NLS-1$

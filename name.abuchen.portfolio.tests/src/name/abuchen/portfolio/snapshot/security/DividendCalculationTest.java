@@ -262,7 +262,7 @@ public class DividendCalculationTest
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, noConvertsNeeded, apple,
                         transactions);
 
-        assertEquals(2.0, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
+        assertEquals(0.02, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class DividendCalculationTest
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, noConvertsNeeded, apple,
                         transactions);
 
-        assertEquals(1.25, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
+        assertEquals(0.0125, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
     }
 
     @Test
@@ -332,7 +332,7 @@ public class DividendCalculationTest
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, noConvertsNeeded, apple,
                         transactions);
 
-        assertEquals(2.0, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
+        assertEquals(0.02, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
     }
 
     @Test
@@ -373,7 +373,7 @@ public class DividendCalculationTest
                         transactions);
 
         // only last 2 divi payments will be used by calculation
-        assertEquals(3.5, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
+        assertEquals(0.035, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
     }
 
     @Test
@@ -422,7 +422,7 @@ public class DividendCalculationTest
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, noConvertsNeeded, apple,
                         transactions);
 
-        assertEquals(2.0, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
+        assertEquals(0.02, dividends.calculateYieldOnCost(2, LocalDate.of(2023, 3, 30)), 0.0);
     }
 
 }

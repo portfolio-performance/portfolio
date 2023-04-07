@@ -760,8 +760,7 @@ public class StatementOfAssetsViewer
             @Override
             public Object apply(SecurityPerformanceRecord t)
             {
-                return t.getDividendYieldOnCost() / 100.0;// labelProvider do
-                                                          // *100% magic
+                return t.getDividendYieldOnCost();
             }
         };
         labelProvider = new ReportingPeriodLabelProvider(valueProvider, null, false);
