@@ -99,5 +99,5 @@ public interface PAnyValueOrBuilder extends
    */
   name.abuchen.portfolio.model.proto.v1.PMapOrBuilder getMapOrBuilder();
 
-  public name.abuchen.portfolio.model.proto.v1.PAnyValue.KindCase getKindCase();
+  name.abuchen.portfolio.model.proto.v1.PAnyValue.KindCase getKindCase();
 }

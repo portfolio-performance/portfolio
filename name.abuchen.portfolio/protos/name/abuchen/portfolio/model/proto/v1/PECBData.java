@@ -26,66 +26,6 @@ private static final long serialVersionUID = 0L;
     return new PECBData();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
-  private PECBData(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 8: {
-
-            lastModified_ = input.readInt64();
-            break;
-          }
-          case 18: {
-            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              series_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries>();
-              mutable_bitField0_ |= 0x00000001;
-            }
-            series_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries.parser(), extensionRegistry));
-            break;
-          }
-          default: {
-            if (!parseUnknownField(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      if (((mutable_bitField0_ & 0x00000001) != 0)) {
-        series_ = java.util.Collections.unmodifiableList(series_);
-      }
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PECBData_descriptor;
@@ -100,7 +40,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LASTMODIFIED_FIELD_NUMBER = 1;
-  private long lastModified_;
+  private long lastModified_ = 0L;
   /**
    * <code>int64 lastModified = 1;</code>
    * @return The lastModified.
@@ -111,6 +51,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SERIES_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries> series_;
   /**
    * <code>repeated .name.abuchen.portfolio.PExchangeRateTimeSeries series = 2;</code>
@@ -170,7 +111,7 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < series_.size(); i++) {
       output.writeMessage(2, series_.get(i));
     }
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -187,7 +128,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, series_.get(i));
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -206,7 +147,7 @@ private static final long serialVersionUID = 0L;
         != other.getLastModified()) return false;
     if (!getSeriesList()
         .equals(other.getSeriesList())) return false;
-    if (!unknownFields.equals(other.unknownFields)) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
 
@@ -224,7 +165,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + SERIES_FIELD_NUMBER;
       hash = (53 * hash) + getSeriesList().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -341,31 +282,26 @@ private static final long serialVersionUID = 0L;
 
     // Construct using name.abuchen.portfolio.model.proto.v1.PECBData.newBuilder()
     private Builder() {
-      maybeForceBuilderInitialization();
+
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-      maybeForceBuilderInitialization();
-    }
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3
-              .alwaysUseFieldBuilders) {
-        getSeriesFieldBuilder();
-      }
+
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       lastModified_ = 0L;
-
       if (seriesBuilder_ == null) {
         series_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
       } else {
+        series_ = null;
         seriesBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000002);
       return this;
     }
 
@@ -392,53 +328,31 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PECBData buildPartial() {
       name.abuchen.portfolio.model.proto.v1.PECBData result = new name.abuchen.portfolio.model.proto.v1.PECBData(this);
-      int from_bitField0_ = bitField0_;
-      result.lastModified_ = lastModified_;
+      buildPartialRepeatedFields(result);
+      if (bitField0_ != 0) { buildPartial0(result); }
+      onBuilt();
+      return result;
+    }
+
+    private void buildPartialRepeatedFields(name.abuchen.portfolio.model.proto.v1.PECBData result) {
       if (seriesBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           series_ = java.util.Collections.unmodifiableList(series_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.series_ = series_;
       } else {
         result.series_ = seriesBuilder_.build();
       }
-      onBuilt();
-      return result;
     }
 
-    @java.lang.Override
-    public Builder clone() {
-      return super.clone();
+    private void buildPartial0(name.abuchen.portfolio.model.proto.v1.PECBData result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.lastModified_ = lastModified_;
+      }
     }
-    @java.lang.Override
-    public Builder setField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.setField(field, value);
-    }
-    @java.lang.Override
-    public Builder clearField(
-        com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return super.clearField(field);
-    }
-    @java.lang.Override
-    public Builder clearOneof(
-        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return super.clearOneof(oneof);
-    }
-    @java.lang.Override
-    public Builder setRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
-      return super.setRepeatedField(field, index, value);
-    }
-    @java.lang.Override
-    public Builder addRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.addRepeatedField(field, value);
-    }
+
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof name.abuchen.portfolio.model.proto.v1.PECBData) {
@@ -458,7 +372,7 @@ private static final long serialVersionUID = 0L;
         if (!other.series_.isEmpty()) {
           if (series_.isEmpty()) {
             series_ = other.series_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureSeriesIsMutable();
             series_.addAll(other.series_);
@@ -471,7 +385,7 @@ private static final long serialVersionUID = 0L;
             seriesBuilder_.dispose();
             seriesBuilder_ = null;
             series_ = other.series_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
             seriesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getSeriesFieldBuilder() : null;
@@ -480,7 +394,7 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
-      this.mergeUnknownFields(other.unknownFields);
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -495,17 +409,48 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      name.abuchen.portfolio.model.proto.v1.PECBData parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              lastModified_ = input.readInt64();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 8
+            case 18: {
+              name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries.parser(),
+                      extensionRegistry);
+              if (seriesBuilder_ == null) {
+                ensureSeriesIsMutable();
+                series_.add(m);
+              } else {
+                seriesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 18
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (name.abuchen.portfolio.model.proto.v1.PECBData) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -525,8 +470,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setLastModified(long value) {
-      
+
       lastModified_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -535,7 +481,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearLastModified() {
-      
+      bitField0_ = (bitField0_ & ~0x00000001);
       lastModified_ = 0L;
       onChanged();
       return this;
@@ -544,9 +490,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries> series_ =
       java.util.Collections.emptyList();
     private void ensureSeriesIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
+      if (!((bitField0_ & 0x00000002) != 0)) {
         series_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries>(series_);
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
        }
     }
 
@@ -696,7 +642,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearSeries() {
       if (seriesBuilder_ == null) {
         series_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         seriesBuilder_.clear();
@@ -773,7 +719,7 @@ private static final long serialVersionUID = 0L;
         seriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries, name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeries.Builder, name.abuchen.portfolio.model.proto.v1.PExchangeRateTimeSeriesOrBuilder>(
                 series_,
-                ((bitField0_ & 0x00000001) != 0),
+                ((bitField0_ & 0x00000002) != 0),
                 getParentForChildren(),
                 isClean());
         series_ = null;
@@ -813,7 +759,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PECBData(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 

@@ -22,7 +22,8 @@ private static final long serialVersionUID = 0L;
     portfolio_ = "";
     account_ = "";
     attributes_ = java.util.Collections.emptyList();
-    transactions_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    transactions_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
   }
 
   @java.lang.Override
@@ -32,128 +33,6 @@ private static final long serialVersionUID = 0L;
     return new PInvestmentPlan();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
-  private PInvestmentPlan(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            name_ = s;
-            break;
-          }
-          case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000001;
-            note_ = s;
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000002;
-            security_ = s;
-            break;
-          }
-          case 34: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000004;
-            portfolio_ = s;
-            break;
-          }
-          case 42: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000008;
-            account_ = s;
-            break;
-          }
-          case 50: {
-            if (!((mutable_bitField0_ & 0x00000010) != 0)) {
-              attributes_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>();
-              mutable_bitField0_ |= 0x00000010;
-            }
-            attributes_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(), extensionRegistry));
-            break;
-          }
-          case 56: {
-
-            autoGenerate_ = input.readBool();
-            break;
-          }
-          case 64: {
-
-            date_ = input.readInt64();
-            break;
-          }
-          case 72: {
-
-            interval_ = input.readInt32();
-            break;
-          }
-          case 80: {
-
-            amount_ = input.readInt64();
-            break;
-          }
-          case 88: {
-
-            fees_ = input.readInt64();
-            break;
-          }
-          case 98: {
-            java.lang.String s = input.readStringRequireUtf8();
-            if (!((mutable_bitField0_ & 0x00000020) != 0)) {
-              transactions_ = new com.google.protobuf.LazyStringArrayList();
-              mutable_bitField0_ |= 0x00000020;
-            }
-            transactions_.add(s);
-            break;
-          }
-          default: {
-            if (!parseUnknownField(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      if (((mutable_bitField0_ & 0x00000010) != 0)) {
-        attributes_ = java.util.Collections.unmodifiableList(attributes_);
-      }
-      if (((mutable_bitField0_ & 0x00000020) != 0)) {
-        transactions_ = transactions_.getUnmodifiableView();
-      }
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PInvestmentPlan_descriptor;
@@ -169,7 +48,8 @@ private static final long serialVersionUID = 0L;
 
   private int bitField0_;
   public static final int NAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object name_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
   /**
    * <code>string name = 1;</code>
    * @return The name.
@@ -207,7 +87,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int NOTE_FIELD_NUMBER = 2;
-  private volatile java.lang.Object note_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object note_ = "";
   /**
    * <code>optional string note = 2;</code>
    * @return Whether the note field is set.
@@ -253,7 +134,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SECURITY_FIELD_NUMBER = 3;
-  private volatile java.lang.Object security_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object security_ = "";
   /**
    * <code>optional string security = 3;</code>
    * @return Whether the security field is set.
@@ -299,7 +181,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PORTFOLIO_FIELD_NUMBER = 4;
-  private volatile java.lang.Object portfolio_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object portfolio_ = "";
   /**
    * <code>optional string portfolio = 4;</code>
    * @return Whether the portfolio field is set.
@@ -345,7 +228,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ACCOUNT_FIELD_NUMBER = 5;
-  private volatile java.lang.Object account_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object account_ = "";
   /**
    * <code>optional string account = 5;</code>
    * @return Whether the account field is set.
@@ -391,6 +275,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ATTRIBUTES_FIELD_NUMBER = 6;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> attributes_;
   /**
    * <code>repeated .name.abuchen.portfolio.PKeyValue attributes = 6;</code>
@@ -431,7 +316,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int AUTOGENERATE_FIELD_NUMBER = 7;
-  private boolean autoGenerate_;
+  private boolean autoGenerate_ = false;
   /**
    * <code>bool autoGenerate = 7;</code>
    * @return The autoGenerate.
@@ -442,7 +327,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DATE_FIELD_NUMBER = 8;
-  private long date_;
+  private long date_ = 0L;
   /**
    * <code>int64 date = 8;</code>
    * @return The date.
@@ -453,7 +338,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int INTERVAL_FIELD_NUMBER = 9;
-  private int interval_;
+  private int interval_ = 0;
   /**
    * <code>int32 interval = 9;</code>
    * @return The interval.
@@ -464,7 +349,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int AMOUNT_FIELD_NUMBER = 10;
-  private long amount_;
+  private long amount_ = 0L;
   /**
    * <code>int64 amount = 10;</code>
    * @return The amount.
@@ -475,7 +360,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FEES_FIELD_NUMBER = 11;
-  private long fees_;
+  private long fees_ = 0L;
   /**
    * <code>int64 fees = 11;</code>
    * @return The fees.
@@ -486,7 +371,9 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TRANSACTIONS_FIELD_NUMBER = 12;
-  private com.google.protobuf.LazyStringList transactions_;
+  @SuppressWarnings("serial")
+  private com.google.protobuf.LazyStringArrayList transactions_ =
+      com.google.protobuf.LazyStringArrayList.emptyList();
   /**
    * <pre>
    * uuids
@@ -550,7 +437,7 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getNameBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
@@ -586,7 +473,7 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < transactions_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, transactions_.getRaw(i));
     }
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -595,7 +482,7 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getNameBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
@@ -642,7 +529,7 @@ private static final long serialVersionUID = 0L;
       size += dataSize;
       size += 1 * getTransactionsList().size();
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -693,7 +580,7 @@ private static final long serialVersionUID = 0L;
         != other.getFees()) return false;
     if (!getTransactionsList()
         .equals(other.getTransactionsList())) return false;
-    if (!unknownFields.equals(other.unknownFields)) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
 
@@ -744,7 +631,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + TRANSACTIONS_FIELD_NUMBER;
       hash = (53 * hash) + getTransactionsList().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -861,51 +748,37 @@ private static final long serialVersionUID = 0L;
 
     // Construct using name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.newBuilder()
     private Builder() {
-      maybeForceBuilderInitialization();
+
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-      maybeForceBuilderInitialization();
-    }
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3
-              .alwaysUseFieldBuilders) {
-        getAttributesFieldBuilder();
-      }
+
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       name_ = "";
-
       note_ = "";
-      bitField0_ = (bitField0_ & ~0x00000001);
       security_ = "";
-      bitField0_ = (bitField0_ & ~0x00000002);
       portfolio_ = "";
-      bitField0_ = (bitField0_ & ~0x00000004);
       account_ = "";
-      bitField0_ = (bitField0_ & ~0x00000008);
       if (attributesBuilder_ == null) {
         attributes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
       } else {
+        attributes_ = null;
         attributesBuilder_.clear();
       }
-      autoGenerate_ = false;
-
-      date_ = 0L;
-
-      interval_ = 0;
-
-      amount_ = 0L;
-
-      fees_ = 0L;
-
-      transactions_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000020);
+      autoGenerate_ = false;
+      date_ = 0L;
+      interval_ = 0;
+      amount_ = 0L;
+      fees_ = 0L;
+      transactions_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       return this;
     }
 
@@ -932,81 +805,68 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PInvestmentPlan buildPartial() {
       name.abuchen.portfolio.model.proto.v1.PInvestmentPlan result = new name.abuchen.portfolio.model.proto.v1.PInvestmentPlan(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
-      result.name_ = name_;
-      if (((from_bitField0_ & 0x00000001) != 0)) {
-        to_bitField0_ |= 0x00000001;
-      }
-      result.note_ = note_;
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        to_bitField0_ |= 0x00000002;
-      }
-      result.security_ = security_;
-      if (((from_bitField0_ & 0x00000004) != 0)) {
-        to_bitField0_ |= 0x00000004;
-      }
-      result.portfolio_ = portfolio_;
-      if (((from_bitField0_ & 0x00000008) != 0)) {
-        to_bitField0_ |= 0x00000008;
-      }
-      result.account_ = account_;
+      buildPartialRepeatedFields(result);
+      if (bitField0_ != 0) { buildPartial0(result); }
+      onBuilt();
+      return result;
+    }
+
+    private void buildPartialRepeatedFields(name.abuchen.portfolio.model.proto.v1.PInvestmentPlan result) {
       if (attributesBuilder_ == null) {
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000020) != 0)) {
           attributes_ = java.util.Collections.unmodifiableList(attributes_);
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.attributes_ = attributes_;
       } else {
         result.attributes_ = attributesBuilder_.build();
       }
-      result.autoGenerate_ = autoGenerate_;
-      result.date_ = date_;
-      result.interval_ = interval_;
-      result.amount_ = amount_;
-      result.fees_ = fees_;
-      if (((bitField0_ & 0x00000020) != 0)) {
-        transactions_ = transactions_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000020);
-      }
-      result.transactions_ = transactions_;
-      result.bitField0_ = to_bitField0_;
-      onBuilt();
-      return result;
     }
 
-    @java.lang.Override
-    public Builder clone() {
-      return super.clone();
+    private void buildPartial0(name.abuchen.portfolio.model.proto.v1.PInvestmentPlan result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.name_ = name_;
+      }
+      int to_bitField0_ = 0;
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.note_ = note_;
+        to_bitField0_ |= 0x00000001;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.security_ = security_;
+        to_bitField0_ |= 0x00000002;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.portfolio_ = portfolio_;
+        to_bitField0_ |= 0x00000004;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.account_ = account_;
+        to_bitField0_ |= 0x00000008;
+      }
+      if (((from_bitField0_ & 0x00000040) != 0)) {
+        result.autoGenerate_ = autoGenerate_;
+      }
+      if (((from_bitField0_ & 0x00000080) != 0)) {
+        result.date_ = date_;
+      }
+      if (((from_bitField0_ & 0x00000100) != 0)) {
+        result.interval_ = interval_;
+      }
+      if (((from_bitField0_ & 0x00000200) != 0)) {
+        result.amount_ = amount_;
+      }
+      if (((from_bitField0_ & 0x00000400) != 0)) {
+        result.fees_ = fees_;
+      }
+      if (((from_bitField0_ & 0x00000800) != 0)) {
+        transactions_.makeImmutable();
+        result.transactions_ = transactions_;
+      }
+      result.bitField0_ |= to_bitField0_;
     }
-    @java.lang.Override
-    public Builder setField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.setField(field, value);
-    }
-    @java.lang.Override
-    public Builder clearField(
-        com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return super.clearField(field);
-    }
-    @java.lang.Override
-    public Builder clearOneof(
-        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return super.clearOneof(oneof);
-    }
-    @java.lang.Override
-    public Builder setRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
-      return super.setRepeatedField(field, index, value);
-    }
-    @java.lang.Override
-    public Builder addRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.addRepeatedField(field, value);
-    }
+
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof name.abuchen.portfolio.model.proto.v1.PInvestmentPlan) {
@@ -1021,33 +881,34 @@ private static final long serialVersionUID = 0L;
       if (other == name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.getDefaultInstance()) return this;
       if (!other.getName().isEmpty()) {
         name_ = other.name_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.hasNote()) {
-        bitField0_ |= 0x00000001;
         note_ = other.note_;
+        bitField0_ |= 0x00000002;
         onChanged();
       }
       if (other.hasSecurity()) {
-        bitField0_ |= 0x00000002;
         security_ = other.security_;
+        bitField0_ |= 0x00000004;
         onChanged();
       }
       if (other.hasPortfolio()) {
-        bitField0_ |= 0x00000004;
         portfolio_ = other.portfolio_;
+        bitField0_ |= 0x00000008;
         onChanged();
       }
       if (other.hasAccount()) {
-        bitField0_ |= 0x00000008;
         account_ = other.account_;
+        bitField0_ |= 0x00000010;
         onChanged();
       }
       if (attributesBuilder_ == null) {
         if (!other.attributes_.isEmpty()) {
           if (attributes_.isEmpty()) {
             attributes_ = other.attributes_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           } else {
             ensureAttributesIsMutable();
             attributes_.addAll(other.attributes_);
@@ -1060,7 +921,7 @@ private static final long serialVersionUID = 0L;
             attributesBuilder_.dispose();
             attributesBuilder_ = null;
             attributes_ = other.attributes_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
             attributesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getAttributesFieldBuilder() : null;
@@ -1087,14 +948,14 @@ private static final long serialVersionUID = 0L;
       if (!other.transactions_.isEmpty()) {
         if (transactions_.isEmpty()) {
           transactions_ = other.transactions_;
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ |= 0x00000800;
         } else {
           ensureTransactionsIsMutable();
           transactions_.addAll(other.transactions_);
         }
         onChanged();
       }
-      this.mergeUnknownFields(other.unknownFields);
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -1109,17 +970,99 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      name.abuchen.portfolio.model.proto.v1.PInvestmentPlan parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              name_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 10
+            case 18: {
+              note_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
+            case 26: {
+              security_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 26
+            case 34: {
+              portfolio_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
+            case 42: {
+              account_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000010;
+              break;
+            } // case 42
+            case 50: {
+              name.abuchen.portfolio.model.proto.v1.PKeyValue m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(),
+                      extensionRegistry);
+              if (attributesBuilder_ == null) {
+                ensureAttributesIsMutable();
+                attributes_.add(m);
+              } else {
+                attributesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 50
+            case 56: {
+              autoGenerate_ = input.readBool();
+              bitField0_ |= 0x00000040;
+              break;
+            } // case 56
+            case 64: {
+              date_ = input.readInt64();
+              bitField0_ |= 0x00000080;
+              break;
+            } // case 64
+            case 72: {
+              interval_ = input.readInt32();
+              bitField0_ |= 0x00000100;
+              break;
+            } // case 72
+            case 80: {
+              amount_ = input.readInt64();
+              bitField0_ |= 0x00000200;
+              break;
+            } // case 80
+            case 88: {
+              fees_ = input.readInt64();
+              bitField0_ |= 0x00000400;
+              break;
+            } // case 88
+            case 98: {
+              java.lang.String s = input.readStringRequireUtf8();
+              ensureTransactionsIsMutable();
+              transactions_.add(s);
+              break;
+            } // case 98
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (name.abuchen.portfolio.model.proto.v1.PInvestmentPlan) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -1165,11 +1108,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setName(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -1178,8 +1119,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearName() {
-      
       name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -1190,12 +1131,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNameBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       name_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -1206,7 +1145,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the note field is set.
      */
     public boolean hasNote() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>optional string note = 2;</code>
@@ -1248,11 +1187,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNote(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      if (value == null) { throw new NullPointerException(); }
       note_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -1261,8 +1198,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearNote() {
-      bitField0_ = (bitField0_ & ~0x00000001);
       note_ = getDefaultInstance().getNote();
+      bitField0_ = (bitField0_ & ~0x00000002);
       onChanged();
       return this;
     }
@@ -1273,12 +1210,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNoteBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000001;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       note_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -1289,7 +1224,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the security field is set.
      */
     public boolean hasSecurity() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
      * <code>optional string security = 3;</code>
@@ -1331,11 +1266,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSecurity(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
       security_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -1344,8 +1277,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearSecurity() {
-      bitField0_ = (bitField0_ & ~0x00000002);
       security_ = getDefaultInstance().getSecurity();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
@@ -1356,12 +1289,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSecurityBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       security_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -1372,7 +1303,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the portfolio field is set.
      */
     public boolean hasPortfolio() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
      * <code>optional string portfolio = 4;</code>
@@ -1414,11 +1345,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setPortfolio(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+      if (value == null) { throw new NullPointerException(); }
       portfolio_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -1427,8 +1356,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearPortfolio() {
-      bitField0_ = (bitField0_ & ~0x00000004);
       portfolio_ = getDefaultInstance().getPortfolio();
+      bitField0_ = (bitField0_ & ~0x00000008);
       onChanged();
       return this;
     }
@@ -1439,12 +1368,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setPortfolioBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000004;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       portfolio_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -1455,7 +1382,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the account field is set.
      */
     public boolean hasAccount() {
-      return ((bitField0_ & 0x00000008) != 0);
+      return ((bitField0_ & 0x00000010) != 0);
     }
     /**
      * <code>optional string account = 5;</code>
@@ -1497,11 +1424,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setAccount(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+      if (value == null) { throw new NullPointerException(); }
       account_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -1510,8 +1435,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearAccount() {
-      bitField0_ = (bitField0_ & ~0x00000008);
       account_ = getDefaultInstance().getAccount();
+      bitField0_ = (bitField0_ & ~0x00000010);
       onChanged();
       return this;
     }
@@ -1522,12 +1447,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setAccountBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000008;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       account_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -1535,9 +1458,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> attributes_ =
       java.util.Collections.emptyList();
     private void ensureAttributesIsMutable() {
-      if (!((bitField0_ & 0x00000010) != 0)) {
+      if (!((bitField0_ & 0x00000020) != 0)) {
         attributes_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>(attributes_);
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
        }
     }
 
@@ -1687,7 +1610,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearAttributes() {
       if (attributesBuilder_ == null) {
         attributes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
       } else {
         attributesBuilder_.clear();
@@ -1764,7 +1687,7 @@ private static final long serialVersionUID = 0L;
         attributesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PKeyValue, name.abuchen.portfolio.model.proto.v1.PKeyValue.Builder, name.abuchen.portfolio.model.proto.v1.PKeyValueOrBuilder>(
                 attributes_,
-                ((bitField0_ & 0x00000010) != 0),
+                ((bitField0_ & 0x00000020) != 0),
                 getParentForChildren(),
                 isClean());
         attributes_ = null;
@@ -1787,8 +1710,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setAutoGenerate(boolean value) {
-      
+
       autoGenerate_ = value;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
@@ -1797,7 +1721,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearAutoGenerate() {
-      
+      bitField0_ = (bitField0_ & ~0x00000040);
       autoGenerate_ = false;
       onChanged();
       return this;
@@ -1818,8 +1742,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setDate(long value) {
-      
+
       date_ = value;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -1828,7 +1753,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearDate() {
-      
+      bitField0_ = (bitField0_ & ~0x00000080);
       date_ = 0L;
       onChanged();
       return this;
@@ -1849,8 +1774,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setInterval(int value) {
-      
+
       interval_ = value;
+      bitField0_ |= 0x00000100;
       onChanged();
       return this;
     }
@@ -1859,7 +1785,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearInterval() {
-      
+      bitField0_ = (bitField0_ & ~0x00000100);
       interval_ = 0;
       onChanged();
       return this;
@@ -1880,8 +1806,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setAmount(long value) {
-      
+
       amount_ = value;
+      bitField0_ |= 0x00000200;
       onChanged();
       return this;
     }
@@ -1890,7 +1817,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearAmount() {
-      
+      bitField0_ = (bitField0_ & ~0x00000200);
       amount_ = 0L;
       onChanged();
       return this;
@@ -1911,8 +1838,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setFees(long value) {
-      
+
       fees_ = value;
+      bitField0_ |= 0x00000400;
       onChanged();
       return this;
     }
@@ -1921,18 +1849,19 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearFees() {
-      
+      bitField0_ = (bitField0_ & ~0x00000400);
       fees_ = 0L;
       onChanged();
       return this;
     }
 
-    private com.google.protobuf.LazyStringList transactions_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private com.google.protobuf.LazyStringArrayList transactions_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     private void ensureTransactionsIsMutable() {
-      if (!((bitField0_ & 0x00000020) != 0)) {
+      if (!transactions_.isModifiable()) {
         transactions_ = new com.google.protobuf.LazyStringArrayList(transactions_);
-        bitField0_ |= 0x00000020;
-       }
+      }
+      bitField0_ |= 0x00000800;
     }
     /**
      * <pre>
@@ -1944,7 +1873,8 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ProtocolStringList
         getTransactionsList() {
-      return transactions_.getUnmodifiableView();
+      transactions_.makeImmutable();
+      return transactions_;
     }
     /**
      * <pre>
@@ -1994,11 +1924,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setTransactions(
         int index, java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTransactionsIsMutable();
+      if (value == null) { throw new NullPointerException(); }
+      ensureTransactionsIsMutable();
       transactions_.set(index, value);
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -2013,11 +1942,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder addTransactions(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTransactionsIsMutable();
+      if (value == null) { throw new NullPointerException(); }
+      ensureTransactionsIsMutable();
       transactions_.add(value);
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -2035,6 +1963,7 @@ private static final long serialVersionUID = 0L;
       ensureTransactionsIsMutable();
       com.google.protobuf.AbstractMessageLite.Builder.addAll(
           values, transactions_);
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -2047,8 +1976,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearTransactions() {
-      transactions_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000020);
+      transactions_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
+      bitField0_ = (bitField0_ & ~0x00000800);;
       onChanged();
       return this;
     }
@@ -2063,12 +1993,11 @@ private static final long serialVersionUID = 0L;
      */
     public Builder addTransactionsBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       ensureTransactionsIsMutable();
       transactions_.add(value);
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -2105,7 +2034,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PInvestmentPlan(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 
