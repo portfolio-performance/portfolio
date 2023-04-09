@@ -1252,6 +1252,9 @@ public class Messages extends NLS
     public static String FilterNotRetired;
     public static String MenuFilterTrades;
     public static String FilterValuationNonZero;
+    public static String FollowUpWidget_Option_Sorting;
+    public static String FollowUpWidget_Option_SortingByDateAscending;
+    public static String FollowUpWidget_Option_SortingByDateDescending;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
     public static String HeatmapOrnamentAverage;
