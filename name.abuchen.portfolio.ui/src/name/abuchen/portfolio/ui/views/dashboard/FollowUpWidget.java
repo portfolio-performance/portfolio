@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -107,6 +108,8 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
                     }
                 }
             }
+
+            Collections.sort(items, (r, l) -> r.date.compareTo(l.date));
 
             return items;
         };
