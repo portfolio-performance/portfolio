@@ -19,12 +19,14 @@
 
 ## Contributing Source Code
 
-* [Development Setup](CONTRIBUTING.md#development-setup)
-* [Project Setup](CONTRIBUTING.md#project-setup)
-* [Contribute Code](CONTRIBUTING.md#contribute-code)
+* [Development setup](CONTRIBUTING.md#development-setup)
+* [Project setup](CONTRIBUTING.md#project-setup)
+* [Contribute code](CONTRIBUTING.md#contribute-code)
 * [Images, Logo & Colors](CONTRIBUTING.md#images-logo-and-color)
 * [Translations](CONTRIBUTING.md#translations)
-* [PDF Importer](CONTRIBUTING.md#pdf-importer)
+* [Interactive-Flex-Query importer](CONTRIBUTING.md#interactive-flex-query-importer)
+* [PDF importer](CONTRIBUTING.md#pdf-importer)
+* [Trade calendar](CONTRIBUTING.md#trade-calendar)
 
 
 ## License
