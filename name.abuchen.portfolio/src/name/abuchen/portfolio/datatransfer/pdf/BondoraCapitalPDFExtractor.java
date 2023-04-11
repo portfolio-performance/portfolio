@@ -96,7 +96,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         country = "CH"; //$NON-NLS-1$
                                     }
 
-                                    t.setAmount(asAmount(v.get("amount").trim().replaceAll("\\s", ""), language, country));
+                                    t.setAmount(asAmount(v.get("amount"), language, country));
                                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                     t.setNote(trim(v.get("note")));
                                 })
