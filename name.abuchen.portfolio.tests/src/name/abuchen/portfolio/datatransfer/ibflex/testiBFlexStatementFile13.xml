@@ -1,0 +1,9 @@
+<FlexQueryResponse queryName="XYZ" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="XXXXXXXX" fromDate="20200102" toDate="20200131" period="LastMonth" whenGenerated="20200217;054932">
+<AccountInformation accountId="XXXXXXXX" currency="EUR" />
+<Trades>
+<Trade currency="USD" assetCategory="CFD" symbol="QQQXn" description="USD QQQX" isin="" reportDate="20200909" exchange="IBUSCFDMS" quantity="50" tradePrice="25" cost="1255" fifoPnlRealized="0" buySell="BUY" accountId="U123456" acctAlias="" model="" fxRateToBase="0.84724" conid="290662729" securityID="" securityIDType="" cusip="" listingExchange="" underlyingConid="177490870" underlyingSymbol="QQQX" underlyingSecurityID="US6706991071" underlyingListingExchange="NASDAQ" issuer="" multiplier="1" strike="" expiry="" tradeID="" putCall="" principalAdjustFactor="" dateTime="20200909;112233" tradeDate="20200909" settleDateTarget="20200911" transactionType="ExchTrade" tradeMoney="1250" proceeds="-1250" taxes="0" ibCommission="-5" ibCommissionCurrency="USD" netCash="-5" closePrice="25.00" openCloseIndicator="O" notes="" fxPnl="0" mtmPnl="0" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" transactionID="N/A" ibOrderID="N/A" ibExecID="N/A" brokerageOrderID="N/A" orderReference="" volatilityOrderLink="" exchOrderId="" extExecID="" orderTime="--" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" orderType="LMT" traderID="" isAPIOrder="N" accruedInt="0"/></Trades>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

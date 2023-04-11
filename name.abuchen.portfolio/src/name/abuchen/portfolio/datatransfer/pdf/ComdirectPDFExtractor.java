@@ -1302,12 +1302,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private boolean isDividendTransaction(Item i)
     {
-        if (i instanceof TransactionItem)
+        if (i instanceof TransactionItem txi)
         {
-            Annotated s = ((TransactionItem) i).getSubject();
-            if (s instanceof AccountTransaction)
+            Annotated s = txi.getSubject();
+            if (s instanceof AccountTransaction a)
             {
-                AccountTransaction a = (AccountTransaction) s;
                 return AccountTransaction.Type.DIVIDENDS.equals(a.getType());
             }
         }

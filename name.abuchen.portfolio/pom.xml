@@ -92,7 +92,7 @@
 	                            <goal>run</goal>
 	                        </goals>
 							<configuration>
-									<protocVersion>3.17.3</protocVersion>
+									<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
 	                                <addProtoSources>all</addProtoSources>
 	                                <includeMavenTypes>direct</includeMavenTypes>
 	                                <outputDirectory>protos</outputDirectory>

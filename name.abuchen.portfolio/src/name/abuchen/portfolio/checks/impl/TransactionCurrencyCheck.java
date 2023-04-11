@@ -112,8 +112,8 @@ public class TransactionCurrencyCheck implements Check
         @Override
         public String getLabel()
         {
-            String type = pair.getTransaction() instanceof AccountTransaction ? ((AccountTransaction) pair
-                            .getTransaction()).getType().toString() : ((PortfolioTransaction) pair.getTransaction())
+            String type = pair.getTransaction() instanceof AccountTransaction at ? at.getType().toString()
+                            : ((PortfolioTransaction) pair.getTransaction())
                             .getType().toString();
             return MessageFormat.format(Messages.IssueTransactionMissingCurrencyCode, type);
         }
@@ -164,13 +164,12 @@ public class TransactionCurrencyCheck implements Check
                 TransactionPair<Transaction> pair = (TransactionPair<Transaction>) t;
                 issues.add(new TransactionMissingCurrencyIssue(client, pair));
             }
-            else if (t instanceof BuySellEntry)
+            else if (t instanceof BuySellEntry entry)
             {
                 // attempt to fix it if both currencies are identical. If a fix
                 // involves currency conversion plus exchange rates, just offer
                 // to delete the transaction.
 
-                BuySellEntry entry = (BuySellEntry) t;
                 String accountCurrency = entry.getAccount().getCurrencyCode();
                 String securityCurrency = entry.getPortfolioTransaction().getSecurity().getCurrencyCode();
 
@@ -181,12 +180,11 @@ public class TransactionCurrencyCheck implements Check
                 issues.add(new TransactionMissingCurrencyIssue(client, pair, Objects.equals(accountCurrency,
                                 securityCurrency)));
             }
-            else if (t instanceof AccountTransferEntry)
+            else if (t instanceof AccountTransferEntry entry)
             {
                 // same story as with purchases: only offer to fix if currencies
                 // match
 
-                AccountTransferEntry entry = (AccountTransferEntry) t;
                 String sourceCurrency = entry.getSourceAccount().getCurrencyCode();
                 String targetCurrency = entry.getTargetAccount().getCurrencyCode();
 
@@ -197,12 +195,10 @@ public class TransactionCurrencyCheck implements Check
                 issues.add(new TransactionMissingCurrencyIssue(client, pair, Objects.equals(sourceCurrency,
                                 targetCurrency)));
             }
-            else if (t instanceof PortfolioTransferEntry)
+            else if (t instanceof PortfolioTransferEntry entry)
             {
                 // transferring a security involves no currency change because
                 // the currency is defined the security itself
-
-                PortfolioTransferEntry entry = (PortfolioTransferEntry) t;
 
                 @SuppressWarnings("unchecked")
                 TransactionPair<Transaction> pair = new TransactionPair<Transaction>(

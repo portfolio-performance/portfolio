@@ -67,10 +67,8 @@ public class SurveyAddon
 
         eventBroker.subscribe(UIEvents.UIElement.TOPIC_WIDGET, event -> {
             Object element = event.getProperty(UIEvents.EventTags.ELEMENT);
-            if (!(element instanceof MPart))
+            if (!(element instanceof MPart mPart))
                 return;
-
-            MPart mPart = (MPart) element;
 
             if (!(mPart.getElementId().equals(UIConstants.Part.PORTFOLIO)))
                 return;

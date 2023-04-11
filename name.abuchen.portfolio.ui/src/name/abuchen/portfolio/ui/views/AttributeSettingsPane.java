@@ -68,9 +68,8 @@ public class AttributeSettingsPane implements InformationPanePage
                 control.dispose();
         }
 
-        if (input instanceof AttributeType)
+        if (input instanceof AttributeType attr)
         {
-            AttributeType attr = (AttributeType) input;
             createAttributSettingsView(attr, viewContainer);
         }
 

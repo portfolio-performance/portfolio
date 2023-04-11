@@ -170,7 +170,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             IObservableValue<Boolean> attributeTarget = WidgetProperties.buttonSelection().observe((Button) value);
             binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel);
         }
-        else if (attribute.getType().getConverter() instanceof ImageConverter)
+        else if (attribute.getType().getConverter() instanceof ImageConverter conv)
         {
             value = new Composite(container, SWT.PUSH);
             GridLayoutFactory.fillDefaults().numColumns(1).applyTo((Composite) value);
@@ -178,7 +178,6 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             final String previewPlaceholderText = "..."; //$NON-NLS-1$
             preview.setText(previewPlaceholderText);
 
-            ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
             Image img = ImageUtil.toImage(conv.toString(attribute.getValue()), 0, 16, 16);
             if (img != null)
                 preview.setImage(img);

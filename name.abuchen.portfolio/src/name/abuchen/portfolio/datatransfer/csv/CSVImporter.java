@@ -146,10 +146,10 @@ public final class CSVImporter
 
         public String toPattern()
         {
-            if (format instanceof SimpleDateFormat)
-                return ((SimpleDateFormat) format).toPattern();
-            else if (format instanceof DecimalFormat)
-                return ((DecimalFormat) format).toPattern();
+            if (format instanceof SimpleDateFormat dateFormat)
+                return dateFormat.toPattern();
+            else if (format instanceof DecimalFormat decimalFormat)
+                return decimalFormat.toPattern();
             else if (format instanceof ISINFormat)
                 return Isin.PATTERN;
             else if (format instanceof EnumMapFormat)
@@ -349,8 +349,12 @@ public final class CSVImporter
                                         NumberFormat.getInstance(Locale.GERMANY)),
                         new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
                                         NumberFormat.getInstance(Locale.US)),
-                        new FieldFormat("0 000.00", Messages.CSVFormatNumberFrance, //$NON-NLS-1$
-                                        NumberFormat.getInstance(Locale.FRANCE)),
+                        new FieldFormat("0 000,00", Messages.CSVFormatNumberFrance, () -> { //$NON-NLS-1$
+                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.FRANCE);
+                            unusualSymbols.setDecimalSeparator(',');
+                            unusualSymbols.setGroupingSeparator(' ');
+                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
+                        }),
                         new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');

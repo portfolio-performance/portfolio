@@ -61,13 +61,13 @@ public class ShowHideSidebarHandler
 
             Layout layout = subject.getLayout();
 
-            if (layout instanceof SashLayout && Objects.equals(((SashLayout) layout).getTag(), tag))
+            if (layout instanceof SashLayout sashLayouzt && Objects.equals(sashLayouzt.getTag(), tag))
                 return Optional.of((SashLayout) layout);
 
             for (Control control : subject.getChildren())
             {
-                if (control instanceof Composite)
-                    stack.add((Composite) control);
+                if (control instanceof Composite composite)
+                    stack.add(composite);
             }
         }
 

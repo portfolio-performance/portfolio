@@ -70,10 +70,8 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                 for (AttributeType t : types)
                 {
                     Object attribute = security.getAttributes().get(t);
-                    if (!(attribute instanceof LimitPrice))
+                    if (!(attribute instanceof LimitPrice limit))
                         continue;
-
-                    LimitPrice limit = (LimitPrice) attribute;
 
                     SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                     if (latest != null && limit.isExceeded(latest))

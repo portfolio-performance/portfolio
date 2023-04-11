@@ -203,12 +203,12 @@ public class ExportSelectionPage extends AbstractWizardPage
         @Override
         public String getText(Object element)
         {
-            if (element instanceof Account)
-                return ((Account) element).getName();
-            else if (element instanceof Portfolio)
-                return ((Portfolio) element).getName();
-            else if (element instanceof Security)
-                return ((Security) element).getName();
+            if (element instanceof Account account)
+                return account.getName();
+            else if (element instanceof Portfolio portfolio)
+                return portfolio.getName();
+            else if (element instanceof Security security)
+                return security.getName();
             else if (element == AccountTransaction.class)
                 return Messages.ExportWizardAccountTransactions;
             else if (element == PortfolioTransaction.class)
@@ -217,8 +217,8 @@ public class ExportSelectionPage extends AbstractWizardPage
                 return Messages.ExportWizardSecurities;
             else if (element == SecurityPrice.class)
                 return Messages.ExportWizardHistoricalQuotes;
-            else if (element instanceof String)
-                return (String) element;
+            else if (element instanceof String s)
+                return s;
             else
                 return null;
         }

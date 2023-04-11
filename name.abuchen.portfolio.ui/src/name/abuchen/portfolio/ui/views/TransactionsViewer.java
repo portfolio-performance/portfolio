@@ -98,16 +98,10 @@ public final class TransactionsViewer implements ModificationListener
 
             Transaction tx = ((TransactionPair<?>) element).getTransaction();
 
-            if (tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) tx;
+            if (tx instanceof PortfolioTransaction t)
                 return t.getType().isLiquidation() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction t = (AccountTransaction) tx;
+            else if (tx instanceof AccountTransaction t)
                 return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
-            }
 
             throw new IllegalArgumentException();
         }
@@ -253,7 +247,8 @@ public final class TransactionsViewer implements ModificationListener
         TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
 
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()) {
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
+        {
             @Override
             public Color getForeground(Object element)
             {
@@ -266,26 +261,26 @@ public final class TransactionsViewer implements ModificationListener
                 return colors.getBackground(element);
             }
         });
-        
+
         ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) t).getType().toString();
-            else if (t instanceof AccountTransaction)
-                return ((AccountTransaction) t).getType().toString();
+            if (t instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
+            else if (t instanceof AccountTransaction at)
+                return at.getType().toString();
             else
                 return null;
         }));
         ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
-            if (t instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) t).getType().toString();
-            else if (t instanceof AccountTransaction)
-                return ((AccountTransaction) t).getType().toString();
+            if (t instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
+            else if (t instanceof AccountTransaction at)
+                return at.getType().toString();
             else
                 return null;
         }).attachTo(column);
@@ -354,9 +349,9 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction)
+            if (t instanceof PortfolioTransaction pt)
                 return t.getShares() != 0
-                                ? Values.CalculatedQuote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                                ? Values.CalculatedQuote.format(pt.getGrossPricePerShare(),
                                                 owner.getClient().getBaseCurrency())
                                 : null;
             else
@@ -364,22 +359,22 @@ public final class TransactionsViewer implements ModificationListener
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction ? ((PortfolioTransaction) tx).getGrossPricePerShare() : null;
+            return tx instanceof PortfolioTransaction pt ? pt.getGrossPricePerShare() : null;
         }).attachTo(column);
         support.addColumn(column);
 
         column = new Column("5", Messages.ColumnAmount, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             Money m;
-            if (t instanceof PortfolioTransaction)
-                m = ((PortfolioTransaction) t).getGrossValue();
+            if (t instanceof PortfolioTransaction pt)
+                m = pt.getGrossValue();
             else
                 m = ((AccountTransaction) t).getGrossValue();
             return Values.Money.format(m, owner.getClient().getBaseCurrency());
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction ? ((PortfolioTransaction) tx).getGrossValue() : null;
+            return tx instanceof PortfolioTransaction pt ? pt.getGrossValue() : null;
         }).attachTo(column);
         support.addColumn(column);
 

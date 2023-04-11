@@ -68,10 +68,10 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
 
     private Transaction getTransaction(Object element)
     {
-        if (element instanceof Transaction)
-            return (Transaction) element;
-        else if (element instanceof TransactionPair<?>)
-            return ((TransactionPair<?>) element).getTransaction();
+        if (element instanceof Transaction transaction)
+            return transaction;
+        else if (element instanceof TransactionPair<?> pair)
+            return pair.getTransaction();
         else
             return null;
     }
@@ -132,9 +132,9 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
 
         TransactionOwner<?> ownerToEdit = editMode.getOwner(crossEntry, transaction);
 
-        if (ownerToEdit instanceof Account)
+        if (ownerToEdit instanceof Account account)
         {
-            String ownerCurrencyCode = ((Account) ownerToEdit).getCurrencyCode();
+            String ownerCurrencyCode = account.getCurrencyCode();
             comboBoxItems = client.getAccounts().stream().filter(a -> !a.equals(skipTransfer))
                             .filter(a -> a.getCurrencyCode().equals(ownerCurrencyCode)).collect(Collectors.toList());
         }

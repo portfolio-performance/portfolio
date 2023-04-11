@@ -65,7 +65,7 @@ public interface Extractor
         private Portfolio portfolioPrimary;
 
         private Portfolio portfolioSecondary;
-        
+
         private String failureMessage;
 
         private boolean investmentPlanItem = false;
@@ -97,7 +97,7 @@ public interface Extractor
         {
             this.failureMessage = failureMessage;
         }
-        
+
         public boolean isFailure()
         {
             return failureMessage != null;
@@ -217,10 +217,10 @@ public interface Extractor
         @Override
         public String getTypeInformation()
         {
-            if (transaction instanceof AccountTransaction)
-                return ((AccountTransaction) transaction).getType().toString();
-            else if (transaction instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) transaction).getType().toString();
+            if (transaction instanceof AccountTransaction at)
+                return at.getType().toString();
+            else if (transaction instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
             else
                 throw new UnsupportedOperationException();
         }
@@ -258,19 +258,19 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            if (transaction instanceof AccountTransaction)
+            if (transaction instanceof AccountTransaction at)
             {
                 Account account = getAccountPrimary();
                 if (account == null)
                     account = context.getAccount();
-                return action.process((AccountTransaction) transaction, account);
+                return action.process(at, account);
             }
-            else if (transaction instanceof PortfolioTransaction)
+            else if (transaction instanceof PortfolioTransaction pt)
             {
                 Portfolio portfolio = getPortfolioPrimary();
                 if (portfolio == null)
                     portfolio = context.getPortfolio();
-                return action.process((PortfolioTransaction) transaction, portfolio);
+                return action.process(pt, portfolio);
             }
             else
             {
@@ -591,13 +591,13 @@ public interface Extractor
 
         Client client = null;
 
-        if (this instanceof AbstractPDFExtractor)
+        if (this instanceof AbstractPDFExtractor pdf)
         {
-            client = ((AbstractPDFExtractor) this).getClient();
+            client = pdf.getClient();
         }
-        else if (this instanceof IBFlexStatementExtractor)
+        else if (this instanceof IBFlexStatementExtractor ibflex)
         {
-            client = ((IBFlexStatementExtractor) this).getClient();
+            client = ibflex.getClient();
         }
         else
         {

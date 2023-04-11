@@ -177,9 +177,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        if (element instanceof AccountTransaction)
+        if (element instanceof AccountTransaction t)
         {
-            AccountTransaction t = (AccountTransaction) element;
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().updateFrom(t);
             accounts.refresh(true);

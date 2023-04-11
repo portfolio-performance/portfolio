@@ -203,8 +203,8 @@ public class InformationPane
         {
             if (item == dropdown)
                 dropdown.setImage(Images.VIEW_SELECTED);
-            else if (item instanceof DropDown)
-                ((DropDown) item).setImage(Images.VIEW);
+            else if (item instanceof DropDown dp)
+                dp.setImage(Images.VIEW);
         }
     }
 

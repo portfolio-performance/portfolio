@@ -359,13 +359,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     // Finally, we remove the flag.
                     type.getCurrentContext().remove("isPurchaseBonds");
 
-                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                    {
-                        BuySellEntryItem item = new BuySellEntryItem(t);
+                    BuySellEntryItem item = new BuySellEntryItem(t);
+                    
+                    if (ctx.getString(FAILURE) != null)
                         item.setFailureMessage(ctx.getString(FAILURE));
-                        return item;
-                    }
-                    return null;
+
+                    return item;
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -865,17 +864,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // If the currency of the tax differs from the amount, 
-                // it will be converted and reset.
-
                 // @formatter:off
+                // Valuta          :    21.01.2020       *Einbeh. Steuer     :         8,26 EUR
                 //                                       Endbetrag          :        -8,26 EUR
-                // @formatter:on
-                .section("currency").optional()
-                .match("^.* Endbetrag([:\\s]+)? (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
-
-                // @formatter:off
+                //
                 // Devisenkurs     :         1,110600   *Einbeh. Steuer     :           99,39 EUR
                 //                                       Endbetrag          :        -8,26 EUR
                 // @formatter:on
@@ -885,11 +877,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     type.getCurrentContext().put("negative", "X");
 
-                    if (t.getCurrencyCode().contentEquals(v.get("currency")))
-                    {
-                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        t.setAmount(asAmount(v.get("amount")));
-                    }
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
                 })
 
                 .optionalOneOf(
@@ -965,6 +954,21 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                         )
+
+                // @formatter:off
+                // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
+                // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
+                // Extag           :       17.02.2022    Bruttoausschüttung :           34,66 USD
+                // @formatter:on
+                .section("note", "amount", "currency").optional()
+                .match("^.* (?<note>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                                    
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " (" + trim(v.get("note")) + " " + v.get("amount") + " " + v.get("currency") + ")");
+                    else
+                        t.setNote(trim(v.get("note")) + " (" + v.get("amount") + " " + v.get("currency") + ")");
+                })
 
                 .wrap(t -> {
                     // The final amount is negative. The taxes incurred
@@ -1120,7 +1124,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> new TransactionItem(t)));
+                .wrap(TransactionItem::new));
 
         // @formatter:off
         // 19.07.     20.07.  Depotgebühren 01.04.2020 - 30.04.2020,                0,26-
@@ -1149,10 +1153,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> {
-                    if (t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    return item;
                 }));
 
         // @formatter:off
@@ -1186,10 +1193,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> {
-                    if (t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    return item;
                 }));
 
         // @formatter:off
@@ -1223,11 +1233,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
                 })
 
-                .wrap(t -> {
-                    if (t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                .wrap(TransactionItem::new));
     }
 
     private void addTransferOutTransaction()
@@ -1582,10 +1588,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                         )
 
-                .wrap(t -> {
-                    if (t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    return item;
                 }));
     }
 
@@ -1734,11 +1743,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("negativeTax", "X");
 
-                                            if (t.getCurrencyCode().contentEquals(v.get("currency")))
-                                            {
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                            }
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
                                         })
                         )
 
@@ -1785,11 +1791,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("negativeTax", "X");
 
-                                            if (t.getCurrencyCode().contentEquals(v.get("currency")))
-                                            {
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                            }
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
                                         })
                         )
 
@@ -1912,11 +1915,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("negativeTax", "X");
 
-                                            if (t.getCurrencyCode().contentEquals(v.get("currency")))
-                                            {
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                t.setAmount(asAmount(v.get("amount")));
-                                            }
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
                                         })
                         )
 

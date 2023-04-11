@@ -130,9 +130,9 @@ public class GroupEarningsByAccount
                         case BUY:
                         case SELL:
                             CrossEntry crossEntry = at.getCrossEntry();
-                            if (crossEntry instanceof BuySellEntry)
+                            if (crossEntry instanceof BuySellEntry entry)
                             {
-                                PortfolioTransaction pt = ((BuySellEntry) crossEntry).getPortfolioTransaction();
+                                PortfolioTransaction pt = entry.getPortfolioTransaction();
                                 taxes.add(pt.getUnitSum(Unit.Type.TAX));
                                 fees.add(pt.getUnitSum(Unit.Type.FEE));
                             }

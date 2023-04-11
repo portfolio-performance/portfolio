@@ -14,9 +14,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof ColorsThemeElementAdapter)
+        if (element instanceof ColorsThemeElementAdapter colorsThemeAdapter)
         {
-            Colors.Theme theme = ((ColorsThemeElementAdapter) element).getColorsTheme();
+            Colors.Theme theme = colorsThemeAdapter.getColorsTheme();
 
             switch (property)
             {

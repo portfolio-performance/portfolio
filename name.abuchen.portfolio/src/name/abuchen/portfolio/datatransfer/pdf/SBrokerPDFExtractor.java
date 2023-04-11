@@ -5,6 +5,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -32,6 +35,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addAccountStatementTransaction();
+        addCreditcardStatementTransaction();
     }
 
     @Override
@@ -61,7 +66,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(Wertpapier Abrechnung )?(?<type>(Ausgabe Investmentfonds|Kauf|Verkauf)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -229,7 +234,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // @formatter:off
                 // Storno unserer Erträgnisgutschrift Nr. 81565205 vom 15.06.2016.
+                // @formatter:on
                 .section("type").optional()
                 .match("^(?<type>Storno) unserer Ertr.gnisgutschrift .*$")
                 .assign((t, v) -> v.getTransactionContext().put(FAILURE,
@@ -254,10 +261,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .match("^(Storno \\- )?(?<type>Ertragsthesaurierung)$")
                 .match("^Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Ertragsthesaurierung") && v.get("sign").equals("Gunsten"))
+                    if ("Ertragsthesaurierung".equals(v.get("type")) && "Gunsten".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                    if (v.get("type").equals("Ertragsthesaurierung") && v.get("sign").equals("Lasten"))
+                    if ("Ertragsthesaurierung".equals(v.get("type")) && "Lasten".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
@@ -530,6 +537,337 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 }));
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug [\\d]+\\/[\\d]{4}", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Datum Erl.uterung Betrag Soll [\\w]{3} Betrag Haben (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                    context.put("currency", m.group("currency"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? "
+                        + "(Lastschrift"
+                        + "|.berweisung online"
+                        + "|Kartenzahlung"
+                        + "|Gutschrift.berweisung"
+                        + "|Dauerauftrag"
+                        + "|Lohn, Gehalt, Rente).*$");
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DEPOSIT);
+                    return entry;
+                })
+
+                .oneOf(
+                                // @formatter:off
+                                // 01.03.2023 Lastschrift
+                                // 03.03.2023 Kartenzahlung
+                                // 06.03.2023 Überweisung online
+                                // 08.03.2023 GutschriftÜberweisung
+                                // 30.03.2023 Dauerauftrag
+                                // 30.03.2023 Lohn, Gehalt, Rente
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "amount", "type")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                                        + "(?<note>(Lastschrift"
+                                                        + "|.berweisung online"
+                                                        + "|Kartenzahlung"
+                                                        + "|Gutschrift.berweisung"
+                                                        + "|Dauerauftrag"
+                                                        + "|Lohn, Gehalt, Rente))"
+                                                        + ".*$")
+                                        .match("^[\\s]+ (?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                            if ("-".equals(trim(v.get("type"))))
+                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(v.get("note"));
+
+                                            if (t.getAmount() == 0)
+                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                        })
+                                ,
+                                // @formatter:off
+                                // 02.03.2020 02.03.2020 Lastschrift              2,00-
+                                // 02.03.2020 02.03.2020 Überweisung online              1,00-
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "type", "amount")
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                                        + "(?<note>(Lastschrift"
+                                                        + "|.berweisung online"
+                                                        + "|Kartenzahlung"
+                                                        + "|Gutschrift.berweisung"
+                                                        + "|Dauerauftrag"
+                                                        + "|Lohn, Gehalt, Rente)) "
+                                                        + "[\\s]+"
+                                                        + "(?<amount>[\\.,\\d]+)"
+                                                        + "(?<type>([\\-|\\+])?)$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                            if ("-".equals(trim(v.get("type"))))
+                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(v.get("note"));
+
+                                            if (t.getAmount() == 0)
+                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                        })
+                        )
+
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (ctx.getString(FAILURE) != null)
+                        item.setFailureMessage(ctx.getString(FAILURE));
+
+                    return item;
+                }));
+
+        // @formatter:off
+        // Entgeltabschluss: Anlage     1
+        // 
+        // Entgelte vom 29.02.2020 bis 31.03.2020                               4,70-
+        // 
+        // Grundpreis (Kontoführung)                              2,00-
+        // Zahlungsverkehr                                        2,70-
+        //                                                             --------------
+        // Abrechnung 31.03.2020                                                4,70-
+        // @formatter:on
+        Block feesBlock = new Block("^Entgeltabschluss: .*$", "^Abrechnung .*$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.FEES_REFUND);
+                    return entry;
+                })
+
+                .section("note", "date", "amount", "type")
+                .match("^(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])?)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from FEES_REFUND to FEES
+                    if ("-".equals(trim(v.get("type"))))
+                        t.setType(AccountTransaction.Type.FEES);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(trim(v.get("note")));
+
+                    if (t.getAmount() == 0)
+                        v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                })
+
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (ctx.getString(FAILURE) != null)
+                        item.setFailureMessage(ctx.getString(FAILURE));
+
+                    return item;
+                }));
+
+        // @formatter:off
+        // Rechnungsabschluss: Anlage     2
+        // 
+        // Kontostand in EUR am 31.03.2020                                   1,89 +
+        //                                                             --------------
+        // Abrechnungszeitraum vom 01.01.2020 bis 31.03.2020
+        // Zinsen für eingeräumte Kontoüberziehung                              0,66-
+        // 10,0500 v.H. Kred-Zins  bis 29.03.2020
+        // 
+        //                                                             --------------
+        // Abrechnung 31.03.2020                                                0,66-
+        // @formatter:on
+        Block interestBlock = new Block("^Rechnungsabschluss: .*$", "^Abrechnung .*$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.INTEREST);
+                    return entry;
+                })
+
+                .section("note", "date", "amount", "type")
+                .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])?)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                    if ("-".equals(trim(v.get("type"))))
+                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(trim(v.get("note")));
+
+                    if (t.getAmount() == 0)
+                        v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                })
+
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (ctx.getString(FAILURE) != null)
+                        item.setFailureMessage(ctx.getString(FAILURE));
+
+                    return item;
+                }));
+    }
+
+    private void addCreditcardStatementTransaction()
+    {
+        DocumentType type = new DocumentType("Ihre Abrechnung vom ", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("^Beleg BuchungVerwendungszweck (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                    context.put("currency", m.group("currency"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DEPOSIT);
+                    return entry;
+                })
+
+                .oneOf(
+                                // @formatter:off
+                                // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "amount", "type")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
+                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
+                                                        + "(?<note>.*) "
+                                                        + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
+                                                        + "(?<amount>[\\.,\\d]+)"
+                                                        + "([\\s])?(?<type>([\\-|\\+]))$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                            if ("-".equals(trim(v.get("type"))))
+                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                                            // Formatting some notes
+                                            if (trim(v.get("note")).endsWith(","))
+                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
+
+                                            t.setNote(trim(v.get("note")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // 02.09.22 03.09.22 Lastschrift 1.345,61+
+                                // 14.09.22 03.09.22 PAYPAL *EBAY DE, 38888899999 20,29+
+                                //
+                                // 04.09.22 06.09.22 PAYPAL *ANNA.JAEGER97, 12,90 -
+                                // 22.09.22 23.09.22 PAYPAL *BRITTAWENDLAND, 10,00 -
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "amount", "type")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
+                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
+                                                        + "(?<note>.*) "
+                                                        + "(?<amount>[\\.,\\d]+)"
+                                                        + "([\\s])?(?<type>([\\-|\\+]))$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                            if ("-".equals(trim(v.get("type"))))
+                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+
+                                            // Formatting some notes
+                                            if (trim(v.get("note")).endsWith(","))
+                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
+
+                                            t.setNote(trim(v.get("note")));
+                                        })
+                        )
+
+                .wrap(TransactionItem::new));
+
+        Block feesExchangeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        type.addBlock(feesExchangeBlock);
+        feesExchangeBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.FEES);
+                    return entry;
+                })
+
+                // @formatter:off
+                // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
+                // 2% für Währungsumrechnung 2,97 -
+                // @formatter:on
+                .section("date", "note", "amount")
+                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
+                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
+                                + ".* "
+                                + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
+                                + "[\\.,\\d]+"
+                                + "([\\s])?\\-$")
+                .match("^(?<note>[\\.,\\d]+% f.r W.hrungsumrechnung) (?<amount>[\\.,\\d]+)([\\s])?\\-$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(trim(v.get("note")));
+                })
+
+                .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
