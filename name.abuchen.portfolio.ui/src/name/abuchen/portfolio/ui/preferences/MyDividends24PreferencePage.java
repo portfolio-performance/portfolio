@@ -41,8 +41,11 @@ public class MyDividends24PreferencePage extends FieldEditorPreferencePage {
             }
         });
 
-        addField(new TextAreaFieldEditor(UIConstants.Preferences.MYDIVIDENDS24_API_KEY,
-                Messages.PrefMyDividends24APIKey, getFieldEditorParent()));
+        addField(new TextAreaFieldEditor(
+            UIConstants.Preferences.MYDIVIDENDS24_API_KEY,
+            Messages.PrefMyDividends24APIKey,
+            getFieldEditorParent()
+        ));
     }
 
     private class TextAreaFieldEditor extends FieldEditor {

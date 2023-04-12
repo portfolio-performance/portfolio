@@ -41,10 +41,8 @@ public class MyDividends24Uploader
 
         JSONObject session = (JSONObject) JSONValue.parse(response);
         JSONArray portfolios = (JSONArray) session.get("depots"); //$NON-NLS-1$
-        System.out.println("api-token: "+ apiKey); //$NON-NLS-1$
-
-        System.out.println("portfolios: "+ portfolios); //$NON-NLS-1$
-        if (portfolios != null)
+        
+               if (portfolios != null)
         {
             int i=0;
             for (Object p : portfolios)
@@ -69,29 +67,26 @@ public class MyDividends24Uploader
 
         transactions.forEach( item -> {
             double quantity = item.getShares()/100000000; 
-            double kaufkurs = item.getGrossValueAmount()/100/quantity;
-            String kaufdatum = item.getDateTime().toString();
+            double buyingprice = item.getGrossValueAmount()/100/quantity;
+            String purchasedate = item.getDateTime().toString();
             String isin = item.getSecurity().getIsin();
-            String type = "Kauf"; //$NON-NLS-1$
+            String type = "buy"; //$NON-NLS-1$
             if( !item.getType().isPurchase() ) {
-                type = "Verkauf"; //$NON-NLS-1$
+                type = "sell"; //$NON-NLS-1$
             }
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Typ", type); //$NON-NLS-1$
-            jsonObject.put("Stueck", quantity); //$NON-NLS-1$
-            jsonObject.put("Kurs", kaufkurs); //$NON-NLS-1$
-            jsonObject.put("Datum", kaufdatum); //$NON-NLS-1$
-            jsonObject.put("ISIN", isin); //$NON-NLS-1$
+            jsonObject.put("type", type); //$NON-NLS-1$
+            jsonObject.put("quantity", quantity); //$NON-NLS-1$
+            jsonObject.put("stockprice", buyingprice); //$NON-NLS-1$
+            jsonObject.put("date", purchasedate); //$NON-NLS-1$
+            jsonObject.put("isin", isin); //$NON-NLS-1$
 
             if (isin != null) {
                 resultTransactions.add(jsonObject);
                             }
         });
 
-        System.out.println(resultTransactions.toString());
- 
-        
         if (resultTransactions.isEmpty())
             return;
 
@@ -99,7 +94,6 @@ public class MyDividends24Uploader
         upload.addHeader("Authorization", "Bearer: "+apiKey); //$NON-NLS-1$ //$NON-NLS-2$
         upload.addHeader("Content-Type", "application/json"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        System.out.println("result: " + resultTransactions); //$NON-NLS-1$
         
 
         JSONObject uploadData = new JSONObject();

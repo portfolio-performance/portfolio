@@ -111,7 +111,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="%menu.online.portfolio-report.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/portfolio-report.net-logo.png" command="_m720cHmOEeuiO8_BzX84yg">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_J5pDQKBuEeuHadwYWq-bDQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_7FI7gMpQEe2KuejBf9Xu9g" elementId="name.abuchen.portfolio.ui.menu.online.uploadToMyDividends24" label="%menu.online.mydividends24.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/mydividends-logo.png" command="_jXezYMpQEe2KuejBf9Xu9g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_7FI7gMpQEe2KuejBf9Xu9g" elementId="name.abuchen.portfolio.ui.menu.online.uploadToMyDividends24" label="%menu.online.mydividends24.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/mydividends24.de-logo.png" command="_jXezYMpQEe2KuejBf9Xu9g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
