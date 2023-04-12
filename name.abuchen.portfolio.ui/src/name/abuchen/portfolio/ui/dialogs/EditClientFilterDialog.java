@@ -80,9 +80,8 @@ public class EditClientFilterDialog extends Dialog
         @Override
         public Object[] getChildren(Object parentElement)
         {
-            if (parentElement instanceof ClientFilterMenu.Item)
+            if (parentElement instanceof ClientFilterMenu.Item item)
             {
-                ClientFilterMenu.Item item = (ClientFilterMenu.Item) parentElement;
                 String[] uuids = item.getUUIDs().split(","); //$NON-NLS-1$
 
                 return Arrays.stream(uuids).map(uuid2object::get).filter(Objects::nonNull).toArray();
@@ -200,7 +199,8 @@ public class EditClientFilterDialog extends Dialog
 
     private void fillContextMenu(IMenuManager manager)
     {
-        if (treeViewer.getStructuredSelection().getFirstElement() instanceof ClientFilterMenu.Item)
+        if (treeViewer.getStructuredSelection()
+                        .getFirstElement() instanceof ClientFilterMenu.Item selectedFilterElement)
         {
             // insert new sub element (child) to filter
             manager.add(new Action(Messages.MenuReportingPeriodInsert)
@@ -208,8 +208,6 @@ public class EditClientFilterDialog extends Dialog
                 @Override
                 public void run()
                 {
-                    ClientFilterMenu.Item selectedFilterElement = (ClientFilterMenu.Item) treeViewer
-                                    .getStructuredSelection().getFirstElement();
                     if (!(selectedFilterElement.getFilter() instanceof PortfolioClientFilter))
                         return;
 
@@ -290,10 +288,9 @@ public class EditClientFilterDialog extends Dialog
                         {
                             // child node clicked (portfolio or account)
                             items.forEach(it -> {
-                                if (it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter)
+                                if (it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter filter)
                                 { // found parent item --> now remove selected
                                   // child item
-                                    PortfolioClientFilter filter = (PortfolioClientFilter) it.getFilter();
                                     filter.removeElement(p.getLastSegment());
 
                                     // important step: update UUIDs because this

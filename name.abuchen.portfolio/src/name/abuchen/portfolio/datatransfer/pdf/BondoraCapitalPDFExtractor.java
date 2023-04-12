@@ -121,7 +121,21 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,\\d]+(\\W)?(\\p{Sc})?$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date"), Locale.UK));
-                                    t.setAmount(asAmount(v.get("amount"), "en", "US"));
+
+                                    String language = "de"; //$NON-NLS-1$
+                                    String country = "DE"; //$NON-NLS-1$
+
+                                    int lastDot = v.get("amount").lastIndexOf("."); //$NON-NLS-1$
+                                    int lastComma = v.get("amount").lastIndexOf(","); //$NON-NLS-1$
+    
+                                    // returns the greater of two int values
+                                    if (Math.max(lastDot, lastComma) == lastDot)
+                                    {
+                                        language = "en"; //$NON-NLS-1$
+                                        country = "US"; //$NON-NLS-1$
+                                    }
+
+                                    t.setAmount(asAmount(v.get("amount"), language, country));
                                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                     t.setNote(trim(v.get("note")));
                                 })

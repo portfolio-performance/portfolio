@@ -1,0 +1,12 @@
+<FlexQueryResponse queryName="AFQ_PP" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="UXXXXXXX" fromDate="20221221" toDate="20221221" period="LastBusinessDay" whenGenerated="20221222;082112">
+<AccountInformation accountId="UXXXXXXX" acctAlias="Cash" model="Independent" currency="EUR" name="" accountType="Individual" customerType="Individual" accountCapabilities="Cash" tradingPermissions="Stocks,Warrants,Forex" accountRepName="" accountRepPhone="" dateOpened="20210727" dateFunded="20210727" dateClosed="" street="" street2="" city="" state="" country="" postalCode="" streetResidentialAddress="" street2ResidentialAddress="" cityResidentialAddress="" stateResidentialAddress="" countryResidentialAddress="" postalCodeResidentialAddress="" masterName="" ibEntity="IB-CE" primaryEmail="" />
+<Trades>
+<Trade fxRateToBase="0.98397" assetCategory="STK" description="PROSHARES ULTRASHORT QQQ" isin="" multiplier="1" dateTime="20191213;103640" tradeDate="20191213" exchange="PSX" quantity="14" taxes="0" ibCommission="-0.175" ibCommissionCurrency="USD" cost="350.175" buySell="BUY" currency="USD" symbol="QID" conid="317467459" securityID="74347B243" securityIDType="CUSIP" cusip="74347B243" listingExchange="ARCA" reportDate="20191213" settleDateTarget="20191217" transactionType="ExchTrade" tradePrice="25" tradeMoney="350" proceeds="-350" netCash="-350.175" closePrice="24.92" openCloseIndicator="O" fifoPnlRealized="0" mtmPnl="-1.12" />
+</Trades><CorporateActions>
+</CorporateActions><CashTransactions>
+</CashTransactions>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

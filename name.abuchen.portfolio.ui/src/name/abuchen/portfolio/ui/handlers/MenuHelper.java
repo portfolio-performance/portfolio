@@ -29,8 +29,8 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
         // if the part is open, but the Client not yet decrypted, menus still
         // must be deactivated
 
-        return null != part && part.getObject() instanceof PortfolioPart
-                        && ((PortfolioPart) part.getObject()).getClient() != null;
+        return null != part && part.getObject() instanceof PortfolioPart portfolioPart
+                        && portfolioPart.getClient() != null;
     }
 
     /* package */static Optional<Client> getActiveClient(MPart part)

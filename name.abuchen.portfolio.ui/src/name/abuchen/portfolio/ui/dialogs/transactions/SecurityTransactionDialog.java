@@ -101,9 +101,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
         ComboInput comboInput = new ComboInput(editArea, null);
-        if (model() instanceof BuySellModel)
+        if (model() instanceof BuySellModel buySellModel)
         {
-            comboInput.value.setInput(including(client.getActiveAccounts(), ((BuySellModel) model()).getAccount()));
+            comboInput.value.setInput(including(client.getActiveAccounts(), buySellModel.getAccount()));
             comboInput.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         }
         else

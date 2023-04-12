@@ -101,6 +101,30 @@ public class SolarisbankAGPDFExtractorTest
     }
 
 
+    @Test
+    public void testGiroKontoauszug03()
+    {
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("GiroKontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(1L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-19T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.99)));
+    }
+
     private List<InputFile> loadFile(String filename)
     {
         return PDFInputFile.loadTestCase(getClass(), filename);

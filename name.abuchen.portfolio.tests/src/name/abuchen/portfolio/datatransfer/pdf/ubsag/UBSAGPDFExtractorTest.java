@@ -54,6 +54,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0950674175"));
         assertThat(security.getWkn(), is("21966836"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS (Lux) Fund Solutions - MSCI Emerging Markets UCITS ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -149,6 +150,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0012530207"));
         assertThat(security.getWkn(), is("1253020"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("N-Akt -B- Bachem Holding AG"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -192,6 +194,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US17275R1023"));
         assertThat(security.getWkn(), is("918546"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("N-Akt Cisco Systems Inc."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -291,6 +294,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BX7RRJ27"));
         assertThat(security.getWkn(), is("29134652"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS (Irl) ETF Plc - Factor MSCI USA Quality UCITS ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -575,6 +579,7 @@ public class UBSAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0267291224"));
         assertThat(security.getWkn(), is("26729122"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("N-AKT SUNRISE COMMUNICATIONS GROUP AG"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 

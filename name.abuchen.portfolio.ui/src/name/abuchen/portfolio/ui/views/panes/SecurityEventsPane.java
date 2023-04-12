@@ -125,9 +125,9 @@ public class SecurityEventsPane implements InformationPanePage
 
         column = new Column(Messages.ColumnPaymentDate, SWT.NONE, 80);
         column.setLabelProvider(new DateLabelProvider(
-                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null));
+                        e -> e instanceof DividendEvent dividendEvent ? dividendEvent.getPaymentDate() : null));
         column.setSorter(ColumnViewerSorter
-                        .create(e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null));
+                        .create(e -> e instanceof DividendEvent dividendEvent ? dividendEvent.getPaymentDate() : null));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.NONE, 80);
@@ -136,13 +136,13 @@ public class SecurityEventsPane implements InformationPanePage
             @Override
             public String getText(Object element)
             {
-                return element instanceof DividendEvent
-                                ? Values.Money.format(((DividendEvent) element).getAmount(), client.getBaseCurrency())
+                return element instanceof DividendEvent dividendEvent
+                                ? Values.Money.format(dividendEvent.getAmount(), client.getBaseCurrency())
                                 : null;
             }
         });
         column.setSorter(ColumnViewerSorter
-                        .create(e -> e instanceof DividendEvent ? ((DividendEvent) e).getAmount() : null));
+                        .create(e -> e instanceof DividendEvent dividendEvent ? dividendEvent.getAmount() : null));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDetails, SWT.None, 300);

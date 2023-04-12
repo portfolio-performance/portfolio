@@ -221,17 +221,17 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             Optional<List<Object>> high = Optional.empty();
             Optional<List<Object>> low = Optional.empty();
             Optional<List<Object>> volume = Optional.empty();
-            if(highPath.isPresent())
+            if (highPath.isPresent())
             {
                 JsonPath highP = JsonPath.compile(highPath.get());
                 high = Optional.of(ctx.read(highP));
             }
-            if(lowPath.isPresent())
+            if (lowPath.isPresent())
             {
                 JsonPath lowP = JsonPath.compile(lowPath.get());
                 low = Optional.of(ctx.read(lowP));
             }
-            if(volumePath.isPresent())
+            if (volumePath.isPresent())
             {
                 JsonPath volumeP = JsonPath.compile(volumePath.get());
                 volume = Optional.of(ctx.read(volumeP));
@@ -243,9 +243,9 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                                 Messages.MsgErrorNumberOfDateAndCloseRecordsDoNotMatch, dates.size(), close.size())));
                 return Collections.emptyList();
             }
-            
+
             BigDecimal factor;
-            if(factorString.isPresent())
+            if (factorString.isPresent())
             {
                 factor = new BigDecimal(factorString.get());
             }
@@ -272,7 +272,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                 if (price.getDate() != null && price.getValue() > 0)
                 {
-                    if(high.isPresent())
+                    if (high.isPresent())
                     {
                         price.setHigh(this.extractValue(high.get().get(index), factor));
                     }
@@ -280,7 +280,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                     {
                         price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
                     }
-                    if(low.isPresent())
+                    if (low.isPresent())
                     {
                         price.setLow(this.extractValue(low.get().get(index), factor));
                     }
@@ -288,7 +288,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                     {
                         price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
                     }
-                    if(volume.isPresent())
+                    if (volume.isPresent())
                     {
                         price.setVolume(this.extractIntegerValue(volume.get().get(index)));
                     }
@@ -314,45 +314,45 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         if (object instanceof Number)
             return new BigDecimal(object.toString()).multiply(factor).multiply(Values.Quote.getBigDecimalFactor())
                             .setScale(0, RoundingMode.HALF_UP).longValue();
-        else if (object instanceof String)
-            return YahooHelper.asPrice((String) object, factor);
+        else if (object instanceof String s)
+            return YahooHelper.asPrice(s, factor);
         return 0;
     }
 
     /* testing */ long extractIntegerValue(Object object) throws ParseException
     {
-        if (object instanceof String)
+        if (object instanceof String s)
             try
             {
-                return Long.parseLong((String) object);
+                return Long.parseLong(s);
             }
-            catch(NumberFormatException e)
+            catch (NumberFormatException e)
             {
                 // try again as Double
                 return Math.round(Double.parseDouble((String) object));
             }
-        if (object instanceof Number)
-            return((Number) object).longValue();
+        if (object instanceof Number num)
+            return num.longValue();
         return 0;
     }
 
     /* testing */ LocalDate extractDate(Object object, Optional<String> dateFormat)
     {
-        if(dateFormat.isPresent())
+        if (dateFormat.isPresent())
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat.get());
             return LocalDate.parse(object.toString(), formatter);
         }
-        if (object instanceof String)
-            return YahooHelper.fromISODate((String) object);
-        else if (object instanceof Long)
-            return parseDateTimestamp((Long) object);
-        else if (object instanceof Integer)
-            return parseDateTimestamp(Long.valueOf((Integer) object));
-        else if (object instanceof Double)
-            return parseDateTimestamp(((Double) object).longValue());
-        else if (object instanceof LocalDate)
-            return ((LocalDate) object);
+        if (object instanceof String s)
+            return YahooHelper.fromISODate(s);
+        else if (object instanceof Long l)
+            return parseDateTimestamp(l);
+        else if (object instanceof Integer i)
+            return parseDateTimestamp(Long.valueOf(i));
+        else if (object instanceof Double d)
+            return parseDateTimestamp(d.longValue());
+        else if (object instanceof LocalDate date)
+            return date;
         return null;
     }
 
@@ -377,8 +377,10 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             // 23:20:06 can't be parsed by this method
             object = object * 24 * 60 * 60;
         }
-        // The following does NOT do a time zone conversion. If the API gives epochs as dates,
-        // we always convert them to dates with respect to UTC (independent of the user timezone).
+        // The following does NOT do a time zone conversion. If the API gives
+        // epochs as dates,
+        // we always convert them to dates with respect to UTC (independent of
+        // the user timezone).
         return LocalDateTime.ofEpochSecond(object, 0, ZoneOffset.UTC).toLocalDate();
     }
 }

@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TextUtil;
@@ -185,6 +186,12 @@ public class CSVExporter
 
     public void exportSecurityPrices(File file, Security security) throws IOException
     {
+        exportSecurityPrices(Optional.empty(), file, security);
+    }
+
+    public void exportSecurityPrices(Optional<CurrencyConverter> converter, File file, Security security)
+                    throws IOException
+    {
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
@@ -193,7 +200,11 @@ public class CSVExporter
             for (SecurityPrice p : security.getPrices())
             {
                 printer.print(p.getDate().toString());
-                printer.print(Values.Quote.format(p.getValue()));
+                long value = p.getValue();
+                if (converter.isPresent())
+                    value = converter.get().convert(p.getDate(), Money.of(security.getCurrencyCode(), value))
+                                    .getAmount();
+                printer.print(Values.Quote.format(value));
                 printer.println();
             }
         }
@@ -201,11 +212,18 @@ public class CSVExporter
 
     public void exportSecurityPrices(File directory, List<Security> securities) throws IOException
     {
-        for (Security security : securities)
-            exportSecurityPrices(new File(directory, security.getIsin() + ".csv"), security); //$NON-NLS-1$
+        exportSecurityPrices(Optional.empty(), directory, securities);
     }
 
-    public void exportMergedSecurityPrices(File file, List<Security> securities) throws IOException
+    public void exportSecurityPrices(Optional<CurrencyConverter> converter, File directory, List<Security> securities)
+                    throws IOException
+    {
+        for (Security security : securities)
+            exportSecurityPrices(converter, new File(directory, security.getIsin() + ".csv"), security); //$NON-NLS-1$
+    }
+
+    public void exportMergedSecurityPrices(Optional<CurrencyConverter> converter, File file, List<Security> securities)
+                    throws IOException
     {
         // prepare: (a) find earliest date (b) ignore securities w/o quotes
         LocalDate earliestDate = null;
@@ -269,7 +287,14 @@ public class CSVExporter
                         if (indices[ii] < 0)
                             printer.print(""); //$NON-NLS-1$
                         else
-                            printer.print(Values.Quote.format(export.get(ii).getPrices().get(indices[ii]).getValue()));
+                        {
+                            long value = export.get(ii).getPrices().get(indices[ii]).getValue();
+                            if (converter.isPresent())
+                                value = converter.get()
+                                                .convert(pointer, Money.of(export.get(ii).getCurrencyCode(), value))
+                                                .getAmount();
+                            printer.print(Values.Quote.format(value));
+                        }
                     }
 
                     printer.println();

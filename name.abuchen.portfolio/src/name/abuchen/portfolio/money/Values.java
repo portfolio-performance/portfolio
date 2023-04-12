@@ -495,10 +495,8 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount)
     {
-        if (amount instanceof Double)
+        if (amount instanceof Double d)
         {
-            Double d = (Double) amount;
-
             if (d.isNaN())
                 return null;
             else if (d.doubleValue() == 0d)
@@ -506,9 +504,9 @@ public abstract class Values<E>
             else
                 return format(amount);
         }
-        else if (amount instanceof Number)
+        else if (amount instanceof Number num)
         {
-            boolean isNotZero = ((Number) amount).longValue() != 0;
+            boolean isNotZero = num.longValue() != 0;
             return isNotZero ? format(amount) : null;
         }
 
@@ -517,9 +515,9 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount, double threshold)
     {
-        if (amount instanceof Double)
+        if (amount instanceof Double d)
         {
-            boolean isNotZero = Math.abs(((Double) amount).doubleValue()) >= threshold;
+            boolean isNotZero = Math.abs(d.doubleValue()) >= threshold;
             return isNotZero ? format(amount) : null;
         }
 

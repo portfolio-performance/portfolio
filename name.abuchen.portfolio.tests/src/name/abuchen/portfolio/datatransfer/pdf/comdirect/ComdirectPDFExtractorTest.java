@@ -56,6 +56,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -99,6 +100,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU1234444444"));
         assertThat(security.getWkn(), is("ETF999"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ComSta foobar .ETF Inhaber-Anteile I o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -142,6 +144,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0009538784"));
         assertThat(security.getWkn(), is("A1C5WJ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NXP Semiconductors NV Aandelen aan toonder EO -,20"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -185,6 +188,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BTN1Y115"));
         assertThat(security.getWkn(), is("A14M2J"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Medtronic PLC Registered Shares DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -228,6 +232,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0970231058"));
         assertThat(security.getWkn(), is("850471"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Boeing Co. Registered Shares DL 5"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -271,6 +276,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005194062"));
         assertThat(security.getWkn(), is("519406"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BayWa AG vink. Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -314,6 +320,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Allianz SE vink.Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -357,6 +364,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US74144T1088"));
         assertThat(security.getWkn(), is("870967"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("T. Rowe Price Group Inc. Registered Shares DL -,20"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -400,6 +408,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005785604"));
         assertThat(security.getWkn(), is("578560"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Fresenius SE & Co. KGaA Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -443,6 +452,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA8911021050"));
         assertThat(security.getWkn(), is("914305"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Toromont Industries Ltd. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -486,6 +496,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0231351067"));
         assertThat(security.getWkn(), is("906866"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Amazon.com Inc. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -581,6 +592,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09259E1082"));
         assertThat(security.getWkn(), is("A2N4AB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BlackRock TCP Capital Corp. Registered Shares DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -624,6 +636,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008232125"));
         assertThat(security.getWkn(), is("823212"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Lufthansa AG vink.Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -667,6 +680,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0048580855"));
         assertThat(security.getWkn(), is("973265"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Fidelity Fds-Greater China Fd. Reg.Shares A (Glob.Cert.) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -762,6 +776,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000687663"));
         assertThat(security.getWkn(), is("A0LFB3"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AerCap Holdings N.V. Aandelen op naam EO -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -857,6 +872,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B63H8491"));
         assertThat(security.getWkn(), is("A1H81L"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Rolls Royce Holdings PLC Registered Shares LS 0.20"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -952,6 +968,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000121014"));
         assertThat(security.getWkn(), is("853292"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LVMH Moët Henn. L. Vuitton SA Actions Port. (C.R.) EO 0,3"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -995,6 +1012,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("ABC123"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FooBar. ETF Inhaber-Anteile I o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1038,6 +1056,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0970231058"));
         assertThat(security.getWkn(), is("850471"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Boeing Co. Registered Shares DL 5"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1081,6 +1100,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4656851056"));
         assertThat(security.getWkn(), is("A0F401"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ITC Holdings Corp. Registered Shares o. N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1144,6 +1164,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
         assertThat(security.getWkn(), is("747206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Wirecard AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1207,6 +1228,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US86771W1053"));
         assertThat(security.getWkn(), is("A14V1T"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Sunrun Inc. Registered Shares DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1342,6 +1364,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TB1AF62"));
         assertThat(security.getWkn(), is("TB1AF6"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG Call 14.01.11 Juniper 30"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1385,6 +1408,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009503540"));
         assertThat(security.getWkn(), is("950354"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Citigroup Global Markets Dt. KOS03/21.12.04 Allianz 80"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1428,6 +1452,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005601215"));
         assertThat(security.getWkn(), is("560121"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Bank AG KOS03/13.12.04 SAP 150"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1471,6 +1496,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
         assertThat(security.getWkn(), is("747206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Wirecard AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1534,6 +1560,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4405431069"));
         assertThat(security.getWkn(), is("A0B9UT"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Hornbeck Offshore Svcs Inc. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1597,6 +1624,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US00845V3087"));
         assertThat(security.getWkn(), is("A0ET5J"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Agere Systems Inc. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1640,6 +1668,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
         assertThat(security.getWkn(), is("A0JMZB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("U n il  e ve r  N . V  . C e r t . v .A a n d e  l e n  E  O -, 1 6"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1682,6 +1711,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008232125"));
         assertThat(security.getWkn(), is("823212"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("De u t s  c he   L uf  t h a n s a A G v i nk  .N a  me n  s-  A kt  ie  n o . N  ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1724,6 +1754,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C V  S  He a  lt h  C  or  p . R  e gi s t  er e  d S  h a r e s  DL  -,  0 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1815,6 +1846,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US6516391066"));
         assertThat(security.getWkn(), is("853823"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("N e w m  o n t C o r p . Re  g is t e  r e d S h a r  e s  D L  1, 6 0"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1906,6 +1938,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A9AXXX6"));
         assertThat(security.getWkn(), is("A1XXXX"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h a r e s I I I x x x x x x x x x x x x x x x E T F B ea  re  r S h a r e s   ( D t.  Z  e r t .)  o  . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1948,6 +1981,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0991991039"));
         assertThat(security.getWkn(), is("123456"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("F oo B a r I n c . R eg  is  t er e d  S h  a r e s 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2039,6 +2073,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US74348T1025"));
         assertThat(security.getWkn(), is("A0B746"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("P  r os p e c t  C  ap i t a l   C o r p. Re g i s t e r e d  S h a r e s  D  L -  , 00 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2130,6 +2165,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B9M6RS56"));
         assertThat(security.getWkn(), is("A1W0MQ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S hs  VI -  JP  M  D L  EM  B d   E OH  U .  ET F D Re g i s t  er  ed   S ha  re s   o .N  ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2172,6 +2208,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A p  pl e  I  nc  . R e gi  st  e r ed   Sh a  re  s o  . N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2263,6 +2300,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1TNA70"));
         assertThat(security.getWkn(), is("A1TNA7"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SA N H A  G m b  H &   C o.  K  G Z- A n l e  ih e  v  .2  0 1 3 ( 2 3 / 2 6)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2305,6 +2343,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1TNA70"));
         assertThat(security.getWkn(), is("A1TNA7"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S A N HA  G m b H   & C  o.  K  G Z  -A  n le i h  e v  .2 0 1  3(  2 0 / 2 3)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2347,6 +2386,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Al l  i an z   S E v i  n k . N am  en  s - Ak t  ie  n  o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2389,6 +2429,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C VS  H e  a lt  h  Co  r p. R eg  is  te  r ed  S  h a re  s D  L -, 0 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2480,6 +2521,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA8911021050"));
         assertThat(security.getWkn(), is("914305"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("To r o  m on  t  I n du  st r i e  s L  t d . R eg  is  te r  ed  S h  ar e  s o  .N ."));
         assertThat(security.getCurrencyCode(), is("CAD"));
 
@@ -2571,6 +2613,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B0M62Q58"));
         assertThat(security.getWkn(), is("A0HGV0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s - M S C I  W o r  ld  U C I T S  E  T F R e g is  t er  e d S  h a r e s U S  D  (D i  st ) o N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2662,6 +2705,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5949181045"));
         assertThat(security.getWkn(), is("870747"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M  i c ro s  of  t C o  rp  . R eg  i s t e r ed  S h  ar  e s D L  - , 00 0  0 0 62  5"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2753,6 +2797,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
         assertThat(security.getWkn(), is("778928"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i Sh s - E  O C  o rp   Bd   La  r . Ca  p U  . ET F R e g i s te r e  d  S ha r e  s  o . N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2795,6 +2840,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007162000"));
         assertThat(security.getWkn(), is("716200"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("K  + S A  k t ie  n ge s  e l l sc  ha f t In h a b e r  -A k t i e n   o . N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2837,6 +2883,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4592001014"));
         assertThat(security.getWkn(), is("851399"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("I nt l  B u s i  ne  ss  M  a c hi  n e s  Co r p . R eg  i s te r  ed  S  ha r  es   DL  -  ,2 0"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2929,6 +2976,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US7427181091"));
         assertThat(security.getWkn(), is("852062"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PROCTER GAMBLE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2972,6 +3020,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AN8068571086"));
         assertThat(security.getWkn(), is("853390"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SCHLUMBERGER   DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3015,6 +3064,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CVS HEALTH CORP.   DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3058,6 +3108,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006766504"));
         assertThat(security.getWkn(), is("676650"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AURUBIS AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3101,6 +3152,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000120271"));
         assertThat(security.getWkn(), is("850727"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TOTAL S.E.        EO 2,50"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3144,6 +3196,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88579Y1010"));
         assertThat(security.getWkn(), is("851745"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3M CO.             DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3187,6 +3240,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0496786574"));
         assertThat(security.getWkn(), is("LYX0FS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MUL-LYX.S+P500UC.ETF DEO"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3230,6 +3284,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1TNA70"));
         assertThat(security.getWkn(), is("A1TNA7"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SANHA ANL 13/26 STZ"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3273,6 +3328,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE NA O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3316,6 +3372,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CVS HEALTH CORP.   DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3359,6 +3416,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA8911021050"));
         assertThat(security.getWkn(), is("914305"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TOROMONT INDS LTD."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3402,6 +3460,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1912161007"));
         assertThat(security.getWkn(), is("850663"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COCA-COLA CO.      DL-,25"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3445,6 +3504,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005790430"));
         assertThat(security.getWkn(), is("579043"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FUCHS PETROL.SE VZO O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3488,6 +3548,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B0M63284"));
         assertThat(security.getWkn(), is("A0HGV5"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IS EUR.PROP.YI.U.ETF EOD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3531,6 +3592,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000ETF7011"));
         assertThat(security.getWkn(), is("ETF701"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CS VERMOEG.STRATE.U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3573,6 +3635,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Al l  i an z   S E v i  n k . N am  en  s - Ak t  ie  n  o . N ."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3622,6 +3685,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE NA O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3671,6 +3735,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C VS  H e  a lt  h  Co  r p. R eg  is  te  r ed  S  h a re  s D  L -, 0 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -3720,6 +3785,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1266501006"));
         assertThat(security.getWkn(), is("859034"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CVS HEALTH CORP.   DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3769,6 +3835,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA8911021050"));
         assertThat(security.getWkn(), is("914305"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("To r o  m on  t  I n du  st r i e  s L  t d . R eg  is  te r  ed  S h  ar e  s o  .N ."));
         assertThat(security.getCurrencyCode(), is("CAD"));
 
@@ -3818,6 +3885,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA8911021050"));
         assertThat(security.getWkn(), is("914305"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TOROMONT INDS LTD."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3867,6 +3935,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
         assertThat(security.getWkn(), is("778928"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i Sh s - E  O C  o rp   Bd   La  r . Ca  p U  . ET F R e g i s te r e  d  S ha r e  s  o . N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3916,6 +3985,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
         assertThat(security.getWkn(), is("778928"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS-EO C.BD L.C.U.ETFEOD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3966,6 +4036,7 @@ public class ComdirectPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BP3QZJ36"));
         assertThat(security.getWkn(), is("A12ATD"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISIV-MSCI FRAN. U.ETF EOA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4006,7 +4077,9 @@ public class ComdirectPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0S9GB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xetra Gold"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4047,7 +4120,9 @@ public class ComdirectPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
         assertThat(security.getWkn(), is("A0S9GB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xetra Gold"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

@@ -228,14 +228,14 @@ public interface PClientOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
-
-  java.lang.String getPropertiesOrDefault(
+  /* nullable */
+java.lang.String getPropertiesOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
-
   java.lang.String getPropertiesOrThrow(
       java.lang.String key);
 

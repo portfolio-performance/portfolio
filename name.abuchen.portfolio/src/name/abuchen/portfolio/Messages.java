@@ -79,6 +79,7 @@ public class Messages extends NLS
     public static String CSVFormatNumberFrance;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
+    public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
     public static String CSVFormatYYYYMMDDSlashes;
     public static String CSVImportedSecurityLabel;
@@ -247,9 +248,9 @@ public class Messages extends NLS
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorInvalidURL;
+    public static String MsgErrorInvalidWKN;
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
     public static String MsgErrorMissingAPIKey;
-    public static String MsgErrorMissingDate;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
     public static String MsgErrorMissingPathToDateOrClose;
@@ -301,7 +302,6 @@ public class Messages extends NLS
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
-    public static String PDFMsgMissingShares;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;

@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: xxxx xxx xxx
+xxxxxxxxxx/00
+Vermerk der Bank: 1000
+2
+
+
+
+ Datum: 16.02.2023Seite: 1 von 1
+Ordernummer xxxxxxxxx.001
+Orderdatum 15.02.2023
+ORDERABRECHNUNG
+KAUF AM 15.02.2023 UM 10:51:09 AUSL.INVESTM.GESCH. NR. xxxxxxxxx.001
+Bezeichnung WKN ISIN
+T. ROWE PR.-GL.N.R.E.AUSD A0MKKC LU0272423673
+Einheit Umsatz
+ST 5,28416
+Preis pro Anteil 10,000000 USD
+Nettoinventarwert 52,84 USD
+Kurswert in EUR 49,50 EUR
+Devisenkurs 1,067400 EUR / USD
+Zwischensumme 49,50 EUR
+Consorsbank Ausgabegebühr 1,00% 0,50 EUR
+zulasten Konto-Nr. 0123456789 50,00 EUR
+Valuta 21.02.2023
+Bestand zugunsten Wertpapierrechnung Luxemburg
+CBL 62126
+Ausgabeaufschlag regulär 5,00%
+Sparplanname: Altersvorsorge
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

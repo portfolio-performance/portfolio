@@ -327,6 +327,12 @@ public class TimelineChart extends Chart // NOSONAR
         return answer;
     }
 
+    public void resetAxes()
+    {
+        for (IAxis axis : getAxisSet().getAxes())
+            axis.setRange(new Range(0, 1));
+    }
+
     public void adjustRange()
     {
         try

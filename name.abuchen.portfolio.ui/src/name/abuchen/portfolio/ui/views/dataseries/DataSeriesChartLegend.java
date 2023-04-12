@@ -489,8 +489,8 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
             int index = 0;
             for (int ii = 0; ii < children.length; ii++)
             {
-                if (children[ii] instanceof PaintItem)
-                    answer[index++] = (PaintItem) children[ii];
+                if (children[ii] instanceof PaintItem paintItem)
+                    answer[index++] = paintItem;
             }
 
             return answer;

@@ -1385,12 +1385,12 @@ public class StatementOfAssetsViewer
             if (value == null)
                 return null;
 
-            if (value instanceof Money)
-                return Values.Money.format((Money) value, client.getBaseCurrency());
-            else if (value instanceof Quote)
-                return Values.CalculatedQuote.format((Quote) value, client.getBaseCurrency());
-            else if (value instanceof Double)
-                return Values.Percent2.format((Double) value);
+            if (value instanceof Money money)
+                return Values.Money.format(money, client.getBaseCurrency());
+            else if (value instanceof Quote quote)
+                return Values.CalculatedQuote.format(quote, client.getBaseCurrency());
+            else if (value instanceof Double d)
+                return Values.Percent2.format(d);
 
             return null;
         }
@@ -1406,12 +1406,12 @@ public class StatementOfAssetsViewer
                 return null;
 
             double doubleValue = 0;
-            if (value instanceof Money)
-                doubleValue = ((Money) value).getAmount();
-            else if (value instanceof Quote)
-                doubleValue = ((Quote) value).getAmount();
-            else if (value instanceof Double)
-                doubleValue = (Double) value;
+            if (value instanceof Money money)
+                doubleValue = money.getAmount();
+            else if (value instanceof Quote quote)
+                doubleValue = quote.getAmount();
+            else if (value instanceof Double d)
+                doubleValue = d;
 
             if (doubleValue < 0)
                 return Colors.theme().redForeground();
@@ -1432,12 +1432,12 @@ public class StatementOfAssetsViewer
                 return null;
 
             double doubleValue = 0;
-            if (value instanceof Money)
-                doubleValue = ((Money) value).getAmount();
-            else if (value instanceof Quote)
-                doubleValue = ((Quote) value).getAmount();
-            else if (value instanceof Double)
-                doubleValue = (Double) value;
+            if (value instanceof Money money)
+                doubleValue = money.getAmount();
+            else if (value instanceof Quote quote)
+                doubleValue = quote.getAmount();
+            else if (value instanceof Double d)
+                doubleValue = d;
 
             if (doubleValue > 0)
                 return Images.GREEN_ARROW.image();

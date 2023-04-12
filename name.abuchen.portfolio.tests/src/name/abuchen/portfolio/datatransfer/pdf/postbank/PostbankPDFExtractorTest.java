@@ -54,6 +54,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("IE00BJ0KDQ92"));
         assertThat(security1.getWkn(), is("A1XB5U"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("XTR.(IE) - MSCI WORLD REGISTERED SHARES 1C O.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -61,6 +62,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0635178014"));
         assertThat(security2.getWkn(), is("ETF127"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("COMSTA.-MSCI EM.MKTS.TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -125,6 +127,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BZ0PKT83"));
         assertThat(security.getWkn(), is("A14YPA"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIV-EDGE MSCI WO.MULT.U.ETF REGISTERED SHARES USD (ACC)O.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -168,6 +171,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertThat(security.getWkn(), is("A1JX52"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -211,6 +215,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BD8HBD32"));
         assertThat(security.getWkn(), is("A2AN2J"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CIVITAS SOCIAL HOUSING PLC REGISTERED SHARES LS -,01"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -306,6 +311,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BF2B0K52"));
         assertThat(security.getWkn(), is("A2DTF1"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FRAN.LIBERTYQ EM.MAR.EQ.UC.ETF REGISTERED SHARES USD ACC.O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -349,6 +355,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US64110L1061"));
         assertThat(security.getWkn(), is("552484"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NETFLIX INC. REGISTERED SHARES DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -392,6 +399,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US53578A1088"));
         assertThat(security.getWkn(), is("A1H82D"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LINKEDIN CORP. REGISTERED SHS CL.A DL-,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -487,6 +495,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0274208692"));
         assertThat(security.getWkn(), is("DBX1MW"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTRACKERS MSCI WORLD SWAP INHABER-ANTEILE 1C O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -530,6 +539,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("IE00BZ163K21"));
         assertThat(security1.getWkn(), is("A143JM"));
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("VANGUARD USD CORPORATE B.U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -537,6 +547,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00BKX55T58"));
         assertThat(security2.getWkn(), is("A12CX1"));
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("VANG.FTSE DEVELOP.WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -544,6 +555,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00B3VVMM84"));
         assertThat(security3.getWkn(), is("A1JX51"));
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("VANGUARD FTSE EM.MARKETS U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -551,6 +563,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("IE00B945VV12"));
         assertThat(security4.getWkn(), is("A1T8FS"));
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("VANGUARD FTSE DEV.EUROPE U.ETF REGISTERED SHARES EUR DIS.ON"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -558,6 +571,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("IE00BF4RFH31"));
         assertThat(security5.getWkn(), is("A2DWBY"));
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("ISHSIII-MSCI WLD SM.CA.UCI.ETF REGISTERED SHARES USD(ACC)O.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -687,6 +701,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4781601046"));
         assertThat(security.getWkn(), is("853260"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("JOHNSON & JOHNSON  SHARES REGISTERED SHARES DL 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -780,6 +795,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006231004"));
         assertThat(security.getWkn(), is("623100"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("INFINEON TECHNOLOGIES AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -824,6 +840,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005557508"));
         assertThat(security.getWkn(), is("555750"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEUTSCHE TELEKOM AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -868,6 +885,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0Q4R36"));
         assertThat(security.getWkn(), is("A0Q4R3"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISH.ST.EU.600 HEALT.C.U.ETF DE INHABER-ANLAGEAKTIEN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -912,6 +930,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1FZS350"));
         assertThat(security.getWkn(), is("A0LEW8"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-DEV.MKTS PROP.YLD U.ETF REGISTERED SHS USD (DIST) O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1005,6 +1024,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US03027X1000"));
         assertThat(security.getWkn(), is("A1JRLA"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AMERICAN TOWER CORP. REGISTERED SHARES DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1098,6 +1118,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0029871042"));
         assertThat(security.getWkn(), is("971663"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FR.TEMP.INV.FDS -T.GL.BD FD NAMENS-ANTEILE A(MDIS.)USD O.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1191,6 +1212,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BD8HBD32"));
         assertThat(security.getWkn(), is("A2AN2J"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CIVITAS SOCIAL HOUSING PLC REGISTERED SHARES LS -,01"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -1284,6 +1306,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS0177089298"));
         assertThat(security.getWkn(), is("908043"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ENEL FINANCE INTL N.V. EO-MEDIUM-TERM NOTES 2003(23)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1328,6 +1351,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US500769JD71"));
         assertThat(security.getWkn(), is("A2YNRB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KREDITANST.F.WIEDERAUFBAU DL-ANLEIHE V.19(29)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1421,6 +1445,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BZ163K21"));
         assertThat(security.getWkn(), is("A143JM"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD USD CORPORATE B.U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1514,6 +1539,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS1014610254"));
         assertThat(security.getWkn(), is("A0JCCZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("2,625% VOLKSWAGEN LEASING MTN.V.14 15.1. 24"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1558,6 +1584,7 @@ public class PostbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46625HKC33"));
         assertThat(security.getWkn(), is("JPM4DQ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3,125% JPMORGAN CHASE & CO.NT.15 23.J/J 01:25"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

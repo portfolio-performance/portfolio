@@ -316,11 +316,11 @@ public final class ClientFilterMenu implements IMenuListener
 
         return new Item(label, uuids, new PortfolioClientFilter(portfolios, accounts));
     }
-    
-    public static String buildUUIDs(Object[] selected) 
+
+    public static String buildUUIDs(Object[] selected)
     {
         return Arrays.stream(selected)
-                        .map(o -> o instanceof Account ? ((Account) o).getUUID() : ((Portfolio) o).getUUID())
+                        .map(o -> o instanceof Account account ? account.getUUID() : ((Portfolio) o).getUUID())
                         .collect(Collectors.joining(",")); //$NON-NLS-1$
     }
 

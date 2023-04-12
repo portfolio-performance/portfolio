@@ -82,10 +82,10 @@ public class MovePlotKeyListener implements Listener
 
     private void adjustRange()
     {
-        if (chart instanceof ScatterChart)
-            ((ScatterChart) chart).adjustRange();
-        else if (chart instanceof TimelineChart)
-            ((TimelineChart) chart).adjustRange();
+        if (chart instanceof ScatterChart scatterChart)
+            scatterChart.adjustRange();
+        else if (chart instanceof TimelineChart timelineChart)
+            timelineChart.adjustRange();
         else
             chart.getAxisSet().adjustRange();
         chart.redraw();

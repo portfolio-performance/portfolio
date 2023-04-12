@@ -107,7 +107,7 @@ public class AboutDialog extends Dialog
         aboutTextBox.addListener(SWT.MouseDown, e -> openBrowser(e, aboutTextBox));
 
         String contributionsText = generateDeveloperListText(Messages.AboutTextDevelopers)
-                        + Messages.AboutTextTranslationDevelopers + Messages.AboutTextOtherSoftware;
+                        + Messages.AboutTextTranslationDevelopers + "\n\n" + Messages.AboutTextOtherSoftware; //$NON-NLS-1$
         styles = new ArrayList<>();
         contributionsText = addMarkdownLikeHyperlinks(contributionsText, styles);
 
