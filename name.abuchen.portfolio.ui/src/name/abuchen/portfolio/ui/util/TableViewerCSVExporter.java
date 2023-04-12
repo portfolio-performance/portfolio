@@ -65,24 +65,24 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
             for (int ii = 0; ii < columnCount; ii++)
             {
                 CellLabelProvider p = viewer.getLabelProvider(ii);
-                if (p instanceof SharesLabelProvider)
+                if (p instanceof SharesLabelProvider lp)
                 {
                     labelProvider[ii] = LabelProvider.createTextProvider(e -> {
-                        Long value = ((SharesLabelProvider) p).getValue(e);
+                        Long value = lp.getValue(e);
                         return value != null ? Values.Share.format(value) : ""; //$NON-NLS-1$
                     });
                 }
-                else if (p instanceof DateTimeLabelProvider)
+                else if (p instanceof DateTimeLabelProvider lp)
                 {
                     labelProvider[ii] = LabelProvider.createTextProvider(e -> {
-                        LocalDateTime dateTime = ((DateTimeLabelProvider) p).getValue(e);
+                        LocalDateTime dateTime = lp.getValue(e);
                         return dateTime != null ? dateTime.format(DATETIME_FORMAT_PATTERN) : ""; //$NON-NLS-1$
                     });
                 }
-                else if (p instanceof DateLabelProvider)
+                else if (p instanceof DateLabelProvider lp)
                 {
                     labelProvider[ii] = LabelProvider.createTextProvider(e -> {
-                        LocalDate dateTime = ((DateLabelProvider) p).getValue(e);
+                        LocalDate dateTime = lp.getValue(e);
                         return dateTime != null ? dateTime.format(DATE_FORMAT_PATTERN) : ""; //$NON-NLS-1$
                     });
                 }

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.61.5-SNAPSHOT</version>
+		<version>0.62.1-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -92,7 +92,7 @@
 	                            <goal>run</goal>
 	                        </goals>
 							<configuration>
-									<protocVersion>3.17.3</protocVersion>
+									<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
 	                                <addProtoSources>all</addProtoSources>
 	                                <includeMavenTypes>direct</includeMavenTypes>
 	                                <outputDirectory>protos</outputDirectory>

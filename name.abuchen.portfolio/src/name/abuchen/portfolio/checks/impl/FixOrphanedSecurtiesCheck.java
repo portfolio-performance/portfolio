@@ -30,7 +30,7 @@ public class FixOrphanedSecurtiesCheck implements Check
                         .collect(Collectors.toSet());
 
         missing.stream().forEach(security -> {
-            security.setName(security.getName() + Messages.LabelSuffixEntryCorrected);
+            security.setName(security.getName() + " " + Messages.LabelSuffixEntryCorrected); //$NON-NLS-1$
             client.addSecurity(security);
         });
 

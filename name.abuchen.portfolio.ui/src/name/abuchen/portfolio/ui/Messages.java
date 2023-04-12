@@ -420,6 +420,7 @@ public class Messages extends NLS
     public static String ErrorKeyAlreadyUsed;
     public static String ExportWizardAccountTransactions;
     public static String ExportWizardAllTransactionsAktienfreundeNet;
+    public static String ExportWizardCurrencyConversionQuotes;
     public static String ExportWizardDescription;
     public static String ExportWizardErrorExporting;
     public static String ExportWizardHistoricalQuotes;
@@ -951,6 +952,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidCurrency;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
+    public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
     public static String MsgErrorDividendsYearBetween1900AndNow;
@@ -960,6 +962,7 @@ public class Messages extends NLS
     public static String MsgErrorNoInvestmentVehicleFoundAtURL;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
+    public static String MsgErrorPortfolioNotExist;
     public static String MsgErrorSavingIniFile;
     public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
@@ -1101,6 +1104,10 @@ public class Messages extends NLS
     public static String PresetsPrefPageStartOfDay;
     public static String PresetsPrefPageTime;
     public static String PresetsPrefPageTitle;
+    public static String SecuritiesChart_NoDataMessage_NoHoldings;
+    public static String SecuritiesChart_NoDataMessage_NoPrices;
+    public static String SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod;
+    public static String SecuritiesChart_NoDataMessage_NoSecuritySelected;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldNotZero;

@@ -50,6 +50,7 @@ public class RevolutLtdPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88160R1014"));
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("TSLA"));
         assertThat(security.getName(), is("Tesla"));
         new AssertImportActions().check(results, CurrencyUnit.USD);

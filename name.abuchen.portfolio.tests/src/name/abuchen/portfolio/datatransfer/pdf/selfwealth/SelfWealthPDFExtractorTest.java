@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.selfwealth;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,6 +45,8 @@ public class SelfWealthPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("UMAX"));
         assertThat(security.getName(), is("BETA S&P500 YIELDMAX"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -86,6 +89,8 @@ public class SelfWealthPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("UMAX"));
         assertThat(security.getName(), is("BETA S&P500 YIELDMAX"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -128,6 +133,8 @@ public class SelfWealthPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("UMAX"));
         assertThat(security.getName(), is("BETA S&P500 YIELDMAX"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -170,6 +177,8 @@ public class SelfWealthPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("WPL"));
         assertThat(security.getName(), is("WOODSIDE PETROLEUM"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -212,6 +221,8 @@ public class SelfWealthPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("WPL"));
         assertThat(security.getName(), is("WOODSIDE PETROLEUM"));
         assertThat(security.getCurrencyCode(), is("AUD"));

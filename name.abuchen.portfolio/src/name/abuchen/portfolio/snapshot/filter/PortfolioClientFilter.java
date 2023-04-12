@@ -54,20 +54,20 @@ public class PortfolioClientFilter implements ClientFilter
 
     public void addElement(Object element)
     {
-        if (element instanceof Portfolio)
-            portfolios.add((Portfolio) element);
-        else if (element instanceof Account)
-            accounts.add((Account) element);
+        if (element instanceof Portfolio portfolio)
+            portfolios.add(portfolio);
+        else if (element instanceof Account account)
+            accounts.add(account);
         else
             throw new IllegalArgumentException();
     }
     
     public boolean hasElement(Object element)
     {
-        if (element instanceof Portfolio)
-             return portfolios.contains((Portfolio) element);
-        else if (element instanceof Account)
-            return accounts.contains((Account) element);
+        if (element instanceof Portfolio portfolio)
+            return portfolios.contains(portfolio);
+        else if (element instanceof Account account)
+            return accounts.contains(account);
         else
             throw new IllegalArgumentException();
     }

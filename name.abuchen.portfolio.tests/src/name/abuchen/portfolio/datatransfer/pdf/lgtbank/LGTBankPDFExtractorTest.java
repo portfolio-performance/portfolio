@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.lgtbank;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class LGTBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0010244508"));
         assertThat(security.getWkn(), is("861837"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A.P. Moeller - Maersk A/S Namen- und Inhaber-Aktien -B-"));
         assertThat(security.getCurrencyCode(), is("DKK"));
 
@@ -91,6 +93,7 @@ public class LGTBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0060534915"));
         assertThat(security.getWkn(), is("A1XA8R"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Novo Nordisk A/S Namen-Aktien -B-"));
         assertThat(security.getCurrencyCode(), is("DKK"));
 
@@ -134,6 +137,7 @@ public class LGTBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000124141"));
         assertThat(security.getWkn(), is("1098758"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Veolia Environnement SA Namen- und Inhaber-Aktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

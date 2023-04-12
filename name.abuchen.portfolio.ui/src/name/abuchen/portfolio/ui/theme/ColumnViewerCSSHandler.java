@@ -12,10 +12,8 @@ public class ColumnViewerCSSHandler implements ICSSPropertyHandler
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof ColumnViewerElement)
+        if (element instanceof ColumnViewerElement viewer)
         {
-            ColumnViewerElement viewer = (ColumnViewerElement) element;
-
             switch (property)
             {
                 case "swt-lines-visible": //$NON-NLS-1$
@@ -32,10 +30,8 @@ public class ColumnViewerCSSHandler implements ICSSPropertyHandler
     @Override
     public String retrieveCSSProperty(Object element, String property, String pseudo, CSSEngine engine) throws Exception
     {
-        if (element instanceof ColumnViewerElement)
+        if (element instanceof ColumnViewerElement viewer)
         {
-            ColumnViewerElement viewer = (ColumnViewerElement) element;
-
             switch (property)
             {
                 case "swt-lines-visible": //$NON-NLS-1$

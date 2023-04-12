@@ -128,11 +128,10 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
 
         for (Object price : ohlcArray)
         {
-            if (price instanceof JSONArray)
+            if (price instanceof JSONArray priceArray)
             {
                 try
                 {
-                    JSONArray priceArray = (JSONArray) price;
                     LatestSecurityPrice p = fromArray(priceArray);
 
                     if (previous != null && previous.getDate().equals(p.getDate()))

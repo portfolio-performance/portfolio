@@ -1,0 +1,75 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.3
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0119788888
+Depotinhaber:
+Herrn Max Mustermann
+Max Mustermann
+Stöckach Bankverbindung generell:IBAN:
+Strasse 7 DExx xxx5 0101 xxxx xxx2 87
+88888 Dorf Spk Schweinfurt-Haßberge
+Kontoinhaber:
+Mustermann, Max
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+24. Februar 2023
+Ertragsabrechnungen Auszug: 1 / Seite 1 von 2
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+
+ERTRAGSAUSSCHÜTTUNG / KAUF AUS ERTRAG
+Ertragstermin: 24.02.2023
+Anteilbestand am Ertragstermin: 33,823
+Ausschüttung (pro Anteil EUR 2,3300000): EUR 78,81
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 00 Auftragsnummer: 9457 2850
+Verwahrart: GiroSammel Abrechnungstag: 24.02.2023
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Ausschüttung EUR 78,81 Kurs/Kaufpreis Bestand alt: 33,823
+- Verrechnete Steuern EUR 15,34 EUR 63,47 EUR 138,830000 Anteilumsatz: 0,457
+=Wiederanlagebetrag EUR 63,47 Bestand neu: 34,280
+Kirchensteuer wurde berücksichtigt.
+
+ERTRAGSAUSSCHÜTTUNG / KAUF AUS ERTRAG
+Ertragstermin: 24.02.2023
+Anteilbestand am Ertragstermin: 8,848
+Ausschüttung (pro Anteil EUR 2,3300000): EUR 20,62
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 01 Auftragsnummer: 9457 2851
+Verwahrart: GiroSammel Abrechnungstag: 24.02.2023
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Ausschüttung EUR 20,62 Kurs/Kaufpreis Bestand alt: 8,848
+- Verrechnete Steuern EUR 4,01 EUR 16,61 EUR 138,830000 Anteilumsatz: 0,120
+=Wiederanlagebetrag EUR 16,61 Bestand neu: 8,968
+Kirchensteuer wurde berücksichtigt.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0119788888
+Auszug: 1 / Seite 2 von 2
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste EUR 0,00
+(sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung übersandt, welche Sie bis Ende Februar des Folgejahres erhalten. Die erwirtschafteten
+Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind in der
+Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als sog.
+Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Eine evtl. Meldepflicht nach § 63ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Schweinfurt-Haßberge.
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen. 
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

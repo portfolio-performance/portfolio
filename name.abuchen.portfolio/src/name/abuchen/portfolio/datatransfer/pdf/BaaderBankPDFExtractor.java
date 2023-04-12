@@ -259,7 +259,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$")
                 .match("^(?<name1>.*)$")
                 .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Zahlungszeitraum") && !v.get("name1").startsWith("Payment"))
+                    if (!v.get("name1").startsWith("Zahlungszeitraum")
+                                    && !v.get("name1").startsWith("Payment")
+                                    && !v.get("name1").startsWith("Bruttobetrag"))
                         v.put("name", v.get("name") + " " + v.get("name1"));
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -337,10 +339,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         item.setFailureMessage(ctx.getString(FAILURE));
                         return item;
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    return null;
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);

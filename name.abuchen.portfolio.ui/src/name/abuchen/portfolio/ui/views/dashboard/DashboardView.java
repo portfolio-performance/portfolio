@@ -132,11 +132,10 @@ public class DashboardView extends AbstractHistoricView
         {
             Object droppedElement = ((StructuredSelection) transfer.getSelection()).getFirstElement();
 
-            if (!(droppedElement instanceof Composite))
+            if (!(droppedElement instanceof Composite droppedComposite))
                 return;
 
             // check if dropped upon itself
-            Composite droppedComposite = (Composite) droppedElement;
             if (droppedComposite.equals(dropTarget))
                 return;
 

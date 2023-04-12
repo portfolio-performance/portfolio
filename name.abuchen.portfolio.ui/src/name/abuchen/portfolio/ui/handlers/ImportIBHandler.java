@@ -47,6 +47,18 @@ public class ImportIBHandler
 
     private void runImport(MPart part, Shell shell, Client client)
     {
+        if (client.getAccounts().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
+            return;
+        }
+
+        if (client.getPortfolios().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorPortfolioNotExist);
+            return;
+        }
+
         try
         {
             Extractor extractor = new IBFlexStatementExtractor(client);

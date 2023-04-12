@@ -65,18 +65,16 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 0:
                     return Values.DateTime.format(t.getDateTime());
                 case 1:
-                    if (t instanceof AccountTransaction)
-                        return ((AccountTransaction) t).getType().toString();
-                    else if (t instanceof PortfolioTransaction)
-                        return ((PortfolioTransaction) t).getType().toString();
+                    if (t instanceof AccountTransaction at)
+                        return at.getType().toString();
+                    else if (t instanceof PortfolioTransaction pt)
+                        return pt.getType().toString();
                     return null;
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
                     if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
-                    {                     
                         return Values.Share.format(model.calculateNewStock(t.getShares()));
-                    }
                     return null;
                 case 4:
                     return pair.getOwner().toString();

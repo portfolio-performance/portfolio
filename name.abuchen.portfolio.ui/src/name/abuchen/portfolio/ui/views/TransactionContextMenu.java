@@ -124,7 +124,8 @@ public class TransactionContextMenu
         }
     }
 
-    private void fillContextMenuAccountTx(IMenuManager manager, boolean fullContextMenu, TransactionPair<AccountTransaction> tx)
+    private void fillContextMenuAccountTx(IMenuManager manager, boolean fullContextMenu,
+                    TransactionPair<AccountTransaction> tx)
     {
         Action action = createEditAccountTransactionAction(tx);
         action.setAccelerator(SWT.MOD1 | 'E');
@@ -138,7 +139,8 @@ public class TransactionContextMenu
         }
     }
 
-    private void fillContextMenuPortfolioTx(IMenuManager manager, boolean fullContextMenu, TransactionPair<PortfolioTransaction> tx)
+    private void fillContextMenuPortfolioTx(IMenuManager manager, boolean fullContextMenu,
+                    TransactionPair<PortfolioTransaction> tx)
     {
         PortfolioTransaction ptx = tx.getTransaction();
 
@@ -156,16 +158,14 @@ public class TransactionContextMenu
     private Action createEditAccountTransactionAction(TransactionPair<AccountTransaction> tx)
     {
         // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
         {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry)
+        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry entry)
         {
-            AccountTransferEntry entry = (AccountTransferEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(AccountTransferDialog.class, d -> d.setEntry(entry));
         }
@@ -181,16 +181,14 @@ public class TransactionContextMenu
     private Action createEditPortfolioTransactionAction(TransactionPair<PortfolioTransaction> tx)
     {
         // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
         {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry entry)
         {
-            PortfolioTransferEntry entry = (PortfolioTransferEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
         }

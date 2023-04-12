@@ -48,10 +48,10 @@ public class AktienfreundeNetExporter
             // only buy/sell/dividend transactions
             for (Transaction t : transactions)
             {
-                if (t instanceof AccountTransaction)
-                    writeDividend(printer, (AccountTransaction) t);
-                else if (t instanceof PortfolioTransaction)
-                    writeBuySell(printer, (PortfolioTransaction) t);
+                if (t instanceof AccountTransaction at)
+                    writeDividend(printer, at);
+                else if (t instanceof PortfolioTransaction pt)
+                    writeBuySell(printer, pt);
             }
         }
     }

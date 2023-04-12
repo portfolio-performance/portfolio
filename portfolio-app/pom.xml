@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.61.5-SNAPSHOT</version>
+	<version>0.62.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>

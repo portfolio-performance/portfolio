@@ -196,21 +196,22 @@ public class DataSeriesSet
     private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT_PRETAX, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax, wheel.next()));
+                        Messages.PerformanceChartLabelEntirePortfolio + " " + Messages.LabelSuffix_PreTax, //$NON-NLS-1$
+                        wheel.next()));
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
-                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
+                            portfolio.getName() + " " + Messages.LabelSuffix_PreTax, wheel.next())); //$NON-NLS-1$
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName() //$NON-NLS-1$
-                                            + Messages.LabelSuffix_PreTax,
+                                            + " " + Messages.LabelSuffix_PreTax, //$NON-NLS-1$
                             wheel.next()));
 
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
-                            account.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
+                            account.getName() + " " + Messages.LabelSuffix_PreTax, wheel.next())); //$NON-NLS-1$
 
         addCustomClientFilters(client, preferences, true, wheel);
     }
@@ -228,7 +229,8 @@ public class DataSeriesSet
         {
             DataSeries series = new DataSeries(
                             isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
-                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(), wheel.next());
+                            isPreTax ? item.getLabel() + " " + Messages.LabelSuffix_PreTax : item.getLabel(), //$NON-NLS-1$
+                            wheel.next());
 
             if (addedSeries.add(series.getUUID()))
                 availableSeries.add(series);

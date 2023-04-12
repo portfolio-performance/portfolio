@@ -237,10 +237,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 // Rückzahlungskurs 100 % Rückzahlungsdatum 31.07.2014
                 .section("note").optional()
                 .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%)).*$")
-                .assign((t, v) -> {
-                    if (t.getNote() == null)
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap((t, ctx) -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)

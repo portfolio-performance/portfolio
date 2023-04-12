@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.openbanksa;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ public class OpenBankSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BD0NC144"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHARES EURO GOVT INF I'EUR"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -88,6 +91,8 @@ public class OpenBankSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0823415285"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BNP ENERGY TRANSITION P"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -130,6 +135,8 @@ public class OpenBankSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU2403432821"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CLEOME INDEX USA EQUITIES V EURHDG ACC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -172,6 +179,8 @@ public class OpenBankSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0210245469"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ROBECO EURO GOVERMENT BONDS I'EUR ACC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

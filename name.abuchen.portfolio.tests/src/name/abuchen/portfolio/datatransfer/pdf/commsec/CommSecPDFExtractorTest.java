@@ -45,6 +45,8 @@ public class CommSecPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("QAN"));
         assertThat(security.getName(), is("QANTAS AIRWAYS LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -59,7 +61,7 @@ public class CommSecPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(277)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Order No: N118818020"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(1029.92))));
@@ -87,6 +89,8 @@ public class CommSecPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("MSB"));
         assertThat(security.getName(), is("MESOBLAST LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -101,7 +105,7 @@ public class CommSecPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4500)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Order No: NXXXXXXXX"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(20495.47))));
@@ -129,6 +133,8 @@ public class CommSecPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("WTC"));
         assertThat(security.getName(), is("WISETECH GLOBAL LIMITED"));
         assertThat(security.getCurrencyCode(), is("AUD"));
@@ -143,7 +149,7 @@ public class CommSecPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Order No: NXXXXXX"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("AUD", Values.Amount.factorize(28031.94))));

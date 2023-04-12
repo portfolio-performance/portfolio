@@ -52,6 +52,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88579Y1010"));
         assertThat(security.getWkn(), is("851745"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3M CO. REGISTERED SHARES DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +96,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE VINK.NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -138,6 +140,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88579Y1010"));
         assertThat(security.getWkn(), is("851745"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3M CO. REGISTERED SHARES DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -229,6 +232,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE VINK.NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

@@ -53,9 +53,8 @@ public class QuoteFromTransactionExtractor
         {
             Transaction t = p.getTransaction();
             // check the type of the transaction
-            if (t instanceof PortfolioTransaction)
+            if (t instanceof PortfolioTransaction pt)
             {
-                PortfolioTransaction pt = (PortfolioTransaction) t;
                 // get date and quote and build a price from it
                 Quote q = pt.getGrossPricePerShare();
                 LocalDate d = pt.getDateTime().toLocalDate();

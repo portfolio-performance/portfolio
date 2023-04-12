@@ -19,7 +19,7 @@ public class ReadOnlyPortfolio extends Portfolio
 
     public Portfolio unwrap()
     {
-        return source instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) source).unwrap() : source;
+        return source instanceof ReadOnlyPortfolio readOnly ? readOnly.unwrap() : source;
     }
 
     public Portfolio getSource()
@@ -57,6 +57,6 @@ public class ReadOnlyPortfolio extends Portfolio
 
     public static Portfolio unwrap(Portfolio portfolio)
     {
-        return portfolio instanceof ReadOnlyPortfolio ? unwrap(((ReadOnlyPortfolio) portfolio).source) : portfolio;
+        return portfolio instanceof ReadOnlyPortfolio readOnly ? unwrap(readOnly.source) : portfolio;
     }
 }

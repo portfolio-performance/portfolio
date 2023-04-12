@@ -90,7 +90,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         @Override
         public boolean isConflicting(ISchedulingRule rule)
         {
-            return rule instanceof HostSchedulingRule && ((HostSchedulingRule) rule).host.equals(this.host);
+            return rule instanceof HostSchedulingRule hostSchedulingRule && hostSchedulingRule.host.equals(this.host);
         }
 
         public static ISchedulingRule createFor(String url)

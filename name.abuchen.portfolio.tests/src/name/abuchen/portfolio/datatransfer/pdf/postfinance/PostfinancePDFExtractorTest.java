@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -98,6 +101,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0025751329"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LOGITECH N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -142,6 +147,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000PAH0038"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PORSCHE AUTOMOBIL HOLDING PRF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -237,6 +244,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0188802960"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Pictet - Japan Index - I"));
         assertThat(security.getCurrencyCode(), is("JPY"));
 
@@ -332,6 +341,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BD4TYL27"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBSETF MSCI USA hdg to CHF"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -374,6 +385,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -415,6 +428,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0032912732"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS ETF CH - SLI CHF A"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -456,6 +471,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0019396990"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("YPSOMED HLDG"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 

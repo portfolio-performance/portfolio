@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
 
+import name.abuchen.portfolio.util.TextUtil;
+
 public class TestUtilities
 {
     private TestUtilities()
@@ -55,15 +57,19 @@ public class TestUtilities
 
             try
             {
+                String description = bundle.getBaseBundleName() + "_" + bundle.getLocale() + "_" + key; //$NON-NLS-1$ //$NON-NLS-2$
                 String value = bundle.getString(key);
 
                 String test = MessageFormat.format(value, (Object) null);
-                assertThat(test, is(notNullValue()));
+                assertThat(description, test, is(notNullValue()));
 
                 // replacement character
-                assertFalse(value, value.contains("\uFFFD")); //$NON-NLS-1$
-                assertFalse(value, value.contains("\uFFEF")); //$NON-NLS-1$
-                assertFalse(value, value.contains("\uFFBF")); //$NON-NLS-1$
+                assertFalse(description, value.contains("\uFFFD")); //$NON-NLS-1$
+                assertFalse(description, value.contains("\uFFEF")); //$NON-NLS-1$
+                assertFalse(description, value.contains("\uFFBF")); //$NON-NLS-1$
+
+                // check for leading and trailing whitespace
+                assertThat(description, value, is(TextUtil.trim(value)));
             }
             catch (IllegalArgumentException e)
             {

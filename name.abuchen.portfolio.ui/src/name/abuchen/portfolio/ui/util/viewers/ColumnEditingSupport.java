@@ -121,9 +121,9 @@ public abstract class ColumnEditingSupport
         int feature = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
                         | ColumnViewerEditor.TABBING_VERTICAL | ColumnViewerEditor.KEYBOARD_ACTIVATION;
 
-        if (viewer instanceof TableViewer)
-            TableViewerEditor.create((TableViewer) viewer, null, activationStrategy, feature);
-        else if (viewer instanceof TreeViewer)
-            TreeViewerEditor.create((TreeViewer) viewer, activationStrategy, feature);
+        if (viewer instanceof TableViewer tableViewer)
+            TableViewerEditor.create(tableViewer, null, activationStrategy, feature);
+        else if (viewer instanceof TreeViewer treeViewer)
+            TreeViewerEditor.create(treeViewer, activationStrategy, feature);
     }
 }

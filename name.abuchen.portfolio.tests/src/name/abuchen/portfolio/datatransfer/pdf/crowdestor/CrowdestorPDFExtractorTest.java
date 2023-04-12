@@ -56,7 +56,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-16T00:00")));
@@ -67,7 +67,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-17T00:00")));
@@ -78,7 +78,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-18T00:00")));
@@ -89,7 +89,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-19T00:00")));
@@ -100,7 +100,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-20T00:00")));
@@ -111,7 +111,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-21T00:00")));
@@ -122,7 +122,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-22T00:00")));
@@ -133,7 +133,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-23T00:00")));
@@ -144,7 +144,7 @@ public class CrowdestorPDFExtractorTest
         item = iter.next();
 
         // assert transaction
-         transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-24T00:00")));

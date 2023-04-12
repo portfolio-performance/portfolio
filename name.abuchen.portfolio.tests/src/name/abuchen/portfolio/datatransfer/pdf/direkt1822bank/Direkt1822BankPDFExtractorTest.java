@@ -32,7 +32,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class direkt1822bankPDFExtractorTest
+public class Direkt1822BankPDFExtractorTest
 {
     @Test
     public void testWertpapierKauf01()
@@ -52,6 +52,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTA.-MSCI EM.MKTS.TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +96,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392495023"));
         assertThat(security.getWkn(), is("ETF114"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTA.-MSCI PACIFIC TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -138,6 +140,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0444971666"));
         assertThat(security.getWkn(), is("A1CU1W"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("THREADNEEDLE L-GLOBAL TECHNOL. NAMENS-ANTEILE AU USD O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -233,6 +236,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LYXOR MSCI EMERG.MKTS U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -276,6 +280,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0290355717"));
         assertThat(security.getWkn(), is("DBX0AC"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTR.II EUROZONE GOV.BOND INHABER-ANTEILE 1C O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -319,6 +324,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US10111G1011"));
         assertThat(security.getWkn(), is("111111"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("EXXON MOBIL CORP. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -362,6 +368,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LYXOR MSCI EMERG.MKTS U.ETF INH.-AN. I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -405,6 +412,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYM31M36"));
         assertThat(security.getWkn(), is("A2AFCX"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIV-FA.AN.HI.YI.CO.BD U.ETF REGISTERED SHARES USD O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -496,6 +504,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000ETFL078"));
         assertThat(security.getWkn(), is("ETFL07"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEKA EO STOXX SEL.DIV.30 U.ETF INHABER-ANTEILE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -538,6 +547,7 @@ public class direkt1822bankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US30231G1022"));
         assertThat(security.getWkn(), is("852549"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("EXXON MOBIL CORP. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

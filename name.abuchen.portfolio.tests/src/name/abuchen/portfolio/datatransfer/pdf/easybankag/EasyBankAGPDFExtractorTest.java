@@ -53,6 +53,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UK5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h . S T . E u . 6 00 Bas.Res.U.ETF DE Inhaber-Anlageaktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +97,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYZK4776"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h a r e s  I V - Healthc.Innovation Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -137,6 +141,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYWQWR46"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("V a n E c k  V i d  eSports UC. ETF Reg. Shares A USD Acc. o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -179,6 +185,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI World U.ETF Registered Shs USD (Acc) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -221,6 +229,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BGL86Z12"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h a r e s  I V - Electr.Veh.+Dr.Tech Registered Shares USD Acc.o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -263,6 +273,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BZ0PKT83"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I V - E d g e MSCI Wo.Mult.U.ETF Registered Shares USD (Acc)o.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -305,6 +317,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0010527275"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("L . M S C I  W a t . ESG F.(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -347,6 +361,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B9CQXS71"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S P D R  S & P  G l ob.Div.Aristocr.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -389,6 +405,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s - E O  C o r p Bd Lar.Cap U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -431,6 +449,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYZK4883"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I V - D i g i talisation U.ETF Registered Shares USD (Acc) oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -473,6 +493,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1XNHC34"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I - G l . C lean Energy U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -515,6 +537,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BM67HK77"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X t r . ( I E ) - M S CI Wrld Health Care Registered Shares 1C USD o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -557,6 +581,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BM67HT60"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X t r . ( I E ) - M S CI Wo.Inform.Techn. Registered Shares 1C USD o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -599,6 +625,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005557508"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("D E U T S C H E  T E LEKOM AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -641,6 +669,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000815402"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBM Development AG STAMMAKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -683,6 +713,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006204407"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KUKA AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -725,6 +757,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1912161007"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COCA-COLA CO., THE Registered Shares DL -,25"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -767,6 +801,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BM67HK77"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X t r . ( I E ) - M S CI Wrld Health Care Registered Shares 1C USD o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -809,6 +845,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BZ0PKT83"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I V - E d g e MSCI Wo.Mult.U.ETF Registered Shares USD (Acc)o.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -851,6 +889,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s - E O  C o r p Bd Lar.Cap U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -893,6 +933,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B9CQXS71"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S P D R  S & P  G l ob.Div.Aristocr.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -935,6 +977,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI World U.ETF Registered Shs USD (Acc) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -977,6 +1021,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYZK4776"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h a r e s  I V - Healthc.Innovation Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1019,6 +1065,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UK5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h . S T . E u . 6 00 Bas.Res.U.ETF DE Inhaber-Anlageaktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1061,6 +1109,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0010527275"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("L . M S C I  W a t . ESG F.(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1103,6 +1153,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BGL86Z12"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h a r e s  I V - Electr.Veh.+Dr.Tech Registered Shares USD Acc.o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1145,6 +1197,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYWQWR46"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("V a n E c k  V i d  eSports UC. ETF Reg. Shares A USD Acc. o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1187,6 +1241,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYZK4883"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I V - D i g i talisation U.ETF Registered Shares USD (Acc) oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1229,6 +1285,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1XNHC34"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I - G l . C lean Energy U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1271,6 +1329,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BM67HT60"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X t r . ( I E ) - M S CI Wo.Inform.Techn. Registered Shares 1C USD o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1313,6 +1373,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000APOST4"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("O E S T E R R E I C H ISCHE POST AG AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1355,6 +1417,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000743059"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("OMV AG AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1397,6 +1461,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006204407"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KUKA AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1439,6 +1505,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0231351067"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AMAZON.COM INC. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1481,6 +1549,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A l l i a n z  S E vink.Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1522,6 +1592,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005552004"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("D E U T S C H E  P O ST AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1563,6 +1635,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B9CQXS71"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S P D R  S & P  G l ob.Div.Aristocr.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1653,6 +1727,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US7427181091"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("P R O C T E R  &  G AMBLE CO., THE Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1743,6 +1819,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007164600"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S A P  S E Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1784,6 +1862,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1XNHC34"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I - G l . C lean Energy U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1874,6 +1954,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000APOST4"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("O E S T E R R E I C H ISCHE POST AG AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1915,6 +1997,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("A l l i a n z  S E vink.Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1956,6 +2040,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005552004"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("D E U T S C H E  P O ST AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1997,6 +2083,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B9CQXS71"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S P D R  S & P  G l ob.Div.Aristocr.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2087,6 +2175,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007164600"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S A P  S E Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2128,6 +2218,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1XNHC34"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I - G l . C lean Energy U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2218,6 +2310,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000821103"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNIQA Insurance Group AG Stamm-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2259,6 +2353,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005937007"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MAN SE Inhaber-Stammaktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2300,6 +2396,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US46625H1005"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("JPMorgan Chase & Co. Registered Shares DL 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2390,6 +2488,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UK5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h . S T . E u . 6 00 Bas.Res.U.ETF DE Inhaber-Anlageaktien"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2431,6 +2531,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UH1"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h . S T . G l . S el.Div.100 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2472,6 +2574,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032523478"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s - E O  C o r p Bd Lar.Cap U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2513,6 +2617,8 @@ public class EasyBankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A14J587"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("t h y s s e n k r u p p AG Medium Term Notes v.15(25)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

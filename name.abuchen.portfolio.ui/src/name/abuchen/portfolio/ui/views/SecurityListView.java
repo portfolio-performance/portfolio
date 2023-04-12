@@ -195,7 +195,7 @@ public class SecurityListView extends AbstractFinanceView
                         newSecurity.setLatestFeed(QuoteFeed.MANUAL);
                         newSecurity.setCurrencyCode(null);
                         newSecurity.setTickerSymbol(region.getId());
-                        newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
+                        newSecurity.setName(region.getName() + " " + Messages.LabelSuffix_HICP); //$NON-NLS-1$
                         newSecurity.setCalendar(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
 
                         addNewSecurity(newSecurity);
@@ -373,10 +373,8 @@ public class SecurityListView extends AbstractFinanceView
         {
             for (Object attribute : security.getAttributes().getMap().values())
             {
-                if (!(attribute instanceof LimitPrice))
+                if (!(attribute instanceof LimitPrice limit))
                     continue;
-
-                LimitPrice limit = (LimitPrice) attribute;
 
                 SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
                 if (latest != null && limit.isExceeded(latest))

@@ -239,9 +239,9 @@ public class SashLayout extends Layout
     protected void layout(Composite composite, boolean flushCache)
     {
         Rectangle bounds = composite.getBounds();
-        if (composite instanceof Shell)
+        if (composite instanceof Shell shell)
         {
-            bounds = ((Shell) composite).getClientArea();
+            bounds = shell.getClientArea();
         }
         else
         {

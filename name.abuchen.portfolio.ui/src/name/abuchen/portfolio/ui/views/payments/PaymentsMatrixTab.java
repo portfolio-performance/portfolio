@@ -37,6 +37,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
@@ -135,8 +136,8 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             if (!selection.isEmpty())
             {
                 InvestmentVehicle vehicle = ((PaymentsViewModel.Line) selection.getFirstElement()).getVehicle();
-                if (vehicle instanceof Security)
-                    selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
+                if (vehicle instanceof Security security)
+                    selectionService.setSelection(new SecuritySelection(model.getClient(), security));
             }
         });
 
@@ -318,13 +319,13 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         Line line = (Line) selection.getFirstElement();
         InvestmentVehicle vehicle = line.getVehicle();
-        if (vehicle instanceof Account)
+        if (vehicle instanceof Account account)
         {
-            new AccountContextMenu(view).menuAboutToShow(manager, (Account) vehicle, null);
+            new AccountContextMenu(view).menuAboutToShow(manager, ReadOnlyAccount.unwrap(account), null);
         }
-        else if (vehicle instanceof Security)
+        else if (vehicle instanceof Security security)
         {
-            new SecurityContextMenu(view).menuAboutToShow(manager, (Security) vehicle);
+            new SecurityContextMenu(view).menuAboutToShow(manager, security);
         }
     }
 }

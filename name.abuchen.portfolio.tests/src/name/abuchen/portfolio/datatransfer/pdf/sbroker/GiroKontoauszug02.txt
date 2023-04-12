@@ -1,0 +1,248 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+S Sparkasse
+Schweinfurt-Haßberge
+341 00 00 81
+Herrn Ihr Ansprechpartner:
+Max Mustermann Max Mustermann
+Strasse Kundenberatung Stadt
+Frankenweg 7 Marktplatz 7
+99999 Stadt 99999 Stadt
+Telefon 99999 99-764
+Fax 99999 99-499
+xxxxxx@sparkasse-sw-has.de
+ 
+ 
+ 
+1. April 2020
+. Kontoauszug 4/2020 Seite 1 von 5
+Giro Sm@rt 190999981, DE99 9999 9999 9999 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 28.02.2020, Auszug Nr.    3            2,02+
+02.03.2020 02.03.2020 Lastschrift              2,00-
+HFH Hamburger Fern-Hochschule gemei
+200088229716999999999999Nr.1110428/
+1.2.2020Studiengebuehren Monat 02/2
+020
+2000882297
+. 16999999999999
+Gläubiger-ID: DE88ZZZ00000410829
+02.03.2020 02.03.2020 Überweisung online              1,00-
+Armin Mustermann
+DATUM 01.03.2020, 20.59 UHR
+1.TAN 296567
+b03e5e226-6069921-20590733-20200301
+02.03.2020 02.03.2020 Lastschrift               3,50-
+IGM Schweinfurt
+Industriegewerkschaft Metall
+BEITRAG BIS 02/20 MANDATSREF 999999
+3701 GLAEUBIGER-ID DE71ZZZ999999999
+93 NAECHSTER BEITRAGSEINZUG IN BEKA
+NNTER HOEHE UND VEREINBARTEM TURNUS
+126744737
+9999993701
+Gläubiger-ID: DE71ZZZ99999999993
+04.03.2020 04.03.2020 Lastschrift                8,60-
+Lotto24 AG
+C99685998 T181725108255 Spieleinsat
+z per Bankeinzug
+C99685998-T181725108255
+LOTTO24AG-99685998-190404173234
+Gläubiger-ID: 9999999999900071398
+Übertrag:            2,92+
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.5910101 960483.0.10.02 1(F2assung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 4/2020 Seite 2 von 5
+Giro Sm@rt 190999981, DE99 9999 9999 9999 9999 99 Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:            2,92+
+09.03.2020 09.03.2020 Überweisung online            10,00-
+Max Mustermann
+127500 richtig
+DATUM 09.03.2020, 16.54 UHR
+1.TAN 778376
+e6f29d164-1473109-16492948-20200309
+09.03.2020 09.03.2020 Überweisung online              4,00-
+HFH Hamburger Fern-Hochschule
+Prüfungsgebühr Bachelorarbeit 11104
+28
+DATUM 09.03.2020, 16.55 UHR
+1.TAN 519417
+9d346e97b-1732140-16534851-20200309
+09.03.2020 09.03.2020 Kartenzahlung               5,96-
+  ARAL Schweinfurt Strasburgstrase 1/
+/Schweinfurt/DE
+2020-03-06T15:18 Debitk.5 2022-12
+12.03.2020 12.03.2020 Überweisung online              5,00-
+Max Mustermann
+128000
+DATUM 12.03.2020, 19.39 UHR
+1.TAN 826390
+b1e24b2c-12532421-19382280-20200312
+19.03.2020 19.03.2020 Lastschrift              2,00-
+. Bundeskasse in Weiden
+Kfz-Steuer fuer 99999999 fuer die
+Zeit vom 19.03.2020 bis zum 18.03.2
+021 Kassenzeichen K10850020960
+K10850020960/000022/20ZVS06F
+KFZFK1085002096027092018
+Gläubiger-ID: DE09ZZZ00000000001
+19.03.2020 19.03.2020 Lastschrift                8,60-
+Lotto24 AG
+C99685998 T607480062218 Spieleinsat
+z per Bankeinzug
+C99685998-T607480062218
+LOTTO24AG-99685998-190404173234
+Gläubiger-ID: 9999999999900071398
+30.03.2020 30.03.2020 Lastschrift                3,15-
+AMAZON PAYMENTS EUROPE S.C.A.
+303-6388892-9432340 AMZN Mktp DE 5O
+5XJGBW6W0NKWYG
+5O5XJGBW6W0NKWYG
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe
+Gläubiger-ID: DE94ZZZ00000561653
+30.03.2020 30.03.2020 Lohn, Gehalt, Rente            9.999,37+
+ZF FRIEDRICHSHAFEN A
+Lohn/Gehalt 99999999/202003
+Übertrag:            2,58+
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.5910101 960483.0.10.02 1(F2assung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 4/2020 Seite 3 von 5
+Giro Sm@rt 190999981, DE99 9999 9999 9999 9999 99 Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:            2,58+
+31.03.2020 31.03.2020 Überweisung online            1,00-
+Mustermann Max
+DATUM 31.03.2020, 16.54 UHR
+1.TAN 871088
+428d19b31c-267390-16532976-20200331
+31.03.2020 31.03.2020 Lastschrift                6,99-
+AMAZON PAYMENTS EUROPE S.C.A.
+303-8052379-0257133 AMZN Mktp DE 4X
+ULD0DDWTLIME6K
+4XULD0DDWTLIME6K
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe
+Gläubiger-ID: DE94ZZZ00000561653
+31.03.2020 01.04.2020 Entgeltabrechnung                4,70-
+siehe Anlage Nr. 1
+ 3 1.03.2020 01.04.2020 Abrechnung 31.03.2020                0,66-
+siehe Anlage Nr. 2
+ Kontostand am 31.03.2020 um 20:03 Uhr              6,23+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 2
+Ihr Dispositionskredit EUR: 2.000,00
+.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.5910101 960483.0.10.02 1(F2assung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 4/2020 Seite 4 von 5
+Giro Sm@rt 190999981, DE99 9999 9999 9999 9999 99 Max Mustermann
+Entgeltabschluss: Anlage     1
+ 
+Entgelte vom 29.02.2020 bis 31.03.2020                               4,70-
+ 
+Grundpreis (Kontoführung)                              2,00-
+Zahlungsverkehr                                        2,70-
+                                                            --------------
+Abrechnung 31.03.2020                                                4,70-
+ 
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20200331-BY044-00009635280
+ 
+.  
+  
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.5910101 960483.0.10.02 1(F2assung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 4/2020 Seite 5 von 5
+Giro Sm@rt 190999981, DE99 9999 9999 9999 9999 99 Max Mustermann
+Rechnungsabschluss: Anlage     2
+ 
+Kontostand in EUR am 31.03.2020                                   1,89 +
+                                                            --------------
+Abrechnungszeitraum vom 01.01.2020 bis 31.03.2020
+Zinsen für eingeräumte Kontoüberziehung                              0,66-
+10,0500 v.H. Kred-Zins  bis 29.03.2020
+ 
+                                                            --------------
+Abrechnung 31.03.2020                                                0,66-
+ 
+Sollzinssätze am 30.03.2020
+. 10,0500 v.H. für eingeräumte Kontoüberziehung
+  (aktuell eingeräumte Kontoüberziehung       2.000,00)
+10,0500 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+ 
+Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+der Entwicklung des 3-Monats-Euribor.
+ 
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+ 
+. Kontostand/Rechnungsabschluss in EUR am 31.03.2020                1,23 +
+Rechnungsnummer: 20200331-BY044-00009635278
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09999/999-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09999/999-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.5910101 960483.0.10.02 1(F2assung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt

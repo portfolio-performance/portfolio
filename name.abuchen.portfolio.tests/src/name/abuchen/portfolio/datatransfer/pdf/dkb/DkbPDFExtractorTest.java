@@ -55,6 +55,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1HLTD2"));
         assertThat(security.getWkn(), is("A1HLTD"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("8,75 % METALCORP GROUP B.V. EO-ANLEIHE 2013(18)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -98,6 +99,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("BMG7945E1057"));
         assertThat(security.getWkn(), is("A0ERZ0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SEADRILL LTD. REGISTERED SHARES DL 2,-"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -141,6 +143,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -184,6 +187,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -227,6 +231,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INHABER-ANTEILE I O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -270,6 +275,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -313,6 +319,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000121014"));
         assertThat(security.getWkn(), is("853292"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LVMH MOET HENN. L. VUITTON SE ACTIONS PORT. (C.R.) EO 0,3"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -356,6 +363,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0126639464"));
         assertThat(security.getWkn(), is("A1JJES"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CALIDA HOLDING AG NAM.-AKT. SF 0,10"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -452,6 +460,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000A0U9J2"));
         assertThat(security.getWkn(), is("A1MLSS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("8,5 % SCHOLZ HOLDING INH.-SCHV. V.2012(2017)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -515,6 +524,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005140008"));
         assertThat(security.getWkn(), is("514000"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEUTSCHE BANK AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -558,6 +568,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A2YN900"));
         assertThat(security.getWkn(), is("A2YN90"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TEAMVIEWER AG INHABER-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -601,6 +612,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US00165C1045"));
         assertThat(security.getWkn(), is("A1W90H"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AMC ENTERTAINMENT HOLDINGS INC REG. SHARES CLASS A DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -664,6 +676,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000LED02V0"));
         assertThat(security.getWkn(), is("LED02V"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("OSRAM LICHT AG Z.VERKAUF EING.NAMENS-AKTIEN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -707,6 +720,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA3012831077"));
         assertThat(security.getWkn(), is("A1C30Q"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("EXCHANGE INCOME CORP. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -750,6 +764,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0010524777"));
         assertThat(security.getWkn(), is("LYX0CB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LYXOR NEW ENERGY UCITS ETF ACTIONS AU PORT.DIST O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -793,6 +808,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS0149161217"));
         assertThat(security.getWkn(), is("858865"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("2,309 % RBS CAPITAL TRUST A EO-FLR TR.PREF.SEC.02(12/UND.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -836,6 +852,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1RE7V0"));
         assertThat(security.getWkn(), is("A1RE7V"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6,875 % MS DEUTSCHLAND GMBH INH.-SCHV. V.2012(2017)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -879,6 +896,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1RE7V0"));
         assertThat(security.getWkn(), is("A1RE7V"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6,875 % MS DEUTSCHLAND GMBH INH.-SCHV. V.2012(2017)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -922,6 +940,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1RE7V0"));
         assertThat(security.getWkn(), is("A1RE7V"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6,875 % MS DEUTSCHLAND GMBH INH.-SCHV. V.2012(2017)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -948,17 +967,26 @@ public class DkbPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierStornoVerkauf01()
+    public void testWertpapierVerkaufStorno01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoVerkauf01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufStorno01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00BKX55T58"));
+        assertThat(security.getWkn(), is("A12CX1"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("VANG.FTSE DEVELOP.WORLD U.ETF REGISTERED SHARES USD DIS.ON"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check cancellation (Storno) transaction
         BuySellEntryItem cancellation = (BuySellEntryItem) results.stream() //
@@ -966,8 +994,23 @@ public class DkbPDFExtractorTest
                         .filter(BuySellEntryItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoVerkauf01.txt"));
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.3986)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("VerkaufStorno01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1051.50))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1051.50))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -988,6 +1031,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1R1AN5"));
         assertThat(security.getWkn(), is("A1R1AN"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PCC SE INH.-TEILSCHULDV. V.13(13/17)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1030,6 +1074,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007100000"));
         assertThat(security.getWkn(), is("710000"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DAIMLER AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1072,6 +1117,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3XNN521"));
         assertThat(security.getWkn(), is("A1JJAG"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DIM.FDS-GLOBAL SMALL COMPANIES REGISTERED SHARES EUR DIS.O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1114,6 +1160,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0010570767"));
         assertThat(security.getWkn(), is("870503"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CHOCOLADEF. LINDT & SPRUENGLI INHABER-PART.SCH. SF 10"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -1206,6 +1253,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
         assertThat(security.getWkn(), is("A0RPWH"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares Core MSCI World UCITS ETF USD REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1248,6 +1296,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3VVMM84"));
         assertThat(security.getWkn(), is("A1JX51"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE EM.MARKETS U.ETF REGISTERED SHARES USD DIS.ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1340,6 +1389,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1R1AN5"));
         assertThat(security.getWkn(), is("A1R1AN"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PCC SE INH.-TEILSCHULDV. V.13(13/17)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1382,6 +1432,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005552004"));
         assertThat(security.getWkn(), is("555200"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEUTSCHE POST AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1424,6 +1475,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0LGQL5"));
         assertThat(security.getWkn(), is("A0LGQL"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IS.II-DEV.MARK.PR.YLD. UC. ETF BEARER SHARES (DT. ZERT.) O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1516,6 +1568,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B6YX5D40"));
         assertThat(security.getWkn(), is("A1JKS0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR S&P US DIVID.ARISTOCR.ETF REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1608,6 +1661,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLE INC. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1700,6 +1754,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("JP3414750004"));
         assertThat(security.getWkn(), is("471496"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SEIKO EPSON CORP. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is("JPY"));
 
@@ -1792,6 +1847,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B02J6398"));
         assertThat(security.getWkn(), is("A0DJ58"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ADMIRAL GROUP PLC REGISTERED SHARES LS -,001"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -1884,6 +1940,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1R1AN5"));
         assertThat(security.getWkn(), is("A1R1AN"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PCC SE INH.-TEILSCHULDV. V.13(13/17)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1976,6 +2033,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0010570767"));
         assertThat(security.getWkn(), is("870503"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CHOCOLADEF. LINDT & SPRUENGLI INHABER-PART.SCH. SF 10"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -2068,6 +2126,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0Z2ZZ5"));
         assertThat(security.getWkn(), is("A0Z2ZZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FREENET AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2111,6 +2170,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getWkn(), is("US9RGR"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("24,75 % UBS AG (LONDON BRANCH) EO-ANL. 14(16) RWE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2154,6 +2214,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
         assertThat(security.getWkn(), is("A2PKXG"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF REG. SHS USD ACC. ON"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2196,6 +2257,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTA.-MSCI EM.MKTS.TRN U.ETF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2346,6 +2408,7 @@ public class DkbPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU1737652583"));
         assertThat(security.getWkn(), is("A2H9Q0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AMUNDI IND.SOL.-A.IN.MSCI E.M."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

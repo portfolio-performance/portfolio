@@ -28,90 +28,6 @@ private static final long serialVersionUID = 0L;
     return new PTransactionUnit();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
-  private PTransactionUnit(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 8: {
-            int rawValue = input.readEnum();
-
-            type_ = rawValue;
-            break;
-          }
-          case 16: {
-
-            amount_ = input.readInt64();
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            currencyCode_ = s;
-            break;
-          }
-          case 32: {
-            bitField0_ |= 0x00000001;
-            fxAmount_ = input.readInt64();
-            break;
-          }
-          case 42: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000002;
-            fxCurrencyCode_ = s;
-            break;
-          }
-          case 50: {
-            name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder subBuilder = null;
-            if (((bitField0_ & 0x00000004) != 0)) {
-              subBuilder = fxRateToBase_.toBuilder();
-            }
-            fxRateToBase_ = input.readMessage(name.abuchen.portfolio.model.proto.v1.PDecimalValue.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(fxRateToBase_);
-              fxRateToBase_ = subBuilder.buildPartial();
-            }
-            bitField0_ |= 0x00000004;
-            break;
-          }
-          default: {
-            if (!parseUnknownField(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PTransactionUnit_descriptor;
@@ -244,7 +160,7 @@ private static final long serialVersionUID = 0L;
 
   private int bitField0_;
   public static final int TYPE_FIELD_NUMBER = 1;
-  private int type_;
+  private int type_ = 0;
   /**
    * <code>.name.abuchen.portfolio.PTransactionUnit.Type type = 1;</code>
    * @return The enum numeric value on the wire for type.
@@ -257,13 +173,12 @@ private static final long serialVersionUID = 0L;
    * @return The type.
    */
   @java.lang.Override public name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type getType() {
-    @SuppressWarnings("deprecation")
-    name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type result = name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.valueOf(type_);
+    name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type result = name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.forNumber(type_);
     return result == null ? name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.UNRECOGNIZED : result;
   }
 
   public static final int AMOUNT_FIELD_NUMBER = 2;
-  private long amount_;
+  private long amount_ = 0L;
   /**
    * <code>int64 amount = 2;</code>
    * @return The amount.
@@ -274,7 +189,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CURRENCYCODE_FIELD_NUMBER = 3;
-  private volatile java.lang.Object currencyCode_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object currencyCode_ = "";
   /**
    * <code>string currencyCode = 3;</code>
    * @return The currencyCode.
@@ -312,7 +228,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FXAMOUNT_FIELD_NUMBER = 4;
-  private long fxAmount_;
+  private long fxAmount_ = 0L;
   /**
    * <code>optional int64 fxAmount = 4;</code>
    * @return Whether the fxAmount field is set.
@@ -331,7 +247,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FXCURRENCYCODE_FIELD_NUMBER = 5;
-  private volatile java.lang.Object fxCurrencyCode_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object fxCurrencyCode_ = "";
   /**
    * <code>optional string fxCurrencyCode = 5;</code>
    * @return Whether the fxCurrencyCode field is set.
@@ -422,7 +339,7 @@ private static final long serialVersionUID = 0L;
     if (amount_ != 0L) {
       output.writeInt64(2, amount_);
     }
-    if (!getCurrencyCodeBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(currencyCode_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, currencyCode_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
@@ -434,7 +351,7 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000004) != 0)) {
       output.writeMessage(6, getFxRateToBase());
     }
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -451,7 +368,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(2, amount_);
     }
-    if (!getCurrencyCodeBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(currencyCode_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, currencyCode_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
@@ -465,7 +382,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(6, getFxRateToBase());
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -500,7 +417,7 @@ private static final long serialVersionUID = 0L;
       if (!getFxRateToBase()
           .equals(other.getFxRateToBase())) return false;
     }
-    if (!unknownFields.equals(other.unknownFields)) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
 
@@ -531,7 +448,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + FXRATETOBASE_FIELD_NUMBER;
       hash = (53 * hash) + getFxRateToBase().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -665,22 +582,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       type_ = 0;
-
       amount_ = 0L;
-
       currencyCode_ = "";
-
       fxAmount_ = 0L;
-      bitField0_ = (bitField0_ & ~0x00000001);
       fxCurrencyCode_ = "";
-      bitField0_ = (bitField0_ & ~0x00000002);
-      if (fxRateToBaseBuilder_ == null) {
-        fxRateToBase_ = null;
-      } else {
-        fxRateToBaseBuilder_.clear();
+      fxRateToBase_ = null;
+      if (fxRateToBaseBuilder_ != null) {
+        fxRateToBaseBuilder_.dispose();
+        fxRateToBaseBuilder_ = null;
       }
-      bitField0_ = (bitField0_ & ~0x00000004);
       return this;
     }
 
@@ -707,64 +619,40 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PTransactionUnit buildPartial() {
       name.abuchen.portfolio.model.proto.v1.PTransactionUnit result = new name.abuchen.portfolio.model.proto.v1.PTransactionUnit(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
-      result.type_ = type_;
-      result.amount_ = amount_;
-      result.currencyCode_ = currencyCode_;
-      if (((from_bitField0_ & 0x00000001) != 0)) {
-        result.fxAmount_ = fxAmount_;
-        to_bitField0_ |= 0x00000001;
-      }
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        to_bitField0_ |= 0x00000002;
-      }
-      result.fxCurrencyCode_ = fxCurrencyCode_;
-      if (((from_bitField0_ & 0x00000004) != 0)) {
-        if (fxRateToBaseBuilder_ == null) {
-          result.fxRateToBase_ = fxRateToBase_;
-        } else {
-          result.fxRateToBase_ = fxRateToBaseBuilder_.build();
-        }
-        to_bitField0_ |= 0x00000004;
-      }
-      result.bitField0_ = to_bitField0_;
+      if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
     }
 
-    @java.lang.Override
-    public Builder clone() {
-      return super.clone();
+    private void buildPartial0(name.abuchen.portfolio.model.proto.v1.PTransactionUnit result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.type_ = type_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.amount_ = amount_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.currencyCode_ = currencyCode_;
+      }
+      int to_bitField0_ = 0;
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.fxAmount_ = fxAmount_;
+        to_bitField0_ |= 0x00000001;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.fxCurrencyCode_ = fxCurrencyCode_;
+        to_bitField0_ |= 0x00000002;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.fxRateToBase_ = fxRateToBaseBuilder_ == null
+            ? fxRateToBase_
+            : fxRateToBaseBuilder_.build();
+        to_bitField0_ |= 0x00000004;
+      }
+      result.bitField0_ |= to_bitField0_;
     }
-    @java.lang.Override
-    public Builder setField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.setField(field, value);
-    }
-    @java.lang.Override
-    public Builder clearField(
-        com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return super.clearField(field);
-    }
-    @java.lang.Override
-    public Builder clearOneof(
-        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return super.clearOneof(oneof);
-    }
-    @java.lang.Override
-    public Builder setRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
-      return super.setRepeatedField(field, index, value);
-    }
-    @java.lang.Override
-    public Builder addRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.addRepeatedField(field, value);
-    }
+
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof name.abuchen.portfolio.model.proto.v1.PTransactionUnit) {
@@ -785,20 +673,21 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getCurrencyCode().isEmpty()) {
         currencyCode_ = other.currencyCode_;
+        bitField0_ |= 0x00000004;
         onChanged();
       }
       if (other.hasFxAmount()) {
         setFxAmount(other.getFxAmount());
       }
       if (other.hasFxCurrencyCode()) {
-        bitField0_ |= 0x00000002;
         fxCurrencyCode_ = other.fxCurrencyCode_;
+        bitField0_ |= 0x00000010;
         onChanged();
       }
       if (other.hasFxRateToBase()) {
         mergeFxRateToBase(other.getFxRateToBase());
       }
-      this.mergeUnknownFields(other.unknownFields);
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -813,17 +702,62 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      name.abuchen.portfolio.model.proto.v1.PTransactionUnit parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              type_ = input.readEnum();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 8
+            case 16: {
+              amount_ = input.readInt64();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 16
+            case 26: {
+              currencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 26
+            case 32: {
+              fxAmount_ = input.readInt64();
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 32
+            case 42: {
+              fxCurrencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000010;
+              break;
+            } // case 42
+            case 50: {
+              input.readMessage(
+                  getFxRateToBaseFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 50
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (name.abuchen.portfolio.model.proto.v1.PTransactionUnit) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -842,8 +776,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setTypeValue(int value) {
-      
       type_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -853,8 +787,7 @@ private static final long serialVersionUID = 0L;
      */
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type getType() {
-      @SuppressWarnings("deprecation")
-      name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type result = name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.valueOf(type_);
+      name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type result = name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.forNumber(type_);
       return result == null ? name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Type.UNRECOGNIZED : result;
     }
     /**
@@ -866,7 +799,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
         throw new NullPointerException();
       }
-      
+      bitField0_ |= 0x00000001;
       type_ = value.getNumber();
       onChanged();
       return this;
@@ -876,7 +809,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearType() {
-      
+      bitField0_ = (bitField0_ & ~0x00000001);
       type_ = 0;
       onChanged();
       return this;
@@ -897,8 +830,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setAmount(long value) {
-      
+
       amount_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -907,7 +841,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearAmount() {
-      
+      bitField0_ = (bitField0_ & ~0x00000002);
       amount_ = 0L;
       onChanged();
       return this;
@@ -954,11 +888,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCurrencyCode(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       currencyCode_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -967,8 +899,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearCurrencyCode() {
-      
       currencyCode_ = getDefaultInstance().getCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
@@ -979,12 +911,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCurrencyCodeBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       currencyCode_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -996,7 +926,7 @@ private static final long serialVersionUID = 0L;
      */
     @java.lang.Override
     public boolean hasFxAmount() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
      * <code>optional int64 fxAmount = 4;</code>
@@ -1012,8 +942,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setFxAmount(long value) {
-      bitField0_ |= 0x00000001;
+
       fxAmount_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -1022,7 +953,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearFxAmount() {
-      bitField0_ = (bitField0_ & ~0x00000001);
+      bitField0_ = (bitField0_ & ~0x00000008);
       fxAmount_ = 0L;
       onChanged();
       return this;
@@ -1034,7 +965,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the fxCurrencyCode field is set.
      */
     public boolean hasFxCurrencyCode() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000010) != 0);
     }
     /**
      * <code>optional string fxCurrencyCode = 5;</code>
@@ -1076,11 +1007,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFxCurrencyCode(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
       fxCurrencyCode_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -1089,8 +1018,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearFxCurrencyCode() {
-      bitField0_ = (bitField0_ & ~0x00000002);
       fxCurrencyCode_ = getDefaultInstance().getFxCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00000010);
       onChanged();
       return this;
     }
@@ -1101,12 +1030,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFxCurrencyCodeBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       fxCurrencyCode_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -1119,7 +1046,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the fxRateToBase field is set.
      */
     public boolean hasFxRateToBase() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000020) != 0);
     }
     /**
      * <code>optional .name.abuchen.portfolio.PDecimalValue fxRateToBase = 6;</code>
@@ -1141,11 +1068,11 @@ private static final long serialVersionUID = 0L;
           throw new NullPointerException();
         }
         fxRateToBase_ = value;
-        onChanged();
       } else {
         fxRateToBaseBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000020;
+      onChanged();
       return this;
     }
     /**
@@ -1155,11 +1082,11 @@ private static final long serialVersionUID = 0L;
         name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder builderForValue) {
       if (fxRateToBaseBuilder_ == null) {
         fxRateToBase_ = builderForValue.build();
-        onChanged();
       } else {
         fxRateToBaseBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000020;
+      onChanged();
       return this;
     }
     /**
@@ -1167,39 +1094,38 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeFxRateToBase(name.abuchen.portfolio.model.proto.v1.PDecimalValue value) {
       if (fxRateToBaseBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) != 0) &&
-            fxRateToBase_ != null &&
-            fxRateToBase_ != name.abuchen.portfolio.model.proto.v1.PDecimalValue.getDefaultInstance()) {
-          fxRateToBase_ =
-            name.abuchen.portfolio.model.proto.v1.PDecimalValue.newBuilder(fxRateToBase_).mergeFrom(value).buildPartial();
+        if (((bitField0_ & 0x00000020) != 0) &&
+          fxRateToBase_ != null &&
+          fxRateToBase_ != name.abuchen.portfolio.model.proto.v1.PDecimalValue.getDefaultInstance()) {
+          getFxRateToBaseBuilder().mergeFrom(value);
         } else {
           fxRateToBase_ = value;
         }
-        onChanged();
       } else {
         fxRateToBaseBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000020;
+      onChanged();
       return this;
     }
     /**
      * <code>optional .name.abuchen.portfolio.PDecimalValue fxRateToBase = 6;</code>
      */
     public Builder clearFxRateToBase() {
-      if (fxRateToBaseBuilder_ == null) {
-        fxRateToBase_ = null;
-        onChanged();
-      } else {
-        fxRateToBaseBuilder_.clear();
+      bitField0_ = (bitField0_ & ~0x00000020);
+      fxRateToBase_ = null;
+      if (fxRateToBaseBuilder_ != null) {
+        fxRateToBaseBuilder_.dispose();
+        fxRateToBaseBuilder_ = null;
       }
-      bitField0_ = (bitField0_ & ~0x00000004);
+      onChanged();
       return this;
     }
     /**
      * <code>optional .name.abuchen.portfolio.PDecimalValue fxRateToBase = 6;</code>
      */
     public name.abuchen.portfolio.model.proto.v1.PDecimalValue.Builder getFxRateToBaseBuilder() {
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000020;
       onChanged();
       return getFxRateToBaseFieldBuilder().getBuilder();
     }
@@ -1263,7 +1189,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PTransactionUnit(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 

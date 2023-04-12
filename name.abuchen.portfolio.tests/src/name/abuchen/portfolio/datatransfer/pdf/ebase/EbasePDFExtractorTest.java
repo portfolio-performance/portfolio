@@ -50,18 +50,24 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("IE00BJZ2DC62"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Xtr.(IE) - Russell Midcap Registered Shares 1C USD o.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("FR0010405431"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Lyxor MSCI Greece UCITS ETF Actions au Porteur Dist o.N."));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0378453376"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -156,12 +162,16 @@ public class EbasePDFExtractorTest
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("FR0010405431"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Lyxor MSCI Greece UCITS ETF Actions au Porteur Dist o.N."));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0378453376"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -246,18 +256,24 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A0F5UH1"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000A0D8Q49"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0592215403"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -341,18 +357,24 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0322253732"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000A0F5UH1"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("DE000A0D8Q49"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -446,12 +468,16 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0322253732"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000A0F5UH1"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -535,6 +561,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -583,6 +611,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0274211480"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("db x-trackers DAX ETF (DR) Inhaber-Anteile 1C o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -666,6 +696,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0010315770"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -708,6 +740,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B2QWDY88"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -777,6 +811,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005933972"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares TecDAX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -902,6 +938,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1W57M07"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsII- BRIC 50 UCITS ETF Registered Shs USD (Dist) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -971,6 +1009,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1239,6 +1279,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1301,6 +1343,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1383,6 +1427,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1445,6 +1491,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1487,48 +1535,64 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0159052710"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0552385295"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N."));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0171310443"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0073232471"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Mor.St.Inv.-US Growth Fund Actions Nom. A o.N."));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("DE0009769869"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("DWS Akt.Strategie Deutschl. Inhaber-Anteile LC"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("FR0010527275"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("DE0009772657"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("Siemens Global Growth Inhaber-Anteile A"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("DE0009807016"));
+        assertNull(security8.getWkn());
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("hausInvest Inhaber-Anteile"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1968,36 +2032,48 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0159052710"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N."));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0171310443"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("DE0009769869"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("DWS Akt.Strategie Deutschl. Inhaber-Anteile LC"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("FR0010527275"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("DE0009772657"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("Siemens Global Growth Inhaber-Anteile A"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("DE0009807016"));
+        assertNull(security8.getWkn());
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("hausInvest Inhaber-Anteile"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2422,36 +2498,48 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0009769869"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("DWS Akt.Strategie Deutschl. Inhaber-Anteile LC"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0009772657"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Siemens Global Growth Inhaber-Anteile A"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0159052710"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0552385295"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N."));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0171310443"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("FR0010527275"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3038,66 +3126,88 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0008486655"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("DWS Concept GS&P Food Inhaber-Anteile LD"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0069450822"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Fidelity Fds-America Fund Reg.Shs A-Euro-(Glob.Cert.)oN"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0571085413"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Vontobel Fd.-mtx Sust.EM Lead. Actions Nom. B Cap.USD o.N."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("DE0009769869"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("DWS Akt.Strategie Deutschl. Inhaber-Anteile LC"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("FR0010527275"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("DE0009772657"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Siemens Global Growth Inhaber-Anteile"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("GB00B0MY6T00"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("BNY Mellon Global Income Fund Registered Sterling Inc.Shs oN"));
         assertThat(security7.getCurrencyCode(), is("GBP"));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("LU0171310443"));
+        assertNull(security8.getWkn());
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getIsin(), is("LU0159052710"));
+        assertNull(security9.getWkn());
+        assertNull(security9.getTickerSymbol());
         assertThat(security9.getName(), is("JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N."));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security10 = results.stream().filter(SecurityItem.class::isInstance).skip(9).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security10.getIsin(), is("LU0552385295"));
+        assertNull(security10.getWkn());
+        assertNull(security10.getTickerSymbol());
         assertThat(security10.getName(), is("Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N."));
         assertThat(security10.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security11 = results.stream().filter(SecurityItem.class::isInstance).skip(10).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security11.getIsin(), is("LU2197908721"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security11.getName(), is("M.U.L.-Lyxor Nasdaq-100 UC.ETF Act. Nom. USD Acc. oN"));
         assertThat(security11.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3396,54 +3506,72 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0008486655"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("DWS Concept GS&P Food Inhaber-Anteile LD"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0069450822"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Fidelity Fds-America Fund Reg.Shs A-Euro-(Glob.Cert.)oN"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("DE0009769869"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("DWS Akt.Strategie Deutschl. Inhaber-Anteile LC"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("FR0010527275"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("Lyxor World Water(DR)UCITS ETF Actions au Port.Dist o.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("DE0009772657"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Siemens Global Growth Inhaber-Anteile"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("GB00B0MY6T00"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("BNY Mellon Global Income Fund Registered Sterling Inc.Shs oN"));
         assertThat(security7.getCurrencyCode(), is("GBP"));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("LU0171310443"));
+        assertNull(security8.getWkn());
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getIsin(), is("LU0159052710"));
+        assertNull(security9.getWkn());
+        assertNull(security9.getTickerSymbol());
         assertThat(security9.getName(), is("JPMorgan-US Technology Fund Actions Nom. A (acc.) EUR o.N."));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security11 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security11.getIsin(), is("LU2197908721"));
+        assertNull(security11.getWkn());
+        assertNull(security11.getTickerSymbol());
         assertThat(security11.getName(), is("M.U.L.-Lyxor Nasdaq-100 UC.ETF Act. Nom. USD Acc. oN"));
         assertThat(security11.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3723,6 +3851,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0360863863"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ARERO - Der Weltfonds Inhaber-Anteile o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3765,12 +3895,16 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0009785303"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("NORDINTERNET Inhaber-Anteile"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0171310443"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("BGF - World Technology Fund Act. Nom. Classe A2 EUR o.N."));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3834,6 +3968,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005933972"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares TecDAX UCITS ETF DE Inhaber-Anteile (Acc.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3896,6 +4032,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UH1"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -3938,30 +4076,40 @@ public class EbasePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0392496427"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("ComStage-DJ Sw.Tit.30TM U.ETF Inhaber-Anteile I o.N."));
         assertThat(security1.getCurrencyCode(), is("CHF"));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B0M62Q58"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)o"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("DE0005933923"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("iShares MDAX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("IE0031442068"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("iShs S&P 500 UCITS ETF Registered Shares USD (Dist)o"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0603942888"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("ComStage-SDAX UCITS ETF Inhaber-Anteile I o.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4179,12 +4327,16 @@ public class EbasePDFExtractorTest
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("DE0005933923"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("iShares MDAX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0603942888"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("ComStage-SDAX UCITS ETF Inhaber-Anteile I o.N."));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -4374,6 +4526,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -4556,6 +4710,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -4640,6 +4796,8 @@ public class EbasePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
