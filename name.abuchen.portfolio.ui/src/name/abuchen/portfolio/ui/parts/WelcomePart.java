@@ -183,6 +183,12 @@ public class WelcomePart
         text.setText(Messages.PrefDescriptionDivvyDiary);
         GridDataFactory.fillDefaults().indent(3, 0).hint(400, SWT.DEFAULT).applyTo(text);
 
+        addSectionLabel(translation, Messages.PrefTitleMyDividends24);
+
+        text = new StyledLabel(translation, SWT.WRAP);
+        text.setText(Messages.PrefDescriptionMyDividends24);
+        GridDataFactory.fillDefaults().indent(3, 0).hint(400, SWT.DEFAULT).applyTo(text);
+
         addLink(translation, "action:opensettings", Messages.LabelSettings + "...", null); //$NON-NLS-1$ //$NON-NLS-2$
     }
 

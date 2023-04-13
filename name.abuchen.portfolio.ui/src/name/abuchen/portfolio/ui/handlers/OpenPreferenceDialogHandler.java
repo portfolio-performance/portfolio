@@ -28,6 +28,7 @@ import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
 import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
@@ -76,6 +77,7 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("eodhistoricaldata", new EODHistoricalDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("mydividends24", new MyDividends24PreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (enableExperimentalFeatures)
             pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
