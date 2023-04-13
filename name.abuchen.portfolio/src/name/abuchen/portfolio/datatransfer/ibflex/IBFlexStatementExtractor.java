@@ -90,17 +90,6 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges.put("TGATE", "DE");
         this.exchanges.put("SWB", "SG");
         this.exchanges.put("FWB", "F");
-        // CFD
-        this.exchanges.put("IBUS500", "^GSPC");
-        this.exchanges.put("IBUS30", "^DJI");
-        this.exchanges.put("IBUST100", "^IXIC");
-        this.exchanges.put("IBGB100", "^FTSE");
-        this.exchanges.put("IBEU50", "^STOXX50E");
-        this.exchanges.put("IBDE30", "^GDAXI");
-        this.exchanges.put("IBFR40", "^FCHI");
-        this.exchanges.put("IBNL25", "^AEX");
-        this.exchanges.put("IBJP225", "^N225");
-        this.exchanges.put("IBAU200", "^AXJO");
     }
 
     /**
@@ -133,9 +122,9 @@ public class IBFlexStatementExtractor implements Extractor
     private class IBFlexStatementExtractorResult
     {
         private static final String ASSETKEY_STOCK = "STK";
+        private static final String ASSETKEY_FUND = "FUND";
         private static final String ASSETKEY_OPTION = "OPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
-        private static final String ASSETKEY_CFD = "CFD";
 
         private Document document;
         private List<Exception> errors = new ArrayList<>();
@@ -291,9 +280,9 @@ public class IBFlexStatementExtractor implements Extractor
             String assetCategory = element.getAttribute("assetCategory");
 
             if (!Arrays.asList(ASSETKEY_STOCK, //
+                            ASSETKEY_FUND, //
                             ASSETKEY_OPTION, //
-                            ASSETKEY_FUTURE_OPTION, //
-                            ASSETKEY_CFD) //
+                            ASSETKEY_FUTURE_OPTION) //
                             .contains(assetCategory))
                 return null;
 
@@ -317,36 +306,62 @@ public class IBFlexStatementExtractor implements Extractor
                     throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this
-            // case tradeDate will be replaced by "000000".
-            // New format is stored in dateTime, take care for double imports).
-            if (element.hasAttribute("dateTime"))
+            // @formatter:off
+            // If possible, set "tradeDate" with "tradeTime" as the correct
+            // trading date of the transaction.
+            //
+            // If "tradeTime" is not present, then check 
+            // if "tradeDate" and "dateTime" are the same date, then
+            // set "dateTime" as the trading day.
+            // @formatter:on
+            if (element.hasAttribute("tradeDate") && element.hasAttribute("tradeTime"))
             {
-                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
-                                element.getAttribute("dateTime").substring(9, 15)));
+                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
+                                element.getAttribute("tradeTime")));
             }
             else
             {
-                if (element.hasAttribute("tradeTime"))
-                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
-                                    element.getAttribute("tradeTime")));
+                if (element.hasAttribute("tradeDate"))
+                {
+                    // Check if "tradeDate" and "dateTime" (date, not time) are equal.
+                    if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
+                    {
+                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
+                                        element.getAttribute("dateTime").substring(9, 15)));
+                    }
+                    else
+                    {
+                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
+                    }
+                }
+                else
+                {
+                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
+                                    element.getAttribute("dateTime").substring(9, 15)));
+                }
             }
 
             // Set transaction currency
             String currency = asCurrencyCode(element.getAttribute("currency"));
 
-            // Set amount which is "netCash" or "cost"
-            if (element.hasAttribute("cost"))
+            // @formatter:off
+            // Set amount and check if the element contains the "netCash"
+            // attribute. If the element contains only the "cost" attribute, the
+            // amount will be set based on this attribute.
+            // @formatter:on
+            if (element.hasAttribute("netCash"))
             {
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                                asAmount(element.getAttribute("cost")));
+                                asAmount(element.getAttribute("netCash")));
+
                 setAmount(element, transaction.getPortfolioTransaction(), amount);
                 setAmount(element, transaction.getAccountTransaction(), amount, false);
             }
             else
             {
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                                asAmount(element.getAttribute("netCash")));
+                                asAmount(element.getAttribute("cost")));
+
                 setAmount(element, transaction.getPortfolioTransaction(), amount);
                 setAmount(element, transaction.getAccountTransaction(), amount, false);
             }
@@ -390,18 +405,20 @@ public class IBFlexStatementExtractor implements Extractor
 
             ExtractorUtils.fixGrossValueBuySell().accept(transaction);
 
-            if (transaction.getPortfolioTransaction().getCurrencyCode() != null
-                            && transaction.getPortfolioTransaction().getAmount() != 0)
+            BuySellEntryItem item = new BuySellEntryItem(transaction);
+
+            if (transaction.getPortfolioTransaction().getCurrencyCode() != null && transaction.getPortfolioTransaction().getAmount() == 0)
             {
-                BuySellEntryItem item = new BuySellEntryItem(transaction);
-
-                if (Messages.MsgErrorOrderCancellationUnsupported
-                                .equals(transaction.getPortfolioTransaction().getNote()))
-                    item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
-
+                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                 return item;
             }
-            return null;
+            else if (Messages.MsgErrorOrderCancellationUnsupported.equals(transaction.getPortfolioTransaction().getNote()))
+            {
+                item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
+                return item;
+            }
+
+            return item;
         };
 
         /**
@@ -612,8 +629,6 @@ public class IBFlexStatementExtractor implements Extractor
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
-            Optional<String> underlyingSymbol = Optional.ofNullable(element.getAttribute("underlyingSymbol"));
-            Optional<String> underlyingSecurityID = Optional.ofNullable(element.getAttribute("underlyingSecurityID"));
             String assetCategory = element.getAttribute("assetCategory");
             String exchange = element.getAttribute("exchange");
             String quoteFeed = QuoteFeed.MANUAL;
@@ -639,7 +654,7 @@ public class IBFlexStatementExtractor implements Extractor
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
-            if (ASSETKEY_STOCK.equals(assetCategory))
+            if (ASSETKEY_STOCK.equals(assetCategory) || ASSETKEY_FUND.equals(assetCategory))
             {
                 computedTickerSymbol = tickerSymbol;
                 if (!CurrencyUnit.USD.equals(currency))
@@ -669,30 +684,8 @@ public class IBFlexStatementExtractor implements Extractor
 
                 }
 
-                // For Stock, lets use Alphavante quote feed by default
+                // For Stock and Fund, lets use Alphavante quote feed by default
                 quoteFeed = AlphavantageQuoteFeed.ID;
-            }
-
-            if (ASSETKEY_CFD.equals(assetCategory))
-            {
-                quoteFeed = AlphavantageQuoteFeed.ID;
-
-                if (underlyingSecurityID.isPresent())
-                    isin = underlyingSecurityID.get();
-
-                if (underlyingSymbol.isPresent())
-                {
-                    // use underlyingSymbol instead of symbol for CFD
-                    if (exchanges.containsKey(underlyingSymbol.get()))
-                    {
-                        computedTickerSymbol = Optional.of(exchanges.get(underlyingSymbol.get()));
-                        quoteFeed = YahooFinanceQuoteFeed.ID;
-                    }
-                    else
-                    {
-                        computedTickerSymbol = underlyingSymbol;
-                    }
-                }
             }
 
             Security s2 = null;
