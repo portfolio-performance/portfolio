@@ -88,8 +88,11 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         String value = fromObject.trim();
 
         long result = 0;
-        for (String part : value.split("\\+")) //$NON-NLS-1$
+        for (String part : value.split("\\+|(?=-)")) //$NON-NLS-1$
             result += convertToLong(part.trim());
+
+        if (result < 0 && !acceptNegativeValues)
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, value));
 
         return Long.valueOf(result);
     }
@@ -128,9 +131,6 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         BigDecimal answer = (BigDecimal) decimalFormat.parse(string, parsePosition);
 
         if (parsePosition.getIndex() == 0 || parsePosition.getIndex() < string.length())
-            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
-
-        if (answer.signum() == -1 && !acceptNegativeValues)
             throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
 
         return answer.multiply(type.getBigDecimalFactor()).longValue();
