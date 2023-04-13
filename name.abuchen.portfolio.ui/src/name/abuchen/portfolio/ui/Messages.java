@@ -393,6 +393,10 @@ public class Messages extends NLS
     public static String DivvyDiaryMissingAPIKey;
     public static String DivvyDiaryMsgUploading;
     public static String DivvyDiaryUploadSuccessfulMsg;
+    public static String MyDividends24ConfirmUpload;
+    public static String MyDividends24MissingAPIKey;
+    public static String MyDividends24MsgUploading;
+    public static String MyDividends24UploadSuccessfulMsg;
     public static String EODHistoricalDataMissingAPIKey;
     public static String EditWizardAttributesTitle;
     public static String EditWizardLatestQuoteFeedTitle;
@@ -1060,6 +1064,7 @@ public class Messages extends NLS
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
+    public static String PrefDescriptionMyDividends24;
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionLeeway;
     public static String PrefDescriptionPortfolioReport;
@@ -1067,6 +1072,7 @@ public class Messages extends NLS
     public static String PrefDescriptionQuandl;
     public static String PrefDescriptionTwelveData;
     public static String PrefDivvyDiaryAPIKey;
+    public static String PrefMyDividends24APIKey;
     public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
     public static String PrefLeewayAPIKey;
@@ -1105,6 +1111,7 @@ public class Messages extends NLS
     public static String PrefTitleBackup;
     public static String PrefTitleCalendar;
     public static String PrefTitleDivvyDiary;
+    public static String PrefTitleMyDividends24;
     public static String PrefTitleEODHistoricalData;
     public static String PrefTitleFinnhub;
     public static String PrefTitleLeeway;
