@@ -14,7 +14,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
     private static final char NBSP = '\u00A0'; // No-Break Space
     private static final char NNBS = '\u202f'; // Narrow No-Break Space
 
-    private final DecimalFormat defaultPlattern;
+    private final DecimalFormat defaultPattern;
     private final DecimalFormat withSpacePattern;
     private final DecimalFormat belgianPattern;
 
@@ -31,8 +31,8 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         this.type = type;
         this.acceptNegativeValues = acceptNegativeValues;
 
-        defaultPlattern = new DecimalFormat("#,###.##"); //$NON-NLS-1$
-        defaultPlattern.setParseBigDecimal(true);
+        defaultPattern = new DecimalFormat("#,###.##"); //$NON-NLS-1$
+        defaultPattern.setParseBigDecimal(true);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 
@@ -103,7 +103,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
             // regular decimal separator
 
             int dot = part.indexOf('.');
-            int comma = part.indexOf(defaultPlattern.getDecimalFormatSymbols().getDecimalSeparator());
+            int comma = part.indexOf(defaultPattern.getDecimalFormatSymbols().getDecimalSeparator());
 
             if (comma < 0 && dot >= 0 && part.lastIndexOf('.') == dot)
                 return parse(part, belgianPattern);
@@ -119,7 +119,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
             // fall back to default pattern
         }
 
-        return parse(part, defaultPlattern);
+        return parse(part, defaultPattern);
     }
 
     private long parse(String string, DecimalFormat decimalFormat)
