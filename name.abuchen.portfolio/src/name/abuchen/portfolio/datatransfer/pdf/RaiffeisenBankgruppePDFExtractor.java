@@ -1,12 +1,14 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -32,6 +34,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDeliveryInOutBoundTransaction();
         addAccountStatementTransactions();
     }
 
@@ -199,10 +202,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift)");
+        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift|Ertragsgutschrift nach .*)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Gesch.ftsart: Ertrag|Dividendengutschrift)$");
+        Block block = new Block("^((Gesch.ftsart: Ertrag|Dividendengutschrift)|Ertragsgutschrift nach .*)$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -235,12 +238,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Stück 100 QUALCOMM INC. US7475251036 (883121)
                                 // REGISTERED SHARES DL -,0001
                                 // Zahlbarkeitstag 16.12.2021 Dividende pro Stück 0,68 USD
+                                //
+                                // Stück 111 DEUTSCHE TELEKOM AG DE0005557508 (555750)
+                                // NAMENS-AKTIEN O.N.
+                                // Zahlbarkeitstag 12.04.2023 Ertrag  pro Stück 0,70 EUR
                                 // @formatter:on
                                 section -> section
                                         .attributes("name", "isin", "wkn", "name1", "currency")
                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
                                         .match("^(?<name1>.*)$")
-                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Dividende|Ertrag) .* [\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -350,6 +357,97 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addDeliveryInOutBoundTransaction()
+    {
+        DocumentType type = new DocumentType("Gesch.ftsart: (Einbuchung|Ausbuchung)");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Abrechnungsnummer\\/\\-datum: .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
+                .section("type").optional()
+                .match("^Gesch.ftsart: (?<type>(Einbuchung|Ausbuchung))$")
+                .assign((t, v) -> {
+                    if ("Einbuchung".equals(v.get("type")))
+                        t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                })
+
+                // @formatter:off
+                // Titel: LU0392496344 Lyxor MSCI Europe SmallCap ETF
+                // Inh.-An. I o.N.
+                // @formatter:on
+                .section("isin", "name", "nameContinued")
+                .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
+                .match("^(?<nameContinued>.*)$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // Abgang: 433 Stk   
+                // Zugang: 433 Stk   
+                // @formatter:on
+                .section("shares")
+                .match("^(Abgang|Zugang): (?<shares>[\\.,\\d]+) .*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // Valuta 10.03.2023
+                // @formatter:on
+                .section("date")
+                .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // Zu Gunsten IBAN AT44 3400 0000 0123 4567 0,00 EUR 
+                // @formatter:on
+                .section("amount", "currency")
+                .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // @formatter:off
+                // Abrechnungsnummer/-datum: 45664992 - 16.03.2023
+                // @formatter:on
+                .section("note1", "note2").optional()
+                .match("^(?<note1>Abrechnungsnummer)\\/\\-datum: (?<note2>[\\d]+) \\- .*$")
+                .assign((t, v) -> t.setNote(trim(v.get("note1"))+ ": " + trim(v.get("note2"))))
+
+                // @formatter:off
+                // im Verhältnis: 1 : 1
+                // @formatter:on
+                .section("note").optional()
+                .match("^.* (?<note>Verh.ltnis: .*)$")
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(trim(v.get("note")));
+                })
+
+                .wrap((t, ctx) -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                    {
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                        return item;
+                    }
+
+                    return item;
+                });
     }
 
     private void addAccountStatementTransactions()
