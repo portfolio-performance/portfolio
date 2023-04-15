@@ -87,6 +87,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.defaultValueFormat = defaultValueFormat;
     }
 
+    public Format getDefaultValueFormat()
+    {
+        return this.defaultValueFormat;
+    }
+
     public void overrideValueFormat(String series, Format valueFormat)
     {
         this.overrideValueFormat.put(series, valueFormat);

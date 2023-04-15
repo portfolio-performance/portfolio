@@ -67,6 +67,9 @@
          <property-name
                name="highlight-color">
          </property-name>
+         <property-name
+               name="measurement-color">
+         </property-name>
       </handler>
       <handler
             adapter="name.abuchen.portfolio.ui.theme.ColorsThemeElementAdapter"

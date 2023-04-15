@@ -378,7 +378,7 @@ public abstract class Values<E>
         @Override
         public String format(Double percent)
         {
-            return String.format("%,.2f", percent * 100); //$NON-NLS-1$
+            return String.format("%+,.2f%%", percent * 100); //$NON-NLS-1$
         }
     };
 

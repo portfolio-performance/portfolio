@@ -74,6 +74,7 @@ public class TimelineChart extends Chart // NOSONAR
     private List<MarkerLine> markerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
 
+    private MeasurementTool measurementTool;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
@@ -137,6 +138,8 @@ public class TimelineChart extends Chart // NOSONAR
         getPlotArea().addPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
+
+        measurementTool = new MeasurementTool(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
@@ -218,6 +221,11 @@ public class TimelineChart extends Chart // NOSONAR
     public TimelineChartToolTip getToolTip()
     {
         return toolTip;
+    }
+
+    public MeasurementTool getMeasurementTool()
+    {
+        return measurementTool;
     }
 
     private void paintTimeGrid(PaintEvent e)

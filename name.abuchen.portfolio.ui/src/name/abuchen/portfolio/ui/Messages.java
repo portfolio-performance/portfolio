@@ -773,6 +773,7 @@ public class Messages extends NLS
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
+    public static String LabelMeasureDistance;
     public static String LabelMetricCheckInterval;
     public static String LabelMetric;
     public static String LabelMetricDays;
