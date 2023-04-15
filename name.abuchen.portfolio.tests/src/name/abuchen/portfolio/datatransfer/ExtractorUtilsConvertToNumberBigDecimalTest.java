@@ -15,6 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 import name.abuchen.portfolio.money.Values;
 
 @RunWith(Parameterized.class)
+@SuppressWarnings("nls")
 public class ExtractorUtilsConvertToNumberBigDecimalTest
 {
     private String input;

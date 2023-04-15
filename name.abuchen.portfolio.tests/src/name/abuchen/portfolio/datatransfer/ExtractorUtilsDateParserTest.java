@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
 
+@SuppressWarnings("nls")
 public class ExtractorUtilsDateParserTest
 {
     @Test
