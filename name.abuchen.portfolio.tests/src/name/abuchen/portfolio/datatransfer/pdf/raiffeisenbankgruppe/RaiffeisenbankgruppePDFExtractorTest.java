@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -28,6 +29,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -976,6 +978,49 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testDividende07()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0005557508"));
+        assertThat(security.getWkn(), is("555750"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("DEUTSCHE TELEKOM AG NAMENS-AKTIEN O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-12T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(111)));
+        assertThat(transaction.getSource(), is("Dividende07.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(77.70))));
+        assertThat(transaction.getGrossValue(), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(77.70))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), 
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
@@ -1606,5 +1651,122 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1870.70))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Lohn/Gehalt"));
+    }
+
+    @Test
+    public void testEinbuchung01()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("LU0392496344"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("Lyxor MSCI Europe SmallCap ETF Inh.-An. I o.N."));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getIsin(), is("LU2572257470"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("AIS-MSCI Eu.SC ESG CL.NZ AMCTB Act.Nom. U.ETF EUR Dis. oN"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check delivery outbound (Auslieferung) transaction
+        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+
+        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(433)));
+        assertThat(entry.getSource(), is("Umtausch01.txt"));
+        assertThat(entry.getNote(), is("Abrechnungsnummer: 46711492"));
+
+        assertThat(entry.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check delivery inbound (Einlieferung) transaction
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(433)));
+        assertThat(entry.getSource(), is("Umtausch01.txt"));
+        assertThat(entry.getNote(), is("Abrechnungsnummer: 45664992 | Verhältnis: 1 : 1"));
+
+        assertThat(entry.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 1st cancellation (Amount 0,00) transaction
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+
+        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(433)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Umtausch01.txt"));
+        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Abrechnungsnummer: 46711492"));
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check 2nd cancellation (Amount 0,00) transaction
+        cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
+
+        assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(433)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Umtausch01.txt"));
+        assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Abrechnungsnummer: 45664992 | Verhältnis: 1 : 1"));
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 }
