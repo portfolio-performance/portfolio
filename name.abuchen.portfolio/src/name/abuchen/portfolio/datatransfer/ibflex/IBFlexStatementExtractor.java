@@ -847,12 +847,8 @@ public class IBFlexStatementExtractor implements Extractor
         while (iter.hasNext())
         {
             Object o = iter.next().getSubject();
-            if (o instanceof AccountTransaction)
-            {
-                AccountTransaction a = (AccountTransaction) o;
-                if (TO_BE_DELETED.equals(a.getNote()))
-                    iter.remove();
-            }
+            if (o instanceof AccountTransaction a && TO_BE_DELETED.equals(a.getNote()))
+                iter.remove();
         }
 
         return items;
