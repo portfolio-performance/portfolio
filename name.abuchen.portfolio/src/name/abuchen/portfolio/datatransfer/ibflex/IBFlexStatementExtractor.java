@@ -45,7 +45,6 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
@@ -684,8 +683,9 @@ public class IBFlexStatementExtractor implements Extractor
 
                 }
 
-                // For Stock and Fund, lets use Alphavante quote feed by default
-                quoteFeed = AlphavantageQuoteFeed.ID;
+                // for Stock and Fund, use Yahoo as default (AlphaVantage has no
+                // meaningful free tier)
+                quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
             Security s2 = null;
