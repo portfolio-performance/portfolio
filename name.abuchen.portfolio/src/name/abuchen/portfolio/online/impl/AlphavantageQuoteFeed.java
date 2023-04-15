@@ -189,7 +189,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         {
             @SuppressWarnings("nls")
             WebAccess webaccess = new WebAccess("www.alphavantage.co", "/query") //
-                            .addParameter("function", "TIME_SERIES_DAILY") //
+                            .addParameter("function", "TIME_SERIES_DAILY_ADJUSTED") //
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("apikey", apiKey) //
                             .addParameter("datatype", "csv") //
@@ -204,7 +204,8 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 return data;
 
             // poor man's check
-            if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
+            if (!"timestamp,open,high,low,close,adjusted_close,volume,dividend_amount,split_coefficient" //$NON-NLS-1$
+                            .equals(lines[0]))
             {
                 data.addError(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
                 return data;
@@ -217,7 +218,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 String line = lines[ii];
 
                 String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 6)
+                if (values.length != 9)
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
                 LatestSecurityPrice price = new LatestSecurityPrice();
@@ -230,7 +231,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
                 price.setHigh(asPrice(values[2]));
                 price.setLow(asPrice(values[3]));
-                price.setVolume(Long.parseLong(values[5]));
+                price.setVolume(Long.parseLong(values[6]));
 
                 if (price.getValue() != 0)
                     data.addPrice(price);
