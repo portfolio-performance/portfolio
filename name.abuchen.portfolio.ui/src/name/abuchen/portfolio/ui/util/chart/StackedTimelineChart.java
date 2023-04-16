@@ -34,8 +34,6 @@ public class StackedTimelineChart extends Chart // NOSONAR
 
         setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 
-        this.dates = dates;
-
         getLegend().setVisible(false);
 
         // x axis
@@ -43,12 +41,7 @@ public class StackedTimelineChart extends Chart // NOSONAR
         xAxis.getTitle().setVisible(false);
         xAxis.getTick().setVisible(false);
         xAxis.getGrid().setStyle(LineStyle.NONE);
-
-        String[] categories = new String[dates.size()];
-        for (int ii = 0; ii < categories.length; ii++)
-            categories[ii] = dates.get(ii).toString();
-        xAxis.setCategorySeries(categories);
-        xAxis.enableCategory(true);
+        setDates(dates);
 
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
@@ -76,6 +69,17 @@ public class StackedTimelineChart extends Chart // NOSONAR
         toolTip.setDefaultValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
 
         new ChartContextMenu(this);
+    }
+
+    public void setDates(List<LocalDate> dates)
+    {
+        this.dates = dates;
+        IAxis xAxis = getAxisSet().getXAxis(0);
+        String[] categories = new String[dates.size()];
+        for (int ii = 0; ii < categories.length; ii++)
+            categories[ii] = dates.get(ii).toString();
+        xAxis.setCategorySeries(categories);
+        xAxis.enableCategory(true);
     }
 
     public ILineSeries addSeries(String id, String label, double[] values, Color color)
