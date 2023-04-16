@@ -260,9 +260,19 @@ public class IBFlexStatementExtractor implements Extractor
                     }
                 }
             }
-
             setAmount(element, transaction, amount);
+
+            // Set note
             transaction.setNote(element.getAttribute("description"));
+
+            // Add Trade-ID note if available
+            if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
+                transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+
+            // Add Transaction-ID note if available
+            if (!element.getAttribute("transactionID").isEmpty()
+                            && !element.getAttribute("transactionID").equals("N/A"))
+                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | " + transaction.getNote());
 
             // Transactions which do not have an account-id will not be
             // imported.
@@ -273,7 +283,7 @@ public class IBFlexStatementExtractor implements Extractor
         };
 
         /**
-         * Construct a BuySellEntry based on Trade object defined in eElement
+         * Construct a BuySellEntry based on Trade object defined in element
          */
         private Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
@@ -383,14 +393,15 @@ public class IBFlexStatementExtractor implements Extractor
 
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
+            // Set note
             if (transaction.getNote() == null
                             || !transaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
             {
-                // Trade ID
+                // Add Trade-ID note if available
                 if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
                     transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
 
-                // Transaction ID
+                // Add Transaction-ID note if available
                 if (!element.getAttribute("transactionID").isEmpty()
                                 && !element.getAttribute("transactionID").equals("N/A"))
                 {
@@ -422,29 +433,29 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * Constructs a Transaction object for a Corporate Transaction defined
-         * in eElement.
+         * in element.
          */
-        private Function<Element, Item> buildCorporateTransaction = eElement -> {
-            Money proceeds = Money.of(asCurrencyCode(eElement.getAttribute("currency")),
-                            Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
+        private Function<Element, Item> buildCorporateTransaction = element -> {
+            Money proceeds = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                            Values.Amount.factorize(Double.parseDouble(element.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
             {
                 BuySellEntry transaction = new BuySellEntry();
 
-                if (Double.parseDouble(eElement.getAttribute("quantity")) >= 0)
+                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
                     transaction.setType(PortfolioTransaction.Type.BUY);
                 else
                     transaction.setType(PortfolioTransaction.Type.SELL);
 
-                transaction.setDate(ExtractorUtils.asDate(eElement.getAttribute("reportDate")));
+                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
-                double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
+                double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 transaction.setShares(Values.Share.factorize(qty));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
-                transaction.setNote(eElement.getAttribute("description"));
+                transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                transaction.setNote(element.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
 
@@ -455,24 +466,62 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 // Set transaction type
                 PortfolioTransaction transaction = new PortfolioTransaction();
-                if (Double.parseDouble(eElement.getAttribute("quantity")) >= 0)
+                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
                     transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 else
                     transaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-                transaction.setDateTime(ExtractorUtils.asDate(eElement.getAttribute("reportDate")));
+                transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
-                Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
+                Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
-                transaction.setNote(eElement.getAttribute("description"));
+                transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                transaction.setNote(element.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
 
                 return new TransactionItem(transaction);
             }
+        };
+
+        /**
+         * Constructs a Transaction object for a SalesTax Transaction defined
+         * in element.
+         */
+        private Function<Element, Item> buildSalesTaxTransaction = element -> {
+            AccountTransaction transaction = new AccountTransaction();
+
+            // Set transaction type
+            transaction.setType(AccountTransaction.Type.TAXES);
+
+            // Set date
+            transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
+
+            // Set amount
+            Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                            asAmount(element.getAttribute("salesTax")));
+            setAmount(element, transaction, amount);
+
+            // Set note
+            transaction.setNote(element.getAttribute("taxableDescription"));
+
+            // Add Tax-Transaction-ID note if available
+            if (!element.getAttribute("taxableTransactionID").isEmpty()
+                            && !element.getAttribute("taxableTransactionID").equals("N/A"))
+                    transaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | " + transaction.getNote());
+
+            // Add Transaction-ID note if available
+            if (!element.getAttribute("transactionID").isEmpty() && !element.getAttribute("transactionID").equals("N/A"))
+                transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | " + transaction.getNote());
+
+            // Transactions which do not have an account-id will not be
+            // imported.
+            if (!element.getAttribute("accountId").equals("-"))
+                return new TransactionItem(transaction);
+            else
+                return null;
         };
 
         private Unit createUnit(Element element, Unit.Type unitType, Money amount)
@@ -568,7 +617,11 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Imports Trades, CorporateActions and CashTransactions from Document
+         * Imports from Document
+         *  - Trades
+         *  - CorporateActions
+         *  - CashTransactions
+         *  - SalesTaxes
          */
         private void importModelObjects(String type, Function<Element, Item> handleNodeFunction)
         {
@@ -610,6 +663,9 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Process all CorporateTransactions
             importModelObjects("CorporateAction", buildCorporateTransaction);
+
+            // Process all SalesTaxes
+            importModelObjects("SalesTax", buildSalesTaxTransaction);
 
             // TODO: Process all FxTransactions and ConversionRates
         }
@@ -793,6 +849,7 @@ public class IBFlexStatementExtractor implements Extractor
                                         .equals(((AccountTransaction) i.getSubject()).getType()) || //
                                         AccountTransaction.Type.TAXES //
                                                         .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .filter(i -> i.getSecurity() != null)
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
         dividendTaxTransactions.forEach((k, v) -> {

@@ -46,7 +46,7 @@ public class IBFlexStatementExtractorTest
 {
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
-        File tempFile = File.createTempFile("iBFlexStatementExtractorTest", null);
+        File tempFile = File.createTempFile("IBFlexStatementExtractorTest", null);
         tempFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream(tempFile);
 
@@ -71,11 +71,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile01() throws IOException
+    public void testIBFlexStatementFile01() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile01.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile01.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -647,11 +647,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile02() throws IOException
+    public void testIBFlexStatementFile02() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile02.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile02.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1055,11 +1055,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile03() throws IOException
+    public void testIBFlexStatementFile03() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile03.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile03.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1093,15 +1093,15 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("USD IBKR MANAGED SECURITIES (SYEP) INTEREST FOR NOV-2022"));
+        assertThat(transaction.getNote(), is("Transaction-ID: mytransactionidhere | USD IBKR MANAGED SECURITIES (SYEP) INTEREST FOR NOV-2022"));
     }
 
     @Test
-    public void testiBFlexStatementFile04() throws IOException
+    public void testIBFlexStatementFile04() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile04.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile04.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1161,11 +1161,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile05() throws IOException
+    public void testIBFlexStatementFile05() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile05.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile05.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1259,7 +1259,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("MMM(US88579Y1010) CASH DIVIDEND 1.36000000 USD PER SHARE (Ordinary Dividend)"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 8765764573 | MMM(US88579Y1010) CASH DIVIDEND 1.36000000 USD PER SHARE (Ordinary Dividend)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.52))));
@@ -1279,7 +1279,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("CDW(US12514G1085) CASH DIVIDEND USD 0.38 PER SHARE (Ordinary Dividend)"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 13713058125 | CDW(US12514G1085) CASH DIVIDEND USD 0.38 PER SHARE (Ordinary Dividend)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.50))));
@@ -1292,11 +1292,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile06() throws IOException
+    public void testIBFlexStatementFile06() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile06.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile06.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1395,7 +1395,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("MMM(US88579Y1010) CASH DIVIDEND 1.36000000 USD PER SHARE (Ordinary Dividend)"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 8765764573 | MMM(US88579Y1010) CASH DIVIDEND 1.36000000 USD PER SHARE (Ordinary Dividend)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.74))));
@@ -1415,7 +1415,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("CDW(US12514G1085) CASH DIVIDEND USD 0.38 PER SHARE (Ordinary Dividend)"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 13713058125 | CDW(US12514G1085) CASH DIVIDEND USD 0.38 PER SHARE (Ordinary Dividend)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.04))));
@@ -1431,11 +1431,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile07() throws IOException
+    public void testIBFlexStatementFile07() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile07.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile07.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1491,11 +1491,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile08() throws IOException
+    public void testIBFlexStatementFile08() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile08.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile08.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1535,7 +1535,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("SGN(US8688612048) CASH DIVIDEND USD 0.088051 PER SHARE (Ordinary Dividend)"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 13505500800 | SGN(US8688612048) CASH DIVIDEND USD 0.088051 PER SHARE (Ordinary Dividend)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(8.98))));
@@ -1559,15 +1559,15 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.67))));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("SGN(US8688612048) CASH DIVIDEND USD 0.088051 PER SHARE - FEE"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 13505500802 | SGN(US8688612048) CASH DIVIDEND USD 0.088051 PER SHARE - FEE"));
     }
 
     @Test
-    public void testiBFlexStatementFile09() throws IOException
+    public void testIBFlexStatementFile09() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile09.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile09.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1652,11 +1652,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile10() throws IOException
+    public void testIBFlexStatementFile10() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile10.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile10.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1716,11 +1716,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile11() throws IOException
+    public void testIBFlexStatementFile11() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile11.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile11.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -1780,11 +1780,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile12() throws IOException
+    public void testIBFlexStatementFile12() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile12.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile12.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -2115,11 +2115,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile14() throws IOException
+    public void testIBFlexStatementFile14() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile14.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile14.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -2318,7 +2318,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1500.00))));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 22952664670 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
 
         item = iter.next();
 
@@ -2328,15 +2328,15 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1500.00))));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
+        assertThat(transaction.getNote(), is("Transaction-ID: 23145951086 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
     }
 
     @Test
-    public void testiBFlexStatementFile15() throws IOException
+    public void testIBFlexStatementFile15() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile15.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile15.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -2417,11 +2417,11 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
-    public void testiBFlexStatementFile16() throws IOException
+    public void testIBFlexStatementFile16() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
 
-        InputStream activityStatement = getClass().getResourceAsStream("testiBFlexStatementFile16.xml");
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile16.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<>();
@@ -2497,5 +2497,98 @@ public class IBFlexStatementExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(200.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile17() throws IOException
+    {
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile17.xml");
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        List<Item> securityItems = results.stream().filter(SecurityItem.class::isInstance) //
+                        .collect(Collectors.toList());
+        List<Item> buySellTransactions = results.stream().filter(BuySellEntryItem.class::isInstance) //
+                        .collect(Collectors.toList());
+        List<Item> accountTransactions = results.stream().filter(TransactionItem.class::isInstance) //
+                        .collect(Collectors.toList());
+
+        assertThat(errors, empty());
+        assertThat(securityItems.size(), is(0));
+        assertThat(buySellTransactions.size(), is(0));
+        assertThat(accountTransactions.size(), is(6));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(6L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457125101 | R******09:NASDAQ (UTP TAPE C) LEVEL 1 FOR MAR 2023"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457125105 | R******09:NYSE (CTA TAPE A) LEVEL 1 FOR MAR 2023"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457125110 | R******09:OPRA NP L1 FOR MAR 2023"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457155534 | Tax-Transaction-ID: 457125101 | r******09:NASDAQ (UTP Tape C) Level 1"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457155535 | Tax-Transaction-ID: 457125105 | r******09:NYSE (CTA Tape A) Level 1"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
+        assertNull(transaction.getSource());
+        assertThat(transaction.getNote(), is("Transaction-ID: 457155536 | Tax-Transaction-ID: 457125110 | r******09:OPRA NP L1"));
+
     }
 }
