@@ -969,6 +969,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Gebühren extern ADR EUR 2,00 
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
