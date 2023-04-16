@@ -22,6 +22,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class DropDown extends ContributionItem
 {
+    private boolean enabled = true;
     private String label;
     private String toolTip;
     private Images image;
@@ -76,6 +77,21 @@ public class DropDown extends ContributionItem
         this.image = image;
         this.style = style;
         this.menuListener = menuListener;
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+        if (widget != null && !widget.isDisposed())
+        {
+            widget.setEnabled(enabled);
+        }
     }
 
     public final String getLabel()
@@ -166,6 +182,9 @@ public class DropDown extends ContributionItem
         ti.setToolTipText(toolTip != null ? toolTip : label);
 
         ti.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            if (!enabled)
+                return;
+
             if (e.detail == SWT.ARROW || defaultAction == null)
             {
                 ToolItem item = (ToolItem) e.widget;
@@ -189,6 +208,7 @@ public class DropDown extends ContributionItem
         }));
 
         ti.addDisposeListener(e -> disposeListeners.forEach(l -> l.widgetDisposed(e)));
+        ti.setEnabled(enabled);
 
         widget = ti;
     }
