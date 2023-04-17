@@ -270,7 +270,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Dividendenabrechnung"
                         + "|Aussch.ttung aus"
                         + "|Wahldividende"
-                        + "|Fund Distribution)");
+                        + "|Fund Distribution"
+                        + "|Dividende)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Ex\\-(Tag|Date): .*$");
