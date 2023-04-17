@@ -63,9 +63,9 @@ public class MeasurementTool
     {
         this.chart = chart;
 
-        chart.getPlotArea().addListener(SWT.MouseDown, this::handleEvent);
-        chart.getPlotArea().addListener(SWT.MouseMove, this::handleEvent);
-        chart.getPlotArea().addListener(SWT.MouseUp, this::handleEvent);
+        chart.getPlotArea().addListener(SWT.MouseDown, this::onMouseDown);
+        chart.getPlotArea().addListener(SWT.MouseMove, this::onMouseMove);
+        chart.getPlotArea().addListener(SWT.MouseUp, this::onMouseUp);
 
         ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
         {
@@ -129,49 +129,41 @@ public class MeasurementTool
                         });
     }
 
-    private void handleEvent(Event e)
+    private void onMouseDown(Event e)
     {
-        if (!isActive)
+        if (!isActive || e.button != 1)
             return;
 
-        switch (e.type)
-        {
-            case SWT.MouseDown:
-                if (e.button == 1)
-                {
-                    if (redrawOnMove) // click'n'click mode
-                        end = Spot.from(e, chart);
-                    else // new line
-                        start = end = Spot.from(e, chart);
+        if (redrawOnMove) // click'n'click mode
+            end = Spot.from(e, chart);
+        else // new line
+            start = end = Spot.from(e, chart);
 
-                    redrawOnMove = true;
-                    chart.redraw();
-                }
-                return;
+        redrawOnMove = true;
+        chart.redraw();
+    }
 
-            case SWT.MouseMove:
-                if (redrawOnMove)
-                {
-                    end = Spot.from(e, chart);
-                    chart.redraw();
-                }
-                return;
+    private void onMouseMove(Event e)
+    {
+        if (!isActive || !redrawOnMove)
+            return;
 
-            case SWT.MouseUp:
-                if (start != null && e.button == 1)
-                {
-                    // if enough time has elapsed, assume it was click'n'drag
-                    // mode (otherwise continue in click'n'click mode)
-                    if (e.time - start.time > 300)
-                        redrawOnMove = false;
+        end = Spot.from(e, chart);
+        chart.redraw();
+    }
 
-                    end = Spot.from(e, chart);
-                    chart.redraw();
-                }
-                return;
-            default:
-                return;
-        }
+    private void onMouseUp(Event e)
+    {
+        if (!isActive || start == null || e.button != 1)
+            return;
+
+        // if enough time has elapsed, assume it was click'n'drag
+        // mode (otherwise continue in click'n'click mode)
+        if (e.time - start.time > 300)
+            redrawOnMove = false;
+
+        end = Spot.from(e, chart);
+        chart.redraw();
     }
 
     private void paintControl(PaintEvent e)
