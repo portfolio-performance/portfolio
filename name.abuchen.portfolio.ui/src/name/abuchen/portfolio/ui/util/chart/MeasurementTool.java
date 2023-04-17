@@ -4,9 +4,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -46,6 +49,7 @@ public class MeasurementTool
     public static final int PADDING = 5;
 
     private final TimelineChart chart;
+    private ArrayList<IAction> buttons = new ArrayList<>();
 
     private boolean isActive = false;
 
@@ -91,7 +95,10 @@ public class MeasurementTool
 
     public void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(createAction());
+        var action = createAction();
+        // store buttons to update their image on context menu action
+        buttons.add(action);
+        toolBar.add(action);
     }
 
     public void addContextMenu(IMenuManager manager)
@@ -105,8 +112,12 @@ public class MeasurementTool
                         isActive ? Images.MEASUREMENT_ON : Images.MEASUREMENT_OFF, //
                         a -> {
                             isActive = !isActive;
-                            a.setImageDescriptor(isActive ? Images.MEASUREMENT_ON.descriptor()
-                                            : Images.MEASUREMENT_OFF.descriptor());
+
+                            // update images of tool bar buttons
+                            ImageDescriptor image = isActive ? Images.MEASUREMENT_ON.descriptor()
+                                            : Images.MEASUREMENT_OFF.descriptor();
+                            buttons.forEach(button -> button.setImageDescriptor(image));
+
                             chart.getToolTip().setActive(!isActive);
 
                             if (!isActive)
