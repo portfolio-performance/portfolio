@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -54,6 +56,7 @@ public class MeasurementTool
     private boolean redrawOnMove = false;
     private Spot start;
     private Spot end;
+    private ArrayList<SimpleAction> buttons = new ArrayList<>();
 
     /* package */ MeasurementTool(TimelineChart chart)
     {
@@ -91,22 +94,34 @@ public class MeasurementTool
 
     public void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(createAction());
+        var action = createAction(false);
+        // store buttons to update their image on context menu action
+        buttons.add(action);
+        toolBar.add(action);
     }
 
     public void addContextMenu(IMenuManager manager)
     {
-        manager.add(createAction());
+        manager.add(createAction(true));
     }
 
-    private SimpleAction createAction()
+    private SimpleAction createAction(boolean doUpdateButton)
     {
         return new SimpleAction(Messages.LabelMeasureDistance, //
                         isActive ? Images.MEASUREMENT_ON : Images.MEASUREMENT_OFF, //
                         a -> {
                             isActive = !isActive;
-                            a.setImageDescriptor(isActive ? Images.MEASUREMENT_ON.descriptor()
-                                            : Images.MEASUREMENT_OFF.descriptor());
+                            ImageDescriptor image = isActive ? Images.MEASUREMENT_ON.descriptor()
+                                            : Images.MEASUREMENT_OFF.descriptor();
+
+                            // update image of button
+                            if (doUpdateButton)
+                                buttons.forEach(b -> {
+                                    b.setImageDescriptor(image);
+                                    b.setChecked(isActive);
+                                });
+
+                            a.setImageDescriptor(image);
                             chart.getToolTip().setActive(!isActive);
 
                             if (!isActive)
