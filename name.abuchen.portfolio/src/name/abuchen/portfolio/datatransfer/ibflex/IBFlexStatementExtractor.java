@@ -81,14 +81,13 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges = new HashMap<>();
 
         this.exchanges.put("EBS", "SW");
-        this.exchanges.put("LSE", "L");
-        this.exchanges.put("SWX", "SW");
-        this.exchanges.put("TSE", "TO");
-        this.exchanges.put("VENTURE", "V");
-        this.exchanges.put("IBIS", "DE");
+        this.exchanges.put("LSE", "L"); // London Stock Exchange
+        this.exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
+        this.exchanges.put("TSE", "TO"); // TSX Venture
+        this.exchanges.put("IBIS", "DE"); // XETRA
         this.exchanges.put("TGATE", "DE");
-        this.exchanges.put("SWB", "SG");
-        this.exchanges.put("FWB", "F");
+        this.exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
+        this.exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
     }
 
     /**
@@ -118,12 +117,25 @@ public class IBFlexStatementExtractor implements Extractor
         return result;
     }
 
+    /**
+     * @formatter:off
+     * Information on the different asset categorie
+     * --------------------------------------------
+     * STK  --> Stock
+     * FUND --> Fonds
+     * IND  --> Indices
+     * OPT  --> Options
+     * FOP  --> Future Options
+     * WAR  --> Warrants
+     * @formatter:on
+     */
     private class IBFlexStatementExtractorResult
     {
         private static final String ASSETKEY_STOCK = "STK";
         private static final String ASSETKEY_FUND = "FUND";
         private static final String ASSETKEY_OPTION = "OPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
+        private static final String ASSETKEY_WARRANTS = "WAR";
 
         private Document document;
         private List<Exception> errors = new ArrayList<>();
@@ -152,7 +164,8 @@ public class IBFlexStatementExtractor implements Extractor
             // Changed from dateTime to reportDate + Check for old Data-Formats,
             // Quapla 14.2.20
             // @formatter:on
-            String dateTime = element.hasAttribute("reportDate") ? element.getAttribute("reportDate") : element.getAttribute("dateTime");
+            String dateTime = element.hasAttribute("reportDate") ? element.getAttribute("reportDate")
+                            : element.getAttribute("dateTime");
             if (dateTime.length() == 15)
                 transaction.setDateTime(ExtractorUtils.asDate(dateTime.substring(0, 8)));
             else
@@ -263,16 +276,35 @@ public class IBFlexStatementExtractor implements Extractor
             setAmount(element, transaction, amount);
 
             // Set note
-            transaction.setNote(element.getAttribute("description"));
+            if (!transaction.getType().equals(AccountTransaction.Type.DIVIDENDS))
+                transaction.setNote(element.getAttribute("description"));
 
             // Add Trade-ID note if available
-            if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
-                transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+            if (transaction.getNote() == null)
+            {
+                if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
+                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
+            }
+            else
+            {
+                if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
+                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+            }
 
             // Add Transaction-ID note if available
-            if (!element.getAttribute("transactionID").isEmpty()
-                            && !element.getAttribute("transactionID").equals("N/A"))
-                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | " + transaction.getNote());
+            if (transaction.getNote() == null)
+            {
+                if (!element.getAttribute("transactionID").isEmpty()
+                                && !element.getAttribute("transactionID").equals("N/A"))
+                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID"));
+            }
+            else
+            {
+                if (!element.getAttribute("transactionID").isEmpty()
+                                && !element.getAttribute("transactionID").equals("N/A"))
+                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
+                                    + transaction.getNote());
+            }
 
             // Transactions which do not have an account-id will not be
             // imported.
@@ -291,7 +323,7 @@ public class IBFlexStatementExtractor implements Extractor
             if (!Arrays.asList(ASSETKEY_STOCK, //
                             ASSETKEY_FUND, //
                             ASSETKEY_OPTION, //
-                            ASSETKEY_FUTURE_OPTION) //
+                            ASSETKEY_FUTURE_OPTION, ASSETKEY_WARRANTS) //
                             .contains(assetCategory))
                 return null;
 
@@ -332,7 +364,8 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 if (element.hasAttribute("tradeDate"))
                 {
-                    // Check if "tradeDate" and "dateTime" (date, not time) are equal.
+                    // Check if "tradeDate" and "dateTime" (date, not time) are
+                    // equal.
                     if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
                     {
                         transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
@@ -417,12 +450,14 @@ public class IBFlexStatementExtractor implements Extractor
 
             BuySellEntryItem item = new BuySellEntryItem(transaction);
 
-            if (transaction.getPortfolioTransaction().getCurrencyCode() != null && transaction.getPortfolioTransaction().getAmount() == 0)
+            if (transaction.getPortfolioTransaction().getCurrencyCode() != null
+                            && transaction.getPortfolioTransaction().getAmount() == 0)
             {
                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                 return item;
             }
-            else if (Messages.MsgErrorOrderCancellationUnsupported.equals(transaction.getPortfolioTransaction().getNote()))
+            else if (Messages.MsgErrorOrderCancellationUnsupported
+                            .equals(transaction.getPortfolioTransaction().getNote()))
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
                 return item;
@@ -455,7 +490,6 @@ public class IBFlexStatementExtractor implements Extractor
                 transaction.setShares(Values.Share.factorize(qty));
 
                 transaction.setSecurity(this.getOrCreateSecurity(element, true));
-                transaction.setNote(element.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
 
@@ -487,8 +521,8 @@ public class IBFlexStatementExtractor implements Extractor
         };
 
         /**
-         * Constructs a Transaction object for a SalesTax Transaction defined
-         * in element.
+         * Constructs a Transaction object for a SalesTax Transaction defined in
+         * element.
          */
         private Function<Element, Item> buildSalesTaxTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
@@ -510,11 +544,14 @@ public class IBFlexStatementExtractor implements Extractor
             // Add Tax-Transaction-ID note if available
             if (!element.getAttribute("taxableTransactionID").isEmpty()
                             && !element.getAttribute("taxableTransactionID").equals("N/A"))
-                    transaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | " + transaction.getNote());
+                transaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | "
+                                + transaction.getNote());
 
             // Add Transaction-ID note if available
-            if (!element.getAttribute("transactionID").isEmpty() && !element.getAttribute("transactionID").equals("N/A"))
-                transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | " + transaction.getNote());
+            if (!element.getAttribute("transactionID").isEmpty()
+                            && !element.getAttribute("transactionID").equals("N/A"))
+                transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
+                                + transaction.getNote());
 
             // Transactions which do not have an account-id will not be
             // imported.
@@ -617,11 +654,13 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
+         * @formatter:off
          * Imports from Document
-         *  - Trades
-         *  - CorporateActions
-         *  - CashTransactions
-         *  - SalesTaxes
+         * - Trades
+         * - CorporateActions
+         * - CashTransactions
+         * - SalesTaxes
+         * @formatter:on
          */
         private void importModelObjects(String type, Function<Element, Item> handleNodeFunction)
         {
@@ -798,7 +837,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Regex Pattern matches the Dividend per Share and calculate number
             // of shares
-            Pattern pDividendPerShares = Pattern.compile(".*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*");
+            Pattern pDividendPerShares = Pattern.compile(
+                            ".*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*");
             Matcher m = pDividendPerShares.matcher(desc);
             if (m.find())
             {
