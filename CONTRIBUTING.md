@@ -311,9 +311,9 @@ The test file is an XML file. People anonymize their personal information and ac
 
 * The test files should not be modified beyond the anonymization
 * Follow the naming convention for test files (type in the local language, two digit counter):
-	* `testiBFlexStatementFile01.xml`
+	* `testIBFlexStatementFile01.xml`
 * Samples
-	*  Transaction in XML-File: [IBFlexStatementExtractorTest](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java) - see `testiBFlexStatementFile01()`
+	*  Transaction in XML-File: [IBFlexStatementExtractorTest](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java) - see `testIBFlexStatementFile01()`
 
 
 ## PDF importer
