@@ -40,12 +40,27 @@ public class CreateTextFromPDFHandler
             PDFInputFile inputFile = new PDFInputFile(file);
             inputFile.convertPDFtoText();
 
-            String text = "PDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$
-            text += "\nPortfolio Performance Version: " + PortfolioPlugin.getDefault().getBundle().getVersion().toString(); //$NON-NLS-1$
-            text += "\n-----------------------------------------\n"; //$NON-NLS-1$
-            text += inputFile.getText().replace("\r","");   // CRLF to spac; //$NON-NLS-1$ //$NON-NLS-2$
+            StringBuilder textBuilder = new StringBuilder();
+            textBuilder.append("```") //$NON-NLS-1$
+                            .append("\n"); //$NON-NLS-1$
+            textBuilder.append("PDFBox Version: ") //$NON-NLS-1$
+                            .append(inputFile.getPDFBoxVersion().toString()) //
+                            .append("\n"); //$NON-NLS-1$
+            textBuilder.append("Portfolio Performance Version: ") //$NON-NLS-1$
+                            .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
+                            .append("\n"); //$NON-NLS-1$
+            textBuilder.append("-----------------------------------------\n"); //$NON-NLS-1$
+            textBuilder.append(inputFile.getText().replace("\r", "")) //$NON-NLS-1$ //$NON-NLS-2$
+                            .append("\n"); //$NON-NLS-1$
+            textBuilder.append("```"); //$NON-NLS-1$
 
-            new DisplayTextDialog(shell, file, text).open();
+            String text = textBuilder.toString();
+
+            DisplayTextDialog dialog = new DisplayTextDialog(shell, file, text);
+            dialog.setDialogTitle(Messages.PDFImportDebugTextExtraction);
+            dialog.setAdditionalText(Messages.PDFImportDebugInformation);
+            dialog.createPDFDebug(true);
+            dialog.open();
         }
         catch (IOException e)
         {
