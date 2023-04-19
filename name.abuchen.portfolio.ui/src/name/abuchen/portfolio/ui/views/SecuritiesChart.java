@@ -22,6 +22,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -605,6 +606,7 @@ public class SecuritiesChart
     public void addButtons(ToolBarManager toolBar)
     {
         chart.getMeasurementTool().addButtons(toolBar);
+        toolBar.add(new Separator());
 
         List<Action> viewActions = new ArrayList<>();
 
@@ -621,7 +623,7 @@ public class SecuritiesChart
             viewActions.add(action);
             toolBar.add(action);
         }
-
+        toolBar.add(new Separator());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
