@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -553,15 +554,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? "
+        Block depositRemovalBlock_Format01 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? "
                         + "(Lastschrift"
                         + "|.berweisung online"
+                        + "|.berweisung"
                         + "|Kartenzahlung"
                         + "|Gutschrift.berweisung"
                         + "|Dauerauftrag"
-                        + "|Lohn, Gehalt, Rente).*$");
-        type.addBlock(depositRemovalBlock);
-        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+                        + "|Lohn, Gehalt, Rente"
+                        + "|Basis\\-Lastschrift"
+                        + "|Zahlungseingang)$");
+        type.addBlock(depositRemovalBlock_Format01);
+        depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
@@ -569,83 +573,162 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .oneOf(
-                                // @formatter:off
-                                // 01.03.2023 Lastschrift
-                                // 03.03.2023 Kartenzahlung
-                                // 06.03.2023 Überweisung online
-                                // 08.03.2023 GutschriftÜberweisung
-                                // 30.03.2023 Dauerauftrag
-                                // 30.03.2023 Lohn, Gehalt, Rente
-                                // @formatter:on
-                                section -> section
-                                        .attributes("date", "note", "amount", "type")
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                        + "(?<note>(Lastschrift"
-                                                        + "|.berweisung online"
-                                                        + "|Kartenzahlung"
-                                                        + "|Gutschrift.berweisung"
-                                                        + "|Dauerauftrag"
-                                                        + "|Lohn, Gehalt, Rente))"
-                                                        + ".*$")
-                                        .match("^[\\s]+ (?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                // @formatter:off
+                // 01.03.2023 Lastschrift
+                // 03.03.2023 Kartenzahlung
+                // 06.03.2023 Überweisung online
+                // 08.03.2023 GutschriftÜberweisung
+                // 30.03.2023 Dauerauftrag
+                // 30.03.2023 Lohn, Gehalt, Rente
+                // @formatter:on
+                .section("date", "note", "amount", "type")
+                .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "(?<note>(Lastschrift"
+                                + "|.berweisung online"
+                                + "|.berweisung"
+                                + "|Kartenzahlung"
+                                + "|Gutschrift.berweisung"
+                                + "|Dauerauftrag"
+                                + "|Lohn, Gehalt, Rente"
+                                + "|Basis\\-Lastschrift"
+                                + "|Zahlungseingang))"
+                                + "$")
+                .match("^[\\s]+ (?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
 
-                                            // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(trim(v.get("type"))))
-                                                t.setType(AccountTransaction.Type.REMOVAL);
+                    // Is type is "-" change from DEPOSIT to REMOVAL
+                    if ("-".equals(trim(v.get("type"))))
+                        t.setType(AccountTransaction.Type.REMOVAL);
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(v.get("note"));
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
 
-                                            if (t.getAmount() == 0)
-                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-                                        })
-                                ,
-                                // @formatter:off
-                                // 02.03.2020 02.03.2020 Lastschrift              2,00-
-                                // 02.03.2020 02.03.2020 Überweisung online              1,00-
-                                // @formatter:on
-                                section -> section
-                                        .attributes("date", "note", "type", "amount")
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                                        + "(?<note>(Lastschrift"
-                                                        + "|.berweisung online"
-                                                        + "|Kartenzahlung"
-                                                        + "|Gutschrift.berweisung"
-                                                        + "|Dauerauftrag"
-                                                        + "|Lohn, Gehalt, Rente)) "
-                                                        + "[\\s]+"
-                                                        + "(?<amount>[\\.,\\d]+)"
-                                                        + "(?<type>([\\-|\\+])?)$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
-
-                                            // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(trim(v.get("type"))))
-                                                t.setType(AccountTransaction.Type.REMOVAL);
-
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(v.get("note"));
-
-                                            if (t.getAmount() == 0)
-                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-                                        })
-                        )
-
-                .wrap((t, ctx) -> {
+                .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
 
-                    if (ctx.getString(FAILURE) != null)
-                        item.setFailureMessage(ctx.getString(FAILURE));
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                     return item;
+                }));
+
+        Block depositRemovalBlock_Format02 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? "
+                        + "(Lastschrift"
+                        + "|.berweisung online"
+                        + "|.berweisung"
+                        + "|Kartenzahlung"
+                        + "|Gutschrift.berweisung"
+                        + "|Dauerauftrag"
+                        + "|Lohn, Gehalt, Rente"
+                        + "|Basis\\-Lastschrift"
+                        + "|Zahlungseingang) .*[\\.,\\d][\\-|\\+]+.*$");
+        type.addBlock(depositRemovalBlock_Format02);
+        depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DEPOSIT);
+                    return entry;
+                })
+
+                // @formatter:off
+                // 02.03.2020 02.03.2020 Lastschrift              2,00-
+                // 02.03.2020 02.03.2020 Überweisung online              1,00-
+                // 01.03.2016 01.03.2016 Basis-Lastschrift              119,00-
+                // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
+                // 06.04.2017 06.04.2017 Überweisung            3.000,00-  
+                // @formatter:on
+                .section("date", "note", "type", "amount")
+                .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
+                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                + "(?<note>(Lastschrift"
+                                + "|.berweisung online"
+                                + "|.berweisung"
+                                + "|Kartenzahlung"
+                                + "|Gutschrift.berweisung"
+                                + "|Dauerauftrag"
+                                + "|Lohn, Gehalt, Rente"
+                                + "|Basis\\-Lastschrift"
+                                + "|Zahlungseingang)) "
+                                + "[\\s]+"
+                                + "(?<amount>[\\.,\\d]+)"
+                                + "(?<type>([\\-|\\+])?).*$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from DEPOSIT to REMOVAL
+                    if ("-".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    return item;
+                }));
+
+        Block depositRemovalBlock_Format03 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$");
+        type.addBlock(depositRemovalBlock_Format03);
+        depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DEPOSIT);
+                    return entry;
+                })
+
+                // @formatter:off
+                // 25.09.2020 25.09.2020
+                // Lastschrift
+                //                9,75-
+                // @formatter:on
+                .section("date", "note", "amount", "type").optional()
+                .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                .match("^(?<note>(Lastschrift"
+                                + "|.berweisung online"
+                                + "|.berweisung"
+                                + "|Kartenzahlung"
+                                + "|Gutschrift.berweisung"
+                                + "|Dauerauftrag"
+                                + "|Lohn, Gehalt, Rente"
+                                + "|Basis\\-Lastschrift"
+                                + "|Zahlungseingang))$")
+                .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])).*")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from DEPOSIT to REMOVAL
+                    if ("-".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return item;
+
+                    return null;
                 }));
 
         // @formatter:off
@@ -682,16 +765,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(trim(v.get("note")));
-
-                    if (t.getAmount() == 0)
-                        v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
                 })
 
-                .wrap((t, ctx) -> {
+                .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
 
-                    if (ctx.getString(FAILURE) != null)
-                        item.setFailureMessage(ctx.getString(FAILURE));
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                     return item;
                 }));
@@ -725,23 +805,20 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
 
                     // Is type is "-" change from INTEREST to INTEREST_CHARGE
-                    if ("-".equals(trim(v.get("type"))))
+                    if ("-".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(trim(v.get("note")));
-
-                    if (t.getAmount() == 0)
-                        v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
                 })
 
-                .wrap((t, ctx) -> {
+                .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
 
-                    if (ctx.getString(FAILURE) != null)
-                        item.setFailureMessage(ctx.getString(FAILURE));
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                     return item;
                 }));
@@ -787,7 +864,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(trim(v.get("type"))))
+                                            if ("-".equals(v.get("type")))
                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                             t.setDateTime(asDate(v.get("date")));
@@ -819,7 +896,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(trim(v.get("type"))))
+                                            if ("-".equals(v.get("type")))
                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                             t.setDateTime(asDate(v.get("date")));
