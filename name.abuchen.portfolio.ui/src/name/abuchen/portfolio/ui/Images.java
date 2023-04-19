@@ -105,7 +105,8 @@ public enum Images
     POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
     DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
     EODHISTORICALDATA_LOGO("eodhistoricaldata-logo.png"), //$NON-NLS-1$
-    PORTFOLIO_REPORT_LOGO("portfolio-report.net-logo.png"); //$NON-NLS-1$
+    PORTFOLIO_REPORT_LOGO("portfolio-report.net-logo.png"), //$NON-NLS-1$
+    GITHUB_LOGO("github.com-logo.png"); //$NON-NLS-1$
 
     static
     {
