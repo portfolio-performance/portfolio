@@ -145,6 +145,10 @@ public class PerformanceChartView extends AbstractHistoricView
 
         setChartSeries();
 
+        // measure tool initialization is last operation to register the tool as
+        // the last PaintListener to draw top most
+        chart.getMeasurementTool().initialize();
+
         return composite;
     }
 

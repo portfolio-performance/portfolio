@@ -25,6 +25,11 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
     public AccountBalanceChart(Composite parent)
     {
         super(parent);
+
+        // measure tool initialization is last operation to register the tool as
+        // the last PaintListener to draw top most
+        super.getMeasurementTool().initialize();
+
         getTitle().setVisible(false);
     }
 

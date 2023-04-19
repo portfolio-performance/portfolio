@@ -426,6 +426,10 @@ public class SecuritiesChart
         legend.setVisible(true);
 
         setupTooltip();
+
+        // measure tool initialization is last operation to register the tool as
+        // the last PaintListener to draw top most
+        chart.getMeasurementTool().initialize();
     }
 
     public IntervalOption getIntervalOption()

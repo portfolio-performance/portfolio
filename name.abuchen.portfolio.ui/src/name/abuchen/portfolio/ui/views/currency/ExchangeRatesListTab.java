@@ -162,6 +162,9 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     protected void createBottomTable(Composite parent)
     {
         chart = new TimelineChart(parent);
+        // measure tool initialization is last operation to register the tool as
+        // the last PaintListener to draw top most
+        chart.getMeasurementTool().initialize();
         stylingEngine.style(chart);
         chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.ExchangeRate.pattern()));
         refreshChart(null);

@@ -234,6 +234,9 @@ public class ChartWidget extends WidgetDelegate<Object>
         });
 
         chart = new TimelineChart(container);
+        // measure tool initialization is last operation to register the tool as
+        // the last PaintListener to draw top most
+        chart.getMeasurementTool().initialize();
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
         chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
