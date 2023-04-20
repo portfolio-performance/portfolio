@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,10 +27,12 @@ public class AlphavantageQuoteFeedTest
         security.setTickerSymbol("AAPL");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoApiKey()
     {
-        new AlphavantageQuoteFeed().getLatestQuote(security);
+        AlphavantageQuoteFeed feed = new AlphavantageQuoteFeed();
+        Optional<LatestSecurityPrice> result = feed.getLatestQuote(security);
+        assertThat(result.isEmpty(), is(true));
     }
 
     @Test
