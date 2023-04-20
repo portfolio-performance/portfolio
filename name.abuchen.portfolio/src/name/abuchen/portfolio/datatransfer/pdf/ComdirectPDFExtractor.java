@@ -1276,9 +1276,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         ownIndex = 1;
                     }
 
-                    // if tax of a1 < tax of a2
-                    if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount()
-                                    .isGreaterOrEqualTo(a1.getUnit(Type.TAX).get().getAmount()))
+                    // if tax of a1 does not exist or if tax of a1 <= tax of a2
+                    if (!a1.getUnit(Type.TAX).isPresent()
+                                    || isLessOrEqualTo(a1.getUnit(Type.TAX), a2.getUnit(Type.TAX)))
                     {
                         // store potential gross unit
                         Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
@@ -1298,6 +1298,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         }
 
         return items;
+    }
+
+    private boolean isLessOrEqualTo(Optional<Unit> unit, Optional<Unit> other)
+    {
+        if (unit.isPresent() && other.isPresent())
+            return unit.get().getAmount().isLessOrEqualTo(other.get().getAmount());
+        else
+            return false;
     }
 
     private boolean isDividendTransaction(Item i)
