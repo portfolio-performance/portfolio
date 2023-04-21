@@ -496,9 +496,12 @@ public class SecurityListView extends AbstractFinanceView
                         ((IStructuredSelection) event.getSelection()).getFirstElement()));
 
         securities.addSelectionChangedListener(event -> {
-            Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (security != null)
-                selectionService.setSelection(new SecuritySelection(getClient(), security));
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+
+            if (!selection.isEmpty())
+                selectionService.setSelection(new SecuritySelection(getClient(), selection.toList()));
+            else
+                selectionService.setSelection(null);
         });
 
         securities.addFilter(new ViewerFilter()
