@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0302402000003202338440
+Herrn
+Max Mustermann
+Strasse 7
+99999 Stadt
+    Frankfurt am Main,  20.04.2023
+Depotservicegebühr US09075V1026
+Kundennummer: 1657894
+Kontonummer : 1009999999
+Depotnummer : 1009999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A2PSR2  US09075V1026  BIONTECH SE SPON. ADRS 1        10,000000
+Sehr geehrter Herr Mustermann,
+die ausländische Lagerstelle hat eine Depotservicegebühr aus ISIN US09075V1026
+in Höhe von 0.18 EUR erhoben.
+Wir belasten den Betrag Ihrem Konto 1009999999 per Valuta 23.03.2023.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Irrtum vorbehalten.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003202338440 0113302400000101
