@@ -34,8 +34,8 @@ public class UpdateQuotesHandler
             if ("security".equals(filter)) //$NON-NLS-1$
             {
                 selectionService.getSelection(client).ifPresent(s -> {
-                    new UpdateQuotesJob(client, s.getSecurity()).schedule();
-                    new UpdateDividendsJob(client, s.getSecurity()).schedule(5000);
+                    new UpdateQuotesJob(client, s.getSecurities()).schedule();
+                    new UpdateDividendsJob(client, s.getSecurities()).schedule(5000);
                 });
             }
             else if ("active".equals(filter)) //$NON-NLS-1$
