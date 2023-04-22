@@ -1673,6 +1673,7 @@ public class SecuritiesChart
             if (font == null)
                 font = FontDescriptor.createFrom(e.gc.getFont()).increaseHeight(5).createFont(e.display);
 
+            Font defaultFont = e.gc.getFont();
             e.gc.setFont(font);
 
             Point txtExtend = e.gc.textExtent(message);
@@ -1680,6 +1681,8 @@ public class SecuritiesChart
             int posY = (e.height - txtExtend.y) / 2;
             e.gc.setForeground(Colors.DARK_GRAY);
             e.gc.drawText(message, posX, posY);
+
+            e.gc.setFont(defaultFont);
         }
 
         @Override
