@@ -977,6 +977,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Mindermengenzuschlag Finanzen.net EUR 1,00
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Mindermengenzuschlag .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
