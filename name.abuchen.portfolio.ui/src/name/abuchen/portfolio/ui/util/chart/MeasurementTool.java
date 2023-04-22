@@ -16,8 +16,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.IPlotArea;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -67,20 +65,7 @@ public class MeasurementTool
         chart.getPlotArea().addListener(SWT.MouseMove, this::onMouseMove);
         chart.getPlotArea().addListener(SWT.MouseUp, this::onMouseUp);
 
-        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent e)
-            {
-                MeasurementTool.this.paintControl(e);
-            }
-
-            @Override
-            public boolean drawBehindSeries()
-            {
-                return false;
-            }
-        });
+        chart.getPlotArea().addPaintListener(this::paintControl);
     }
 
     public Color getColor()

@@ -393,7 +393,6 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
-    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     private int swtAntialias = SWT.ON;
@@ -414,9 +413,8 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
-        chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(this.messagePainter);
+        chart.addPlotPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.addPlotPaintListener(this.messagePainter);
         chart.getPlotArea().addDisposeListener(this.messagePainter);
 
         messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
@@ -754,7 +752,6 @@ public class SecuritiesChart
             chart.clearMarkerLines();
             chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
-            customBehindPaintListener.clear();
             customTooltipEvents.clear();
             chart.resetAxes();
             chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
