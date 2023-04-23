@@ -1,0 +1,84 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Bundorf BLZ: 793 517 30
+Spk Ostunterfranken
+Kontoinhaber:
+Richard Mustermann
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+16. April 2010
+Verkauf wegen Tausch von Fondsanteilen Auszug: 1 / Seite 1 von 2
+Kauf aus Tausch von Fondsanteilen
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+TAUSCH/VERKAUF erteilt per Deka.de - Internet
+zu Gunsten
+Fondsbezeichnung: Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterkonto: 01
+zu Lasten
+Fondsbezeichnung: Deka-GeldmarktPlan TF 
+ISIN: LU0268059614 Unterkonto: 00 Auftragsnummer: 8101 2363
+Verwahrart: GiroSammel Abrechnungstag: 16.04.2010
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil B  estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Preis Bestand alt: 2,014
+Abrechnungsbetrag EUR 1.000,00 EUR 1.000,00 EUR 998,720000 Anteilumsatz: -1,001
+Zwischengewinn Bestand neu: 1,013
+EUR 4,890000
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 1 / Seite 2 von 2
+TAUSCH/KAUF erteilt per Deka.de - Internet
+zu Lasten
+Fondsbezeichnung: Deka-GeldmarktPlan TF
+ISIN: LU0268059614 Unterkonto: 00
+zu Gunsten
+Fondsbezeichnung: Deka-ConvergenceAktien TF 
+ISIN: LU0133666759 Unterkonto: 01 Auftragsnummer: 8101 2364
+Verwahrart: GiroSammel Abrechnungstag: 16.04.2010
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil B  estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Preis Bestand alt: 0,000
+Abrechnungsbetrag EUR 1.000,00 EUR 1.000,00 EUR 170,520000 Anteilumsatz: 5,864
+Bestand neu: 5,864
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn und realisierte  E UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 578,28
+Anrechenbare ausländische Quellensteuer EUR 1,52
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der Jahres-
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und
+Deka-ZukunftsPlan sind in der Ansparphase abgeltungsteuerfrei. Diese werden erst in der Auszahlphase
+steuerlich berücksichtigt!   
+Bitte prüfen Sie die vorliegenden Informationen.
+ 
+Zu Ihrer persönlichen Anlagestrategie mit Deka Investmentfonds und den Fonds unserer Kooperationspartner
+beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls den aktuellen Rechenschaftsbericht und Verkaufsprospekt mit den Details Ihrer
+Fondsanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+ 
+Über Chancen, Risiken und Kosten der Anlage informiert Sie das Fondsporträt des jeweiligen Fonds.
+Wünschen Sie aktuelle Informationen zu unseren Fonds, können Sie diese jederzeit im Internet über
+www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068

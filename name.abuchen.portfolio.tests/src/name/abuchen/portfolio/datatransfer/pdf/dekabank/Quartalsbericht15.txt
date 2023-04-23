@@ -1,0 +1,317 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Jahresdepotauszug per 31.12.2012
+Depotübersicht 
+Depot: 0111111111   
+Depotinhaber:
+.....
+. Richard Mustermann    
+..
+.
+... Bankverbindung:    
+Konto: 0000111111 BLZ: 793 517 30   
+Spk Ostunterfranken    
+Herrn Inh.: Mustermann, Richard    
+Richard Mustermann Sparer-Pauschbetrag   
+Musterstraße 9 Erteilt 2012: EUR 600,00  
+11111 Stadt Beansprucht: EUR 149,03  
+ 
+ISIN Unterdepot Bezeichnung Wert Wertentwicklung
+in EUR in EUR 
+per 31.12.2012 * für 2012
+LU0268059614  00 Deka-LiquiditätsPlan TF 0,00 +0,75
+LU0348413815  00 DekaLux-PharmaTech TF 2.162,81 +230,77
+DE0008474511  00 AriDeka CF 1.748,24 +210,89
+LU0133666759  00 Deka-ConvergenceAktien TF 2.399,11 +319,08
+LU0133666759  01 Deka-ConvergenceAktien TF 924,58 +122,97
+LU0052859252  00 DekaLux-Pazifik 2.852,95 +344,02
+LU0062624902  00 DekaLux-Deutschland TF A 2.812,33 +614,83
+DE0009771980  00 Deka-EuropaBond TF 0,00 +194,70
+DE0009786285  00 Deka-EuropaPotential TF 2.404,20 +324,76
+XF0009994050  00 Deka-BonusRente  
+DE0005424519  00 - Deka-BR 100 4.208,77 +256,66
+   Garantiertes Kapital zu Beginn der Auszahlungsphase (Beitragszusage):  
+4.047,43 EUR
+   Dieser Betrag steht Ihnen auf Basis der bisher eingezahlten   
+Altersvorsorgebeiträge (einschließlich Zulagen) zu Beginn der
+Auszahlungsphase mindestens zur Verfügung.
+   Gesamt in EUR 19.512,99 +2.619,43
+* Beachten Sie hierzu bitte die Erläuterungen unter "Informationen zum DekaBank Depot" auf der Folgeseite.
+Zu allen Themen rund um Ihr DekaBank Depot informiert Sie Ihr Berater der Sparkasse Ostunterfranken
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2012
+Depotübersicht 
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+ Depotpreis inkl. 19% MwSt: 
+10,00 EUR wurden für 2012 belastet
+Entgelte werden gemäß Preis- und Leistungsverzeichnis erhoben.
+ 
+Besondere Hinweise zur Deka-BonusRente:
+Das Jahresendereporting zur Deka-BonusRente mit der Bescheinigung nach § 92 EStG sowie der Zusatzinformation nach § 7 Abs. 4
+Altersvorsorgeverträge-Zertifizierungsgesetz (AltZertG) geht Ihnen separat zu. Der Versand startet Ende Februar 2013. Sofern Sie die DekaBank per
+Dauerzulageantrag bevollmächtigt haben, die Zulage jedes Jahr für Sie automatisch zu beantragen, übernehmen wir dies auf Grundlage der von
+Ihnen mitgeteilten Daten. Die Zulage wird nach Eingang Ihrem Deka-BonusRente Vertrag gutgeschrieben. Liegt uns Ihre Zustimmung zur
+Datenübermittlung der gezahlten Beiträge zur Beantragung des Sonderausgabenabzugs vor, erfolgt per Datenfernübertragung eine Meldung an die
+Deutsche Rentenversicherung Bund - Zentrale Zulagenstelle für Altersvermögen (ZfA).
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+
+
+Jahresdepotauszug per 31.12.2012
+Umsatz-Jahresübersicht
+Seite 1
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-LiquiditätsPlan TF
+ISIN: LU0268059614 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 1.023,10 987,550000  1,036   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Verkauf 1.023,85 988,270000  -1,036 30.01.2012 30.01.2012
+Summe der Betragsbewegungen     -1.023,85   
+Bestand am 31.12.2012 0,00  978,120000  0,000   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+DekaLux-PharmaTech TF
+ISIN: LU0348413815 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 1.932,04 122,320000  15,795   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Thesaurierung 0,00 134,330000  +0,000 02.07.2012 02.07.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 2.162,81  136,930000  15,795   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+AriDeka CF
+ISIN: DE0008474511 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 1.537,35 45,240000  33,982   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Ausschüttung 17,08 48,630000  +0,351 17.02.2012 17.02.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 1.748,24  50,920000  34,333   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich schriftlich an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2012
+Umsatz-Jahresübersicht
+Seite 2
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 2.080,03 136,700000  15,216   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Thesaurierung 0,00 152,790000  +0,000 01.10.2012 01.10.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 2.399,11  157,670000  15,216   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 01
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 801,61 136,700000  5,864   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Thesaurierung 0,00 152,790000  +0,000 01.10.2012 01.10.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 924,58  157,670000  5,864   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+DekaLux-Pazifik
+ISIN: LU0052859252 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 2.508,93 405,320000  6,190   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Ausschüttung 58,50 438,170000  +0,134 20.11.2012 20.11.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 2.852,95  451,130000  6,324   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2012
+Umsatz-Jahresübersicht
+Seite 3
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+DekaLux-Deutschland TF A
+ISIN: LU0062624902 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 2.197,50 67,730000  32,445   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Thesaurierung 0,00 81,810000  +0,000 01.10.2012 01.10.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 2.812,33  86,680000  32,445   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Deka-EuropaBond TF
+ISIN: DE0009771980 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 2.053,93 38,190000  53,782   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Verkauf 2.248,63 41,810000  -53,782 30.07.2012 30.07.2012
+Summe der Betragsbewegungen     -2.248,63   
+Bestand am 31.12.2012 0,00  42,040000  0,000   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2011 2.079,44 57,690000  36,045   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Abrechnungsbetrag Thesaurierung 0,00 66,700000  +0,000 28.12.2012 28.12.2012
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2012 2.404,20  66,700000  36,045   
+Bewertung mit dem Rücknahmepreis vom 28.12.2012
+ 
+Dieser Depotauszug besteht aus 3 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2012
+Umsatz-Jahresübersicht Deka-BonusRente
+Seite 1
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-BonusRente
+ISIN: XF0009994050 Unterdepot: 00  
+Vertragsnummer: 011111111199940500 Z  ertifizierungs-Nr.: 003604
+ 
+Aktuelle Phase: Ansparphase B  eginn der Auszahlungsphase: 01.10.2047
+Übersicht der angesparten Fonds
+ Fondsname ISIN Verwahrart
+ Deka-BR 100 DE0005424519 GiroSammel
+Übersicht der erfolgten Zahlungen
+Umsatzart Fondsname Ein-/Auszahlung Preis je A nteil Abgerechnete Buchungs- Abrech-
+ EUR EUR  Anteile tag nungstag
+Bestand am 31.12.2011 Deka-BR 100 2.139,25 36,690000  58,306   
+Gesamtbestand des Vertrages am 31.12.2011 2.139,25
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Lastschrifteinzug Deka-BR 100 1.000,00 41,090000  +24,337 20.02.2012 20.02.2012
+Zulagenzahlung      2011 Deka-BR 100 62,86 38,880000  +1,617 21.05.2012 21.05.2012
+Abrechnungsbetrag Thesaurierung Deka-BR 100 10,95 39,790000  +0,275 02.07.2012 02.07.2012
+Lastschrifteinzug Deka-BR 100 750,00 43,110000  +17,397 20.12.2012 20.12.2012
+Bestand am 31.12.2012 Deka-BR 100 4.208,77 41,290000  101,932   
+Gesamtbestand des Vertrages am 31.12.2012 4.208,77
+ Bewertung mit dem Rücknahmepreis vom 28.12.2012
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich schriftlich an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Dieser Depotauszug besteht aus 1 Seite.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+ Bescheinigung 
+Bescheinigung für alle Privatdepots
+Verlustbescheinigung im Sinne des § 43 a Abs. 3 Satz 4 EStG für alle Privatdepots
+Für
+Richard Mustermann  , 11111 Stadt, Musterstraße 9
+ 
+ werden für das Kalenderjahr 2012 folgende Angaben bescheinigt: 
+Betrag EUR Anlage KAP der
+Einkommensteuer-
+erklärung
+Höhe der Kapitalerträge 149,02 KAP: Zeile 7
+davon: Gewinn aus Kapitalerträgen im Sinne des § 20 Abs. 2 EStG 14,73 KAP: Zeile 8
+Ersatzbemessungsgrundlage im Sinne des § 43a Abs. 2 Satz 7, 10, 13 und 14 EStG 0,00 KAP: Zeile 11
+Enthalten in den bescheinigten Kapitalerträgen
+Höhe des nicht ausgeglichenen Verlustes ohne Verlust aus der Veräußerung von Aktien 0,00 KAP: Zeile 12
+Höhe des nicht ausgeglichenen Verlustes  aus der Veräußerung von Aktien im Sinne des § 20 0,00 KAP: Zeile 13
+Abs. 2 Satz 1 Nr. 1 EStG
+Höhe des in Anspruch genommenen Sparer-Pauschbetrages 149,03 KAP: Zeile 14 oder 15
+Kapitalertragsteuer 0,00 KAP: Zeile 50
+Solidaritätszuschlag 0,00 KAP: Zeile 51
+Kirchensteuer zur Kapitalertragsteuer 0,00 KAP: Zeile 52
+0,00
+Summe der angerechneten ausländischen Steuer 0,00 KAP: Zeile 53
+Summe der anrechenbaren noch nicht angerechneten ausländischen Steuer 6,17 KAP: Zeile 54
+Ausländischer thesaurierender Investmentfonds vorhanden
+nur nachrichtlich:
+Höhe der ausschüttungsgleichen Erträge aus ausländischen thesaurierenden 14,18 KAP: Zeile 17
+Investmentvermögen
+Hierauf entfallende anrechenbare ausländische Steuern 1,62 KAP: Zeile 54
+Bei Veräußerung/Rückgabe von Anteilen 0,00
+Summe der als zugeflossen geltenden, noch nicht dem Steuerabzug unterworfenen Erträge
+aus Anteilen an ausländischen Investmentvermögen in Fällen des § 7 Abs. 1 Satz 1 Nr. 3
+InvStG
+(Diese Summe ist in der bescheinigten Höhe der Kapitalerträge enthalten und in der Anlage
+KAP von der Höhe der Kapitalerträge abzuziehen.)
+Vermerke des bescheinigenden Institutes:
+Gegebenenfalls zu zahlende Steuern wurden an das Finanzamt Frankfurt am Main V - Höchst, 60305 Frankfurt unter der Steuernummer
+1111111111111 abgeführt.
+Das Ankreuzfeld "Ausländischer thesaurierender Investmentfonds vorhanden" bezieht sich auf den Stichtag 31.12.
+Bei der inländischen Thesaurierung für den LINGOHR-EUROPA-SYSTEMATIC-LBB-INVEST (DE0005320097) und den
+LINGOHR-SYSTEMATIC-LBB-INVEST (DE0009774794) vom 3. Januar 2012 konnte ein Kirchensteuerabzug nicht berücksichtigt werden. Bitte
+holen Sie die Besteuerung in der Veranlagung nach, wenn Sie kirchensteuerpflichtig sind (siehe Informationen zum DekaBank Depot).
+Der Thesaurierungsbetrag aus der Zeile "nur nachrichtlich: Höhe der ausschüttungsgleichen Erträge aus ausländischen thesaurierenden
+Investmentvermögen" wurde nicht der Kapitalertragsteuer unterworfen. Deshalb müssen Sie diesen Betrag gegebenenfalls in Ihrer
+Steuererklärung angeben. Bei Fragen wenden Sie sich bitte an Ihren steuerlichen Berater oder an Ihr Finanzamt.
+Zusätzliche Informationen zu Ihrer Steuerbescheinigung finden Sie auf der Rück-/Folgeseite und in den Informationen zum DekaBank Depot.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+ Richard Mustermann  , 11111 Stadt, Musterstraße 9
+Aufgrund rechtlicher Vorgaben sind anrechenbare Quellensteuer und Verluste bzw. gezahlte Zwischengewinne grundsätzlich direkt mit
+positiven Kapitalerträgen zu verrechnen. Abweichend hiervon ist die Verrechnung jedoch für bestimmte Konstellationen ausgeschlossen, dies
+gilt insbesondere bei der Abwicklung von Nachlassfällen oder bei Wechsel des Steuerstatus von Steuerinländer in Steuerausländer oder
+umgekehrt. Daher erhalten Sie den nachfolgenden Verlustausweis bzw. den Ausweis anrechenbarer ausländischer Steuer. Die Beträge
+können im Rahmen der Veranlagung geltend gemacht werden. 
+Betrag EUR
+Höhe des nicht ausgeglichenen Verlustes ohne Verlust aus der Veräußerung von Aktien 0,00
+Summe der anrechenbaren noch nicht angerechneten ausländischen Steuer  1,62
+(inklusive der anrechenbaren ausländischen Steuer aus ausländischen thesaurierenden Investmentfonds)
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
