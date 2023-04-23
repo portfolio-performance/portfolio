@@ -1,19 +1,19 @@
-PDFBox Version: 1.8.16
-Portfolio Performance Version: 0.60.1
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
 -----------------------------------------
 DekaBank
 Herrn Deutsche
-xxx
-xxxx Girozentrale
-xxxx
+Max Muster
+Strasse 8 Girozentrale
+99999 Stadt
 Juli 2022
 Depotservice
 DekaBank Depot
 60625 Frankfurt am Main
-DekaBank Depot Nr. 0140484429 Telefon (0 69) 71 47 - 6 52
+DekaBank Depot Nr. 9999999999 Telefon (0 69) 71 47 - 6 52
 Ihr Bericht für das zweite Quartal 2022 Telefax (0 69) 25 46 - 24 83
 www.deka.de
-Sehr geehrter Herr XXX,
+Sehr geehrter Herr Muster,
 Vorstand
 Dr. Georg Stocker
 die Inflationsraten bleiben in vielen Industrieländern hartnäckig hoch. Um die Inflations- (Vorsitzender)
@@ -89,21 +89,30 @@ sinnvestieren-der-deka-talk-mit-patrick-dewayne
 Quartalsbericht per 30.06.2022
 Depotübersicht
 Seite: 1
-Depot: xxxxx
+Depot: 9999999999
 Depotinhaber:
-xxxx
+Max Muster
 Herrn
-xxxxx
-xxxx
-xxxx
+Max Muster
+Strasse 8
+99999 Stadt
 ISIN Unter- Bezeichnung Wert Wertentwicklung
 depot in EUR in EUR 
 per 30.06.2022 seit 31.03.2022 1
-DE000DK2CDS0 00 Deka-DividendenStrategie CF (A) 2.789,05 -195,79
-LU1508359509 00 Deka-Industrie 4.0 CF 5.107,49 -1.141,20
-DE0008474503 00 DekaFonds CF                  2.358,86 -390,35
-DE0009771824 99 Deka-VarioInvest TF 164,66 -3,50
-Gesamt in EUR 10.420,06 -1.730,84
+DE000DK0ECU8 00 Deka-GlobalChampions CF       2.399,07 -259,02
+VL-Vertrag: gesperrt bis zum 31.12.2024 
+Vertragsinhaber: Max Muster
+LU0348413815 00 DekaLux-PharmaTech TF 5.395,84 -84,01
+LU0052859252 00 DekaLuxTeam-Aktien Asien      5.407,15 -114,50
+DE0009786285 00 Deka-EuropaPotential TF 4.128,69 -899,23
+XF0009994050 00 Deka-BonusRente               
+DE0005424519 00 - Deka-BR 100                   10.146,62 -1.246,91
+            Garantiertes Kapital zu Beginn der Auszahlungsphase (Beitragszusage):
+6.225,13 EUR
+Dieser Betrag steht Ihnen auf Basis der bisher eingezahlten
+Altersvorsorgebeiträge (einschließlich Zulagen) zu Beginn der
+Auszahlungsphase mindestens zur Verfügung.
+Gesamt in EUR 27.477,37 -2.603,67
 1 Hinweis: Der letzte Handelstag kann stichtagsbezogen vom Quartalsultimo abweichen.
 Wichtiger Hinweis zu MiFID:
 Alle auf dieser Depotübersicht aufgeführten Vermögenswerte fallen unter die Regelungen der Richtlinie 2014/65/EU (MiFID II) und deren
@@ -115,13 +124,24 @@ möglich, dass die in anderen Informationen ausgewiesenen Wertentwicklungen von 
 abweichen.
 Hinweise zum Berater:
 Wenn Sie eine Beratung zu Ihren bereits gehaltenen Wertpapieren oder zum Erwerb weiterer Wertpapiere wünschen, sprechen Sie Ihre
-Kundenberaterin oder Ihren Kundenberater bei der Rheinhessen Sparkasse an. Diese beraten Sie gerne.
+Kundenberaterin oder Ihren Kundenberater bei der Sparkasse Schweinfurt-Haßberge an. Diese beraten Sie gerne.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2022
+Depotübersicht
+Seite: 2
+Depot: 9999999999
+Depotinhaber:
+Max Muster
 Ressourcen, Zeit und Geld sparen: Mit einem Online-Zugang haben Sie von überall und jederzeit Zugriff auf Ihr DekaBank Depot sowie die
 dazugehörigen Dokumente, z.B. auch über die S-Invest App (www.deka.de/s-invest).
 Außerdem helfen Sie dabei, wichtige Ressourcen zu schonen! Jedes auf die Online-Nutzung umgestellte DekaBank Depot bedeutet ca. 
 6 Briefe im Jahr weniger, die verschickt werden müssen. Und Sie profitieren durch den reduzierten Depotpreis. Weitere Informationen zur
 Online-Freischaltung erhalten Sie unter www.deka.de/online oder in Ihrer Sparkasse.
-Dieser Report besteht aus 1 Seite.
+Dieser Report besteht aus 2 Seiten.
 DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
 Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
 60625 Frankfurt www.deka.de Frankfurt am Main
@@ -195,40 +215,33 @@ faktoren auf Basis der gesetzlichen Vorgaben sowie eines ergän-
 Quartalsbericht per 30.06.2022
 Umsatzübersicht
 Seite 1
-Depot: xxxxxx
+Depot: 9999999999
 Depotinhaber:
-xxxxx
-
-Deka-DividendenStrategie CF (A)
-ISIN: DE000DK2CDS0 Unterdepot: 00
+Max Muster
+Deka-GlobalChampions CF       
+ISIN: DE000DK0ECU8 Unterdepot: 00
 Verwahrart: GiroSammel
+VL-Vertrag: gesperrt bis zum 31.12.2024, Vertragsinhaber: Max Muster
 Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
 EUR Fremdwährung EUR Anteile tag nungstag
-Bestand am 31.03.2022 2.868,27  186,300000 15,396
+Bestand am 31.03.2022 2.538,09  283,490000 8,953
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
-Lastschrifteinzug 50,00 195,780000 +0,255 11.04.2022 11.04.2022
-Mandatsreferenz: 01111111111111
-Lastschrifteinzug 50,00 186,290000 +0,268 10.05.2022 10.05.2022
-Mandatsreferenz: 01111111111111
-Ausschüttung / Kauf aus Ertrag 0,00 177,600000 +0,000 20.05.2022 20.05.2022
-Verkauf aus Ertrag 33,43 177,600000 +0,000 20.05.2022 20.05.2022
-Lastschrifteinzug 50,00 184,490000 +0,271 10.06.2022 10.06.2022
-Mandatsreferenz: 01111111111111
-Summe der Betragsbewegungen 150,00
-Bestand am 30.06.2022 2.789,05 172,270000 16,190
+Kauf 40,00 284,870000 +0,140 21.04.2022 21.04.2022
+Kauf 40,00 264,650000 +0,151 23.05.2022 23.05.2022
+Kauf 40,00 256,820000 +0,156 21.06.2022 21.06.2022
+Summe der Betragsbewegungen 120,00
+Bestand am 30.06.2022 2.399,07 255,220000 9,400
 Bewertung mit dem Rücknahmepreis vom 30.06.2022
-
-Deka-Industrie 4.0 CF         
-ISIN: LU1508359509 Unterdepot: 00
+DekaLux-PharmaTech TF         
+ISIN: LU0348413815 Unterdepot: 00
 Verwahrart: GiroSammel
 Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
 EUR Fremdwährung EUR Anteile tag nungstag
-Bestand am 31.03.2022 5.948,69  184,610000 32,223
+Bestand am 31.03.2022 5.479,85  401,160000 13,660
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
-Lastschrifteinzug 100,00 183,550000 +0,545 11.04.2022 11.04.2022
-Mandatsreferenz: 01111111111111
-Lastschrifteinzug 100,00 162,430000 +0,616 10.05.2022 10.05.2022
-Mandatsreferenz: 01111111111111
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2022 5.395,84 395,010000 13,660
+Bewertung mit dem Rücknahmepreis vom 30.06.2022
 Bitte prüfen Sie die vorliegenden Informationen.
 Fortsetzung auf Seite 2
 DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
@@ -238,61 +251,61 @@ HRA 16068
 Quartalsbericht per 30.06.2022
 Umsatzübersicht
 Seite 2
-Depot: 0140484429
+Depot: 9999999999
 Depotinhaber:
-XXXX XXXX
-
-Deka-Industrie 4.0 CF         
-ISIN: LU1508359509 Unterdepot: 00
+Max Muster
+DekaLuxTeam-Aktien Asien      
+ISIN: LU0052859252 Unterdepot: 00
 Verwahrart: GiroSammel
 Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
 EUR Fremdwährung EUR Anteile tag nungstag
-Fortsetzung von vorheriger Seite
-Lastschrifteinzug 100,00 167,180000 +0,598 10.06.2022 10.06.2022
-Mandatsreferenz: 01111111111111
-Summe der Betragsbewegungen 300,00
-Bestand am 30.06.2022 5.107,49 150,300000 33,982
-Bewertung mit dem Rücknahmepreis vom 30.06.2022
-
-DekaFonds CF                  
-ISIN: DE0008474503 Unterdepot: 00
-Verwahrart: GiroSammel
-Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
-EUR Fremdwährung EUR Anteile tag nungstag
-Bestand am 31.03.2022 2.599,21  116,520000 22,307
+Bestand am 31.03.2022 5.521,65  859,400000 6,425
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
-Lastschrifteinzug 50,00 119,560000 +0,418 11.04.2022 11.04.2022
-Mandatsreferenz: 01111111111111
-Lastschrifteinzug 50,00 112,870000 +0,443 10.05.2022 10.05.2022
-Mandatsreferenz: 01111111111111
-Lastschrifteinzug 50,00 116,300000 +0,430 10.06.2022 10.06.2022
-Mandatsreferenz: 01111111111111
-Summe der Betragsbewegungen 150,00
-Bestand am 30.06.2022 2.358,86 99,960000 23,598
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2022 5.407,15 841,580000 6,425
 Bewertung mit dem Rücknahmepreis vom 30.06.2022
-Fortsetzung auf Seite 3
+Deka-EuropaPotential TF       
+ISIN: DE0009786285 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2022 5.027,92  169,530000 29,658
+Bewertung mit dem Rücknahmepreis vom 31.03.2022
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2022 4.128,69 139,210000 29,658
+Bewertung mit dem Rücknahmepreis vom 30.06.2022
+Dieser Report besteht aus 2 Seiten.
 DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
 Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
 60625 Frankfurt www.deka.de Frankfurt am Main
 HRA 16068
 Quartalsbericht per 30.06.2022
-Umsatzübersicht
-Seite 3
-Depot: 0140484429
+Umsatzübersicht Deka-BonusRente
+Seite 1
+Depot: 9999999999
 Depotinhaber:
-xxx xxx
-
-Deka-VarioInvest TF           
-ISIN: DE0009771824 Unterdepot: 99
-Verwahrart: GiroSammel
-Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
-EUR Fremdwährung EUR Anteile tag nungstag
-Bestand am 31.03.2022 168,16  63,890000 2,632
+Max Muster
+Deka-BonusRente
+ISIN: XF0009994050 Unterdepot: 00
+Vertragsnummer: 999999999999940500  Zertifizierungs-Nr.: 003604
+Aktuelle Phase:  Ansparphase Beginn der Auszahlungsphase: 01.05.2049
+Übersicht der angesparten Fonds
+Fondsname ISIN Verwahrart
+Deka-BR 100 DE0005424519 GiroSammel
+Übersicht der erfolgten Zahlungen
+Umsatzart Fondsname Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR EUR Anteile tag nungstag
+Bestand am 31.03.2022 Deka-BR 100 11.298,54 107,930000 104,684
+Gesamtbestand des Vertrages am 01.04.2022 11.298,54
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
-Summe der Betragsbewegungen 0,00
-Bestand am 30.06.2022 164,66 62,560000 2,632
+Zulagenzahlung       2021 Deka-BR 100 14,99 101,840000 +0,147 17.05.2022 17.05.2022
+Lastschrifteinzug Deka-BR 100 80,00 103,190000 +0,775 08.06.2022 08.06.2022
+Mandatsreferenz: 9999999999001
+Bestand am 30.06.2022 Deka-BR 100 10.146,62 96,080000 105,606
+Gesamtbestand des Vertrages am 30.06.2022 10.146,62
 Bewertung mit dem Rücknahmepreis vom 30.06.2022
-Dieser Report besteht aus 3 Seiten.
+Bitte prüfen Sie die vorliegenden Informationen.
+Dieser Report besteht aus 1 Seite.
 DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
 Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
 60625 Frankfurt www.deka.de Frankfurt am Main

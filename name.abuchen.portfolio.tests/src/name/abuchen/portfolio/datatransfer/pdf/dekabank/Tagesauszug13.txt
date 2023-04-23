@@ -1,0 +1,108 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Stadt BLZ: 793 517 30
+Spk Ostunterfranken
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. August 2009
+Ertragsausschüttungen Auszug: 4 / Seite 1 von 4
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+ERTRAGSABRECHNUNG
+Am 20.08.2009 fand die Ertragsausschüttung des Deka-GeldmarktPlan TF statt. Der Ausschüttungsbetrag pro
+Anteil beträgt EUR 29,5900000. Ihrer Ertragsausschüttung lag ein Anteilbestand von 1,565 Anteilen
+zugrunde.
+Bitte beachten Sie: Weitere Anteilsumsätze können den "Bestand alt" verändert haben. Diese Abrechnung
+weist Ihnen den aktuellen Anteilsbestand aus. 
+Fondsbezeichnung: Deka-GeldmarktPlan TF 
+ISIN: LU0268059614 Unterkonto: 00 Auftragsnummer: 9311 0573
+Verwahrart: GiroSammel Abrechnungstag: 20.08.2009
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil  B estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Ausschüttung EUR 46,31 Preis Bestand alt: 1,565
+= Wiederanlagebetrag EUR 46,31 EUR 46,31 EUR 995,430000 Anteilumsatz: 0,047
+Bestand neu: 1,612
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 4 / Seite 2 von 4
+ERTRAGSABRECHNUNG
+Am 20.08.2009 fand die Ertragsausschüttung des Deka-EuropaBond TF statt. Der Ausschüttungsbetrag pro
+Anteil beträgt EUR 1,0500000. Ihrer Ertragsausschüttung lag ein Anteilbestand von 49,088 Anteilen
+zugrunde.
+Bitte beachten Sie: Weitere Anteilsumsätze können den "Bestand alt" verändert haben. Diese Abrechnung
+weist Ihnen den aktuellen Anteilsbestand aus. 
+Fondsbezeichnung: Deka-EuropaBond TF 
+ISIN: DE0009771980 Unterkonto: 00 Auftragsnummer: 9329 3756
+Verwahrart: GiroSammel Abrechnungstag: 20.08.2009
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil B  estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Ausschüttung EUR 51,54 Preis Bestand alt: 49,088
+= Wiederanlagebetrag EUR 51,54 EUR 51,54 EUR 36,340000 Anteilumsatz: 1,418
+Zwischengewinn Bestand neu: 50,506
+EUR 0,280000
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn und realisierte  E UR 0,40
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 485,23
+Anrechenbare ausländische Quellensteuer EUR 3,72
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der Jahres-
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und
+Deka-ZukunftsPlan sind in der Ansparphase abgeltungssteuerfrei. Diese werden erst in der Auszahlphase
+steuerlich berücksichtigt!   
+Eine evtl. Meldepflicht nach § 59ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+ 
+Zu Ihrer persönlichen Anlagestrategie mit Deka Investmentfonds und den Fonds unserer Kooperationspartner
+beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls den aktuellen Rechenschaftsbericht und Verkaufsprospekt mit den Details Ihrer
+Fondsanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 4 / Seite 3 von 4
+  
+Deka ist "Top-Fondsgesellschaft"
+ 
+Die Höchstnote von 5 Sternen wurde der Deka bei einer
+Preisverleihung des Wirtschaftsmagazins "Capital" im Januar
+2009 verliehen. 
+ 
+Capital untersuchte dabei 100 Fondsgesellschaften nach
+Lückenlosigkeit der Produktpalette, Fondsqualität, Management
+und Service. Von diesen erhielten lediglich 8 weitere Anbieter die
+Bestnote.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Sehr geehrte Kundin, sehr geehrter Kunde,
+regelmäßiges Sparen ist die Grundlage für einen zielgerichteten Vermögensaufbau. Und die ideale Ergänzung
+zu Ihrer Geldanlage. Nutzen Sie die Chance, mit dem Deka-FondsSparplan Ihre persönlichen Anlageziele noch
+leichter und flexibler zu erreichen - mit einer monatlichen Sparrate schon ab 25 Euro und einem individuellen
+Zahlungsrhythmus. Wenn Sie Ihren Deka-FondsSparplan erhöhen oder mit einem neuen Deka-FondsSparplan
+regelmäßig sparen möchten, senden Sie diesen Auftrag ausgefüllt an uns zurück. Mit der Zusendung unserer
+Bestätigung ist Ihr Sparplan automatisch eingerichtet.
+Depotnummer: 0111111111
+Depotinhaber: Richard Mustermann
+Generelle Bankverbindung: Konto: 0000111111 BLZ: 793 517 30 Spk Ostunterfranken
+Fondsbezeichnung: Deka-GeldmarktPlan TF
+ISIN: LU0268059614   Ausgabeaufschlag¹: 0,000 %

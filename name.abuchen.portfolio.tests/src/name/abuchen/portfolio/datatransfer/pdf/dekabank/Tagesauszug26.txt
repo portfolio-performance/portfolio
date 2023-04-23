@@ -1,0 +1,255 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann
+Stöckach Bankverbindung generell:IBAN:
+Frankenweg 7 DExx xxx5 0101 xxxx xxx7 81
+97494 Bundorf Spk Schweinfurt-Haßberge
+Kontoinhaber:
+Mustermann, Richard
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. März 2020
+Verkäufe von Wertpapieren Auszug: 2 / Seite 1 von 6
+Auslieferungen von Wertpapieren
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: DekaLux-PharmaTech TF
+ISIN: LU0348413815 Unterdepot: 00 Auftragsnummer: 8101 8357
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 16,882
+Anteilumsatz: -16,000
+Bestand neu: 0,882
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: DekaLux-PharmaTech TF
+ISIN: LU0348413815 Unterdepot: 00 Auftragsnummer: 8101 8358
+Verwahrart: GiroSammel Abrechnungstag: 19.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 232,27 Kurs Bestand alt: 0,882
+=Abrechnungsbetrag EUR 232,27 EUR 232,27 EUR 263,350000 Anteilumsatz: -0,882
+Bestand neu: 0,000
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 2 von 6
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: AriDeka CF
+ISIN: DE0008474511 Unterdepot: 00 Auftragsnummer: 8102 9562
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 40,388
+Anteilumsatz: -40,000
+Bestand neu: 0,388
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: AriDeka CF
+ISIN: DE0008474511 Unterdepot: 00 Auftragsnummer: 8102 9563
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 18,49 Kurs Bestand alt: 0,388
+=Abrechnungsbetrag EUR 18,49 EUR 18,49 EUR 47,650000 Anteilumsatz: -0,388
+Bestand neu: 0,000
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 00 Auftragsnummer: 8103 0560
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 15,952
+Anteilumsatz: -15,000
+Bestand neu: 0,952
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 3 von 6
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 00 Auftragsnummer: 8103 0561
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 110,18 Kurs Bestand alt: 0,952
+=Abrechnungsbetrag EUR 110,18 EUR 110,18 EUR 115,740000 Anteilumsatz: -0,952
+Bestand neu: 0,000
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 01 Auftragsnummer: 8103 0562
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 6,148
+Anteilumsatz: -6,000
+Bestand neu: 0,148
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 01 Auftragsnummer: 8103 0563
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 17,13 Kurs Bestand alt: 0,148
+=Abrechnungsbetrag EUR 17,13 EUR 17,13 EUR 115,740000 Anteilumsatz: -0,148
+Bestand neu: 0,000
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 4 von 6
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: DekaLuxTeam-Aktien Asien
+ISIN: LU0052859252 Unterdepot: 00 Auftragsnummer: 8103 0608
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 6,854
+Anteilumsatz: -6,000
+Bestand neu: 0,854
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: DekaLuxTeam-Aktien Asien
+ISIN: LU0052859252 Unterdepot: 00 Auftragsnummer: 8103 0609
+Verwahrart: GiroSammel Abrechnungstag: 19.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 494,76 Kurs Bestand alt: 0,854
+=Abrechnungsbetrag EUR 494,76 EUR 494,76 EUR 579,350000 Anteilumsatz: -0,854
+Bestand neu: 0,000
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: DekaLux-Deutschland TF A
+ISIN: LU0062624902 Unterdepot: 00 Auftragsnummer: 8103 1684
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 34,726
+Anteilumsatz: -34,000
+Bestand neu: 0,726
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 5 von 6
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: DekaLux-Deutschland TF A
+ISIN: LU0062624902 Unterdepot: 00 Auftragsnummer: 8103 1685
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 58,09 Kurs Bestand alt: 0,726
+=Abrechnungsbetrag EUR 58,09 EUR 58,09 EUR 80,020000 Anteilumsatz: -0,726
+Bestand neu: 0,000
+AUSLIEFERUNG 
+Ihrem Auftrag entsprechend haben wir Ihre Wertpapiere auf Depot: 1001111111 Depotinhaber: Richard Mustermann
+bei der flatex Bank übertragen.
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 00 Auftragsnummer: 8103 3823
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Bestand alt: 37,901
+Anteilumsatz: -37,000
+Bestand neu: 0,901
+Bitte beachten Sie, dass nur ganze Stücke übertragen werden können. Eventuell vorhandene Bruchstücke
+werden wir, sofern Sie uns hierzu einen Auftrag erteilt haben, verkaufen und den Erlös zu Gunsten der von
+Ihnen angegebenen Bankverbindung überweisen.
+VERKAUF 
+Bankverbindung: IBAN: DE49 1011 0110 1001 1111 11
+Kontoinhaber: Mustermann,Richard
+flatex Bank
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 00 Auftragsnummer: 8103 3824
+Verwahrart: GiroSammel Abrechnungstag: 18.03.2020
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten Bestandsdaten
+des Wertpapiers je Anteil in Stück
+Auszahlungsbetrag EUR 79,92 Kurs Bestand alt: 0,901
+=Abrechnungsbetrag EUR 79,92 EUR 79,92 EUR 88,700000 Anteilumsatz: -0,901
+Bestand neu: 0,000
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 250,00.
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste EUR 0,00
+(sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 173,03
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 6 von 6
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Bitte prüfen Sie die vorliegenden Informationen.
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Schweinfurt-Haßberge.
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen. 
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
