@@ -77,6 +77,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
@@ -278,6 +279,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerToolTipSupport.enableFor(errorTableViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(errorTableViewer);
         errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
@@ -333,6 +335,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 String text = e.getMessage();
                 return text == null || text.isEmpty() ? e.getClass().getName() : text;
             }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                return TextUtil.wordwrap(getText(element));
+            }
         });
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100, true));
     }
@@ -366,22 +374,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getToolTipText(Object entry)
             {
-                List<String> messages = new ArrayList<String>();
-                ((ExtractedEntry) entry).getStatus() //
+                String message = ((ExtractedEntry) entry).getStatus() //
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .forEach(s -> {
-                                    if (s.getMessage() != null)
-                                        messages.add(s.getMessage());
-                                });
-                String message = null;
-                for (String m : messages)
-                {
-                    if (message != null && message.length() > 0)
-                        message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    else
-                        message = m;
-                }
-                return message;
+                                .filter(s -> s.getMessage() != null) //
+                                .map(s -> s.getMessage()) // NOSONAR
+                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
+                return TextUtil.wordwrap(message);
             }
 
             @Override
@@ -419,22 +417,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getToolTipText(Object entry)
             {
-                List<String> messages = new ArrayList<String>();
-                ((ExtractedEntry) entry).getStatus() //
+                String message = ((ExtractedEntry) entry).getStatus() //
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .forEach(s -> {
-                                    if (s.getMessage() != null)
-                                        messages.add(s.getMessage());
-                                });
-                String message = null;
-                for (String m : messages)
-                {
-                    if (message != null && message.length() > 0)
-                        message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    else
-                        message = m;
-                }
-                return message;
+                                .filter(s -> s.getMessage() != null) //
+                                .map(s -> s.getMessage()) // NOSONAR
+                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
+                return TextUtil.wordwrap(message);
             }
 
             @Override
