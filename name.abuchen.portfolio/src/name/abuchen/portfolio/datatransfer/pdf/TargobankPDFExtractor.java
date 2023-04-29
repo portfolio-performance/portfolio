@@ -558,7 +558,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(dividendTransaction.getUnitSum(Unit.Type.TAX).getCurrencyCode(),
                                             dividendTransaction.getUnitSum(Unit.Type.TAX).getAmount());
 
-                            if (tax.isGreaterOrEqualThan(taxTransaction.getMonetaryAmount()))
+                            if (tax.isGreaterOrEqualTo(taxTransaction.getMonetaryAmount()))
                                 taxTransaction.setMonetaryAmount(taxTransaction.getMonetaryAmount().subtract(tax));
                         }
 

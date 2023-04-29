@@ -473,7 +473,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     // The tax assessment basis can include foreign withholding taxes which
                     // have been deducted from the gross value before taxes value.
                     Money tax = null;
-                    if (grossValueBeforeTaxes.isGreaterOrEqualThan(taxAssessmentBasis))
+                    if (grossValueBeforeTaxes.isGreaterOrEqualTo(taxAssessmentBasis))
                         tax = grossValueBeforeTaxes.subtract(t.getMonetaryAmount());
                     else
                         tax = taxAssessmentBasis.subtract(t.getMonetaryAmount());
@@ -523,7 +523,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     // The tax assessment basis can include foreign withholding taxes which
                     // have been deducted from the gross value before taxes value.
                     Money tax = null;
-                    if (grossValueBeforeTaxes.isGreaterOrEqualThan(taxAssessmentBasis))
+                    if (grossValueBeforeTaxes.isGreaterOrEqualTo(taxAssessmentBasis))
                         tax = grossValueBeforeTaxes.subtract(t.getMonetaryAmount());
                     else
                         tax = taxAssessmentBasis.subtract(t.getMonetaryAmount());
@@ -1278,7 +1278,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                     // if tax of a1 < tax of a2
                     if (!a1.getUnit(Type.TAX).isPresent() || a2.getUnit(Type.TAX).get().getAmount()
-                                    .isGreaterOrEqualThan(a1.getUnit(Type.TAX).get().getAmount()))
+                                    .isGreaterOrEqualTo(a1.getUnit(Type.TAX).get().getAmount()))
                     {
                         // store potential gross unit
                         Optional<Unit> unitGross = a1.getUnit(Unit.Type.GROSS_VALUE);
