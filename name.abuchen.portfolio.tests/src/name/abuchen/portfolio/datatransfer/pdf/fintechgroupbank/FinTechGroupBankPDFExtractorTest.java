@@ -5463,7 +5463,8 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.PDFMsgTransactionIsProcessedThroughAnotherDocument));
+        assertThat(cancellation.getFailureMessage(),
+                        is(Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2023-03-23T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));

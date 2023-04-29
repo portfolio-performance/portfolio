@@ -1713,7 +1713,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
 
-                    item.setFailureMessage(Messages.PDFMsgTransactionIsProcessedThroughAnotherDocument);
+                            item.setFailureMessage(
+                                            Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex);
 
                     return item;
                 });
