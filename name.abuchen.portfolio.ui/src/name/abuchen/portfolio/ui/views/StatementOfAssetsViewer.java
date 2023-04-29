@@ -93,6 +93,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -754,7 +755,7 @@ public class StatementOfAssetsViewer
                         .forEach(column -> {
                             if (column.getSorter() != null)
                                 column.getSorter().wrap(ElementComparator::new);
-                            column.getEditingSupport().addListener(new TouchClientListener(client));
+                            column.getEditingSupport().addListener(new MarkDirtyClientListener(client));
                             support.addColumn(column);
                         });
     }
