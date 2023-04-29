@@ -1277,7 +1277,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                     }
 
                     // if tax of a1 does not exist or if tax of a1 <= tax of a2
-                    if (!a1.getUnit(Type.TAX).isPresent()
+                    if (a1.getUnit(Type.TAX).isEmpty()
                                     || isLessOrEqualTo(a1.getUnit(Type.TAX), a2.getUnit(Type.TAX)))
                     {
                         // store potential gross unit
