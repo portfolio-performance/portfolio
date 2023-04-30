@@ -39,11 +39,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addSummaryStatementBuySellTransaction();
+        addSellTransaction();
         addDividendeTransaction();
         addDividendeWithNegativeAmountTransaction();
+        addStockDividendeTransaction();
         addDepotStatementTransaction();
         addTransferOutTransaction();
-        addTransferInTransaction();
+        addDeliveryInboundTransaction();
         addAdvanceTaxTransaction();
         addDepotServiceFeesTransaction();
     }
@@ -372,7 +374,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTaxReturnBlock(type);
+        addBuySellTaxReturnBlock(type);
     }
 
     private void addSummaryStatementBuySellTransaction()
@@ -614,6 +616,78 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
         addSummaryStatementTaxReturnBlock(type);
         addSummaryStatementFeesBlock(type);
+    }
+
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("Spitzenregulierung");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Kundenservice:$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                // Spitzenregulierung                                                    5,86 EUR
+                // @formatter:on
+                .section("wkn", "isin", "name", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+.*$")
+                .match("^Spitzenregulierung .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                // @formatter:on
+                .section("shares")
+                .match("^[A-Z0-9]{6} ([\\s]+)?[A-Z]{2}[A-Z0-9]{9}[0-9] ([\\s]+)?.* ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                //     Frankfurt am Main,  22.06.2020
+                // @formatter:on
+                .section("date")
+                .match("^.*, ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                // @formatter:off
+                // Verrechnung über Ihr Konto: 1009999999 Gutschrift                     5,86 EUR
+                // @formatter:on
+                .section("currency", "amount")
+                .match("^.* Gutschrift([\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                // @formatter:off
+                // Spitzenregulierung in CA05156X1087
+                // @formatter:on
+                .section("note")
+                .match("^(?<note>Spitzenregulierung in .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap((t, ctx) -> {
+                    BuySellEntryItem item = new BuySellEntryItem(t);
+                    
+                    if (ctx.getString(FAILURE) != null)
+                        item.setFailureMessage(ctx.getString(FAILURE));
+
+                    return item;
+                });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -987,6 +1061,288 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
+    private void addStockDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Stockdividende");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Stockdividende.*$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+
+        pdfTransaction
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                // @formatter:on
+                .section("wkn", "isin", "name", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+.*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // @formatter:on
+                .section("shares")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^[A-Z0-9]{6} ([\\s]+)?[A-Z]{2}[A-Z0-9]{9}[0-9] ([\\s]+)?.* ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // @formatter:on
+                .section("date")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Steuerpfl. Ertrag                                                   135,00 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^Steuerpfl\\. Ertrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .optionalOneOf(
+                                // @formatter:off
+                                //   unter der Transaktion-Nr.: 132465978
+                                //   unter der Transaktion-Nr. : 1111111111
+                                // Transaktionsnummer: 921414163
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                ,
+                                // @formatter:off
+                                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                // 1301138113.
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
+                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                        )
+
+                .wrap(t -> {
+                    // The final amount is negative. The taxes incurred
+                    // are processed in a separate transaction. 
+                    // Finally, we remove the flag.
+                    type.getCurrentContext().remove("negative");
+
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        addStockDividendeTaxReturnBlock(type);
+        addStockDividendeTransactionDeliveryInbound(type);
+
+        block.set(pdfTransaction);
+    }
+
+    private void addStockDividendeTaxReturnBlock(DocumentType type)
+    {
+        Block block = new Block("^Stockdividende.*$");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.TAX_REFUND);
+            return entry;
+        });
+
+        pdfTransaction
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                // @formatter:on
+                .section("wkn", "isin", "name", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+.*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // @formatter:on
+                .section("shares")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^[A-Z0-9]{6} ([\\s]+)?[A-Z]{2}[A-Z0-9]{9}[0-9] ([\\s]+)?.* ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // @formatter:on
+                .section("date")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                // Verrechnung über Ihr Konto: 1009999999 Gutschrift                   -37,54 EUR
+                // @formatter:on
+                .section("amount", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("Verrechnung .ber Ihr Konto.* [\\d]+ .* \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .optionalOneOf(
+                                // @formatter:off
+                                //   unter der Transaktion-Nr.: 132465978
+                                //   unter der Transaktion-Nr. : 1111111111
+                                // Transaktionsnummer: 921414163
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                ,
+                                // @formatter:off
+                                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                // 1301138113.
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
+                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                        )
+
+                .wrap(t -> {
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        block.set(pdfTransaction);
+    }
+
+    private void addStockDividendeTransactionDeliveryInbound(DocumentType type)
+    {
+        Block block = new Block("^Stockdividende.*$");
+
+        type.addBlock(block);
+        block.set(new Transaction<PortfolioTransaction>()
+
+                .subject(() -> {
+                    PortfolioTransaction entry = new PortfolioTransaction();
+                    entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                    return entry;
+                })
+
+                 // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                // @formatter:on
+                .section("wkn", "isin", "name", "currency")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+.*$")
+                .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$")
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // 867025  FR0000121147  FAURECIA EU INH      EO 7                   3,000000
+                // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                // @formatter:on
+                .section("shares")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^[A-Z0-9]{6} ([\\s]+)?[A-Z]{2}[A-Z0-9]{9}[0-9] ([\\s]+)?.* ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // @formatter:on
+                .section("date")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                // Steuerpfl. Ertrag                                                   135,00 EUR
+                // @formatter:on
+               .section("amount", "currency")
+               .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+               .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
+               .match("^Steuerpfl\\. Ertrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+               .assign((t, v) -> {
+                   t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                   t.setAmount(asAmount(v.get("amount")));
+               })
+
+                .optionalOneOf(
+                                // @formatter:off
+                                //   unter der Transaktion-Nr.: 132465978
+                                //   unter der Transaktion-Nr. : 1111111111
+                                // Transaktionsnummer: 921414163
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                ,
+                                // @formatter:off
+                                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                // 1301138113.
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
+                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                        )
+
+                .wrap(TransactionItem::new));
+    }
+
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
@@ -1357,7 +1713,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("wkn", "isin", "name", "currency")
-                                        .find("^WKN ([\\s]+)?ISIN ([\\s]+)?Wertpapierbezeichnung ([\\s]+)?Anzahl$")
+                                        .find("WKN ([\\s]+)?ISIN ([\\s]+)?Wertpapierbezeichnung ([\\s]+)?Anzahl")
                                         .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+$")
                                         .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -1474,7 +1830,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addTransferInOutTaxReturnBlock(type);
     }
 
-    private void addTransferInTransaction()
+    private void addDeliveryInboundTransaction()
     {
         DocumentType type = new DocumentType("Gutschrifts-\\/Belastungsanzeige");
         this.addDocumentTyp(type);
@@ -1528,12 +1884,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Kurs           : 30,070360 EUR          Devisenkurs    :          1,000000
                 // @formatter:on
-                .section("amount", "currency")
-                .match("^Kurs([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
-                })
+               .section("amount", "currency")
+               .match("^Kurs([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+               .assign((t, v) -> {
+                   t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                   t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
+               })
 
                 // If the taxes are negative,
                 // this is a tax refund transaction
@@ -1722,7 +2078,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addTaxReturnBlock(DocumentType type)
+    private void addBuySellTaxReturnBlock(DocumentType type)
     {
         Block block = new Block("^.* Auftragsdatum .*$");
         type.addBlock(block);
@@ -2420,6 +2776,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     private void addTransferInOutTaxReturnBlock(DocumentType type)
     {
         Block block = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
+
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -2444,7 +2801,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // SG0WRD DE000SG0WRD3 SG EFF. TURBOL ZS 83,00
                 // @formatter:on
                 .section("wkn", "isin", "name", "currency").optional()
-                .find("^WKN ([\\s]+)?ISIN ([\\s]+)?Wertpapierbezeichnung ([\\s]+)?Anzahl$")
+                .find("WKN ([\\s]+)?ISIN ([\\s]+)?Wertpapierbezeichnung ([\\s]+)?Anzahl")
                 .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+$")
                 .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -2655,6 +3012,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("tax", "currency").optional()
                 .match("^.* Einbeh\\. Steuer\\*([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                        processTaxEntries(t, v, type);
+                })
+
+                // @formatter:off
+                // Steuerbetrag**                                                        0,00 EUR
+                // @formatter:on
+                .section("tax", "currency").optional()
+                .match("^Steuerbetrag\\*\\* .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
                         processTaxEntries(t, v, type);
