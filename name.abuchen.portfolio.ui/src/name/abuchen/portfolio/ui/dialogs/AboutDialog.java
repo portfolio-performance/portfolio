@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import static name.abuchen.portfolio.ui.util.DialogTextUtils.addBoldFirstLine;
+import static name.abuchen.portfolio.ui.util.DialogTextUtils.addMarkdownLikeHyperlinks;
+
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -9,8 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,10 +43,8 @@ import org.osgi.framework.Bundle;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.util.BuildInfo;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class AboutDialog extends Dialog
 {
@@ -77,16 +76,15 @@ public class AboutDialog extends Dialog
 
     private Control createAboutText(Composite parent)
     {
-        String aboutText = MessageFormat.format(Messages.AboutText,
-                        PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
-                        DateTimeFormatter.ofPattern("MMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
-                        System.getProperty("osgi.os"), //$NON-NLS-1$
-                        System.getProperty("osgi.arch"), //$NON-NLS-1$
-                        System.getProperty("java.vm.version"), //$NON-NLS-1$
-                        System.getProperty("java.vm.vendor")); //$NON-NLS-1$
+        String version = PortfolioPlugin.getDefault().getBundle().getVersion().toString();
+        String buildTime = DateTimeFormatter.ofPattern("MMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()); //$NON-NLS-1$
+        String os = System.getProperty("osgi.os"); //$NON-NLS-1$
+        String arch = System.getProperty("osgi.arch"); //$NON-NLS-1$
+        String jvmVersion = System.getProperty("java.vm.version"); //$NON-NLS-1$
+        String jvmVendor = System.getProperty("java.vm.vendor"); //$NON-NLS-1$
+        String aboutText = MessageFormat.format(Messages.AboutText, version, buildTime, os, arch, jvmVersion, jvmVendor);
 
         Composite area = new Composite(parent, SWT.NONE);
-
         area.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         getShell().setText(Messages.LabelAbout);
 
@@ -97,32 +95,61 @@ public class AboutDialog extends Dialog
         List<StyleRange> styles = new ArrayList<>();
         aboutText = addMarkdownLikeHyperlinks(aboutText, styles);
         addBoldFirstLine(aboutText, styles);
-
         Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
         StyledText aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         aboutTextBox.setText(aboutText);
         aboutTextBox.setStyleRanges(styles.toArray(new StyleRange[0]));
-
         aboutTextBox.addListener(SWT.MouseDown, e -> openBrowser(e, aboutTextBox));
 
-        String contributionsText = generateDeveloperListText(Messages.AboutTextDevelopers)
-                        + Messages.AboutTextTranslationDevelopers + "\n\n" + Messages.AboutTextOtherSoftware; //$NON-NLS-1$
+        String contributionsText = generateDeveloperListText(Messages.AboutTextDevelopers);
         styles = new ArrayList<>();
         contributionsText = addMarkdownLikeHyperlinks(contributionsText, styles);
+        addBoldFirstLine(contributionsText, styles);
+        Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
         StyledText contributionsBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         contributionsBox.setText(contributionsText);
         contributionsBox.setStyleRanges(styles.toArray(new StyleRange[0]));
-
         contributionsBox.addListener(SWT.MouseDown, e -> openBrowser(e, contributionsBox));
 
-        // layout
+        styles = new ArrayList<>();
+        String translationDevelopersText = addMarkdownLikeHyperlinks(Messages.AboutTextTranslationDevelopers, styles);
+        addBoldFirstLine(translationDevelopersText, styles);
+        Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 10).applyTo(area);
+        StyledText translationDevelopersBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        translationDevelopersBox.setText(translationDevelopersText);
+        translationDevelopersBox.setStyleRanges(styles.toArray(new StyleRange[0]));
+        translationDevelopersBox.addListener(SWT.MouseDown, e -> openBrowser(e, translationDevelopersBox));
+
+        styles = new ArrayList<>();
+        String otherSoftwareText = addMarkdownLikeHyperlinks(Messages.AboutTextOtherSoftware, styles);
+
+        StyledText otherSoftwareBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        otherSoftwareBox.setText(otherSoftwareText);
+        otherSoftwareBox.setStyleRanges(styles.toArray(new StyleRange[0]));
+        otherSoftwareBox.addListener(SWT.MouseDown, e -> openBrowser(e, otherSoftwareBox));
+
+        // layout
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(area);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.CENTER, SWT.TOP).applyTo(imageLabel);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(aboutTextBox);
+
+        // Configurations for the aboutTextBox
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(aboutTextBox);
+
+        // Configurations for the contributionsBox
         GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(contributionsBox);
+
+        // Configurations for the translationDevelopersBox
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(translationDevelopersBox);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(otherSoftwareBox);
+        Composite bottomArea = new Composite(area, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(0, 5).applyTo(bottomArea);
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(bottomArea);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(translationDevelopersBox);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(otherSoftwareBox);
+        bottomArea.layout();
 
         return area;
     }
@@ -170,85 +197,51 @@ public class AboutDialog extends Dialog
         }
     }
 
-    private String addMarkdownLikeHyperlinks(String aboutText, List<StyleRange> styles)
-    {
-        Pattern pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher(aboutText);
-
-        StringBuilder answer = new StringBuilder(aboutText.length());
-        int pointer = 0;
-
-        while (matcher.find())
-        {
-            int start = matcher.start();
-            int end = matcher.end();
-
-            answer.append(aboutText.substring(pointer, start));
-
-            String text = matcher.group("text"); //$NON-NLS-1$
-            String link = matcher.group("link"); //$NON-NLS-1$
-
-            StyleRange styleRange = new StyleRange();
-            styleRange.underline = true;
-            styleRange.underlineStyle = SWT.UNDERLINE_LINK;
-            styleRange.underlineColor = Colors.theme().hyperlink();
-            styleRange.foreground = Colors.theme().hyperlink();
-            styleRange.data = link;
-            styleRange.start = answer.length();
-            styleRange.length = text.length();
-            styles.add(styleRange);
-
-            answer.append(text);
-
-            pointer = end;
-        }
-
-        if (pointer < aboutText.length())
-            answer.append(aboutText.substring(pointer));
-
-        return answer.toString();
-    }
-
-    private void addBoldFirstLine(String aboutText, List<StyleRange> ranges)
-    {
-        StyleRange styleRange = new StyleRange();
-        styleRange.fontStyle = SWT.BOLD;
-        styleRange.start = 0;
-        styleRange.length = aboutText.indexOf('\n');
-        ranges.add(styleRange);
-    }
-
     private String generateDeveloperListText(String developers)
     {
-        List<String> developerList = Arrays.asList(TextUtil.trim(developers.split(","))); //$NON-NLS-1$
-
-        int developersTextLineLength = 0;
-
-        StringBuilder developerText = new StringBuilder();
-        developerText.append(Messages.AboutTextDeveloped + "\n  "); //$NON-NLS-1$
-
-        for (int i = 0; i < developerList.size(); i++)
+        List<String> developerList = Arrays.asList(developers.split(",\\s*")); //$NON-NLS-1$
+        StringBuilder builder = new StringBuilder(Messages.AboutTextDeveloped).append("\n  "); //$NON-NLS-1$
+        int size = developerList.size();
+        int lineLength = 0;
+        for (int i = 0; i < size; i++)
         {
-            if (i == developerList.size() - 1)
-                developerText.append("and [" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + ").\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            else
-                developerText.append("[" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + "), "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            String dev = developerList.get(i);
+            String link = "(https://github.com/" + dev + ")";  //$NON-NLS-1$//$NON-NLS-2$
 
-            // Line break if...
-            if (developersTextLineLength + developerList.get(i).length() >= 80)
+            int length = dev.length() + (i == size - 1 ? 1 : 2);
+
+            if (lineLength + length > 130)
             {
-                developerText.append("\n  "); //$NON-NLS-1$
-                developersTextLineLength = 0;
+                builder.append("\n  "); //$NON-NLS-1$
+                lineLength = 2;
+            }
+            if (i == 0)
+            {
+                builder.append("[").append(dev).append("]").append(link).append(", "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                lineLength = dev.length() + 2;
+            }
+            else if (i == size - 1)
+            {
+                builder.append(" and [").append(dev).append("]").append(link).append(".\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                lineLength = 0;
             }
             else
             {
-                developersTextLineLength += developerList.get(i).length();
+                if (i + 1 == size - 1)
+                {
+                    builder.append("[").append(dev).append("]").append(link); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                else
+                {
+                    builder.append("[").append(dev).append("]").append(link).append(", "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    lineLength += 2;
+                }
             }
+            lineLength += dev.length();
         }
+        builder.append("  Many thanks for your support."); //$NON-NLS-1$
 
-        developerText.append("  Many thanks for your support.\n\n"); //$NON-NLS-1$
-
-        return developerText.toString();
+        return builder.toString();
     }
 
     private void openBrowser(Event event, StyledText textBox)
@@ -262,19 +255,18 @@ public class AboutDialog extends Dialog
             DesktopAPI.browse(String.valueOf(style.data));
     }
 
-    @SuppressWarnings("nls")
     private String buildInfoText()
     {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Generated at " + LocalDateTime.now());
-        builder.append("\n\nSystem Properties:\n\n");
+        builder.append("Generated at " + LocalDateTime.now()); //$NON-NLS-1$
+        builder.append("\n\nSystem Properties:\n\n"); //$NON-NLS-1$
 
         System.getProperties().entrySet().stream()
                         .sorted((r, l) -> r.getKey().toString().compareTo(l.getKey().toString()))
-                        .forEach(e -> builder.append(e.getKey() + ": " + e.getValue() + "\n"));
+                        .forEach(e -> builder.append(e.getKey() + ": " + e.getValue() + "\n")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        builder.append("\n\nOSGi Bundles:\n\n");
+        builder.append("\n\nOSGi Bundles:\n\n"); //$NON-NLS-1$
 
         Bundle[] bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
         Arrays.sort(bundles, (r, l) -> r.getSymbolicName().compareTo(l.getSymbolicName()));
@@ -283,27 +275,26 @@ public class AboutDialog extends Dialog
         {
             Bundle b = bundles[ii];
 
-            builder.append(b.getSymbolicName() + " (" + b.getVersion().toString() + ")");
+            builder.append(b.getSymbolicName() + " (" + b.getVersion().toString() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
             addSignerInfo(builder, b);
 
             if (!b.getSignerCertificates(Bundle.SIGNERS_TRUSTED).isEmpty())
-                builder.append(" [trusted]");
+                builder.append(" [trusted]"); //$NON-NLS-1$
 
-            builder.append("\n");
+            builder.append("\n"); //$NON-NLS-1$
         }
 
         return builder.toString();
     }
 
-    @SuppressWarnings("nls")
     private void addSignerInfo(StringBuilder builder, Bundle b)
     {
         Map<X509Certificate, List<X509Certificate>> certificates = b.getSignerCertificates(Bundle.SIGNERS_ALL);
         if (certificates.isEmpty())
             return;
 
-        builder.append(" [signed by ");
+        builder.append(" [signed by "); //$NON-NLS-1$
 
         boolean isFirstCertificate = true;
 
@@ -314,10 +305,10 @@ public class AboutDialog extends Dialog
                 LdapName ldapDN = new LdapName(cert.getSubjectX500Principal().getName());
                 for (Rdn rdn : ldapDN.getRdns())
                 {
-                    if ("CN".equals(rdn.getType()))
+                    if ("CN".equals(rdn.getType())) //$NON-NLS-1$
                     {
                         if (!isFirstCertificate)
-                            builder.append(", ");
+                            builder.append(", "); //$NON-NLS-1$
                         builder.append(rdn.getValue());
                         isFirstCertificate = false;
                     }
@@ -329,7 +320,7 @@ public class AboutDialog extends Dialog
             }
         }
 
-        builder.append("]");
+        builder.append("]"); //$NON-NLS-1$
     }
 
 }

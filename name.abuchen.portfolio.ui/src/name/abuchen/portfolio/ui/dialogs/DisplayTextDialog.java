@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import static name.abuchen.portfolio.ui.util.DialogTextUtils.addBoldFirstLine;
+import static name.abuchen.portfolio.ui.util.DialogTextUtils.addMarkdownLikeHyperlinks;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +12,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -38,7 +39,6 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class DisplayTextDialog extends Dialog
@@ -242,45 +242,6 @@ public class DisplayTextDialog extends Dialog
         }
     }
 
-    private String addMarkdownLikeHyperlinks(String additionalText, List<StyleRange> styles)
-    {
-        Pattern pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher(additionalText);
-
-        StringBuilder answer = new StringBuilder(additionalText.length());
-        int pointer = 0;
-
-        while (matcher.find())
-        {
-            int start = matcher.start();
-            int end = matcher.end();
-
-            answer.append(additionalText.substring(pointer, start));
-
-            String text = matcher.group("text"); //$NON-NLS-1$
-            String link = matcher.group("link"); //$NON-NLS-1$
-
-            StyleRange styleRange = new StyleRange();
-            styleRange.underline = true;
-            styleRange.underlineStyle = SWT.UNDERLINE_LINK;
-            styleRange.underlineColor = Colors.theme().hyperlink();
-            styleRange.foreground = Colors.theme().hyperlink();
-            styleRange.data = link;
-            styleRange.start = answer.length();
-            styleRange.length = text.length();
-            styles.add(styleRange);
-
-            answer.append(text);
-
-            pointer = end;
-        }
-
-        if (pointer < additionalText.length())
-            answer.append(additionalText.substring(pointer));
-
-        return answer.toString();
-    }
-
     private void openBrowser(Event e, StyledText textBox)
     {
         int offset = textBox.getOffsetAtPoint(new Point(e.x, e.y));
@@ -290,14 +251,5 @@ public class DisplayTextDialog extends Dialog
         StyleRange style = textBox.getStyleRangeAtOffset(offset);
         if (style != null && style.data != null)
             DesktopAPI.browse(String.valueOf(style.data));
-    }
-
-    private void addBoldFirstLine(String additionalText, List<StyleRange> ranges)
-    {
-        StyleRange styleRange = new StyleRange();
-        styleRange.fontStyle = SWT.BOLD;
-        styleRange.start = 0;
-        styleRange.length = additionalText.indexOf('\n');
-        ranges.add(styleRange);
     }
 }
