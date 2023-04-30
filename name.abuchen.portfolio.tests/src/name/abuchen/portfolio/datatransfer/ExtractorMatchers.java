@@ -12,10 +12,12 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
@@ -24,13 +26,13 @@ import name.abuchen.portfolio.money.Values;
 
 public class ExtractorMatchers
 {
-    private static class TransactionPropertyMatcher<V> extends TypeSafeDiagnosingMatcher<Transaction>
+    private static class PropertyMatcher<T, V> extends TypeSafeDiagnosingMatcher<T>
     {
         private String label;
         private V expectedValue;
-        private Function<Transaction, V> value;
+        private Function<T, V> value;
 
-        public TransactionPropertyMatcher(String label, V expectedValue, Function<Transaction, V> value)
+        public PropertyMatcher(String label, V expectedValue, Function<T, V> value)
         {
             this.label = label;
             this.expectedValue = expectedValue;
@@ -38,7 +40,7 @@ public class ExtractorMatchers
         }
 
         @Override
-        protected boolean matchesSafely(Transaction transaction, Description mismatchDescription)
+        protected boolean matchesSafely(T transaction, Description mismatchDescription)
         {
             Object actualValue;
             try
@@ -67,14 +69,13 @@ public class ExtractorMatchers
         }
     }
 
-    private static class TransactionMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
+    private static class ExtractorItemMatcher<V> extends TypeSafeDiagnosingMatcher<Extractor.Item>
     {
         private String label;
-        private Function<Extractor.Item, Transaction> transaction;
-        private Matcher<Transaction>[] properties;
+        private Function<Extractor.Item, V> transaction;
+        private Matcher<V>[] properties;
 
-        public TransactionMatcher(String label, Function<Extractor.Item, Transaction> transaction,
-                        Matcher<Transaction>[] properties)
+        public ExtractorItemMatcher(String label, Function<Extractor.Item, V> transaction, Matcher<V>[] properties)
         {
             this.label = label;
             this.transaction = transaction;
@@ -84,14 +85,14 @@ public class ExtractorMatchers
         @Override
         protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
         {
-            Transaction tx = transaction.apply(item);
+            V tx = transaction.apply(item);
             if (tx == null)
             {
                 mismatchDescription.appendText("\n* not a '").appendText(label).appendText("' item"); //$NON-NLS-1$ //$NON-NLS-2$
                 return false;
             }
 
-            for (Matcher<Transaction> property : properties)
+            for (Matcher<V> property : properties)
             {
                 if (!property.matches(tx))
                 {
@@ -108,7 +109,7 @@ public class ExtractorMatchers
         public void describeTo(Description description)
         {
             description.appendText(label).appendText(" with:"); //$NON-NLS-1$
-            for (Matcher<Transaction> p : properties)
+            for (Matcher<V> p : properties)
             {
                 description.appendText("\n - "); //$NON-NLS-1$
                 p.describeTo(description);
@@ -116,7 +117,7 @@ public class ExtractorMatchers
         }
     }
 
-    private static class AccountTransactionMatcher extends TransactionMatcher
+    private static class AccountTransactionMatcher extends ExtractorItemMatcher<Transaction>
     {
         public AccountTransactionMatcher(String label, AccountTransaction.Type type, Matcher<Transaction>[] properties)
         {
@@ -147,7 +148,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> purchase(Matcher<Transaction>... properties)
     {
-        return new TransactionMatcher("purchase", //$NON-NLS-1$
+        return new ExtractorItemMatcher<Transaction>("purchase", //$NON-NLS-1$
                         item -> item instanceof BuySellEntryItem buysell //
                                         && buysell.getSubject() instanceof BuySellEntry entry
                                         && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY
@@ -159,7 +160,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> sale(Matcher<Transaction>... properties)
     {
-        return new TransactionMatcher("sale", //$NON-NLS-1$
+        return new ExtractorItemMatcher<Transaction>("sale", //$NON-NLS-1$
                         item -> item instanceof BuySellEntryItem buysell //
                                         && buysell.getSubject() instanceof BuySellEntry entry
                                         && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL
@@ -174,7 +175,7 @@ public class ExtractorMatchers
                         ? LocalDateTime.parse(dateString)
                         : LocalDate.parse(dateString).atStartOfDay();
 
-        return new TransactionPropertyMatcher<>("date", //$NON-NLS-1$
+        return new PropertyMatcher<>("date", //$NON-NLS-1$
                         expectecd, //
                         Transaction::getDateTime);
     }
@@ -182,7 +183,7 @@ public class ExtractorMatchers
     public static Matcher<Transaction> hasShares(double value)
     {
         // work with BigDecimal to have better assertion failed messages
-        return new TransactionPropertyMatcher<BigDecimal>("shares", //$NON-NLS-1$
+        return new PropertyMatcher<Transaction, BigDecimal>("shares", //$NON-NLS-1$
                         BigDecimal.valueOf(value).setScale(Values.Share.precision(), Values.MC.getRoundingMode()), //
                         tx -> BigDecimal.valueOf(tx.getShares()).divide(Values.Share.getBigDecimalFactor(), Values.MC)
                                         .setScale(Values.Share.precision(), Values.MC.getRoundingMode()));
@@ -190,33 +191,33 @@ public class ExtractorMatchers
 
     public static Matcher<Transaction> hasSource(String source)
     {
-        return new TransactionPropertyMatcher<>("source", source, //$NON-NLS-1$
+        return new PropertyMatcher<>("source", source, //$NON-NLS-1$
                         Transaction::getSource);
     }
 
     public static Matcher<Transaction> hasNote(String note)
     {
-        return new TransactionPropertyMatcher<>("note", note, //$NON-NLS-1$
+        return new PropertyMatcher<>("note", note, //$NON-NLS-1$
                         Transaction::getNote);
     }
 
     public static Matcher<Transaction> hasAmount(String currencyCode, double value)
     {
-        return new TransactionPropertyMatcher<>("amount", //$NON-NLS-1$
+        return new PropertyMatcher<>("amount", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         Transaction::getMonetaryAmount);
     }
 
     public static Matcher<Transaction> hasGrossValue(String currencyCode, double value)
     {
-        return new TransactionPropertyMatcher<>("grossValue", //$NON-NLS-1$
+        return new PropertyMatcher<>("grossValue", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         Transaction::getGrossValue);
     }
 
     public static Matcher<Transaction> hasForexGrossValue(String currencyCode, double value)
     {
-        return new TransactionPropertyMatcher<>("forexGrossValue", //$NON-NLS-1$
+        return new PropertyMatcher<>("forexGrossValue", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         tx -> {
                             Unit grossValueUnit = tx.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(AssertionError::new);
@@ -226,14 +227,14 @@ public class ExtractorMatchers
 
     public static Matcher<Transaction> hasTaxes(String currencyCode, double value)
     {
-        return new TransactionPropertyMatcher<>("taxes", //$NON-NLS-1$
+        return new PropertyMatcher<>("taxes", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         tx -> tx.getUnitSum(Type.TAX));
     }
 
     public static Matcher<Transaction> hasFees(String currencyCode, double value)
     {
-        return new TransactionPropertyMatcher<>("fees", //$NON-NLS-1$
+        return new PropertyMatcher<>("fees", //$NON-NLS-1$
                         Money.of(currencyCode, Values.Amount.factorize(value)), //
                         tx -> tx.getUnitSum(Type.FEE));
     }
@@ -244,12 +245,50 @@ public class ExtractorMatchers
      */
     public static Matcher<Transaction> check(Consumer<Transaction> check)
     {
-        return new TransactionPropertyMatcher<>("check", //$NON-NLS-1$
+        return new PropertyMatcher<>("check", //$NON-NLS-1$
                         null, //
                         tx -> {
                             check.accept(tx);
                             return null;
                         });
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> security(Matcher<Security>... properties)
+    {
+        return new ExtractorItemMatcher<Security>("security", //$NON-NLS-1$
+                        item -> item instanceof SecurityItem securityItem ? securityItem.getSecurity() : null,
+                        properties);
+    }
+
+    public static Matcher<Security> hasName(String name)
+    {
+        return new PropertyMatcher<>("Name", name, //$NON-NLS-1$
+                        Security::getName);
+    }
+
+    public static Matcher<Security> hasIsin(String isin)
+    {
+        return new PropertyMatcher<>("isin", isin, //$NON-NLS-1$
+                        Security::getIsin);
+    }
+
+    public static Matcher<Security> hasWkn(String wkn)
+    {
+        return new PropertyMatcher<>("wkn", wkn, //$NON-NLS-1$
+                        Security::getWkn);
+    }
+
+    public static Matcher<Security> hasTicker(String ticker)
+    {
+        return new PropertyMatcher<>("ticker", ticker, //$NON-NLS-1$
+                        Security::getTickerSymbol);
+    }
+
+    public static Matcher<Security> hasCurrencyCode(String currencyCode)
+    {
+        return new PropertyMatcher<>("currencyCode", currencyCode, //$NON-NLS-1$
+                        Security::getCurrencyCode);
     }
 
 }
