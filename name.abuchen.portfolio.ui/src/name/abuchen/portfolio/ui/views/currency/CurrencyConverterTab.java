@@ -294,7 +294,10 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         nodeViewer.setContentProvider(new ExchangeRateTimeSeriesContentProvider());
         nodeViewer.setInput(model);
 
-        model.addPropertyChangeListener(p -> nodeViewer.refresh(true));
+        model.addPropertyChangeListener(p -> {
+                nodeViewer.refresh(true);
+                nodeViewer.expandAll();
+            });
 
         return area;
     }
