@@ -60,6 +60,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("VR-Bank"); //$NON-NLS-1$
         addBankIdentifier("VRB"); //$NON-NLS-1$
         addBankIdentifier("Postfach 12 40"); //$NON-NLS-1$
+        addBankIdentifier("Am Marktplatz 10 · 97762 Hammelburg"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendeTransaction();
