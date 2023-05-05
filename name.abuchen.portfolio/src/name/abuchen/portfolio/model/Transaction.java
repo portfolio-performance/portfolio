@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -199,6 +200,7 @@ public abstract class Transaction implements Annotated, Adaptable
 
     private String uuid;
     private LocalDateTime date;
+    private LocalDate exDate;
     private String currencyCode;
     private long amount;
 
@@ -225,7 +227,7 @@ public abstract class Transaction implements Annotated, Adaptable
 
     public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
-        this(date, currencyCode, amount, null, 0, null);
+        this(date, null, currencyCode, amount, null, 0, null);
     }
 
     public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
@@ -233,6 +235,20 @@ public abstract class Transaction implements Annotated, Adaptable
     {
         this();
         this.date = date;
+        this.exDate = null;
+        this.currencyCode = currencyCode;
+        this.amount = amount;
+        this.security = security;
+        this.shares = shares;
+        this.note = note;
+    }
+
+    public Transaction(LocalDateTime date, LocalDate exDate, String currencyCode, long amount, Security security,
+                    long shares, String note)
+    {
+        this();
+        this.date = date;
+        this.exDate = exDate;
         this.currencyCode = currencyCode;
         this.amount = amount;
         this.security = security;
@@ -258,6 +274,17 @@ public abstract class Transaction implements Annotated, Adaptable
     public void setDateTime(LocalDateTime date)
     {
         this.date = date;
+        this.updatedAt = Instant.now();
+    }
+
+    public LocalDate getExDate()
+    {
+        return exDate;
+    }
+
+    public void setExDate(LocalDate exDate)
+    {
+        this.exDate = exDate;
         this.updatedAt = Instant.now();
     }
 

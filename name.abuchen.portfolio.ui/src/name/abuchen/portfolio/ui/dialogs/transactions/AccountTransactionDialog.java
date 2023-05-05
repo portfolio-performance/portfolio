@@ -108,9 +108,16 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // Ex-date
+
+        ExDateInput exDate = new ExDateInput(editArea, Messages.ColumnExDate);
+        exDate.setVisible(model().supportsShares());
+        exDate.bindDate(Properties.exDate.name());
+
         // date & time
 
         DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.checkWithExdate(exDate.getVisible());
         dateTime.bindDate(Properties.date.name());
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
@@ -217,8 +224,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // form layout
         //
 
-        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
-                        taxes.label, fees.label, total.label, lblNote, fxGrossAmount.label);
+        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, exDate.label,
+                        shares.label, taxes.label, fees.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
         if (securities != null)
@@ -239,9 +246,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // date
         // shares
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
-
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
+        // Ex-date
+        if (exDate.getVisible())
+        {
+            forms = forms.thenBelow(exDate.exDate.getControl()).label(exDate.label);
+            startingWith(exDate.exDate.getControl());
+        }
+        
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount

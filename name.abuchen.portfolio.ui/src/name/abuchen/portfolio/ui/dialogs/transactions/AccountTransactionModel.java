@@ -29,7 +29,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, time, exDate, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, fxFees, fees, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -46,6 +46,7 @@ public class AccountTransactionModel extends AbstractModel
     private Account account;
     private LocalDate date = LocalDate.now();
     private LocalTime time = PresetValues.getTime();
+    private LocalDate exDate = LocalDate.now();
     private long shares;
 
     private long fxGrossAmount;
@@ -130,6 +131,7 @@ public class AccountTransactionModel extends AbstractModel
         }
 
         t.setDateTime(LocalDateTime.of(date, time));
+        t.setExDate(supportsShares() ? exDate : null);
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -241,6 +243,8 @@ public class AccountTransactionModel extends AbstractModel
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
+        LocalDate transactionExDate = transaction.getExDate();
+        this.exDate = transactionExDate;
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -427,6 +431,18 @@ public class AccountTransactionModel extends AbstractModel
     public void setTime(LocalTime time)
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
+    }
+
+    public LocalDate getExDate()
+    {
+        return exDate;
+    }
+
+    public void setExDate(LocalDate exDate)
+    {
+        firePropertyChange(Properties.exDate.name(), this.exDate, this.exDate = exDate);
+        updateShares();
+        updateExchangeRate();
     }
 
     public long getShares()
