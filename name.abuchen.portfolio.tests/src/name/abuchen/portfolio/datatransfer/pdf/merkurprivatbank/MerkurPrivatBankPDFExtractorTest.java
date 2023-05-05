@@ -56,7 +56,7 @@ public class MerkurPrivatBankPDFExtractorTest
         assertThat(security.getName(), is("XTR.(IE) - MSCI WORLD REGISTERED SHARES 1C O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        // check buy sell transaction
+        // check buy transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
