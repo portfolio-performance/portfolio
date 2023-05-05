@@ -64,7 +64,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DZ Bank Gruppe (Volksbank/ Union Investment/ VR-Bank/ GLS Bank ...)"; //$NON-NLS-1$
+        return "MERKUR PRIVATBANK KGaA"; //$NON-NLS-1$
     }
 
     private void addBuySellTransaction()
