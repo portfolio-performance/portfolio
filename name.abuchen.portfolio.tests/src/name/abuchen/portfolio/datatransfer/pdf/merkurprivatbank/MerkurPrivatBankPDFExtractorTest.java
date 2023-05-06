@@ -60,7 +60,7 @@ public class MerkurPrivatBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-05-02T09:34:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125.3258)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Ihr ETF-Sparplan Nr.      1"));
+        assertThat(entry.getNote(), is("Auftragsnummer 284722/61.00\nIhr ETF-Sparplan Nr. 1"));
         
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10002.50))));

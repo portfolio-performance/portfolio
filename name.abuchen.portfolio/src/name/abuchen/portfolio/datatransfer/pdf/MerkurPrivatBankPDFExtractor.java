@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -43,7 +44,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // Wertpapier Abrechnung Kauf 
         // @formatter:on
-        Block firstRelevantLine = new Block("^Wertpapier Abrechnung Kauf.*$");
+        Block firstRelevantLine = new Block("^Depotnummer [\\d]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
         
@@ -87,14 +88,20 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         // @formatter:off
+                        // Auftragsnummer 284722/61.00
                         // Ausf. erfolgte über Quotrix
                         // Ihr ETF-Sparplan Nr. 1
                         // @formatter:on
-                        .section("note").optional()
+                        .section("note", "note1").optional()
+                        .match("^ (?<note>Auftragsnummer .*)$")
                         .match("^Ausf. erfolgte über .*$")
-                        .match("^(?<note>.*)$")
+                        .match("^(?<note1>.*)$")
                         .match("^Für das Gesch.ft wurde keine Anlageberatung erbracht.")
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> {
+                            if (!v.get("note1").isEmpty())
+                                v.put("note", trim(v.get("note")) + "\n" + trim(replaceMultipleBlanks(v.get("note1"))));
+                            t.setNote(trim(v.get("note")));
+                        })
                         
                         .wrap(BuySellEntryItem::new);
 
