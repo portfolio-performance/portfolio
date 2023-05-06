@@ -17,9 +17,6 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
         
-        // @formatter:off
-        // Am Marktplatz 10 · 97762 Hammelburg
-        // @formatter:on
         addBankIdentifier("Am Marktplatz 10 · 97762 Hammelburg"); //$NON-NLS-1$
 
         addBuySellTransaction();
@@ -43,58 +40,63 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         
-        // Start from: Wertpapier Abrechnung Kauf
+        // @formatter:off
+        // Wertpapier Abrechnung Kauf 
+        // @formatter:on
         Block firstRelevantLine = new Block("^Wertpapier Abrechnung Kauf.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
         
         pdfTransaction
                         // @formatter:off
-                        // Type (Optional)
-                        // Wertpapier Abrechnung Kauf
-                        // @formatter:on
-                        .section("type").optional().match("^Wertpapier Abrechnung (?<type>Kauf).*$").assign((t, v) -> {
-                            if (v.get("type").equals("Kauf"))
-                                t.setType(PortfolioTransaction.Type.BUY);
-                        })
-                        // @formatter:off
-                        // Security identification:
                         // Stück 125,3258 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
-                        // REGISTERED SHARES 1C O.N.
+                        // REGISTERED SHARES 1C O.N.          
                         // @formatter:on
-                        .section("name", "ln2", "isin", "wkn")
-                        .match("^St.ck [\\,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
-                        .match("^(?<ln2>.*)$").assign((t, v) -> {
-                            // Assemble name from both lines
-                            if (!v.get("ln2").startsWith("Handels-/Ausführungsplatz"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("ln2")));
+                        .section("name", "name1", "isin", "wkn")
+                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
+                        .match("^(?<name1>.*)$")
+                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
+                        
                         // @formatter:off
-                        // Shares of the transaction
-                        // Stück 125,3258
+                        // Stück 125,3258 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
                         // @formatter:on
-                        .section("shares").match("^St.ck (?<shares>[\\,\\d]+) .*$").assign((t, v) -> 
-                            t.setShares(asShares(v.get("shares")))
-                        )
+                        .section("shares")
+                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        
                         // @formatter:off
-                        // Date and time
-                        // Schlusstag/-Zeit 02.05.2023 09:34:40
+                        // Schlusstag/-Zeit 02.05.2023 09:34:40 Auftraggeber Max Mustermann
                         // @formatter:on
                         .section("date", "time")
                         .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
-                        // Total amount (With fees and taxes)
                         // Ausmachender Betrag 10.002,50- EUR
                         // @formatter:on
-                        .section("amount", "totalcurrency")
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<totalcurrency>[\\w]{3})$")
+                        .section("amount", "currency")
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("totalcurrency")));
-                        }).wrap(BuySellEntryItem::new);
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        
+                        // @formatter:off
+                        // Ausf. erfolgte über Quotrix
+                        // Ihr ETF-Sparplan Nr. 1
+                        // @formatter:on
+                        .section("note").optional()
+                        .match("^Ausf. erfolgte über .*$")
+                        .match("^(?<note>.*)$")
+                        .match("^Für das Gesch.ft wurde keine Anlageberatung erbracht.")
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        
+                        .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
 
@@ -104,7 +106,6 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
                         // @formatter:off
-                        // Fee section
                         // Provision 2,50- EUR
                         // @formatter:on
                         .section("fee", "currency").optional()
