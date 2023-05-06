@@ -24,7 +24,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland"); //$NON-NLS-1$
+        addBankIdentifier("Swissquote Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addDividendsTransaction();
@@ -86,7 +86,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .match("^Betrag (belastet|gutgeschrieben) (auf|auf Ihrer) Kontonummer .*, Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                // // @formatter:off
+                // @formatter:off
                 // Zu Ihren Lasten USD 2'900.60
                 // Zu Ihren Gunsten CHF 8'198.70
                 // @formatter:on
@@ -105,8 +105,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional()
                 .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d]+)$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.'\\d]+)$")
-                .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$")
-                .assign((t, v) -> {
+                .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$").assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
@@ -130,7 +129,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         }
                         catch (IllegalArgumentException e)
                         {
-                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());                            
+                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());
                             type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
@@ -158,12 +157,11 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz:.*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DIVIDENDS);
-                    return entry;
-                });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // @formatter:off
