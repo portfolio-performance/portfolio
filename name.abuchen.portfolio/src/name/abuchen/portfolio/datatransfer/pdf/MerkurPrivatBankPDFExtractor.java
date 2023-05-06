@@ -90,7 +90,8 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Auftragsnummer 284722/61.00
                         // Ausf. erfolgte über Quotrix
-                        // Ihr ETF-Sparplan Nr. 1
+                        // Ihr ETF-Sparplan Nr.      1
+                        // Für das Geschäft wurde keine Anlageberatung erbracht.
                         // @formatter:on
                         .section("note", "note1").optional()
                         .match("^ (?<note>Auftragsnummer .*)$")
