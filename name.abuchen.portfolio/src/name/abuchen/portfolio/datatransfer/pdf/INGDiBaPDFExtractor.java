@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -375,6 +376,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
+
+                .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap((t, ctx) -> {
                     TransactionItem item = new TransactionItem(t);
