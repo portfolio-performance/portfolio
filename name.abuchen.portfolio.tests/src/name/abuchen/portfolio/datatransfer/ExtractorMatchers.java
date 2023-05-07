@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,11 +13,13 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -127,10 +130,64 @@ public class ExtractorMatchers
         }
     }
 
+    private static class FailureMessageItemMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
+    {
+        private String message;
+        private Matcher<Extractor.Item> matcher;
+
+        public FailureMessageItemMatcher(String message, Matcher<Extractor.Item> matcher)
+        {
+            this.message = message;
+            this.matcher = matcher;
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
+        {
+            if (!Objects.equals(message, item.getFailureMessage()))
+            {
+                if (item.getFailureMessage() == null)
+                    mismatchDescription.appendText("\n* item w/o failure message"); //$NON-NLS-1$
+                else
+
+                    mismatchDescription.appendText(
+                                    MessageFormat.format("\n* with failure message ''{0}''", item.getFailureMessage())); //$NON-NLS-1$
+                return false;
+            }
+
+            boolean result = matcher.matches(item);
+            if (!result)
+            {
+                matcher.describeMismatch(item, mismatchDescription);
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description)
+        {
+            description.appendText(MessageFormat.format("a failure message ''{0}'' and type ", message)); //$NON-NLS-1$
+            matcher.describeTo(description);
+        }
+    }
+
+    public static Matcher<Extractor.Item> withFailureMessage(String message, Matcher<Extractor.Item> matcher)
+    {
+        return new FailureMessageItemMatcher(message, matcher);
+    }
+
     @SafeVarargs
     public static Matcher<Extractor.Item> dividend(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("dividend", AccountTransaction.Type.DIVIDENDS, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> interest(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("interest", AccountTransaction.Type.INTEREST, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
@@ -143,6 +200,12 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> deposit(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("deposit", AccountTransaction.Type.DEPOSIT, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> taxRefund(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("tax refund", AccountTransaction.Type.TAX_REFUND, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
@@ -165,6 +228,37 @@ public class ExtractorMatchers
                                         && buysell.getSubject() instanceof BuySellEntry entry
                                         && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL
                                                         ? entry.getPortfolioTransaction()
+                                                        : null, //
+                        properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> inboundDelivery(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("inbound delivery", //$NON-NLS-1$
+                        item -> item instanceof TransactionItem tItem //
+                                        && tItem.getSubject() instanceof PortfolioTransaction tx
+                                        && tx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND ? tx : null, //
+                        properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> outboundDelivery(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("outbound delivery", //$NON-NLS-1$
+                        item -> item instanceof TransactionItem tItem //
+                                        && tItem.getSubject() instanceof PortfolioTransaction tx
+                                        && tx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND ? tx : null, //
+                        properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> securityTransfer(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("securityTransfer", //$NON-NLS-1$
+                        item -> item instanceof PortfolioTransferItem transfer //
+                                        && transfer.getSubject() instanceof PortfolioTransferEntry entry
+                                                        ? entry.getSourceTransaction()
                                                         : null, //
                         properties);
     }
