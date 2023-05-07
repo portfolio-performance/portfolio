@@ -94,15 +94,12 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Für das Geschäft wurde keine Anlageberatung erbracht.
                         // @formatter:on
                         .section("note", "note1").optional()
-                        .match("^ (?<note>Auftragsnummer .*)$")
-                        .match("^Ausf. erfolgte über .*$")
+                        .match("^.*(?<note>Auftragsnummer .*)$")
+                        .find("Ausf\\. erfolgte .ber .*")
                         .match("^(?<note1>.*)$")
-                        .match("^Für das Gesch.ft wurde keine Anlageberatung erbracht.")
-                        .assign((t, v) -> {
-                            if (!v.get("note1").isEmpty())
-                                v.put("note", trim(v.get("note")) + "\n" + trim(replaceMultipleBlanks(v.get("note1"))));
-                            t.setNote(trim(v.get("note")));
-                        })
+                        .match("^F.r das Gesch.ft .*$")
+                        .assign((t, v) -> t.setNote(
+                                        trim(v.get("note")) + "\n" + trim(replaceMultipleBlanks(v.get("note1")))))
                         
                         .wrap(BuySellEntryItem::new);
 
