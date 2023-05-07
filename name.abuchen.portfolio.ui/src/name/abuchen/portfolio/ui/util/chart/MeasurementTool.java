@@ -43,6 +43,9 @@ public class MeasurementTool
         }
     }
 
+    private static final boolean IS_MEASUREMENT_TOOL_ENABLED = "enable" //$NON-NLS-1$
+                    .equals(System.getProperty("name.abuchen.portfolio.ui.measurement_tool")); //$NON-NLS-1$
+
     public static final int OFFSET = 10;
     public static final int PADDING = 5;
 
@@ -80,15 +83,19 @@ public class MeasurementTool
 
     public void addButtons(ToolBarManager toolBar)
     {
-        var action = createAction();
-        // store buttons to update their image on context menu action
-        buttons.add(action);
-        toolBar.add(action);
+        if (IS_MEASUREMENT_TOOL_ENABLED)
+        {
+            var action = createAction();
+            // store buttons to update their image on context menu action
+            buttons.add(action);
+            toolBar.add(action);
+        }
     }
 
     public void addContextMenu(IMenuManager manager)
     {
-        manager.add(createAction());
+        if (IS_MEASUREMENT_TOOL_ENABLED)
+            manager.add(createAction());
     }
 
     private SimpleAction createAction()
