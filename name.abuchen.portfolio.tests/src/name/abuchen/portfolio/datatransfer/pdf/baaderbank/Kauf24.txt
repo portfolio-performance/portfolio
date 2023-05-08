@@ -1,35 +1,33 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.0
+Portfolio Performance Version: 0.62.1
 -----------------------------------------
-Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Gartenstraße 67
-T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de 76135 Karlsruhe
-www.finanzen.net/zero
-+49 89 5455 8188
+ Scalable Capital GmbH
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
 Seite 1/1
-Herrn Karlsruhe
-20.04.2023
-Max Mustermann
-Musterstraße 1 Max Mustermann
-01234 Musterstadt  Stamm-Nr.: 00000      Portfolio: 1
-Depot-Nr.: 1234567890
-Vorgangs-Nr.: 12345678
-Referenz-Nr.: 123456789
+Herrn München
+04.05.2023
+MtkonEo InqpXBdoR
+xGj Tj QkvDRGS 65 RzlTaQC wfImvRLuw
+0575 RdaZZR Stamm-Nr.: 0219630    Portfolio: 1
+Depot-Nr.: 2782794192
+dfXMYlRrT Vorgangs-Nr.: 002052907
+Referenz-Nr.: 245669281
 Wertpapierabrechnung: Kauf
-Auftragsdatum: 20.04.2023 Ausführungsplatz: GETTEX - MM Munich
-Auftragszeit: 20:28:12:00
-Nominale ISIN: DE000GP0Q523 WKN: GP0Q52 Kurs 
-STK 110 Goldman Sachs Bank Europe SE EUR 9,464
-TuBear O.End Nasd100 14200
-Auftraggeber: Depotinhaber
-Art der Auftragserteilung: Orderroutingsystem FinanzenNet
-Kurswert EUR 1.041,04
-Mindermengenzuschlag Finanzen.net EUR 1,00
-Zu Lasten Konto 1234567891 Valuta: 24.04.2023 EUR 1.042,04
+Auftragsdatum: 04.05.2023 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 11:30:08:00
+Nominale ISIN: US88579Y1010 WKN: 851745 Kurs 
+STK 0,268 3M Co. EUR 93,27
+Registered Shares DL -,01
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 25,00
+Zu Lasten Konto 2392666000 Valuta: 08.05.2023 EUR 25,00
 Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
 Details zur Ausführung:
-Handels- Handels- 
-Nominale Kurs Ausführungsplatz datum uhrzeit 
-STK   110 EUR 9,464 GETTEX - MM Munich 20.04.2023 20:28:12:969
+Handelsdatum Handelsuhrzeit 
+04.05.2023 11:34:56:54
 Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
 Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
 Lagerland: Deutschland
@@ -38,10 +36,11 @@ Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bit
 Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
 Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
 Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+FS9ntYdmtXcngMoM0uGt3q
 Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
 Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
-finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
-finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH 
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
  
 Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
 Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 

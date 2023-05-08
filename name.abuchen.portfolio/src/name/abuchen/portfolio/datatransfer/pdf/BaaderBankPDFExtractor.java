@@ -59,7 +59,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -228,9 +228,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // @formatter:off
@@ -403,9 +404,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap((t, ctx) -> {
@@ -525,9 +527,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // @formatter:off
