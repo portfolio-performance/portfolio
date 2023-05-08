@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Event;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -42,9 +44,6 @@ public class MeasurementTool
                             chart.getAxisSet().getYAxis(0).getPixelCoordinate(value));
         }
     }
-
-    private static final boolean IS_MEASUREMENT_TOOL_ENABLED = "enable" //$NON-NLS-1$
-                    .equals(System.getProperty("name.abuchen.portfolio.ui.measurement_tool")); //$NON-NLS-1$
 
     public static final int OFFSET = 10;
     public static final int PADDING = 5;
@@ -83,18 +82,21 @@ public class MeasurementTool
 
     public void addButtons(ToolBarManager toolBar)
     {
-        if (IS_MEASUREMENT_TOOL_ENABLED)
-        {
-            var action = createAction();
-            // store buttons to update their image on context menu action
-            buttons.add(action);
-            toolBar.add(action);
-        }
+        if (!PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES))
+            return;
+
+        var action = createAction();
+        // store buttons to update their image on context menu action
+        buttons.add(action);
+        toolBar.add(action);
+
     }
 
     public void addContextMenu(IMenuManager manager)
     {
-        if (IS_MEASUREMENT_TOOL_ENABLED)
+        if (PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES))
             manager.add(createAction());
     }
 
