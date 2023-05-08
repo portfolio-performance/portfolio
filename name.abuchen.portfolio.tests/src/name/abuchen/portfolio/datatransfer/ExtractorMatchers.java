@@ -191,6 +191,12 @@ public class ExtractorMatchers
     }
 
     @SafeVarargs
+    public static Matcher<Extractor.Item> interestCharge(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("interest charge", AccountTransaction.Type.INTEREST_CHARGE, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
     public static Matcher<Extractor.Item> removal(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("removal", AccountTransaction.Type.REMOVAL, properties); //$NON-NLS-1$
@@ -206,6 +212,18 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> taxRefund(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("tax refund", AccountTransaction.Type.TAX_REFUND, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> fee(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("fee", AccountTransaction.Type.FEES, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> feeRefund(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("fee refund", AccountTransaction.Type.FEES_REFUND, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
