@@ -6,6 +6,14 @@
 version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: "/portfolio-app" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/portfolio-product" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/portfolio-target-definition" # Location of package manifests
     schedule:
       interval: "daily"
