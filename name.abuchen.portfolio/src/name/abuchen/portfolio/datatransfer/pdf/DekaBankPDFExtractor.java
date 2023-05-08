@@ -632,13 +632,31 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
             Pattern pSecurity = Pattern.compile("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])( [\\d]+)? ([\\s]+)?[\\d]{2}( \\-)?( .*: )?(?<name>.*) ([\\s]+)?[\\.,\\d]+( [\\.,\\d]+ [\\w]{3})? ([\\-|\\+])?[\\.,\\d]+$");
             Pattern pISIN = Pattern.compile("^((?<name>.*)\\/ )?ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$");
-            Pattern pDate = Pattern.compile("^(Jahresdepotauszug|Depot.bersicht) (per|zum) (?<documentDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+            Pattern pDate = Pattern.compile("^((Jahresdepotauszug|Depot.bersicht|Depot\\-Auszug) )?(per|zum) (?<documentDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$");
             Pattern pShares = Pattern.compile("^.* ([\\.,\\d]+)?(?<addShare>(?<type>[\\-\\+\\s]+)[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSharesTotal = Pattern.compile("^Bestand am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(?<name>.*) ([\\s]+)?([\\.,\\d]+) ([\\s\\*]+)?([\\.,\\d]+) ([\\s]+)?(?<sharesTotal>[\\.,\\d]+).*$");
             Pattern pSecurityName = Pattern.compile("^(Zulagenzahlung([\\s]+)?([\\d]{4})?"
                             + "|.*Ertrag|.*Tausch|.*zahlung|.*preis|.*buchung|.*verwendung|.*Verwendung|.*Aufl.sung|.*einzug|.*erstattung)?"
                             + "(?<name>.*) ([\\s])?([\\.,\\d]+) ([\\s])?([\\.,\\d]+)?(?<addShare>(?<type>[\\-\\+\\s]+)[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
 
+            Pattern pDepotFeeDate = Pattern.compile("^Depotpreis(?! (inkl|incl)\\.) [\\.,\\d]+ [\\.,\\d]+[\\-\\+\\s]+[\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<depotFeeDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+            Pattern pContractFeeDate = Pattern.compile("^Vertragsgeb.hr .*[\\.,\\d]+ [\\.,\\d]+ [\\-\\+\\s]+[\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<contractFeeDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+
+            for (String line : lines)
+            {
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                    context.put("documentDate", mDate.group("documentDate"));
+
+                Matcher mDepotFeeDate = pDepotFeeDate.matcher(line);
+                if (mDepotFeeDate.matches())
+                    context.put("depotFeeDate", mDepotFeeDate.group("depotFeeDate"));
+
+                Matcher mContractFeeDate = pContractFeeDate.matcher(line);
+                if (mContractFeeDate.matches())
+                    context.put("contractFeeDate", mContractFeeDate.group("contractFeeDate"));
+            }
+                            
             // Create a helper to store the list of security items found in the document
             SecurityListHelper securityListHelper = new SecurityListHelper();
             context.putType(securityListHelper);
@@ -648,10 +666,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher mDate = pDate.matcher(line);
-                if (mDate.matches())
-                    context.put("documentDate", mDate.group("documentDate"));
-
                 Matcher mSecurity = pSecurity.matcher(line);
                 if (mSecurity.matches())
                 {
@@ -1371,7 +1385,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     return item;
                 }));
 
-        Block feesBlock = new Block("^.*(Vertragsgeb.hr in [\\d]{4}|.* (inkl|incl)\\.( [\\d]+%)? (Mehrwertsteuer \\(MwSt\\)|MwSt|MWSt)"
+        Block feesBlock = new Block("^.*(Vertragsgeb.hr in [\\d]{4}"
+                        + "|.* (inkl|incl)\\.( [\\d]+%)? (Mehrwertsteuer \\(MwSt\\)|MwSt|MWSt)"
                         + "|Entgelt Aufl.sung "
                         + "|Vertragspreis(?!.*gesamt) "
                         + "|Weitere Preise(?!.*gesamt) "
@@ -1449,7 +1464,11 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
-                                            t.setDateTime(asDate(context.get("documentDate")));
+                                            if (context.get("contractFeeDate") != null && "Vertragsgebühr".equals(v.get("note")))
+                                                t.setDateTime(asDate(context.get("contractFeeDate")));
+                                            else
+                                                t.setDateTime(asDate(context.get("documentDate")));
+
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                             t.setNote(v.get("note") + " " + t.getDateTime().getYear());
@@ -1460,11 +1479,16 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                 // Depot-Auszug zum 31.12.2005 Seite 1
                                 // @formatter:on
                                 section -> section
-                                        .attributes("note", "amount", "date")
+                                        .attributes("note", "amount")
                                         .match("^.*(?<note>Depotpreis) (inkl|incl)\\.( [\\d]+%)? .*: (?<amount>[\\.,\\d]+) .*$")
-                                        .match("^(Depot.bersicht|Depot\\-Auszug|Jahresdepotauszug) (zum|per) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                                         .assign((t, v) -> {
-                                            t.setDateTime(asDate(v.get("date")));
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            if (context.get("depotFeeDate") != null)
+                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                            else
+                                                t.setDateTime(asDate(context.get("documentDate")));
+
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                             t.setNote(v.get("note") + " " + t.getDateTime().getYear());
@@ -1478,11 +1502,16 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                 // Jahresdepotauszug per 31.12.2008
                                 // @formatter:on
                                 section -> section
-                                        .attributes("note", "amount", "currency", "date")
+                                        .attributes("note", "amount", "currency")
                                         .match("^.*(?<note>Depotpreis) (inkl|incl)\\.( [\\d]+%)? .*: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$")
-                                        .match("^(Depot.bersicht|Depot\\-Auszug|Jahresdepotauszug) (zum|per) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                                         .assign((t, v) -> {
-                                            t.setDateTime(asDate(v.get("date")));
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            if (context.get("depotFeeDate") != null)
+                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                            else
+                                                t.setDateTime(asDate(context.get("documentDate")));
+
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setNote(v.get("note") + " " + t.getDateTime().getYear());
@@ -1501,12 +1530,17 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                 // 0,00 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("note", "amount", "currency", "date")
+                                        .attributes("note", "amount", "currency")
                                         .match("^(?<note>.*) (inkl|incl)\\. .*$")
                                         .match("^(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})( .* [\\d]{4} )?.*$")
-                                        .match("^(Jahresdepotauszug )?per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                                         .assign((t, v) -> {
-                                            t.setDateTime(asDate(v.get("date")));
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            if (context.get("depotFeeDate") != null)
+                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                            else
+                                                t.setDateTime(asDate(context.get("documentDate")));
+
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setNote(trim(stripBlanks(v.get("note"))) + " " + t.getDateTime().getYear());
