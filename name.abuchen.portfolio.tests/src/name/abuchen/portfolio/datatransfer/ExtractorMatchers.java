@@ -209,6 +209,12 @@ public class ExtractorMatchers
     }
 
     @SafeVarargs
+    public static Matcher<Extractor.Item> taxes(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("taxes", AccountTransaction.Type.TAXES, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
     public static Matcher<Extractor.Item> taxRefund(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("tax refund", AccountTransaction.Type.TAX_REFUND, properties); //$NON-NLS-1$
