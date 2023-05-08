@@ -40,12 +40,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addSummaryStatementBuySellTransaction();
         addSellTransaction();
+        addSellForOptionsTransaction();
         addDividendeTransaction();
         addDividendeWithNegativeAmountTransaction();
         addStockDividendeTransaction();
         addDepotStatementTransaction();
-        addTransferOutTransaction();
-        addDeliveryInboundTransaction();
+        addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
         addDepotServiceFeesTransaction();
     }
@@ -1170,7 +1170,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAX_REFUND);
+            entry.setType(AccountTransaction.Type.TAXES);
             return entry;
         });
 
@@ -1658,16 +1658,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new));
     }
 
-    private void addTransferOutTransaction()
+    private void addSellForOptionsTransaction()
     {
-        final DocumentType type = new DocumentType("(Depotausgang|Bestandsausbuchung|Gutschrifts- \\/ Belastungsanzeige)", (context, lines) -> {
+        final DocumentType type = new DocumentType("(Depotausgang|Gutschrifts\\- \\/ Belastungsanzeige)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^([\\s]+)?Frankfurt( am Main)?, ([\\s]+)?(den )?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
-
             for (String line : lines)
             {
-                Matcher m = pDate.matcher(line);
-                if (m.matches())
-                    context.put("date", m.group("date"));
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                    context.put("date", mDate.group("date"));
             }
         });
         this.addDocumentTyp(type);
@@ -1675,12 +1674,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
-            entry.setDate(asDate(type.getCurrentContext().get("date").toString()));
             entry.setType(PortfolioTransaction.Type.SELL);
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
+        Block firstRelevantLine = new Block("^(Depotausgang|Gutschrifts\\- \\/ Belastungsanzeige).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1689,11 +1687,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:off
                                 // Depotausgang                          COMMERZBANK INLINE09EO/SF (DE000CM31SV9)
                                 // Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 10,000000000000 EUR
-                                // Bestandsausbuchung                       COMMERZBANK PUT10 EOLS (DE000CB81KN1)
                                 // @formatter:on
                                 section -> section
                                         .attributes("name", "isin", "currency")
-                                        .match("^(Depotausgang|Bestandsausbuchung) ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
+                                        .match("^Depotausgang ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
                                         .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 ,
@@ -1746,40 +1743,46 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                     // @formatter:on
                                     section -> section
                                             .attributes("shares")
-                                            .match("^(Stk|Stck)\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+) .* Betrag\\/Stck\\. .* [\\.,\\d]+ [\\w]{3}$$")
+                                            .match("^(Stk|Stck)\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+) .* Betrag\\/Stck\\. .* [\\.,\\d]+ [\\w]{3}$")
                                             .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                             )
 
-                    // @formatter:off
-                    // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
-                    // Fälligkeitstag                                                  25.06.2021
-                    // @formatter:on
-                    .section("date").optional()
-                    .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                    .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                    .oneOf(
+                                    // @formatter:off
+                                    // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+                                    // Fälligkeitstag                                                  25.06.2021
+                                    // @formatter:on
+                                    section -> section
+                                            .attributes("date")
+                                            .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                            .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                                    ,
+                                    // @formatter:of
+                                    // It is possible that in case of collective billing the date
+                                    // is only in the header of the document.
+                                    // 
+                                    //              Frankfurt, 18.09.2020
+                                    // @formatter:on
+                                    section -> section
+                                            .attributes("dummy")
+                                            .match("^(?<dummy>Vorsitzender).*$")
+                                            .assign((t, v) -> {
+                                                Map<String, String> context = type.getCurrentContext();
+
+                                                t.setDate(asDate(context.get("date")));
+                                            })
+                            )
 
                     // @formatter:off
                     // Verwahrart      : GS-Verwahrung        Geldgegenwert***:              0,20 EUR
                     //                                           Geldgegenwert*  :         111,22 EUR
                     // Geldgegenwert                                                       393,73 EUR
                     // @formatter:on
-                    .section("amount", "currency").optional()
+                    .section("amount", "currency")
                     .match("^(.* )?Geldgegenwert([:\\*\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                     .assign((t, v) -> {
                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         t.setAmount(asAmount(v.get("amount")));
-                    })
-
-                    // @formatter:off
-                    // **oben genannten Bestand haben wir wertlos ausgebucht
-                    // @formatter:on
-                    .section().optional()
-                    .match("^.* Bestand haben wir wertlos ausgebucht.*$")
-                    .assign((t, v) -> {
-                        t.setCurrencyCode(t.getAccountTransaction().getSecurity().getCurrencyCode());
-                        t.setAmount(0L);
-                        t.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                        t.setType(PortfolioTransaction.Type.TRANSFER_OUT);
                     })
 
                     // If the taxes are negative,
@@ -1789,17 +1792,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     // @formatter:off
                     // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
                     //                                           Einbeh. Steuer**:         -10,00 EUR
-                    // @formatter:on
-                    .section("taxRefund").optional()
-                    .match("^.* Einbeh\\. Steuer[\\*\\s]+: ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) [\\w]{3}$")
-                    .assign((t, v) -> t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund"))))
-
-                    // @formatter:off
                     // Einbeh. Steuer**                                                    -88,53 EUR
                     // @formatter:on
-                    .section("taxRefund").optional()
-                    .match("^Einbeh\\. Steuer[\\*\\s]+ \\-(?<taxRefund>[\\.,\\d]+) [\\w]{3}$")
-                    .assign((t, v) -> t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxRefund"))))
+                    .section("taxRefund", "currency").optional()
+                    .match("^.*Einbeh\\. Steuer[:\\*\\s]+ ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                    .assign((t, v) -> {
+                        Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                        t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(amount)); 
+                    })
 
                     .optionalOneOf(
                                     // @formatter:off
@@ -1827,12 +1828,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTransferInOutTaxReturnBlock(type);
+        addTaxReturnBlockForOptions(type);
     }
 
-    private void addDeliveryInboundTransaction()
+    private void addDeliveryInOutboundTransaction()
     {
-        DocumentType type = new DocumentType("Gutschrifts-\\/Belastungsanzeige");
+        DocumentType type = new DocumentType("(Gutschrifts-\\/Belastungsanzeige|Bestandsausbuchung)");
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -1842,25 +1843,47 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Depoteingang.*$");
+        Block firstRelevantLine = new Block("^(Depoteingang|Bestandsausbuchung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // @formatter:off
-                // Depoteingang DEKAFONDS CF (DE0008474503)
-                // Kurs           : 105,769231 EUR         Devisenkurs    :          1,000000
-                // @formatter:on
-                .section("isin", "name", "currency")
-                .match("^Depoteingang ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
-                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                // Is type --> "wertlos" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                .section("type").optional()
+                .match("^.* (?<type>Bestand haben wir wertlos ausgebucht).*$")
+                .assign((t, v) -> {
+                    if ("Bestand haben wir wertlos ausgebucht".equals(v.get("type")))
+                        t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                })
+
+                .oneOf(
+                                // @formatter:off
+                                // Depoteingang DEKAFONDS CF (DE0008474503)
+                                // Kurs           : 105,769231 EUR         Devisenkurs    :          1,000000
+                                // @formatter:on
+                                section -> section
+                                        .attributes("isin", "name", "currency")
+                                        .match("^Depoteingang ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
+                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Bestandsausbuchung                       COMMERZBANK PUT10 EOLS (DE000CB81KN1)
+                                // Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 0,0000000000000 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "currency")
+                                        .match("^Bestandsausbuchung ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
+                                        .match("^.* Betrag\\/Stk([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
                 // @formatter:off
                 // Stk./Nominale   : 25.000,000000 EUR    Einbeh. Steuer* :              0,00 EUR
+                // Stk./Nominale**: 2.000,000000 Stk       Einbeh. Steuer*:              0,00 EUR
                 // @formatter:on
                 .section("shares", "notation")
-                .match("^Stk\\.\\/Nominale([\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
+                .match("(St|Stk|Stck)\\.\\/Nominale([*\\s]+)?: ([\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
                     if (v.get("notation") != null && !v.get("notation").startsWith("St"))
@@ -1874,22 +1897,48 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     }
                 })
 
-                // @formatter:off
-                // Datum : 16.03.2015
-                // @formatter:on
-                .section("date")
-                .match("Datum([\\s]+)?: ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .oneOf(
+                                // @formatter:off
+                                // Datum : 16.03.2015
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("Datum([\\s]+)?: ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                ,
+                                // @formatter:off
+                                // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+                                // Fälligkeitstag                                                  25.06.2021
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
 
-                // @formatter:off
-                // Kurs           : 30,070360 EUR          Devisenkurs    :          1,000000
-                // @formatter:on
-               .section("amount", "currency")
-               .match("^Kurs([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
-               .assign((t, v) -> {
-                   t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                   t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
-               })
+                .oneOf(
+                                // @formatter:off
+                                // Kurs           : 30,070360 EUR          Devisenkurs    :          1,000000
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Kurs([\\s]+)?: ([\\s]+)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
+                                        })
+                                ,
+                                // @formatter:off
+                                // **oben genannten Bestand haben wir wertlos ausgebucht
+                                // @formatter:on
+                                section -> section
+                                        .attributes("type")
+                                        .match("^.* (?<type>Bestand haben wir wertlos ausgebucht).*$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                                            t.setAmount(0L);
+                                        })
+                        )
 
                 // If the taxes are negative,
                 // this is a tax refund transaction
@@ -1898,9 +1947,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 //                                           Einbeh. Steuer**:          -1,00 EUR
                 // @formatter:on
-                .section("taxRefund").optional()
-                .match("^.* Einbeh\\. Steuer[\\*\\s]+: ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) [\\w]{3}$")
-                .assign((t, v) -> t.setAmount(t.getAmount() - asAmount(v.get("taxRefund"))))
+                .section("taxRefund", "currency").optional()
+                .match("^.*Einbeh\\. Steuer[:\\*\\s]+ ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                    t.setMonetaryAmount(t.getMonetaryAmount().subtract(amount)); 
+                })
 
                 .optionalOneOf(
                                 // @formatter:off
@@ -1928,7 +1981,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTransferInOutTaxReturnBlock(type);
+        addTaxReturnBlockForOptions(type);
     }
 
     private void addAdvanceTaxTransaction()
@@ -2773,7 +2826,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    private void addTransferInOutTaxReturnBlock(DocumentType type)
+    private void addTaxReturnBlockForOptions(DocumentType type)
     {
         Block block = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
 
