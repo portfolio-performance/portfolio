@@ -48,7 +48,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapier Abrechnung )?(Ausgabe Investmentfonds|Kauf|Verkauf)");
+        DocumentType type = new DocumentType("(?<![\\d]{4} )(Wertpapier Abrechnung|Wertpapierabrechnung)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -192,12 +192,48 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
+                .optionalOneOf(
+                                // @formatter:off
+                                // Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
+                                // Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note", "note1")
+                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$")
+                                        .match("^.*[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                ,
+                                // @formatter:off
+                                // Depot-Nr. Abrechnungs-Nr.
+                                // 111/2222/002 65091167
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note", "note1")
+                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.)$")
+                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                ,
+                                // @formatter:off
+                                // Abrechnungsnr. 12345678
+                                //  XXXX XXXAuftragsnummer XXXXXX/XX.XX
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^.*(?<note>(Abrechnungsnr\\.|Auftragsnummer) .*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        )
+
                 // @formatter:off
                 // Limit 189,40 EUR
                 // @formatter:on
                 .section("note").optional()
                 .match("(?<note>Limit .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(v.get("note"));
+                })
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -221,9 +257,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "Gutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|"
-                        + "Aussch.ttung (f.r|Investmentfonds)|"
-                        + "Gutschrift)"
+        Block block = new Block("^(Dividendengutschrift"
+                        + "|Aussch.ttung (f.r|Investmentfonds)"
+                        + "|Gutschrift)"
                         + "( [^\\.,\\d]+.*)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -240,8 +276,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("type").optional()
                 .match("^(?<type>Storno) unserer Ertr.gnisgutschrift .*$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                 // @formatter:off
                 // If we have a positive amount and a gross reinvestment,
@@ -419,29 +454,69 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                // @formatter:off
-                // Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
-                // @formatter:on
-                .section("note").optional()
-                .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .optionalOneOf(
+                                // @formatter:off
+                                // Depot-Nr. Abrechnungs-Nr.
+                                // 000/0000/000 70314707
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note", "note1")
+                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$")
+                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                ,
+                                // @formatter:off
+                                // Abrechnungsnr. 12345678
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(?<note>Abrechnungsnr\\. .*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        )
 
-                // @formatter:off
-                // Ertrag für 2014/15 EUR 12,70
-                // Ertrag für 2017 USD 54,16
-                // @formatter:on
-                .section("note1", "note2", "note3").optional()
-                .match("^(?<note1>Ertrag f.r [\\d]{4}(\\/[\\d]{2})?) (?<note2>[\\w]{3}) (?<note3>[\\.,\\d]+)$")
-                .assign((t, v) -> t.setNote(v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")"))
-
-                // @formatter:off
-                // Ertragsthesaurierung
-                // Ertrag für 2017 USD 54,16
-                // @formatter:on
-                .section("note1", "note2", "note3", "note4").optional()
-                .match("^(Storno \\- )?(?<note1>Ertragsthesaurierung)$")
-                .match("^Ertrag (?<note2>f.r [\\d]{4}(\\/[\\d]{2})?) (?<note3>[\\w]{3}) (?<note4>[\\.,\\d]+)$")
-                .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")"))
+                .optionalOneOf(
+                                // @formatter:off
+                                // Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^.* Art der Dividende (?<note>.*)$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                                            else
+                                                t.setNote(v.get("note"));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Ertragsthesaurierung
+                                // Ertrag für 2017 USD 54,16
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2", "note3", "note4")
+                                        .match("^(Storno \\- )?(?<note1>Ertragsthesaurierung)$")
+                                        .match("^Ertrag (?<note2>f.r [\\d]{4}(\\/[\\d]{2})?) (?<note3>[\\w]{3}) (?<note4>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + trim(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")"));
+                                            else
+                                                t.setNote(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")");
+                                        })
+                                ,
+                                // @formatter:off
+                                // Ertrag für 2014/15 EUR 12,70
+                                // Ertrag für 2017 USD 54,16
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2", "note3")
+                                        .match("^(?<note1>Ertrag f.r [\\d]{4}(\\/[\\d]{2})?) (?<note2>[\\w]{3}) (?<note3>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + trim(v.get("note1")) + " (" + v.get("note3") + " " + v.get("note2") + ")");
+                                            else
+                                                t.setNote(v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")");
+                                        })
+                        )
 
                 .wrap((t, ctx) -> {
                     // If we have multiple entries in the document, with
@@ -533,6 +608,37 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                .optionalOneOf(
+                                // @formatter:off
+                                // Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
+                                // Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note", "note1")
+                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$")
+                                        .match("^.*[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                ,
+                                // @formatter:off
+                                // Depot-Nr. Abrechnungs-Nr.
+                                // 111/2222/002 65091167
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note", "note1")
+                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.)$")
+                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                ,
+                                // @formatter:off
+                                // Abrechnungsnr. 12345678
+                                //  XXXX XXXAuftragsnummer XXXXXX/XX.XX
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^.*(?<note>(Abrechnungsnr\\.|Auftragsnummer) .*)$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        )
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
@@ -542,14 +648,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug [\\d]+\\/[\\d]{4}", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Datum Erl.uterung Betrag Soll [\\w]{3} Betrag Haben (?<currency>[\\w]{3})$");
+        final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
+            Pattern pCurrency_Format01 = Pattern.compile("^Datum Erl.uterung Betrag Soll [\\w]{3} Betrag Haben (?<currency>[\\w]{3})$");
+            Pattern pCurrency_Format02 = Pattern.compile("^Buch\\.-Tag Wert Verwendungszweck\\/Erl.uterungen Umsatz \\((?<currency>[\\w]{3})\\)$");
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency_Format01 = pCurrency_Format01.matcher(line);
+                if (mCurrency_Format01.matches())
+                    context.put("currency", mCurrency_Format01.group("currency"));
+
+                Matcher mCurrency_Format02 = pCurrency_Format02.matcher(line);
+                if (mCurrency_Format02.matches())
+                    context.put("currency", mCurrency_Format02.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -563,7 +674,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Dauerauftrag"
                         + "|Lohn, Gehalt, Rente"
                         + "|Basis\\-Lastschrift"
-                        + "|Zahlungseingang)$");
+                        + "|Zahlungseingang"
+                        + "|Geldautomat"
+                        + "|Barumsatz)$");
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -591,9 +704,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Dauerauftrag"
                                 + "|Lohn, Gehalt, Rente"
                                 + "|Basis\\-Lastschrift"
-                                + "|Zahlungseingang))"
+                                + "|Zahlungseingang"
+                                + "|Geldautomat"
+                                + "|Barumsatz))"
                                 + "$")
-                .match("^[\\s]+ (?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+).*$")
+                .match("^^[\\s\\.]+ (?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -625,7 +740,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Dauerauftrag"
                         + "|Lohn, Gehalt, Rente"
                         + "|Basis\\-Lastschrift"
-                        + "|Zahlungseingang) .*[\\.,\\d][\\-|\\+]+.*$");
+                        + "|Zahlungseingang"
+                        + "|Geldautomat"
+                        + "|Barumsatz) .*[\\.,\\d][\\-|\\+]+.*$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -653,7 +770,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Dauerauftrag"
                                 + "|Lohn, Gehalt, Rente"
                                 + "|Basis\\-Lastschrift"
-                                + "|Zahlungseingang)) "
+                                + "|Zahlungseingang"
+                                + "|Geldautomat"
+                                + "|Barumsatz)) "
                                 + "[\\s]+"
                                 + "(?<amount>[\\.,\\d]+)"
                                 + "(?<type>([\\-|\\+])?).*$")
@@ -704,13 +823,85 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Dauerauftrag"
                                 + "|Lohn, Gehalt, Rente"
                                 + "|Basis\\-Lastschrift"
-                                + "|Zahlungseingang))$")
+                                + "|Zahlungseingang"
+                                + "|Geldautomat"
+                                + "|Barumsatz))$")
                 .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])).*")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
                     // Is type is "-" change from DEPOSIT to REMOVAL
                     if ("-".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(t -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return item;
+
+                    return null;
+                }));
+
+        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
+                        + "(Lastschrift"
+                        + "|.berweisung online"
+                        + "|.berweisung"
+                        + "|Kartenzahlung"
+                        + "|Gutschrift.berweisung"
+                        + "|Dauerauftrag"
+                        + "|Lohn, Gehalt, Rente"
+                        + "|Basis\\-Lastschrift"
+                        + "|Zahlungseingang"
+                        + "|Geldautomat"
+                        + "|Barumsatz) (\\-)?[\\.,\\d]+$");
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction entry = new AccountTransaction();
+                    entry.setType(AccountTransaction.Type.DEPOSIT);
+                    return entry;
+                })
+
+                // @formatter:off
+                // 30.06 30.06.14 Überweisung -400,00
+                // 07.07 07.07.14 Geldautomat -500,00
+                // 01.07 01.07.14 Lastschrift -28,50
+                // 18.09 18.09.14 Basis-Lastschrift -40,00
+                // 26.09 26.09.14 Lohn, Gehalt, Rente 1.835,19
+                // 29.09 29.09.14 Zahlungseingang 435,54
+                // 22.06 22.06.15 Kartenzahlung -60,82
+                // 23.06 23.06.15 Barumsatz 500,00
+                // @formatter:on
+                .section("date", "note", "amount", "type")
+                .match("^.*[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
+                                + "(?<note>(Lastschrift"
+                                + "|.berweisung online"
+                                + "|.berweisung"
+                                + "|Kartenzahlung"
+                                + "|Gutschrift.berweisung"
+                                + "|Dauerauftrag"
+                                + "|Lohn, Gehalt, Rente"
+                                + "|Basis\\-Lastschrift"
+                                + "|Zahlungseingang"
+                                + "|Geldautomat"
+                                + "|Barumsatz))"
+                                + "(?<type>[\\s|\\-]+)(?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from DEPOSIT to REMOVAL
+                    if ("-".equals(trim(v.get("type"))))
                         t.setType(AccountTransaction.Type.REMOVAL);
 
                     t.setDateTime(asDate(v.get("date")));
@@ -741,7 +932,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         //                                                             --------------
         // Abrechnung 31.03.2020                                                4,70-
         // @formatter:on
-        Block feesBlock = new Block("^Entgeltabschluss: .*$", "^Abrechnung .*$");
+        Block feesBlock = new Block("^Entgelte vom .*$", "^Abrechnung .*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
@@ -788,7 +979,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         //                                                             --------------
         // Abrechnung 31.03.2020                                                0,66-
         // @formatter:on
-        Block interestBlock = new Block("^Rechnungsabschluss: .*$", "^Abrechnung .*$");
+        Block interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -1191,3 +1382,4 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
+
