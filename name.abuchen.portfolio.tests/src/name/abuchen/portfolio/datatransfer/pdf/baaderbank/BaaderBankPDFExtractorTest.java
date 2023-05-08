@@ -1117,6 +1117,35 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf26()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf26.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AU000000BHP4"), hasWkn("850524"), hasTicker(null), //
+                        hasName("BHP Group Ltd. Registered Shares DL -,50"), // 
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-04-19T11:55:01"), hasShares(1.881), //
+                        hasSource("Kauf26.txt"), hasNote("Vorgangs-Nr.: 186694373"), //
+                        hasAmount("EUR", 53.98), hasGrossValue("EUR", 53.98), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
