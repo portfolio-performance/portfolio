@@ -60,6 +60,7 @@ import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
+import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -347,8 +348,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         currencyCode = getModel().getCurrencyCode();
 
-        if (comboExchange != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+        if (comboExchange != null && feed.getId() != null && 
+                        (feed.getId().startsWith(YAHOO) // 
+                                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
+                                        || feed.getId().equals(LeewayQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
@@ -484,18 +487,27 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void createDetailDataWidgets(QuoteFeed feed)
     {
-        boolean dropDown = feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)
-                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID));
+        boolean dropDown = feed != null && feed.getId() != null && //
+                        (feed.getId().startsWith(YAHOO) //
+                                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
+                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID) //
+                                        || feed.getId().equals(LeewayQuoteFeed.ID));
 
-        boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
-                        || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
+        boolean feedURL = feed != null && feed.getId() != null && //
+                        (feed.getId().equals(HTMLTableQuoteFeed.ID) //
+                                        || feed.getId().equals(CSQuoteFeed.ID) //
+                                        || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
-        boolean needsTicker = feed != null && feed.getId() != null && Set
-                        .of(AlphavantageQuoteFeed.ID, FinnhubQuoteFeed.ID, BinanceQuoteFeed.ID, BitfinexQuoteFeed.ID,
-                                        CoinGeckoQuoteFeed.ID, KrakenQuoteFeed.ID, EODHistoricalDataQuoteFeed.ID)
-                        .contains(feed.getId());
+        boolean needsTicker = feed != null && feed.getId() != null //
+                        && Set.of(AlphavantageQuoteFeed.ID, //
+                                        FinnhubQuoteFeed.ID, //
+                                        BinanceQuoteFeed.ID, //
+                                        BitfinexQuoteFeed.ID, //
+                                        CoinGeckoQuoteFeed.ID, //
+                                        KrakenQuoteFeed.ID, //
+                                        EODHistoricalDataQuoteFeed.ID) //
+                                        .contains(feed.getId());
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
 
@@ -754,8 +766,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && // 
+                        (feed.getId().startsWith(YAHOO) //
+                                        || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());

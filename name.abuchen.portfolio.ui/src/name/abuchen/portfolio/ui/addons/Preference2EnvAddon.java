@@ -13,6 +13,8 @@ import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
+import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
+import name.abuchen.portfolio.online.impl.LeewaySearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
@@ -51,6 +53,14 @@ public class Preference2EnvAddon
     {
         ((FinnhubQuoteFeed) Factory.getQuoteFeedProvider(FinnhubQuoteFeed.ID)).setApiKey(finnhubApiKey);
         Factory.getSearchProvider(FinnhubSearchProvider.class).setApiKey(finnhubApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setLeewayApiKey(@Preference(value = UIConstants.Preferences.LEEWAY_API_KEY) String leewayApiKey)
+    {
+        ((LeewayQuoteFeed) Factory.getQuoteFeedProvider(LeewayQuoteFeed.ID)).setApiKey(leewayApiKey);
+        Factory.getSearchProvider(LeewaySearchProvider.class).setApiKey(leewayApiKey);
     }
 
     @Inject

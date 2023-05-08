@@ -1051,12 +1051,14 @@ public class Messages extends NLS
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
     public static String PrefDescriptionFinnhub;
+    public static String PrefDescriptionLeeway;
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLeewayAPIKey;
     public static String PrefLabelAlwaysDisplayCurrencyCode;
     public static String PrefLabelAutoSaveFrequency;
     public static String PrefLabelDisplayPA;
@@ -1094,6 +1096,7 @@ public class Messages extends NLS
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleEODHistoricalData;
     public static String PrefTitleFinnhub;
+    public static String PrefTitleLeeway;
     public static String PrefTitlePortfolioReport;
     public static String PrefTitleQuandl;
     public static String PresetsPrefPageDescription;
