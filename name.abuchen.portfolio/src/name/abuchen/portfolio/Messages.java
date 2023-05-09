@@ -158,6 +158,9 @@ public class Messages extends NLS
     public static String LabelReportingPeriodYTD;
     public static String LabelSearchAll;
     public static String LabelSearchBond;
+    public static String LabelSearchETC;
+    public static String LabelSearchETF;
+    public static String LabelSearchFund;
     public static String LabelSearchShare;
     public static String LabelSecurity;
     public static String LabelSecurityPrice;
@@ -247,6 +250,7 @@ public class Messages extends NLS
     public static String MsgErrorInvalidURL;
     public static String MsgErrorInvalidWKN;
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
+    public static String MsgErrorLeewayAPIKeyMissing;
     public static String MsgErrorMissingAPIKey;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
