@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
@@ -147,6 +148,8 @@ public class PortfolioReportNet
                 vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
             else if (TYPE_BOND.equals(t))
                 vehicle.type = SecuritySearchProvider.Type.BOND.toString();
+            else if (TYPE_FUND.equals(t))
+                vehicle.type = Messages.LabelSearchFund;
             else
                 vehicle.type = t;
 
@@ -296,6 +299,7 @@ public class PortfolioReportNet
 
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
     private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
+    private static final String TYPE_FUND = "fund"; //$NON-NLS-1$
 
     private static final String HOST = "api.portfolio-report.net"; //$NON-NLS-1$
 
