@@ -22,8 +22,13 @@ public interface SecuritySearchProvider
         String getType();
 
         String getExchange();
-        
+
         String getSource();
+
+        default String getCurrencyCode()
+        {
+            return null;
+        }
 
         default String getExtraAttributes()
         {
