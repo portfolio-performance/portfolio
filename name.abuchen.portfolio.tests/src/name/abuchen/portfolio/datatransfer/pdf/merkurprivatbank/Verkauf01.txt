@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+   
+Am Marktplatz 10 · 97762 Hammelburg Seite 1 von 2
+Depotnummer
+ 15024974
+ Kundennummer 876779124
+hBoqvO uPvjD mvBzcto
+ Auftragsnummer 306589/61.00
+hBoqvO uPvjD mvBzcto Datum 09.05.2023
+XfZHinOsW. 7 Ihr Berater Herr Yns PqhtlQfllYL
+25656 Nürnberg Telefon +49 951 302896-13
+Rechnungsnummer L14713-6419181099/23
+Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 500 ISHARES CORE DAX UCITS ETF DE      DE0005933931 (593393)
+INHABER-ANTEILE EUR ACC.           
+Handels-/Ausführungsplatz Quotrix (Best Execution)
+Börsensegment DUSD
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 09.05.2023 09:44:22 Auftraggeber BfzklL CudRT vqUNAjn
+Ausführungskurs 133,74 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 66.870,00 EUR
+Provision 25,00- EUR
+Übertragungs-/Liefergebühr 0,06- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 3.245,16 EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 3.245,16 EUR
+ 
+Verrechnete sonstige negative Kapitalerträge 3.245,16- EUR
+Ausmachender Betrag 66.844,94 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 11.05.2023 zu Gunsten des Kontos 7359384 (IBAN DE65 7013 0800 0001 7241 34),
+BLZ 13452634 (BIC GENODEF1M06).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+6175.05091724.0000046OR07
+Seite 2 von 2
+Depotnummer 07703416
+Kundennummer 425538277
+Auftragsnummer 922436/61.00
+Datum 09.05.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 7.574,64 0,00 0,00 0,00
+Verkauf 0,00 3.245,16- 0,00 0,00 0,00
+Nachher 0,00 4.329,48 0,00 0,00 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Einbuchung 4268995599 22.12.2021 Stück 200,0000 26.238,00- 26.737,98 149,99- 349,99 (D)
+Einbuchung 5417583099 24.02.2022 Stück 300,0000 35.971,00- 40.106,96 1.240,79- 2.895,17 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 3.245,16
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.05091724.0000047OR07
