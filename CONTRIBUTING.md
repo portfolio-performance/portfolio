@@ -45,7 +45,8 @@
 
 * Java 17, for example from [Azul](https://www.azul.com/downloads/)
 
-* [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
+* [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. 
+	- Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
 
 Optionally, install language packs for Eclipse:
  * `Menu` --> `Help` --> `Install New Software`
@@ -99,6 +100,9 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
 		- `name.abuchen.portfolio.datatransfer.ExtractorUtils`
+		- `name.abuchen.portfolio.datatransfer.ExtractorMatchers`
+		- `name.abuchen.portfolio.datatransfer.ExtractorTestUtilities`
+		- `name.abuchen.portfolio.junit.TestUtilities.*`
 * `Java` --> `Installed JREs`
 	- Add the Java 17 JDK
 
@@ -113,7 +117,8 @@ For further disucssion, check out the thread in the [(German) Forum](https://for
 To contribute to Portfolio Performacne, you create a fork, clone the repository, make and push changes to your repository, and then create a pull request.
 
 * [Create your own fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
-* Within Eclipse, [clone your repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository). In the last step, choose to *import all existing Eclipse projects*.
+* Within Eclipse, [clone your repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository).
+	- In the last step, choose to *import all existing Eclipse projects*.
 * Within Eclipse, [import projects from an existing repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-import-projects-from-an-existing-repository)
 
 
