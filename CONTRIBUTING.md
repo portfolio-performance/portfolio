@@ -99,6 +99,9 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 	- Click on `New Type...` and add the following favorites
 		- `name.abuchen.portfolio.util.TextUtil`
 		- `name.abuchen.portfolio.datatransfer.ExtractorUtils`
+		- `name.abuchen.portfolio.datatransfer.ExtractorMatchers`
+		- `name.abuchen.portfolio.datatransfer.ExtractorTestUtilities`
+		- `name.abuchen.portfolio.junit.TestUtilities.*`
 * `Java` --> `Installed JREs`
 	- Add the Java 17 JDK
 
