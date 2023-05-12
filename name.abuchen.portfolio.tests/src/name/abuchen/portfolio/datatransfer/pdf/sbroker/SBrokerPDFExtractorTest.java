@@ -1,14 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.sbroker;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -16,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -28,6 +20,16 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
@@ -111,7 +113,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
@@ -155,7 +157,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
@@ -647,7 +649,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
@@ -711,7 +713,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
@@ -755,7 +757,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
@@ -819,7 +821,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
@@ -862,7 +864,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
@@ -954,7 +956,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
@@ -1046,7 +1048,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
@@ -1139,7 +1141,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
@@ -1232,7 +1234,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
@@ -1325,7 +1327,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
@@ -1418,7 +1420,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
@@ -1511,7 +1513,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
@@ -1603,7 +1605,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
@@ -1659,7 +1661,7 @@ public class SBrokerPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("FI0009000459"), hasWkn("870740"), hasTicker(null), //
-                        hasName("HUHTAMAEKI OYJ REGISTERED SHARES O.N."), // 
+                        hasName("HUHTAMAEKI OYJ REGISTERED SHARES O.N."), //
                         hasCurrencyCode("EUR"))));
 
         // check dividende transaction
@@ -1668,6 +1670,37 @@ public class SBrokerPDFExtractorTest
                         hasSource("Dividende11.txt"), hasNote("Abrechnungsnr. 12345678 | Zwischendividende"), //
                         hasAmount("EUR", 9.10), hasGrossValue("EUR", 14.00), //
                         hasTaxes("EUR", 4.90), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende12()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4T88"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs-Asia Pacific Div.U.ETF Registered Shares USD (Dist)oN"), //
+                        hasCurrencyCode("USD"))));
+
+        // check cancellation (Amount = 0,00) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        taxes( //
+                                hasDate("2017-12-31"), hasShares(6.064), //
+                                hasSource("Dividende12.txt"), hasNote("Thesaurierung (0,52 EUR)"), //
+                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), hasForexGrossValue("USD", 0.00), //
+                                hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -1767,241 +1800,103 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(20L));
         assertThat(results.size(), is(20));
-
-        // check transaction
-        // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(20L));
-
-        Item item = iter.next();
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.50))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung online"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-01"), hasAmount("EUR", 1.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung online"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.80))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-01"), hasAmount("EUR", 1.50), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-03"), hasAmount("EUR", 1.80), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung online"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-06"), hasAmount("EUR", 2.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung online"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung online"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-06"), hasAmount("EUR", 3.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung online"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung online"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-08"), hasAmount("EUR", 4.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung online"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("GutschriftÜberweisung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2023-03-08"), hasAmount("EUR", 3.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Gutschrift (Überweisung)"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.60))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-14"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(224.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-14"), hasAmount("EUR", 8.60), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(189.90))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-20"), hasAmount("EUR", 224.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.87))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-20"), hasAmount("EUR", 189.90), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.18))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-21"), hasAmount("EUR", 7.87), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(189.90))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-23"), hasAmount("EUR", 90.18), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(191.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("GutschriftÜberweisung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2023-03-23"), hasAmount("EUR", 189.90), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Gutschrift (Überweisung)"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.60))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-27"), hasAmount("EUR", 191.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-28T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lastschrift"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-28"), hasAmount("EUR", 8.60), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lastschrift"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.63))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2023-03-30"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Dauerauftrag"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.40))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Lohn, Gehalt, Rente"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2023-03-30"), hasAmount("EUR", 25.63), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.40))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Entgelte vom 01.03.2023 bis 31.03.2023"));
+        assertThat(results, hasItem(fee(hasDate("2023-03-31"), hasAmount("EUR", 5.40), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Entgelte vom 01.03.2023 bis 31.03.2023"))));
 
-        item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-03-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023"))));
 
-        // assert transaction is cancellation
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023"));
-
-        // check cancellation (Amount = 0,00) transaction
-        TransactionItem cancellation = (TransactionItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(TransactionItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
-
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2023-03-31T00:00")));
-        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
-        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023"));
-
-        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2023-03-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023")))));
     }
 
     @Test
@@ -2009,7 +1904,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"),
                         errors);
@@ -2188,7 +2083,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"),
                         errors);
@@ -2310,7 +2205,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"),
                         errors);
@@ -2449,7 +2344,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"),
                         errors);
@@ -2498,7 +2393,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"),
                         errors);
@@ -2537,15 +2432,17 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2016-11-22"), hasAmount("EUR", 17.95), //
@@ -2561,15 +2458,17 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2018-12-04"), hasAmount("EUR", 33.40), //
@@ -2590,6 +2489,12 @@ public class SBrokerPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2018-12-31"), hasAmount("EUR", 0.00), //
                         hasSource("GiroKontoauszug08.txt"), hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2018-12-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug08.txt"), hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018")))));
     }
 
     @Test
@@ -2597,13 +2502,17 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
 
@@ -2618,6 +2527,12 @@ public class SBrokerPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
                         hasSource("GiroKontoauszug09.txt"), hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019")))));
     }
 
     @Test
@@ -2625,15 +2540,17 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug10.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
         assertThat(results.size(), is(7));
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(7L));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2014-06-30"), hasAmount("EUR", 14.99), //
@@ -2662,6 +2579,12 @@ public class SBrokerPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2014-06-30"), hasAmount("EUR", 0.00), //
                         hasSource("GiroKontoauszug10.txt"), hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2014-06-30"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug10.txt"), hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014")))));
     }
 
     @Test
@@ -2669,15 +2592,17 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug11.txt"),
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2015-06-23"), hasAmount("EUR", 500.00), //
@@ -2690,6 +2615,340 @@ public class SBrokerPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2015-06-30"), hasAmount("EUR", 0.00), //
                         hasSource("GiroKontoauszug11.txt"), hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2015-06-30"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug11.txt"), hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015")))));
+    }
+
+    @Test
+    public void testGiroKontoauszug12()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug12.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-24"), hasAmount("EUR", 87.59), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2018-04-27"), hasAmount("EUR", 1111.11), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Lohn, Gehalt, Rente"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-30"), hasAmount("EUR", 400.00), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-04-30"), hasAmount("EUR", 91.35), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-05-02"), hasAmount("EUR", 260.00), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-05-02"), hasAmount("EUR", 33.48), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-05-03"), hasAmount("EUR", 4000.00), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2018-05-03"), hasAmount("EUR", 11.90), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2018-04-30"), hasAmount("EUR", 4.40), //
+                        hasSource("GiroKontoauszug12.txt"), hasNote("Entgelte vom 30.03.2018 bis 30.04.2018"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug13()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug13.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2017-01-23"), hasAmount("EUR", 303.70), //
+                        hasSource("GiroKontoauszug13.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2017-02-01"), hasAmount("EUR", 5.00), //
+                        hasSource("GiroKontoauszug13.txt"), hasNote("sonstige Entgelte"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2017-01-31"), hasAmount("EUR", 4.10), //
+                        hasSource("GiroKontoauszug13.txt"), hasNote("Entgelte vom 31.12.2016 bis 31.01.2017"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug14()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug14.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-01-14"), hasAmount("EUR", 5.71), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-01-14"), hasAmount("EUR", 7.90), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-01-15"), hasAmount("EUR", 29.70), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-01-22"), hasAmount("EUR", 483.99), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-01-25"), hasAmount("EUR", 304.02), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("sonstige Buchung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-01-28"), hasAmount("EUR", 1981.40), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Lohn, Gehalt, Rente"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-01-28"), hasAmount("EUR", 420.25), //
+                        hasSource("GiroKontoauszug14.txt"), hasNote("Zahlungseingang"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug15()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug15.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-03-04"), hasAmount("EUR", 3000.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-03-05"), hasAmount("EUR", 2200.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-03-18"), hasAmount("EUR", 750.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Bargeldauszahlung (Debitkarte)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-03-18"), hasAmount("EUR", 64.71), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-03-18"), hasAmount("EUR", 25.75), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2019-03-22"), hasAmount("EUR", 2092.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Bargeldeinzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2019-03-28"), hasAmount("EUR", 25.75), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2019-03-29"), hasAmount("EUR", 5.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Entgelte vom 01.03.2019 bis 29.03.2019"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug15.txt"), hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019")))));
+    }
+
+    @Test
+    public void testGiroKontoauszug16()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug16.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(15L));
+        assertThat(results.size(), is(15));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-02"), hasAmount("EUR", 600.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-02"), hasAmount("EUR", 34.50), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-08"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-16"), hasAmount("EUR", 57.30), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-16"), hasAmount("EUR", 8.30), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-23"), hasAmount("EUR", 86.39), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-23"), hasAmount("EUR", 12.34), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-24"), hasAmount("EUR", 73.73), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-29"), hasAmount("EUR", 250.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-29"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-11-29"), hasAmount("EUR", 1111.11), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lohn, Gehalt, Rente"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-30"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-30"), hasAmount("EUR", 600.00), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-11-30"), hasAmount("EUR", 10.96), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2021-11-30"), hasAmount("EUR", 5.10), //
+                        hasSource("GiroKontoauszug16.txt"), hasNote("Entgelte vom 30.10.2021 bis 30.11.2021"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug17()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug17.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-12-09"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-12-12"), hasAmount("EUR", 98.07), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-12-27"), hasAmount("EUR", 250.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-12-28"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Rechnung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-12-28"), hasAmount("EUR", 23.35), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-12-29"), hasAmount("EUR", 1111.11), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Lohn, Gehalt, Rente"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-12-30"), hasAmount("EUR", 600.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2022-12-30"), hasAmount("EUR", 4.60), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Entgelte vom 01.12.2022 bis 30.12.2022"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2022-12-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest(hasDate("2022-12-31"), hasAmount("EUR", 0.00), //
+                        hasSource("GiroKontoauszug17.txt"), hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022")))));
     }
 
     @Test
@@ -2697,7 +2956,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug01.txt"),
                         errors);
@@ -2946,7 +3205,7 @@ public class SBrokerPDFExtractorTest
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug02.txt"),
                         errors);
