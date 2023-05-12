@@ -1,0 +1,65 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.2
+-----------------------------------------
+Erste Bank der oesterreichischen Am Belvedere 1 T 05 0100 Firmensitz: Wien
+Sparkassen AG 1100 Wien F 0043/5 0100-910100 Handelsgericht Wien
+www.erstebank.at  UID: ATU63358299, FN 286283 f
+Seite 1/2   BIC: GIBAATWWXXX
+ERTRAGS- UND TILGUNGSBELEG WERTPAPIERDEPOT
+XXX A
+ 
+lautend auf XXX
+XXX XXX
+Herr XXX
+XXX
+XXXgasse 35/XX
+XXXX Wien
+Dividende
+ 
+ISIN: DE000BASF111 BASF SE
+NAMENS-AKTIEN O.N.
+Verwahrungsart: Wertpapierrechnung
+Loco: FRANKFURT
+Menge/Währung: 60 STK
+Extag: 02.05.2022
+Ertrag je Stück: 3,4 EUR
+ Beträge in EUR
+Brutto EUR 204,00
+QESt 26,375 % -53,81
+KESt I pro Stück 12,5 % -25,50
+  
+Netto EUR 124,69
+  
+Gutschrift 124,69
+Sollten Sie aufgrund eines für Sie anwendbaren Doppelbesteuerungsabkommens mit dem Quellenstaat
+berechtigt sein, Teile der abgezogenen Quellensteuer zurückzufordern, haben Sie mit den entsprechenden
+Erstattungsformularen (abrufbar bei der ausländischer Finanzbehörde bzw. dem Bundesministerium für
+Finanzen) die Möglichkeit, eine Rückerstattung zu beantragen.
+Wir haben oben genannten Betrag auf Ihrem Konto XXXX00 mit Valuta 05.05.2022 gutgeschrieben.
+Vorbehaltlich Eingang bzw. nachträgliche Storni/Umbuchungen seitens Lagerstelle/Partner.
+Die ausgewiesene Kapitalertragsteuer wird an das Finanzamt für Großbetriebe, Postfach 251, 1000 Wien
+abgeführt.
+Kosten im Detail
+Es sind keine Kosten angefallen.
+ 
+ 
+Für Rückfragen steht Ihnen  Betreuerteam DirektDepot, Erste Bank Oesterreich PB Remote (Trading) Service,
+unter der Telefonnummer +43 (0)5 0100-17800 gerne zur Verfügung.
+ 
+Erste Bank der oesterreichischen Am Belvedere 1 T 05 0100 Firmensitz: Wien
+Sparkassen AG 1100 Wien F 0043/5 0100-910100 Handelsgericht Wien
+www.erstebank.at  UID: ATU63358299, FN 286283 f
+Seite 2/2   BIC: GIBAATWWXXX
+ERTRAGS- UND TILGUNGSBELEG WERTPAPIERDEPOT
+XXXX A
+ 
+lautend auf XXXX
+XXXX
+Freundliche Grüße
+ 
+Erste Bank
+der oesterreichischen Sparkassen AG
+ 
+Wien, am 04.05.2022
+ 
+Dieses Dokument wurde automatisch erstellt und von der Bank nicht unterzeichnet.
