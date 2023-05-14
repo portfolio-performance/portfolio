@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -936,21 +937,18 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

@@ -1,0 +1,73 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+14.04.2023
+Max Mustermann
+Maxstraße 1 Man Mustermann
+11111 XXXXXXX Stamm-Nr.: 999999    Portfolio: 1
+Depot-Nr.: 444444444
+Vorgangs-Nr.: 00000000
+Referenz-Nr.: 999999999
+Dividende
+Ex-Tag: 06.04.2023
+Nominale ISIN: DE0005557508 WKN: 555750 Ausschüttung
+STK 13,629 Deutsche Telekom AG EUR 0,70 p.STK
+Zahlungszeitraum: 01.01.2022 - 31.12.2022 
+Zahltag: 12.04.2023
+Bruttobetrag EUR 9,54
+Zu Gunsten Konto 9999999999 Valuta: 12.04.2023 EUR 9,54
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de EK27-036.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Dividende
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Leistungen steuerliches Einlagekonto § 27 Abs. 1 - 7 KStG EUR 9,54 EUR 9,54
+Ausbuchung
+Stück 13,629 Deutsche Telekom AG
+ISIN: DE0005557508
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 111331788 07.06.2022 STK 1,306 25,00 0,00 0,00
+WP Kauf 126224375 16.08.2022 STK 1,576 29,98 0,00 0,00
+WP Kauf 132763846 13.09.2022 STK 1,285 24,99 0,00 0,00
+WP Kauf 136417148 03.10.2022 STK 1,702 29,98 0,00 0,00
+WP Kauf 144718631 04.11.2022 STK 1,274 25,00 0,00 0,00
+WP Kauf 153838735 13.12.2022 STK 1,291 24,99 0,00 0,00
+WP Kauf 157838038 04.01.2023 STK 5,195 99,98 0,00 0,00
+Einbuchung
+Stück 13,629 Deutsche Telekom AG
+ISIN: DE0005557508
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Kauf 14480910 07.06.2022 STK 1,306 24,09
+WP Kauf 14480910 16.08.2022 STK 1,576 28,88
+WP Kauf 14480910 13.09.2022 STK 1,285 24,09
+WP Kauf 14480910 03.10.2022 STK 1,702 28,79
+WP Kauf 14480910 04.11.2022 STK 1,274 24,11
+WP Kauf 14480910 13.12.2022 STK 1,291 24,09
+WP Kauf 14480910 04.01.2023 STK 5,195 96,34
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de EK27-036.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

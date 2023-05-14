@@ -201,7 +201,6 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 

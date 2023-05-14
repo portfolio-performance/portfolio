@@ -7,7 +7,7 @@ Depot: 0119788888
 Depotinhaber:
 Herrn Max Mustermann
 Max Mustermann
-Stöckach Bankverbindung generell:IBAN:
+Musterstraße Bankverbindung generell:IBAN:
 Strasse 7 DExx xxx5 0101 xxxx xxx2 87
 88888 Dorf Spk Schweinfurt-Haßberge
 Kontoinhaber:

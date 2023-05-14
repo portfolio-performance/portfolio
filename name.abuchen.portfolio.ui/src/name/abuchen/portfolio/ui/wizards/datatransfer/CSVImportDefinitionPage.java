@@ -490,7 +490,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         FileDialog fileDialog = new FileDialog(getControl().getShell(), SWT.OPEN);
         fileDialog.setFilterNames(
                         new String[] { Messages.CSVConfigCSVImportLabelFileJSON, Messages.CSVImportLabelFileAll }); // Messages.CSVImportLabelFileCSV
-        fileDialog.setFilterExtensions(new String[] { "*.json", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        fileDialog.setFilterExtensions(new String[] { "*.json;*.JSON", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
         String fileName = fileDialog.open();
 
         if (fileName == null)

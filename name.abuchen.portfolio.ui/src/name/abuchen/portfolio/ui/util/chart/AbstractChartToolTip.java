@@ -25,6 +25,7 @@ public abstract class AbstractChartToolTip implements Listener
     private Shell tip = null;
     private Object focus = null;
 
+    private boolean isActive = true;
     private boolean showToolTip = false;
     private boolean isAltPressed = false;
 
@@ -48,6 +49,11 @@ public abstract class AbstractChartToolTip implements Listener
         plotArea.addListener(SWT.MouseMove, this);
         plotArea.addListener(SWT.MouseUp, this);
         plotArea.addListener(SWT.Dispose, this);
+    }
+
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
     }
 
     protected abstract Object getFocusObjectAt(Event event);
@@ -77,6 +83,9 @@ public abstract class AbstractChartToolTip implements Listener
     @Override
     public void handleEvent(Event event)
     {
+        if (!isActive)
+            return;
+
         switch (event.type)
         {
             case SWT.Dispose:

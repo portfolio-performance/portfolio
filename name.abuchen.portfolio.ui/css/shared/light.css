@@ -63,6 +63,7 @@ CTabItem:selected {
 	axis-color: black;
 	grid-color: lightgrey;
 	highlight-color: black;
+	measurement-color: #f18f01;
 }
 
 .dashboard Composite,

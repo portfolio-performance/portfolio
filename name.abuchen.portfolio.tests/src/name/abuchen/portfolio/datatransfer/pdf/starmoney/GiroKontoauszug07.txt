@@ -1,0 +1,82 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 24 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 13.12.2012 in EUR 4.602,83
+17.12 17.12.12 Geldautomat -750,00
+GA NR00002056 BLZ79351730 5
+17.12/19.41UHR PFARRWEISA
+28.12 29.12.12 Entgeltabrechnung -2,50
+Entgeltabrechnung siehe Anlage
+28.12 01.01.13 Abrechnung 28.12.2012 0,00
+Abrechnung 28.12.2012 siehe Anlage
+Endsaldo am 28.12.2012 in EUR 2.550,63
+Anlage Rechnungsabschluss:
+Abrechnung 28.12.2012
+Information zur Abrechnung
+Entgelte vom 01.12.2012 bis 28.12.2012                               4,30S
+Entgelte / Auslagen                                    4,30S
+abzüglich 100% Nachlass auf        1,80S               1,80H         1,80H
+--------------
+Abrechnung 28.12.2012                                                2,50S
+Rechnungsnummer: 9703-12-29-01.55.23.403612
+Abrechnung 28.12.2012
+Information zur Abrechnung
+Kontostand am 28.12.2012                                        1.550,63 +
+--------------
+Abrechnungszeitraum vom 01.10.2012 bis 31.12.2012
+Abrechnung 31.12.2012                                                0,00H
+Aktuelle Sollzinssätze am Abrechnungstag:
+12,7500 v.H. Kred-Zins  am  30.12.2012
+für Kredit     bis            2.000,00
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 24 2 von 2
+17,7500 v.H. Überz-Zins am  30.12.2012
+für Kontoüberziehungen
+Die Anpassung des Zinssatzes für Kontoüberziehungen ist abhängig von der
+Entwicklung des "Gleitenden Ein-Jahreszinssatzes für Bundeswertpapiere".
+Kontostand/Rechnungsabschluss                                   1.550,63 +
+am 28.12.2012
+Rechnungsnummer: 1217-12-29-00.32.32.203612
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z. B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Einzugsermächtigungs- und Abbuchungsauftragslastschriften, Schecks und
+andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum
+Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert werden.
+Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungs-
+willen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch
+Bezahltmeldung). Für Lastschriften aus anderen Verfahren gelten die
+Einlösungsregeln in den hierfür vereinbarten besonderen Bedingungen.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG. Unsere für den
+Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und
+besonderen Bedingungen stellen wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse

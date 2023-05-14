@@ -25,9 +25,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
 public class DisplayTextDialog extends Dialog
 {
+    private String dialogTitle;
+    private String additionalText;
     private File source;
     private String text;
     private Text widget;
@@ -59,6 +63,7 @@ public class DisplayTextDialog extends Dialog
         button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             if (widget.isDisposed())
                 return;
+
             Clipboard cb = new Clipboard(Display.getCurrent());
             TextTransfer textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { widget.getText() }, new Transfer[] { textTransfer });
@@ -100,15 +105,45 @@ public class DisplayTextDialog extends Dialog
     }
 
     @Override
-    protected Control createDialogArea(Composite parent)
+    protected final Control createDialogArea(Composite parent)
     {
         Composite container = new Composite(parent, SWT.None);
-        GridDataFactory.fillDefaults().grab(true, true).hint(600, 200).applyTo(container);
+        container.setBackground(Colors.WHITE);
+        GridDataFactory.fillDefaults().grab(true, true).hint(800, 500).applyTo(container);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
-        widget = new Text(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER | SWT.V_SCROLL);
-        widget.setText(text);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(widget);
+        if (dialogTitle != null)
+            getShell().setText(dialogTitle);
+
+        if (additionalText != null)
+        {
+            StyledLabel additionalTextBox = new StyledLabel(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+            additionalTextBox.setBackground(Colors.WHITE);
+            additionalTextBox.setText(additionalText);
+            GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.TOP).indent(5, 5)
+                            .applyTo(additionalTextBox);
+        }
+
+        widget = createTextArea(container);
+
         return container;
+    }
+
+    protected Text createTextArea(Composite container)
+    {
+        Text textArea = new Text(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER | SWT.V_SCROLL);
+        textArea.setText(text);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(textArea);
+        return textArea;
+    }
+
+    public void setDialogTitle(String dialogTitle)
+    {
+        this.dialogTitle = dialogTitle;
+    }
+
+    public void setAdditionalText(String additionalText)
+    {
+        this.additionalText = additionalText;
     }
 }

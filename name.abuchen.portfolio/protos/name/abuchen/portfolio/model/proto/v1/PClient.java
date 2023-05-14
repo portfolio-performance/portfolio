@@ -24,6 +24,7 @@ private static final long serialVersionUID = 0L;
     watchlists_ = java.util.Collections.emptyList();
     taxonomies_ = java.util.Collections.emptyList();
     dashboards_ = java.util.Collections.emptyList();
+    baseCurrency_ = "";
   }
 
   @java.lang.Override
@@ -502,6 +503,45 @@ java.lang.String defaultValue) {
     return settings_ == null ? name.abuchen.portfolio.model.proto.v1.PSettings.getDefaultInstance() : settings_;
   }
 
+  public static final int BASECURRENCY_FIELD_NUMBER = 12;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object baseCurrency_ = "";
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The baseCurrency.
+   */
+  @java.lang.Override
+  public java.lang.String getBaseCurrency() {
+    java.lang.Object ref = baseCurrency_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      baseCurrency_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The bytes for baseCurrency.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getBaseCurrencyBytes() {
+    java.lang.Object ref = baseCurrency_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      baseCurrency_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -551,6 +591,9 @@ java.lang.String defaultValue) {
         10);
     if (settings_ != null) {
       output.writeMessage(11, getSettings());
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 12, baseCurrency_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -611,6 +654,9 @@ java.lang.String defaultValue) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(11, getSettings());
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, baseCurrency_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -651,6 +697,8 @@ java.lang.String defaultValue) {
       if (!getSettings()
           .equals(other.getSettings())) return false;
     }
+    if (!getBaseCurrency()
+        .equals(other.getBaseCurrency())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -704,6 +752,8 @@ java.lang.String defaultValue) {
       hash = (37 * hash) + SETTINGS_FIELD_NUMBER;
       hash = (53 * hash) + getSettings().hashCode();
     }
+    hash = (37 * hash) + BASECURRENCY_FIELD_NUMBER;
+    hash = (53 * hash) + getBaseCurrency().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -918,6 +968,7 @@ java.lang.String defaultValue) {
         settingsBuilder_.dispose();
         settingsBuilder_ = null;
       }
+      baseCurrency_ = "";
       return this;
     }
 
@@ -1038,6 +1089,9 @@ java.lang.String defaultValue) {
         result.settings_ = settingsBuilder_ == null
             ? settings_
             : settingsBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000800) != 0)) {
+        result.baseCurrency_ = baseCurrency_;
       }
     }
 
@@ -1270,6 +1324,11 @@ java.lang.String defaultValue) {
       if (other.hasSettings()) {
         mergeSettings(other.getSettings());
       }
+      if (!other.getBaseCurrency().isEmpty()) {
+        baseCurrency_ = other.baseCurrency_;
+        bitField0_ |= 0x00000800;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1421,6 +1480,11 @@ java.lang.String defaultValue) {
               bitField0_ |= 0x00000400;
               break;
             } // case 90
+            case 98: {
+              baseCurrency_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000800;
+              break;
+            } // case 98
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -3634,6 +3698,78 @@ java.lang.String defaultValue) {
         settings_ = null;
       }
       return settingsBuilder_;
+    }
+
+    private java.lang.Object baseCurrency_ = "";
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return The baseCurrency.
+     */
+    public java.lang.String getBaseCurrency() {
+      java.lang.Object ref = baseCurrency_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        baseCurrency_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return The bytes for baseCurrency.
+     */
+    public com.google.protobuf.ByteString
+        getBaseCurrencyBytes() {
+      java.lang.Object ref = baseCurrency_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        baseCurrency_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @param value The baseCurrency to set.
+     * @return This builder for chaining.
+     */
+    public Builder setBaseCurrency(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      baseCurrency_ = value;
+      bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearBaseCurrency() {
+      baseCurrency_ = getDefaultInstance().getBaseCurrency();
+      bitField0_ = (bitField0_ & ~0x00000800);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @param value The bytes for baseCurrency to set.
+     * @return This builder for chaining.
+     */
+    public Builder setBaseCurrencyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      baseCurrency_ = value;
+      bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

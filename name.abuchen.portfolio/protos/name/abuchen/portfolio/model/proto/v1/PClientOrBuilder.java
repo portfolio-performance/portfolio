@@ -253,4 +253,16 @@ java.lang.String defaultValue);
    * <code>.name.abuchen.portfolio.PSettings settings = 11;</code>
    */
   name.abuchen.portfolio.model.proto.v1.PSettingsOrBuilder getSettingsOrBuilder();
+
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The baseCurrency.
+   */
+  java.lang.String getBaseCurrency();
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The bytes for baseCurrency.
+   */
+  com.google.protobuf.ByteString
+      getBaseCurrencyBytes();
 }

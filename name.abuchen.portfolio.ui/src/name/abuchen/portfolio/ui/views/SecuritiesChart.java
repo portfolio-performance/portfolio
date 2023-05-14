@@ -22,6 +22,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -393,7 +394,6 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
-    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     private int swtAntialias = SWT.ON;
@@ -414,18 +414,17 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
-        chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(this.messagePainter);
+        chart.addPlotPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.addPlotPaintListener(this.messagePainter);
         chart.getPlotArea().addDisposeListener(this.messagePainter);
 
         messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
-        setupTooltip();
-
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        setupTooltip();
     }
 
     public IntervalOption getIntervalOption()
@@ -606,6 +605,9 @@ public class SecuritiesChart
 
     public void addButtons(ToolBarManager toolBar)
     {
+        chart.getMeasurementTool().addButtons(toolBar);
+        toolBar.add(new Separator());
+
         List<Action> viewActions = new ArrayList<>();
 
         for (IntervalOption option : IntervalOption.values())
@@ -621,7 +623,7 @@ public class SecuritiesChart
             viewActions.add(action);
             toolBar.add(action);
         }
-
+        toolBar.add(new Separator());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
@@ -752,7 +754,6 @@ public class SecuritiesChart
             chart.clearMarkerLines();
             chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
-            customBehindPaintListener.clear();
             customTooltipEvents.clear();
             chart.resetAxes();
             chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
@@ -1672,6 +1673,7 @@ public class SecuritiesChart
             if (font == null)
                 font = FontDescriptor.createFrom(e.gc.getFont()).increaseHeight(5).createFont(e.display);
 
+            Font defaultFont = e.gc.getFont();
             e.gc.setFont(font);
 
             Point txtExtend = e.gc.textExtent(message);
@@ -1679,6 +1681,8 @@ public class SecuritiesChart
             int posY = (e.height - txtExtend.y) / 2;
             e.gc.setForeground(Colors.DARK_GRAY);
             e.gc.drawText(message, posX, posY);
+
+            e.gc.setFont(defaultFont);
         }
 
         @Override

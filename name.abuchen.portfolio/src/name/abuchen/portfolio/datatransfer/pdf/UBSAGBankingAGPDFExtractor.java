@@ -516,7 +516,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
@@ -524,14 +523,12 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

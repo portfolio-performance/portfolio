@@ -53,11 +53,16 @@ public class AccountBuilder
         return transaction(Type.INTEREST, date, amount);
     }
 
+    public AccountBuilder interest(String date, long amount, long taxes)
+    {
+        return transaction(Type.INTEREST, date, amount, taxes, null);
+    }
+
     public AccountBuilder interest(LocalDateTime date, long amount)
     {
         return transaction(Type.INTEREST, date, amount);
     }
-    
+
     public AccountBuilder interest_charge(String date, long amount)
     {
         return transaction(Type.INTEREST_CHARGE, date, amount);
@@ -105,29 +110,34 @@ public class AccountBuilder
 
     public AccountBuilder dividend(String date, long amount, Security security)
     {
-        AccountTransaction t = new AccountTransaction(asDateTime(date), account.getCurrencyCode(), amount,
-                        security, Type.DIVIDENDS);
-        account.addTransaction(t);
-        return this;
+        return transaction(Type.DIVIDENDS, date, amount, 0L, security);
     }
 
     public AccountBuilder dividend(String date, long amount, long taxes, Security security)
     {
-        AccountTransaction t = new AccountTransaction(asDateTime(date), account.getCurrencyCode(), amount, security,
-                        Type.DIVIDENDS);
-        t.addUnit(new Unit(Unit.Type.TAX, Money.of(account.getCurrencyCode(), taxes)));
-        account.addTransaction(t);
-        return this;
+        return transaction(Type.DIVIDENDS, date, amount, taxes, security);
     }
 
     private AccountBuilder transaction(Type type, String date, long amount)
     {
-        return transaction(type, asDateTime(date), amount);
+        return transaction(type, asDateTime(date), amount, 0L, null);
     }
 
     private AccountBuilder transaction(Type type, LocalDateTime date, long amount)
     {
-        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, null, type);
+        return transaction(type, date, amount, 0L, null);
+    }
+
+    private AccountBuilder transaction(Type type, String date, long amount, long taxes, Security security)
+    {
+        return transaction(type, asDateTime(date), amount, taxes, security);
+    }
+
+    private AccountBuilder transaction(Type type, LocalDateTime date, long amount, long taxes, Security security)
+    {
+        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, security, type);
+        if (taxes > 0)
+            t.addUnit(new Unit(Unit.Type.TAX, Money.of(account.getCurrencyCode(), taxes)));
         account.addTransaction(t);
         return this;
     }

@@ -124,7 +124,7 @@ public final class DataSeries implements Adaptable
 
     public String getLabel()
     {
-        return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
+        return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
 
     public void setLabel(String label)
@@ -147,6 +147,7 @@ public final class DataSeries implements Adaptable
         }
 
         if (isBenchmark())
+            buf.append(" "); //$NON-NLS-1$
             buf.append(Messages.ChartSeriesBenchmarkSuffix);
 
         return buf.toString();

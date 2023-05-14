@@ -46,6 +46,12 @@ import name.abuchen.portfolio.util.TextUtil;
 
     private void configMenuAboutToShow(IMenuManager manager)
     {
+        if (chart instanceof TimelineChart timelineChart)
+        {
+            timelineChart.getMeasurementTool().addContextMenu(manager);
+            manager.add(new Separator());
+        }
+
         Action actionAdjustRange = new Action(Messages.MenuChartAdjustRange)
         {
             @Override

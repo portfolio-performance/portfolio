@@ -131,6 +131,14 @@ public final class TextUtil
     }
 
     /**
+     * Replace all blanks between strings and replace with a single blank.
+     */
+    public static String replaceMultipleBlanks(String input)
+    {
+        return input == null ? null : Pattern.compile("\\s+").matcher(input).replaceAll(" "); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * Removes unwanted characters before and after any number characters. Used
      * when importing data from CSV files.
      */

@@ -145,6 +145,7 @@ public class ErrorLogPart
         logViewer.addDoubleClickListener(event -> {
             LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
             DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
+            dialog.setDialogTitle(Messages.LabelErrorProtocolDetails);
             dialog.open();
         });
     }

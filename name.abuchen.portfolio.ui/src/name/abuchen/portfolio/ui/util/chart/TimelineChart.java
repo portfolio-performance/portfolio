@@ -12,6 +12,7 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -74,6 +75,7 @@ public class TimelineChart extends Chart // NOSONAR
     private List<MarkerLine> markerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
 
+    private MeasurementTool measurementTool;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
@@ -110,21 +112,7 @@ public class TimelineChart extends Chart // NOSONAR
             public void paintControl(PaintEvent e)
             {
                 paintTimeGrid(e);
-            }
-
-            @Override
-            public boolean drawBehindSeries()
-            {
-                return true;
-            }
-        });
-
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent eventNonTradingDay)
-            {
-                paintNonTradingDayMarker(eventNonTradingDay);
+                paintNonTradingDayMarker(e);
             }
 
             @Override
@@ -137,6 +125,8 @@ public class TimelineChart extends Chart // NOSONAR
         getPlotArea().addPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
+
+        measurementTool = new MeasurementTool(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
@@ -176,6 +166,24 @@ public class TimelineChart extends Chart // NOSONAR
     public void clearNonTradingDayMarker()
     {
         this.nonTradingDayMarkers.clear();
+    }
+
+    public void addPlotPaintListener(PaintListener listener)
+    {
+        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                listener.paintControl(e);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return false;
+            }
+        });
     }
 
     public ILineSeries addDateSeries(String id, LocalDate[] dates, double[] values, String label)
@@ -220,6 +228,11 @@ public class TimelineChart extends Chart // NOSONAR
         return toolTip;
     }
 
+    public MeasurementTool getMeasurementTool()
+    {
+        return measurementTool;
+    }
+
     private void paintTimeGrid(PaintEvent e)
     {
         IAxis xAxis = getAxisSet().getXAxis(0);
@@ -246,7 +259,7 @@ public class TimelineChart extends Chart // NOSONAR
 
         for (MarkerLine marker : markerLines)
         {
-            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
+            int x = xAxis.getPixelCoordinate(marker.getTimeMillis());
 
             String label = marker.label != null ? marker.label : ""; //$NON-NLS-1$
 
@@ -289,7 +302,7 @@ public class TimelineChart extends Chart // NOSONAR
         }
         for (NonTradingDayMarker marker : nonTradingDayMarkers)
         {
-            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
+            int x = xAxis.getPixelCoordinate(marker.getTimeMillis());
             double barWidth = 0;
             for (LocalDate date = marker.date; date.isBefore(end); date = date.plusDays(1))
             {
