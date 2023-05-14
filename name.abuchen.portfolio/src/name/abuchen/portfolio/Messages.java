@@ -240,7 +240,7 @@ public class Messages extends NLS
     public static String MsgErrorDownloadECBStatisticalDataWarehouse;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
-    public static String MsgErrorDuplicateTicker;
+    public static String MsgErrorDuplicateTickerSymbol;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;

@@ -1,14 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -21,11 +12,19 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTickerSymbol;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1046,7 +1045,7 @@ public class BaaderBankPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("DE000GP0Q523"), hasWkn("GP0Q52"), hasTicker(null), //
+                        hasIsin("DE000GP0Q523"), hasWkn("GP0Q52"), hasTickerSymbol(null), //
                         hasName("Goldman Sachs Bank Europe SE TuBear O.End Nasd100 14200"), // 
                         hasCurrencyCode("EUR"))));
 
@@ -1075,7 +1074,7 @@ public class BaaderBankPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US88579Y1010"), hasWkn("851745"), hasTicker(null), //
+                        hasIsin("US88579Y1010"), hasWkn("851745"), hasTickerSymbol(null), //
                         hasName("3M Co. Registered Shares DL -,01"), // 
                         hasCurrencyCode("EUR"))));
 
@@ -1104,7 +1103,7 @@ public class BaaderBankPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("IE00BFNM3P36"), hasWkn("A2N6TH"), hasTicker(null), //
+                        hasIsin("IE00BFNM3P36"), hasWkn("A2N6TH"), hasTickerSymbol(null), //
                         hasName("iShs IV-iShs MSCI EMIMI ES ETF Reg. Shares USD Acc. o.N."), // 
                         hasCurrencyCode("EUR"))));
 
@@ -1133,7 +1132,7 @@ public class BaaderBankPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("AU000000BHP4"), hasWkn("850524"), hasTicker(null), //
+                        hasIsin("AU000000BHP4"), hasWkn("850524"), hasTickerSymbol(null), //
                         hasName("BHP Group Ltd. Registered Shares DL -,50"), // 
                         hasCurrencyCode("EUR"))));
 
@@ -2873,7 +2872,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0005785604"), //
                         hasWkn("578560"), //
-                        hasTicker(null), //
+                        hasTickerSymbol(null), //
                         hasName("Fresenius SE & Co. KGaA"), //
                         hasCurrencyCode("EUR"))));
 

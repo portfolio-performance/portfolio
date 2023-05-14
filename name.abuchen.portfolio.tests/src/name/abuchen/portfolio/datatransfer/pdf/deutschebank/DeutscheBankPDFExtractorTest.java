@@ -15,7 +15,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTickerSymbol;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
@@ -76,7 +76,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("US17275R1023"), //
                         hasWkn("878841"), //
-                        hasTicker(null), //
+                        hasTickerSymbol(null), //
                         hasName("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"), //
                         hasCurrencyCode("USD"))));
 

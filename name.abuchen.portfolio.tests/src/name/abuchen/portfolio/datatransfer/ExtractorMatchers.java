@@ -397,9 +397,9 @@ public class ExtractorMatchers
                         Security::getWkn);
     }
 
-    public static Matcher<Security> hasTicker(String ticker)
+    public static Matcher<Security> hasTickerSymbol(String tickerSymbol)
     {
-        return new PropertyMatcher<>("ticker", ticker, //$NON-NLS-1$
+        return new PropertyMatcher<>("tickerSymbol", tickerSymbol, //$NON-NLS-1$
                         Security::getTickerSymbol);
     }
 

@@ -14,7 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTickerSymbol;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -1359,7 +1359,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("LU0392494562"), //
                         hasWkn("ETF110"), //
-                        hasTicker(null), //
+                        hasTickerSymbol(null), //
                         hasName("COMS.-MSCI WORL.T.U.ETF I"), //
                         hasCurrencyCode("EUR"))));
 
@@ -3781,14 +3781,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("NL00150001Q9"), //
                         hasWkn("A2QL01"), //
-                        hasTicker(null), //
+                        hasTickerSymbol(null), //
                         hasName("STELLANTIS BR RG"), //
                         hasCurrencyCode("EUR"))));
 
         assertThat(results, hasItem(security( //
                         hasIsin("FR0000121147"), //
                         hasWkn("867025"), //
-                        hasTicker(null), //
+                        hasTickerSymbol(null), //
                         hasName("FAURECIA EU INH      EO 7"), //
                         hasCurrencyCode("EUR"))));
 

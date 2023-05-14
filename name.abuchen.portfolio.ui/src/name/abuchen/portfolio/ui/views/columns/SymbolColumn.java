@@ -19,7 +19,7 @@ public class SymbolColumn extends Column
 
     public SymbolColumn(String id)
     {
-        super(id, Messages.ColumnTicker, SWT.LEFT, 80);
+        super(id, Messages.ColumnTickerSymbol, SWT.LEFT, 80);
 
         setLabelProvider(new ColumnLabelProvider()
         {

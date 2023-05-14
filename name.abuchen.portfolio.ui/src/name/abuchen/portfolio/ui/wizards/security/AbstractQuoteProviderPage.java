@@ -162,7 +162,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private ComboViewer comboExchange;
     private Text textFeedURL;
-    private Text textTicker;
+    private Text textTickerSymbol;
 
     private Text textQuandlCode;
     private Label labelQuandlCloseColumnName;
@@ -492,7 +492,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
                         || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
-        boolean needsTicker = feed != null && feed.getId() != null && Set
+        boolean needsTickerSymbol = feed != null && feed.getId() != null && Set
                         .of(AlphavantageQuoteFeed.ID, FinnhubQuoteFeed.ID, BinanceQuoteFeed.ID, BitfinexQuoteFeed.ID,
                                         CoinGeckoQuoteFeed.ID, KrakenQuoteFeed.ID, EODHistoricalDataQuoteFeed.ID)
                         .contains(feed.getId());
@@ -515,10 +515,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             comboExchange = null;
         }
 
-        if (textTicker != null)
+        if (textTickerSymbol != null)
         {
-            textTicker.dispose();
-            textTicker = null;
+            textTickerSymbol.dispose();
+            textTickerSymbol = null;
 
             model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
@@ -575,14 +575,14 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textFeedURL.addModifyListener(e -> onFeedURLChanged());
         }
 
-        if (needsTicker)
+        if (needsTickerSymbol)
         {
-            labelDetailData.setText(Messages.ColumnTicker);
+            labelDetailData.setText(Messages.ColumnTickerSymbol);
 
-            textTicker = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textTicker);
+            textTickerSymbol = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textTickerSymbol);
 
-            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
+            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTickerSymbol);
             IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
             bindings.getBindingContext().bindValue(observeText, observable);
 
@@ -721,7 +721,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco.show();
         }
 
-        if (!dropDown && !feedURL && !needsTicker && !needsQuandlCode && !needsJsonPath && !needsCoinGeckoCoinId)
+        if (!dropDown && !feedURL && !needsTickerSymbol && !needsQuandlCode && !needsJsonPath && !needsCoinGeckoCoinId)
         {
             labelDetailData.setText(""); //$NON-NLS-1$
         }
@@ -999,12 +999,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void onTickerSymbolChanged()
     {
-        boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
+        boolean hasTickerSymbol = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
 
-        if (!hasTicker)
+        if (!hasTickerSymbol)
         {
             clearSampleQuotes();
-            setStatus(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTicker));
+            setStatus(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTickerSymbol));
         }
         else
         {

@@ -85,7 +85,7 @@ public class SearchSecurityWizardPage extends WizardPage
         column.setWidth(250);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
-        column.setText(Messages.ColumnSymbol);
+        column.setText(Messages.ColumnTickerSymbol);
         column.setWidth(60);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);

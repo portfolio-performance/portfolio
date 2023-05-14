@@ -306,7 +306,6 @@ public class Messages extends NLS
     public static String ColumnSubTotal;
     public static String ColumnSum;
     public static String ColumnSumByYear;
-    public static String ColumnSymbol;
     public static String ColumnTargetCurrency;
     public static String ColumnTargetCurrencyToolTip;
     public static String ColumnUsedForRebalancing;
@@ -317,7 +316,7 @@ public class Messages extends NLS
     public static String ColumnTaxonomy;
     public static String ColumnTermCurrency;
     public static String ColumnThereofForeignCurrencyGains;
-    public static String ColumnTicker;
+    public static String ColumnTickerSymbol;
     public static String ColumnToBePctOfTotal;
     public static String ColumnToBePctOfTotal_MenuLabel;
     public static String ColumnTotal;

@@ -234,11 +234,11 @@ public class EditSecurityDialog extends Dialog
         boolean hasQuotes = !security.getPrices().isEmpty();
 
         boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
-        boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
+        boolean tickerSymbolChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
         boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
         boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
+        boolean quotesCanChange = feedChanged || tickerSymbolChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
 

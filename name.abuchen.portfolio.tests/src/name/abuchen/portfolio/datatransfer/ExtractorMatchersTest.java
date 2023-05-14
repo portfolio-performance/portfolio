@@ -12,7 +12,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTickerSymbol;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -49,7 +49,7 @@ public class ExtractorMatchersTest
         s.setName("test name");
         s.setIsin("DE01");
         s.setWkn("WKN");
-        s.setTickerSymbol("TICKER");
+        s.setTickerSymbol("TICKERSYMBOL");
         s.setCurrencyCode("USD");
 
         someSecurity = new SecurityItem(s);
@@ -236,15 +236,15 @@ public class ExtractorMatchersTest
     }
 
     @Test(expected = AssertionError.class)
-    public void testTickerFailure()
+    public void testTickerSymbolFailure()
     {
-        assertThat(List.of(someSecurity), hasItem(security(hasTicker("test"))));
+        assertThat(List.of(someSecurity), hasItem(security(hasTickerSymbol("test"))));
     }
 
     @Test
-    public void testTickerSuccess()
+    public void testTickerSymbolSuccess()
     {
-        assertThat(List.of(someSecurity), hasItem(security(hasTicker("TICKER"))));
+        assertThat(List.of(someSecurity), hasItem(security(hasTickerSymbol("TICKERSYMBOL"))));
     }
 
     @Test(expected = AssertionError.class)

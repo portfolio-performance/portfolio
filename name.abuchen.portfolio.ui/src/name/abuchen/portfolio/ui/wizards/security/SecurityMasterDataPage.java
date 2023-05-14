@@ -116,7 +116,7 @@ public class SecurityMasterDataPage extends AbstractPage
             }
         }
 
-        bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
+        bindings.bindStringInput(container, Messages.ColumnTickerSymbol, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
 
         if (!isExchangeRate)
         {

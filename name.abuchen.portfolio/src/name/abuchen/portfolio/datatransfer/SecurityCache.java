@@ -22,7 +22,7 @@ public class SecurityCache
     private static final Security DUPLICATE_SECURITY_MARKER = new Security();
 
     private static final List<String> MESSAGES = Arrays.asList(Messages.MsgErrorDuplicateISIN,
-                    Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);
+                    Messages.MsgErrorDuplicateTickerSymbol, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);
 
     private final Client client;
 
