@@ -125,6 +125,47 @@ public class SolarisbankAGPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.99)));
     }
 
+    @Test
+    public void testGiroKontoauszug04()
+    {
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("GiroKontoauszug04.txt"), errors);
+        assertThat(errors, empty());
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
+                        .count(), is(2L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-03T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(200)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.40)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-20T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(18.78)));
+
+    }
+
     private List<InputFile> loadFile(String filename)
     {
         return PDFInputFile.loadTestCase(getClass(), filename);

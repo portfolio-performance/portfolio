@@ -8,10 +8,12 @@ Kontostand am 26 Okt. 2022
 0,00 EUR
 Tag der Tag der
 Buchung Wertstellung Typ Beschreibung Betrag
-Kd CUSTOMER_NO Wir sagen
-Danke. RG-Nr. INVOICENO
-19.10.2022 19.10.2022 SEPA-Lastschrift 11,99 EUR -11,99 EUR
-an Peter Pan
+Spass
+03.10.2022 04.04.2023 SEPA-Überweisungvon Erik Neurohr 200,00 EUR
+DE66666666666666666666
+06.10.2022 06.04.2023 Kartenvorgang Visa Geld zurueck AktionVISACLP0324 GB 0,40 EUR
+Eurest
+20.10.2022 20.04.2023 SEPA-Überweisungan Erik Neurohr -18,78 EUR
 DE66666666666666666666
 Monatlich/10 Kontostand am 31 Okt. 2022
 43,20 EUR

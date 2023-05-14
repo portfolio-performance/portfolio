@@ -13,8 +13,8 @@ import name.abuchen.portfolio.model.Client;
 public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
     
-    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung).* (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
-    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung|SEPA-Lastschrift) (?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
+    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
+    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung|SEPA-Lastschrift|SEPA\\-.berweisung)(?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
     
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
@@ -57,7 +57,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DEPOSIT);
             return entry;})
-                        .section(CONTEXT_KEY_DATE, CONTEXT_KEY_AMOUNT, CONTEXT_KEY_CURRENCY)
+                        .section(CONTEXT_KEY_DATE, CONTEXT_KEY_AMOUNT, CONTEXT_KEY_CURRENCY, CONTEXT_KEY_NOTE)
                         .match(regex)
                         .assign(assignmentsProvider())
                         .wrap(TransactionItem::new);
