@@ -8,6 +8,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -32,8 +34,10 @@ public class InsertActionTest
 {
     private Client client;
     private BuySellEntry entry;
+    private AccountTransaction transaction;
 
     private LocalDateTime transactionDate = LocalDateTime.now().withSecond(0).withNano(0);
+    private LocalDate transactionExDate = LocalDate.now();
 
     @Before
     public void prepare()
@@ -55,6 +59,17 @@ public class InsertActionTest
         entry.setNote("note");
         entry.setSource("source");
         entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_99)));
+
+        transaction = new AccountTransaction();
+        transaction.setType(AccountTransaction.Type.DIVIDENDS);
+        transaction.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 9_99));
+        transaction.setShares(99);
+        transaction.setDateTime(transactionDate);
+        transaction.setExDate(transactionExDate);
+        transaction.setSecurity(security);
+        transaction.setNote("note");
+        transaction.setSource("source");
+        transaction.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_99)));
     }
 
     @Test
@@ -96,6 +111,7 @@ public class InsertActionTest
     {
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 8_00)));
         assertThat(t.getNote(), is("note"));
         assertThat(t.getSource(), is("source"));
         assertThat(t.getDateTime(), is(transactionDate));
@@ -123,11 +139,44 @@ public class InsertActionTest
         assertThat(properties, hasItem("amount"));
         assertThat(properties, hasItem("shares"));
         assertThat(properties, hasItem("dateTime"));
+        assertThat(properties, hasItem("exDate"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
         assertThat(properties, hasItem("source"));
         assertThat(properties, hasItem("updatedAt"));
 
-        assertThat(properties.size(), is(10));
+        assertThat(properties.size(), is(11));
+    }
+
+    @Test
+    public void testInsertOfAccountTransaction()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+
+        InsertAction action = new InsertAction(client);
+        action.process(transaction, account);
+
+        assertThat(account.getTransactions().size(), is(1));
+        assertThat(portfolio.getTransactions().size(), is(0));
+
+        AccountTransaction t = account.getTransactions().get(0);
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertTransaction(t);
+    }
+
+    private void assertTransaction(AccountTransaction t)
+    {
+        assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 11_98)));
+        assertThat(t.getNote(), is("note"));
+        assertThat(t.getSource(), is("source"));
+        assertThat(t.getDateTime(), is(transactionDate));
+        assertThat(t.getExDate(), is(transactionExDate));
+        assertThat(t.getShares(), is(99L));
+
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
+        assertThat(t.getUnits().count(), is(1L));
     }
 }

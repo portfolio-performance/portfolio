@@ -32,7 +32,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public enum Properties
     {
-        portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
+        portfolio, security, account, date, time, exDate, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
         convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
         calculationStatus;
@@ -45,6 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Security security;
     protected LocalDate date = LocalDate.now();
     protected LocalTime time = PresetValues.getTime();
+    protected LocalDate exDate = LocalDate.now();
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
@@ -351,6 +352,17 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
         updateExchangeRate();
+    }
+
+    public void setExDate(LocalDate exDate)
+    {
+        firePropertyChange(Properties.exDate.name(), this.exDate, this.exDate = exDate);
+        updateExchangeRate();
+    }
+
+    public LocalDate getExDate()
+    {
+        return exDate;
     }
 
     public long getShares()

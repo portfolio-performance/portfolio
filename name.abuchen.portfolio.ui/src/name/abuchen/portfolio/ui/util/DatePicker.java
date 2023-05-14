@@ -98,4 +98,9 @@ public class DatePicker
     {
         control.setLayoutData(layoutData);
     }
+
+    public void setVisible(boolean visible)
+    {
+        control.setVisible(visible);
+    }
 }

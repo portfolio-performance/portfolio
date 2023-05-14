@@ -141,6 +141,9 @@ public class DetectDuplicatesAction implements ImportAction
         if (!other.getDateTime().toLocalDate().equals(subject.getDateTime().toLocalDate()))
             return false;
 
+        if (!other.getExDate().equals(subject.getExDate()))
+            return false;
+
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))
             return false;
 

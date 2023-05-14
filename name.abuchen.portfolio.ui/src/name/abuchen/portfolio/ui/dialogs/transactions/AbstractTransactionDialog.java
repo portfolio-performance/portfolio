@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Consumer;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
@@ -179,6 +181,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
     public class DateTimeInput
     {
+        private boolean checkWithExdate;
+
         public final Label label;
         public final DatePicker date;
         public final CDateTime time;
@@ -223,15 +227,36 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindDate(String property)
         {
-            IObservableValue<?> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
-            IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
-            context.bindValue(targetObservable, modelObservable);
+            IObservableValue<LocalDate> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
+            IObservableValue<LocalDate> modelObservable = BeanProperties.value(property, LocalDate.class).observe(model);
+
+            if (checkWithExdate)
+            {
+                IObservableValue<LocalDate> exDateModelObservable = BeanProperties.value(Properties.exDate.name(), LocalDate.class).observe(model);
+
+                UpdateValueStrategy<LocalDate, LocalDate> strategy = new UpdateValueStrategy<LocalDate, LocalDate>();
+                strategy.setBeforeSetValidator(value -> {
+                    LocalDate dateValue = (LocalDate) value;
+                    LocalDate exDateValue = (LocalDate) exDateModelObservable.getValue();
+
+                    if (dateValue.isBefore(exDateValue))
+                        return ValidationStatus.error(Messages.MsgCheckIfDateIsBeforeExDate);
+                    else
+                        return ValidationStatus.ok();
+                });
+
+                context.bindValue(targetObservable, modelObservable, strategy, null);
+            }
+            else
+            {
+                context.bindValue(targetObservable, modelObservable);
+            }
         }
 
         public void bindTime(String property)
         {
-            IObservableValue<?> targetObservable = new SimpleDateTimeTimeSelectionProperty().observe(time);
-            IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<LocalTime> targetObservable = new SimpleDateTimeTimeSelectionProperty().observe(time);
+            IObservableValue<LocalTime> modelObservable = BeanProperties.value(property, LocalTime.class).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
 
@@ -248,6 +273,67 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                         consumer.accept(LocalTime.MIDNIGHT);
                 }
             });
+        }
+
+        public void checkWithExdate(boolean visible)
+        {
+            checkWithExdate = visible;
+        }
+    }
+
+    public class ExDateInput
+    {
+        private boolean isVisible;
+
+        public final Label label;
+        public final DatePicker exDate;
+
+        public ExDateInput(Composite editArea, String text)
+        {
+            label = new Label(editArea, SWT.RIGHT);
+            label.setText(text);
+
+            exDate = new DatePicker(editArea);
+        }
+
+        public void bindDate(String property)
+        {
+            IObservableValue<LocalDate> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(exDate.getControl());
+            IObservableValue<LocalDate> modelObservable = BeanProperties.value(property, LocalDate.class).observe(model);
+
+            if (isVisible)
+            {
+                IObservableValue<LocalDate> dateModelObservable = BeanProperties.value(Properties.date.name(), LocalDate.class).observe(model);
+
+                UpdateValueStrategy<LocalDate, LocalDate> strategy = new UpdateValueStrategy<LocalDate, LocalDate>();
+                strategy.setBeforeSetValidator(value -> {
+                    LocalDate exDateValue = (LocalDate) value;
+                    LocalDate dateValue = (LocalDate) dateModelObservable.getValue();
+
+                    if (dateValue.isBefore(exDateValue))
+                        return ValidationStatus.error(Messages.MsgCheckIfDateIsBeforeExDate);
+                    else
+                        return ValidationStatus.ok();
+                });
+
+                context.bindValue(targetObservable, modelObservable, strategy, null);
+            }
+            else
+            {
+                context.bindValue(targetObservable, modelObservable);
+            }
+        }
+
+        public void setVisible(boolean visible)
+        {
+            isVisible = visible;
+            label.setVisible(visible);
+            exDate.setVisible(visible);
+        }
+
+        public boolean getVisible()
+        {
+            return isVisible;
         }
     }
 
