@@ -1,0 +1,77 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+ da
+ 
+  
+Bank Direkt   
+der Raiffeisenlandesbank OÖ (BLZ: 34000)  
+Europaplatz 1a    b
+4020 Linz  
+ 
+ 
+a
+a  
+Abrechnung Ereignis a  
+46102104 - 08.07.2022 a  
+Depotnummer: 12.345.678  
+Herrn sBbJriW LfTObCik
+qvxQNdR vyIdVrWU
+ojqjppGU 988 230/475
+9441 sExHY Bank Direkt
+Wir haben für Sie am 08.07.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+800 Stk   
+Titel: LU0486851024 Xtrackers MSCI Europe Value
+Inhaber-Anteile 1C o.N.
+Fondsgesellschaft: Xtrackers
+Ertrag: 0 EUR
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt am Main
+KESt ausländische Dividende: -156,08 EUR 
+KESt: -0,24 EUR 
+Zu Lasten IBAN AT44 4649 0000 0110 3051 -156,32 EUR 
+Valuta 07.07.2022
+KESt wird mit dem Finanzamt für Großbetriebe abgerechnet.
+Vom Emittenten einbehaltene KESt (VT-relevant): EUR 0,64
+Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds
+KESt pro Fondsanteil 0,0003 EUR  für Neubestand
+Auslands-KESt pro Fondsanteil 0,1951 EUR  für Neubestand
+KESt auf inl. Dividende pro Fondsanteil: 0,0008 EUR
+Extag: 07.07.2022
+Es wurde Auslands-KESt in der Höhe von 0,19 % berücksichtigt.
+08.07.2022 1 / 2
+BIC: RZOOAT2L, Landesgericht Linz, FN 247579m, UID: ATU57834268
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.
+Bank Direkt
+der Raiffeisenlandesbank OÖ (BLZ: 34000)
+Europaplatz 1a  b
+4020 Linz
+a
+a
+Abrechnung Ereignis a
+46102104 - 08.07.2022 a
+Depotnummer: 12.456.678
+uPAUpEB jacNLcOz
+230/475
+Bank Direkt
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 800 Stk
+steuerlicher Anschaffungswert: 14.861,00 EUR
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 800 Stk
+ausschüttungsgleicher Ertrag: 621,20 EUR
+Anschaffungswertreduzierender Betrag: 0,00 EUR
+steuerlicher Anschaffungswert: 14.861,00 EUR
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 800 Stk
+steuerlicher Anschaffungswert: 15.482,20 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+          Für ein Veranlagungsgespräch stehen wir Ihnen gerne zur Verfügung.
+08.07.2022 2 / 2
+BIC: RZOOAT2L, Landesgericht Linz, FN 247579m, UID: ATU57834268
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.
