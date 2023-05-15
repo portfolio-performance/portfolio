@@ -1015,7 +1015,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertNull(transaction.getSource());
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("ORCL (0.19 USD)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.67))));
@@ -1260,7 +1260,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 8765764573"));
+        assertThat(transaction.getNote(), is("US88579Y1010 (1.36 USD) | Transaction-ID: 8765764573"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.52))));
@@ -1280,7 +1280,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 13713058125"));
+        assertThat(transaction.getNote(), is("US12514G1085 (0.38 USD) | Transaction-ID: 13713058125"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.50))));
@@ -1396,7 +1396,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 8765764573"));
+        assertThat(transaction.getNote(), is("US88579Y1010 (1.36 USD) | Transaction-ID: 8765764573"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.74))));
@@ -1416,7 +1416,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 13713058125"));
+        assertThat(transaction.getNote(), is("US12514G1085 (0.38 USD) | Transaction-ID: 13713058125"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.04))));
@@ -1536,7 +1536,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 13505500800"));
+        assertThat(transaction.getNote(), is("US8688612048 (0.088051 USD) | Transaction-ID: 13505500800"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(8.98))));
@@ -2691,7 +2691,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(22)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 1216874520"));
+        assertThat(transaction.getNote(), is("US30214U1025 (0.24 USD) | Transaction-ID: 1216874520"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.70))));
@@ -2711,7 +2711,7 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(22)));
         assertNull(transaction.getSource());
-        assertThat(transaction.getNote(), is("Transaction-ID: 1385409476"));
+        assertThat(transaction.getNote(), is("US30214U1025 (0.24 USD) | Transaction-ID: 1385409476"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.70))));

@@ -276,8 +276,44 @@ public class IBFlexStatementExtractor implements Extractor
             setAmount(element, transaction, amount);
 
             // Set note
-            if (!transaction.getType().equals(AccountTransaction.Type.DIVIDENDS))
-                transaction.setNote(element.getAttribute("description"));
+            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS))
+            {
+                // @formatter:off
+                // MMM(US88579Y1010) CASH DIVIDEND 1.36000000 USD PER SHARE (Ordinary Dividend)
+                // CDW(US12514G1085) CASH DIVIDEND USD 0.38 PER SHARE (Ordinary Dividend)
+                // @formatter:on
+                Pattern pDescription_Format01 = Pattern.compile(".*DIVIDEND (?<dividendPerShares>[\\.,\\d]+) (?<currency>[\\w]{3}) PER SHARE .*");
+                Pattern pDescription_Format02 = Pattern.compile(".*DIVIDEND (?<currency>[\\w]{3}) (?<dividendPerShares>[\\.,\\d]+) PER SHARE .*");
+
+                String note = null;
+                String isin = element.getAttribute("isin");
+                String symbol = element.getAttribute("symbol");
+                String description = element.getAttribute("description");
+
+                Matcher mDescription_Format01 = pDescription_Format01.matcher(description);
+                Matcher mDescription_Format02 = pDescription_Format02.matcher(description);
+
+                if (mDescription_Format01.matches() || mDescription_Format02.matches())
+                {
+                    String dividendPerShares = "";
+                    String currency = "";
+
+                    if (mDescription_Format01.matches())
+                    {
+                        dividendPerShares = mDescription_Format01.group("dividendPerShares").replaceAll("0+$", "");
+                        currency = mDescription_Format01.group("currency");
+                    }
+                    else if (mDescription_Format02.matches())
+                    {
+                        dividendPerShares = mDescription_Format02.group("dividendPerShares").replaceAll("0+$", "");
+                        currency = mDescription_Format02.group("currency");
+                    }
+
+                    note = (isin.isEmpty() ? symbol : isin) + " (" + dividendPerShares + " " + currency + ")";
+                }
+
+                transaction.setNote(note);
+            }
 
             // Add Trade-ID note if available
             if (transaction.getNote() == null)
@@ -288,7 +324,7 @@ public class IBFlexStatementExtractor implements Extractor
             else
             {
                 if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
-                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+                    transaction.setNote(transaction.getNote() + " | " + "Trade-ID: " + element.getAttribute("tradeID"));
             }
 
             // Add Transaction-ID note if available
@@ -302,8 +338,15 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 if (!element.getAttribute("transactionID").isEmpty()
                                 && !element.getAttribute("transactionID").equals("N/A"))
-                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
-                                    + transaction.getNote());
+                    transaction.setNote(transaction.getNote() + " | " + "Transaction-ID: " + element.getAttribute("transactionID"));
+            }
+
+            if (!transaction.getType().equals(AccountTransaction.Type.DIVIDENDS))
+            {
+                if (transaction.getNote() == null)
+                    transaction.setNote(element.getAttribute("description"));
+                else
+                    transaction.setNote(transaction.getNote() + " | " + element.getAttribute("description"));
             }
 
             // Transactions which do not have an account-id will not be
@@ -351,7 +394,7 @@ public class IBFlexStatementExtractor implements Extractor
             // If possible, set "tradeDate" with "tradeTime" as the correct
             // trading date of the transaction.
             //
-            // If "tradeTime" is not present, then check 
+            // If "tradeTime" is not present, then check
             // if "tradeDate" and "dateTime" are the same date, then
             // set "dateTime" as the trading day.
             // @formatter:on
@@ -627,8 +670,8 @@ public class IBFlexStatementExtractor implements Extractor
                     // If the transaction currency is different from the
                     // security currency (as stored in PP) we need to supply the
                     // gross value in the security currency.
-                    // 
-                    // We assume that the security currency is the same that IB 
+                    //
+                    // We assume that the security currency is the same that IB
                     // thinks of as base currency for this transaction (fxRateToBase).
                     // @formatter:on
                     BigDecimal fxRateToBase;
@@ -899,7 +942,7 @@ public class IBFlexStatementExtractor implements Extractor
                 // @formatter:off
                 // It is possible that several dividend transactions exist on
                 // the same day without one or with several taxes transactions.
-                // 
+                //
                 // We simplify here only one dividend transaction with one
                 // related taxes transaction.
                 // @formatter:on
