@@ -13,8 +13,8 @@ import name.abuchen.portfolio.model.Client;
 public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
     
-    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
-    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung|SEPA-Lastschrift|SEPA\\-.berweisung)(?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
+    private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\w{3})$";
+    private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Kartenzahlung|.berweisung|SEPA-Lastschrift|SEPA\\-.berweisung)(?<note>.*) (?<amount>\\-[\\.,\\d]+) (?<currency>\\w{3})$";
     
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
@@ -81,7 +81,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
             transaction.setDateTime(asDate(matcherMap.get(CONTEXT_KEY_DATE)));
             transaction.setAmount(asAmount(matcherMap.get(CONTEXT_KEY_AMOUNT)));
             transaction.setCurrencyCode(matcherMap.get(CONTEXT_KEY_CURRENCY));
-            transaction.setNote(matcherMap.get(CONTEXT_KEY_NOTE));
+            transaction.setNote(matcherMap.get(CONTEXT_KEY_NOTE).trim());
         };
     }
 
