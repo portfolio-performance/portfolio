@@ -255,7 +255,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             this.tickerSymbol = model.getTickerSymbol();
 
-            if (this.tickerSymbol.isEmpty() && feed.getId() != null
+            if (this.tickerSymbol.isEmpty() && feed != null
                             && (feed.getId().startsWith(YAHOO) || feed.getId().equals(LeewayQuoteFeed.ID)))
             {
                 setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));

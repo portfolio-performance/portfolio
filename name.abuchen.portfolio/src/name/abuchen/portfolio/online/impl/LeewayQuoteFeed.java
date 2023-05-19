@@ -58,7 +58,7 @@ public class LeewayQuoteFeed implements QuoteFeed
     private static class ResponseData
     {
         LocalDate quoteStartDate;
-        String array;
+        String json;
     }
 
     @Override
@@ -146,35 +146,29 @@ public class LeewayQuoteFeed implements QuoteFeed
             {
                 response = new ResponseData();
                 response.quoteStartDate = quoteStartDate;
-                response.array = webaccess.get();
-
-                /**
-                 * If the symbol is unknown, the response is
-                 * 
-                 * @formatter:off
-                 * @json    {
-                 *              "msg": "No quotes found for BUCHEN.XETRA"
-                 *          }
-                 * @formatter:on
-                 */
-                // Check if the response.array contains a non-empty JSON array
-                if (response.array != null && !response.array.isEmpty()
-                                && new JSONParser().parse(response.array) instanceof JSONArray)
-                    cache.put(securityTickerSymbol, response);
+                response.json = webaccess.get();
             }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), response.array);
+                data.addResponse(webaccess.getURL(), response.json);
 
             // Check if the response.array contains a non-empty JSON array
-            if (response.array != null && !response.array.isEmpty()
-                            && new JSONParser().parse(response.array) instanceof JSONArray)
+            if (response.json != null && !response.json.isEmpty())
             {
-                JSONParser parser = new JSONParser();
+                Object jsonResponse = new JSONParser().parse(response.json);
 
-                try
+                if (jsonResponse instanceof JSONArray jsonArray)
                 {
-                    JSONArray jsonArray = (JSONArray) parser.parse(response.array);
+                    //
+                    // If the symbol is unknown, the response is
+                    //
+                    // @formatter:off
+                    // { "msg": "No quotes found for FOO.XETRA" } // NOSONAR
+                    // @formatter:on
+
+                    // cache response if it is a valid non-empty array
+                    if (!jsonArray.isEmpty())
+                        cache.put(securityTickerSymbol, response);
 
                     for (Object obj : jsonArray)
                     {
@@ -197,10 +191,6 @@ public class LeewayQuoteFeed implements QuoteFeed
                         if (date != null && close > 0L)
                             data.addPrice(price);
                     }
-                }
-                catch (ParseException e)
-                {
-                    data.addError(e);
                 }
             }
         }
