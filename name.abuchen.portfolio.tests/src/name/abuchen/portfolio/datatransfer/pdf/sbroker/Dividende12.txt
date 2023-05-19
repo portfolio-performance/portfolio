@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+
+Portfolio Performance Version: 0.62.1
+
+-----------------------------------------
+
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=711/7940/017
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+Ausschüttung für
+ADRESSZEILE2=Hans Peter
+01.03.2017 - 31.12.2017
+ADRESSZEILE3=Franka Futzi
+Depot-Nr. Ausführungs-Nr.
+Herrn ADRESSZEILE4=Musterweg 10
+ADRESSZEILE5=88888 München
+Hans Peter
+711/7940/017 68623829
+ADRESSZEILE6=
+Franka Futzi
+BELEGNUMMER=1775
+Musterweg 10
+SEITENNUMMER=1
+88888 München
+STEUERERSTATTUNG=N
+Depotinhaber
+Hans Peter oder Franka Futzi
+Ertragsthesaurierung
+Wiesbaden, 27.03.2018
+Gattungsbezeichnung ISIN
+iShs-Asia Pacific Div.U.ETF Registered Shares USD (Dist)oN IE00B14X4T88
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 6,064 02.01.2018 31.12.2017 USD 0,103644
+Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 0,52
+Bei Teilthesaurierungen kann die Steuerpflicht durch die Barausschüttungskomponente abgegolten sein. In diesen Fällen
+wurde auch die ggf. ausgewiesene anrechenbare Quellensteuer bereits im Rahmen der Ausschüttung berücksichtigt.
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Thesaurierung brutto EUR 0,52
+anrechenbare Quellensteuer Fondseingangsseite EUR 0,02
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 501,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 33,02
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,81
+im laufenden Jahr einbehaltene Kirchensteuer EUR 1,32
+im laufenden Jahr einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,32
+Steuerlicher Stichtag 31.12.2017
+Jahressteuerbescheinigung folgt
+Der von der Kapitalverwaltungsgesellschaft (KVG) zum Geschäftsjahresende des Fonds gemeldete und in jenem
+Kalenderjahr als zugeflossen geltende ausschüttungsgleiche (thesaurierte) Ertrag ist gem. §2 Abs. 1 InvStG steuerpflichtig
+und in der Steuererklärung für 2017 (Anlage KAP) zu deklarieren.
+Verwahrart: Wertpapierrechnung Lagerland: Irland
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/DUANDEREEREIERTR/GDBERTRG/001775/280318/002204

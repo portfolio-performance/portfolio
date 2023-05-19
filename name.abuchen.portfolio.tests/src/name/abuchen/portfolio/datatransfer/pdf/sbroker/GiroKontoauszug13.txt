@@ -1,0 +1,93 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+S Sparkasse
+Ostunterfranken
+Herrn Ihr Ansprechpartner:
+Max Mustermann Kundenberatung Hofheim
+Strasse Manuel Jahna
+Strasse 7 Marktplatz 7
+99999 Stadt 97461 Hofheim
+ Telefon 09523 9228-12
+ Telefax 09523 9228-39
+ manuel.jahna@spk-ostunterfranken.de
+ 
+  
+  
+6. Februar 2017
+. Kontoauszug 3/2017 Seite 1 von 3
+Giro Sm@rt 743781, DE07 7935 1730 0000 9999 99 
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 21.01.2017, Auszug Nr. 2             2.887,05+
+23.01.2017 23.01.2017 Lastschrift              303,70-  
+KREDITKARTENABRECHNUNG
+20.01.17 5490018130999999
+01.02.2017 01.02.2017 sonstige Entgelte                5,00-  
+SK OSTUNTERFRANKEN
+ENTGELT SPKCARD MIT CHIP
+Max Mustermann
+01.02.2017 01.02.2017 Entgeltabrechnung                4,10-  
+siehe Anlage Nr.   1
+.  Kontostand am 06.02.2017 um 19:00 Uhr             4.205,59+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 1
+Ihr Dispositionskredit EUR: 2.000,00
+Aktuelle Wertstellung EUR: +4.205,59
+Sparkasse Ostunterfranken Vorstand: Peter Schleich Telefon 09521 58-0 BIC: BYLADEM1HAS
+Marktplatz 14/15 Andreas Linder Telefax 09521 58-499 BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de USt.-Id.Nr.: DE 133906625
+Anstalt des öffentlichen Rechts AG Bamberg HRA 5337 (AG Amtsgericinfo@spk-ostunterfranken.de Steuer-Nr. 249/114/70639
+Sparkassen-Finanzgruppe
+900 908.000 (Fassung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Ostunterfranken
+Kontoauszug 3/2017 Seite 3 von 3
+Giro Sm@rt 743781, DE07 7935 1730 0000 9999 99 Max Mustermann
+ 
+Entgeltabschluss: Anlage    1
+Entgelte vom 31.12.2016 bis 31.01.2017                               4,10-
+Entgelte / Auslagen                                    4,10-
+                                                            --------------
+Abrechnung 31.01.2017                                                4,10-
+Rechnungsnummer: 20170201-BY036-00001957886
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem 
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en) 
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen 
+. erheben. Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der 
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages 
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher 
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den 
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als 
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen 
+können dem Informationsbogen für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen 
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Ostunterfranken
+Sparkasse Ostunterfranken Vorstand: Peter Schleich Telefon 09521 58-0 BIC: BYLADEM1HAS
+Marktplatz 14/15 Andreas Linder Telefax 09521 58-499 BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de USt.-Id.Nr.: DE 133906625
+Anstalt des öffentlichen Rechts AG Bamberg HRA 5337 (AG Amtsgericinfo@spk-ostunterfranken.de Steuer-Nr. 249/114/70639
+Sparkassen-Finanzgruppe
+900 908.000 (Fassung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+
+```
