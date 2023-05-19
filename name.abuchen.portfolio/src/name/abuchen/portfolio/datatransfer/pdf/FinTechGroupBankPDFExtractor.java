@@ -1366,14 +1366,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 29.01.     29.01.  Überweisung                                       1.100,00+
         // 19.11.     19.11.  Lastschrift                                          50,00+
         // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
+        // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
+        // 19.11.     19.11.  R-Transaktion                                       -53,00-
         // @formatter:on
-        Block block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
+        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
                         + "(.berweisung"
                         + "|Lastschrift"
-                        + "|CASH .*) "
+                        + "|CASH .*"
+                        + "|EINZAHLUNG .*"
+                        + "|AUSZAHLUNG .*"
+                        + "|R\\-Transaktion) "
                         + "([\\s]+)?[\\-\\.,\\d]+[\\+|\\-]$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        type.addBlock(depositRemovalblock);
+        depositRemovalblock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
@@ -1386,7 +1391,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
                                 + "(?<note>(.berweisung"
                                 + "|Lastschrift"
-                                + "|CASH .*)) "
+                                + "|CASH .*"
+                                + "|EINZAHLUNG .*"
+                                + "|AUSZAHLUNG .*"
+                                + "|R\\-Transaktion)) "
                                 + "([\\s]+)?"
                                 + "(?<amount>[\\-\\.,\\d]+)"
                                 + "(?<type>[\\+|\\-])$")
@@ -1408,84 +1416,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        // @formatter:off
-        // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
-        // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                        + "(EINZAHLUNG|AUSZAHLUNG) .* "
-                        + "([\\s]+)?[\\-\\.,\\d]+[\\+|\\-]$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.DEPOSIT);
-                    return t;
-                })
-
-                .section("date", "note", "amount", "type")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
-                                + "(?<note>(EINZAHLUNG|AUSZAHLUNG)) .* "
-                                + "([\\s]+)?"
-                                + "(?<amount>[\\-\\.,\\d]+)"
-                                + "(?<type>[\\+|\\-])$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-
-                    // Is type --> "-" change from DEPOSIT to REMOVAL
-                    if ("-".equals(v.get("type")))
-                        t.setType(AccountTransaction.Type.REMOVAL);
-
-                    // create a long date from the year in the context
-                    if (v.get("date") != null)
-                        t.setDateTime(asDate(v.get("date") + context.get("year")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 19.11.     19.11.  R-Transaktion                                       -53,00-
-        // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?R\\-Transaktion  ([\\s]+)?[\\-\\.,\\d]+\\-$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.REMOVAL);
-                    return t;
-                })
-
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
-                                + "(?<note>R\\-Transaktion)  ([\\s]+)?"
-                                + "(?<amount>[\\-\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-
-                    // create a long date from the year in the context
-                    if (v.get("date") != null)
-                        t.setDateTime(asDate(v.get("date") + context.get("year")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 19.07.     20.07.  Depotgebühren 01.04.2020 - 30.04.2020,                0,26-
-        // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Depotgeb.hren ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, ([\\s]+)?[\\-\\.,\\d]+\\-$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?("
+                        + "Depotgeb.hren .*,"
+                        + "|Depotservicegeb.hr .*"
+                        + "|flatex trader 2\\.0 Basis"
+                        + "|Geb.hr .*) "
+                        + "([\\s]+)?[\\-\\.,\\d]+\\-$");
+        type.addBlock(feeblock);
+        feeblock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
@@ -1493,22 +1431,54 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     return t;
                 })
 
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
-                                + "(?<note>Depotgeb.hren[ ]+[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), ([\\s]+)?"
-                                + "(?<amount>[\\-\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                .oneOf(
+                                // @formatter:off
+                                // 19.07.     20.07.  Depotgebühren 01.04.2020 - 30.04.2020,                0,26-
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
+                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
+                                                        + "(?<note>Depotgeb.hren[ ]+[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), ([\\s]+)?"
+                                                        + "(?<amount>[\\-\\.,\\d]+)\\-$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
 
-                    // create a long date from the year in the context
-                    if (v.get("date") != null)
-                        t.setDateTime(asDate(v.get("date") + context.get("year")));
+                                            // create a long date from the year in the context
+                                            if (v.get("date") != null)
+                                                t.setDateTime(asDate(v.get("date") + context.get("year")));
 
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(replaceMultipleBlanks(v.get("note")));
-                })
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // 13.04.     04.03.  Depotservicegebühr US09075V1026                       0,09-
+                                // 28.03.     28.03.  flatex trader 2.0 Basis                              10,00-
+                                // 21.06.     21.06.  Gebühr Tax Voucher WKN A0NFN3                         5,90-
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "note", "amount")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
+                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
+                                                        + "(?<note>Depotservicegeb.hr .*"
+                                                        + "|flatex trader 2\\.0 Basis"
+                                                        + "|Geb.hr .*) "
+                                                        + "([\\s]+)?"
+                                                        + "(?<amount>[\\-\\.,\\d]+)\\-$")
+                                        .assign((t, v) -> {
+                                            Map<String, String> context = type.getCurrentContext();
+
+                                            // create a long date from the year in the context
+                                            if (v.get("date") != null)
+                                                t.setDateTime(asDate(v.get("date") + context.get("year")));
+
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                        })
+                        )
 
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
@@ -1522,9 +1492,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
         // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Zinsabschluss .*$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Zinsabschluss .*$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
@@ -1566,9 +1536,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
         // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Steuertopfoptimierung .*$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Steuertopfoptimierung .*$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction t = new AccountTransaction();
@@ -1595,70 +1565,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 13.04.     04.03.  Depotservicegebühr US09075V1026                       0,09-
-        // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Depotservicegeb.hr .* ([\\s]+)?[\\-\\.,\\d]+\\-$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.FEES);
-                    return t;
-                })
-
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
-                                + "(?<note>Depotservicegeb.hr .*) ([\\s]+)?"
-                                + "(?<amount>[\\-\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-
-                    // create a long date from the year in the context
-                    if (v.get("date") != null)
-                        t.setDateTime(asDate(v.get("date") + context.get("year")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(trim(v.get("note")));
-                })
-
-                .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 21.06.     21.06.  Gebühr Tax Voucher WKN A0NFN3                         5,90-
-        // @formatter:on
-        block = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Geb.hr .* ([\\s]+)?[\\-\\.,\\d]+\\-$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.FEES);
-                    return t;
-                })
-
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?"
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?"
-                                + "Geb.hr (?<note>.*) ([\\s]+)?"
-                                + "(?<amount>[\\-\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-
-                    // create a long date from the year in the context
-                    if (v.get("date") != null)
-                        t.setDateTime(asDate(v.get("date") + context.get("year")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(trim(v.get("note")));
                 })
 
                 .wrap(TransactionItem::new));
