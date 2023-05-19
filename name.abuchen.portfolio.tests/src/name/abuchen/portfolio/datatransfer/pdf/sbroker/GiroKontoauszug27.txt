@@ -1,0 +1,82 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 18 1 von 3
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 22.08.2012 in EUR 664,84
+18.09 18.09.12 Zahlungseingang 200,00
+Max Mustermann
+21.09 24.09.12 Scheckeinzug 119,73
+Endsaldo am 21.09.2012 in EUR 1.700,18
+Anlage Rechnungsabschluss:
+Abrechnung 31.08.2012
+Information zur Abrechnung
+Entgelte vom 01.08.2012 bis 31.08.2012                               4,55S
+Entgelte / Auslagen                                    4,55S
+--------------
+Abrechnung 31.08.2012                                                4,55S
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 18 2 von 3
+Rechnungsnummer: 4754-08-31-20.44.54.003612
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z. B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Einzugsermächtigungs- und Abbuchungsauftragslastschriften, Schecks und
+andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum
+Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert werden.
+Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungs-
+willen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch
+Bezahltmeldung). Für Lastschriften aus anderen Verfahren gelten die
+Einlösungsregeln in den hierfür vereinbarten besonderen Bedingungen.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG. Unsere für den
+Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und
+besonderen Bedingungen stellen wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse
+Sehr geehrte Kundin, sehr geehrter Kunde,
+wir ändern zum 01.12.2012 folgende Entgelte: Das Entgelt für die Unter-
+richtung über eine berechtigte Ablehnung der Einlösung einer Lastschrift
+wegen fehlender Kontodeckung beträgt künftig 3,50 E.
+Für Bareinzahlungen zu Gunsten Dritter (Zahlscheinentgelt) beträgt das
+Entgelt 10,00 E. Ohne Zahlscheinentgelt ausgeführt werden Bareinzahlungen
+z. G. gemeinnütziger, caritativer Einrichtungen. Für unsere Kunden, die
+Zahlungen über das Girokonto tätigen, kommt das Zahlscheinentgelt nicht
+zum Tragen.
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 18 3 von 3
+Die Änderungen werden wirksam, wenn Sie uns gegenüber nicht bis zum
+30.11.2012 widersprechen. Ihnen steht auch die Möglichkeit zu, den von
+der Änderung betroffenen Vertrag fristlos und kostenfrei zu kündigen.
+Sparkasse Ostunterfranken
+
+```

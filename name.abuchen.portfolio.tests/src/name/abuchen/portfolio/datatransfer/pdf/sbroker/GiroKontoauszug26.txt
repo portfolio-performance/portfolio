@@ -1,0 +1,69 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 12 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 06.06.2011 in EUR 2.412,40
+15.06 15.06.11 Lastschrift -33,43
+TELEKOM DEUTSCHLAND GMBH
+ZAHLBELEG 359756037130 RECH.NR. 9216433657 030611
+VERTRAGSKONTO 9999999999
+16.06 16.06.11 Lastschrift -260,95
+PAYPAL
+QQI4CU224ZA2QRRJ * ALTERNAT ECO, IHR EINKAUF BEI ALTERN
+ATECO 110615P3TX6706MM
+20.06 20.06.11 Zahlungseingang 40,20
+CHRISTIAN ORTNER
+OCZ2P1066LV4GK
+20.06 20.06.11 entgeltfreie Buchung -9,85
+CHIPTAN-VERRECHNUNG AKTION FINANZCHECK BST 2430
+PREIS F. CHIP-TAN-GENERATOR
+21.06 21.06.11 Kartenzahlung -65,28
+TANKSTELLE HUEMPFNER
+EC 75019183 19.06 21.05 CE5
+Endsaldo am 21.06.2011 in EUR 2.083,09
+GENEHMIGUNGSFIKTION:
+Bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an
+unsere Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte
+unserem Preis- und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der ein-
+zelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer einge-
+räumten oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Die Genehmigung umfasst
+auch die im Rechnungsabschluss enthaltenen Belastungsbuchungen aufgrund
+von Einzugsermächtigungslastschriften. Einwendungen gegen Rechnungsab-
+schlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde
+(z.B. Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäfts-
+bedingungen sowie Nummer 2.4 unserer Bedingungen für Zahlungen mittels
+Lastschriften im Einzugsermächtigungs- und Abbuchungsauftragsverfahren).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugs-
+papieren erfolgen unter dem Vorbehalt der Einlösung.
+Einzugsermächtigungs- und Abbuchungsauftragslastschriften, Schecks und
+andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum
+Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert werden.
+Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungs-
+willen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B. durch
+Bezahltmeldung).Für Lastschriften aus anderen Verfahren gelten die
+Einlösungsregeln in den hierfür vereinbarten besonderen Bedingungen.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen
+Geschäftsbedingungen und besonderen Bedingungen können Sie jederzeit bei
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 12 2 von 2
+uns einsehen, sie werden auf Wunsch ausgehändigt.
+
+```
