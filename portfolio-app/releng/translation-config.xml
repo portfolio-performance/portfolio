@@ -34,6 +34,9 @@
 			<context>core.exchanges</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl</path>
 			<filename>exchange-labels</filename>
+			<exclude>
+				<string>leeway.*</string>
+			</exclude>
 		</artifact>
 		<artifact>
 			<context>core.hicp</context>
