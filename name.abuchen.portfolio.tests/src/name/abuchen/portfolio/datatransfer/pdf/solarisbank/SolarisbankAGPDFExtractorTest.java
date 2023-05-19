@@ -5,6 +5,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,10 +20,11 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SolarisbankAGPDFExtractor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class SolarisbankAGPDFExtractorTest
@@ -33,8 +37,11 @@ public class SolarisbankAGPDFExtractorTest
         List<Item> results = extractor.extract(loadFile("GiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(4L));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 200), //
                         hasNote("008eb3a1d003 etoken-google"))));
@@ -57,8 +64,11 @@ public class SolarisbankAGPDFExtractorTest
         List<Item> results = extractor.extract(loadFile("GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100), //
                         hasNote("von Peter Panzwischen Kunden DE11111111111111111111"))));
@@ -73,8 +83,11 @@ public class SolarisbankAGPDFExtractorTest
         List<Item> results = extractor.extract(loadFile("GiroKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
-
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(removal(hasDate("2022-10-19"), hasAmount("EUR", 11.99), //
                         hasNote("11,99 EUR"))));
@@ -86,9 +99,14 @@ public class SolarisbankAGPDFExtractorTest
         SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(loadFile("GiroKontoauszug04.txt"), errors);
-        assertThat(errors, empty());
 
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
 
         assertThat(results, hasItem(deposit(hasDate("2022-10-03"), hasAmount("EUR", 200), //
                         hasNote("von Peter Pan"))));

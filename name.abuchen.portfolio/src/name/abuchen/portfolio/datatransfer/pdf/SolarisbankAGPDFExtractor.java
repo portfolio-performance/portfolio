@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.util.function.BiConsumer;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -81,7 +83,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
             transaction.setDateTime(asDate(matcherMap.get(CONTEXT_KEY_DATE)));
             transaction.setAmount(asAmount(matcherMap.get(CONTEXT_KEY_AMOUNT)));
             transaction.setCurrencyCode(matcherMap.get(CONTEXT_KEY_CURRENCY));
-            transaction.setNote(matcherMap.get(CONTEXT_KEY_NOTE).trim());
+            transaction.setNote(trim(matcherMap.get(CONTEXT_KEY_NOTE)));
         };
     }
 
