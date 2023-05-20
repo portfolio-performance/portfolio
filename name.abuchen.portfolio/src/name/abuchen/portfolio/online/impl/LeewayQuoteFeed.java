@@ -31,6 +31,7 @@ import name.abuchen.portfolio.util.WebAccess;
  * @apiNote There are only 50 API/day available, so only query with validated
  *          ISIN.
  *
+ * Return json for prices
  * @formatter:off
  * @array [
  *          {
@@ -43,6 +44,24 @@ import name.abuchen.portfolio.util.WebAccess;
  *              "close": 5.0618,
  *              "adjusted_close": 0.7622,
  *              "volume": 807001
+ *          }
+ *        ]
+ * @formatter:on
+ *
+ * --------------------------------------------------------------------------
+ *
+ * @apiNote If the exchange market is not present in the ExchangeLabels list, then we insert it.
+ *          If we go through the API and make a query of the unknown exchange market, then we get a
+ *          response back in the form of an array, but we don't get any results via the new "code".
+ *
+ * Return json for unknown exchange labels
+ * @formatter:off
+ * @array [
+ *          {
+ *              "name": "CREF Equity Index Account - R2",
+ *              "code": "QCEQPX",
+ *              "exchange": "US",
+ *              "type": "Common Stock"
  *          }
  *        ]
  * @formatter:on
@@ -159,7 +178,6 @@ public class LeewayQuoteFeed implements QuoteFeed
 
                 if (jsonResponse instanceof JSONArray jsonArray)
                 {
-                    //
                     // If the symbol is unknown, the response is
                     //
                     // @formatter:off
@@ -207,11 +225,30 @@ public class LeewayQuoteFeed implements QuoteFeed
     {
         List<Exchange> answer = new ArrayList<>();
 
+        if (subject.getTickerSymbol() == null)
+            return answer;
+
+        // Extract the exchange from the ticker symbol, if present
+        String securityExchange = null;
+        if (subject.getTickerSymbol().contains(".")) //$NON-NLS-1$
+            securityExchange = subject.getTickerSymbol().substring(subject.getTickerSymbol().indexOf('.') + 1)
+                            .toUpperCase();
+
+        // Extract the symbol from the ticker symbol without the stock market
+        // information
         String symbol = subject.getTickerSymbolWithoutStockMarket();
+
         if (symbol != null && !symbol.trim().isEmpty())
         {
-            ExchangeLabels.getAllExchangeKeys("leeway.") //$NON-NLS-1$
-                            .forEach(e -> answer.add(createExchange(symbol.trim().toUpperCase() + "." + e))); //$NON-NLS-1$
+            // Get a list of all exchange keys
+            List<String> exchangeKeys = ExchangeLabels.getAllExchangeKeys("leeway."); //$NON-NLS-1$
+
+            // If a security exchange is specified and it's not present in the
+            // exchange keys, add the symbol to the answer list
+            if (securityExchange != null && !exchangeKeys.contains(securityExchange))
+                answer.add(createExchange(symbol + "." + securityExchange)); //$NON-NLS-1$
+
+            exchangeKeys.forEach(e -> answer.add(createExchange(symbol.trim().toUpperCase() + "." + e))); //$NON-NLS-1$
         }
 
         return answer;

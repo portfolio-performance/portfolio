@@ -906,7 +906,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (!exchangeSelected)
                 comboExchange.setSelection(null);
 
-            if (this.tickerSymbol.isEmpty()
+            if (this.tickerSymbol == null || this.tickerSymbol.isEmpty()
                             && (feed.getId().startsWith(YAHOO) || feed.getId().equals(LeewayQuoteFeed.ID)))
             {
                 setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));

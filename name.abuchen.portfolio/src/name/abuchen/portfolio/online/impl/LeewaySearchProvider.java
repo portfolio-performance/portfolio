@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +74,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
             typeMap.put("fund", Messages.LabelSearchFund);
 
             // Convert the security type to a standard value
-            type = typeMap.getOrDefault(type.toLowerCase(), "");
+            type = typeMap.getOrDefault(trim(type.toLowerCase()), "");
 
             // Combine the symbol and exchange codes to create the security ID
             StringBuilder symbol = new StringBuilder(code);
@@ -187,8 +189,8 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     @SuppressWarnings("nls")
     private void addISINSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query)
-                        .addParameter("apitoken", apiKey)
+        String array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query) //
+                        .addParameter("apitoken", apiKey) //
                         .get();
 
         extract(answer, array);
