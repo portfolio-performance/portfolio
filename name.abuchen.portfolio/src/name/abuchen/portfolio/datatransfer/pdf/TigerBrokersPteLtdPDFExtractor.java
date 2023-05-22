@@ -27,7 +27,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Tiger Brokers (Singapore) PTE.LTD."); //$NON-NLS-1$
+        addBankIdentifier("Tiger Brokers (Singapore) PTE.LTD.");
 
         addAccountStatementTransaction();
     }
@@ -35,7 +35,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Tiger Brokers (Singapore) Pte. Ltd."; //$NON-NLS-1$
+        return "Tiger Brokers (Singapore) Pte. Ltd.";
     }
 
     private void addAccountStatementTransaction()
@@ -92,7 +92,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                 m = pSecurityDividendTaxEnd.matcher(lines[i]);
                 if (m.matches())
-                    endBlockDividendTaxList = i;   
+                    endBlockDividendTaxList = i;
 
                 m = pSecurityDividendSharesStart.matcher(lines[i]);
                 if (m.matches())
@@ -111,7 +111,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     // @formatter:off
                     // Stringbuilder:
                     // security_(security name)_(security currency) = tickerSymbol
-                    // 
+                    //
                     // Example:
                     // Stock
                     // Symbol Issuer Description Multiplier Expiry Strike Right
@@ -132,7 +132,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     // @formatter:off
                     // Stringbuilder:
                     // pSecurityDividendShares_(shares) = tickerSymbol
-                    // 
+                    //
                     // Example:
                     // Change in Dividend Accruals
                     // Symbol Date Ex Date Pay Date Quantity Tax GST Fee(include ADR) Gross Rate Gross Amount Net Amount Code
@@ -149,14 +149,14 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                 Matcher m = pCurrency.matcher(lines[i]);
                 if (m.matches())
                     baseCurrency = m.group("currency");
-                
+
                 m = pSecurityDividendTax.matcher(lines[i]);
                 if (m.matches())
                 {
                     // @formatter:off
                     // Stringbuilder:
                     // pSecurityDividendTax_(tax)_(security currency) = tickerSymbol
-                    // 
+                    //
                     // Example:
                     // Withholding Tax
                     // Date Description Amount
@@ -458,8 +458,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         for (String key : context.keySet())
         {
-            String[] parts = key.split("_"); //$NON-NLS-1$
-            if (parts[0].equalsIgnoreCase("security")) //$NON-NLS-1$
+            String[] parts = key.split("_");
+            if ("security".equalsIgnoreCase(parts[0]))
             {
                 if (context.get(key).equals(tickerSymbol))
                 {
@@ -519,8 +519,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         for (String key : context.keySet())
         {
-            String[] parts = key.split("_"); //$NON-NLS-1$
-            if (parts[0].equalsIgnoreCase("securityDividendShares")) //$NON-NLS-1$
+            String[] parts = key.split("_");
+            if ("securityDividendShares".equalsIgnoreCase(parts[0]))
             {
                 if (context.get(key).equals(tickerSymbol))
                 {
@@ -558,8 +558,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         for (String key : context.keySet())
         {
-            String[] parts = key.split("_"); //$NON-NLS-1$
-            if (parts[0].equalsIgnoreCase("securityDividendTax")) //$NON-NLS-1$
+            String[] parts = key.split("_");
+            if ("securityDividendTax".equalsIgnoreCase(parts[0]))
             {
                 if (context.get(key).equals(tickerSymbol))
                 {

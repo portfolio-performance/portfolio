@@ -17,7 +17,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Suresse"); //$NON-NLS-1$
+        addBankIdentifier("Suresse");
 
         addAccountStatementTransaction();
     }
@@ -25,19 +25,19 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Suresse Direkt Bank"; //$NON-NLS-1$
+        return "Suresse Direkt Bank";
     }
 
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("Auszug [\\d]+([\\s]+)\\/[\\d]+", (context, lines) -> {
             Pattern pYear = Pattern.compile("^.* [\\d]{2}\\-[\\d]{2}\\-(?<year>[\\d]{4}) : ([\\-])?[\\.,\\d]+ [\\w]{3}$");
-            // read the current context here
+
             for (String line : lines)
             {
-                Matcher m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
+                Matcher mYear = pYear.matcher(line);
+                if (mYear.matches())
+                    context.put("year", mYear.group("year"));
             }
         });
         this.addDocumentTyp(type);
@@ -61,9 +61,9 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
 
                     // Is sign --> "-" change from DEPOSIT to REMOVAL
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.REMOVAL);
-                    
+
                     t.setDateTime(asDate(v.get("date") + "-" + context.get("year")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));

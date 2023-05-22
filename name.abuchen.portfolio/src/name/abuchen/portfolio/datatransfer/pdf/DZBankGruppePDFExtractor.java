@@ -29,37 +29,31 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
+    private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*"); //$NON-NLS-1$
-        Boolean bJointAccount = false;
+        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*");
 
         for (String line : lines)
         {
-            Matcher m = pJointAccount.matcher(line);
-            if (m.matches())
+            if (pJointAccount.matcher(line).matches())
             {
-                context.put(isJointAccount, Boolean.TRUE.toString());
-                bJointAccount = true;
+                context.putBoolean(IS_JOINT_ACCOUNT, true);
                 break;
             }
         }
-
-        if (!bJointAccount)
-            context.put(isJointAccount, Boolean.FALSE.toString());
     };
 
     public DZBankGruppePDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("GLS Bank"); //$NON-NLS-1$
-        addBankIdentifier("Union Investment Service Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("Volksbank"); //$NON-NLS-1$
-        addBankIdentifier("VR-Bank"); //$NON-NLS-1$
-        addBankIdentifier("VRB"); //$NON-NLS-1$
-        addBankIdentifier("Postfach 12 40"); //$NON-NLS-1$
+        addBankIdentifier("GLS Bank");
+        addBankIdentifier("Union Investment Service Bank AG");
+        addBankIdentifier("Volksbank");
+        addBankIdentifier("VR-Bank");
+        addBankIdentifier("VRB");
+        addBankIdentifier("Postfach 12 40");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -69,7 +63,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DZ Bank Gruppe (Volksbank/ Union Investment/ VR-Bank/ GLS Bank ...)"; //$NON-NLS-1$
+        return "DZ Bank Gruppe (Volksbank/ Union Investment/ VR-Bank/ GLS Bank ...)";
     }
 
     private void addBuySellTransaction()
@@ -96,7 +90,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -244,41 +238,41 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
             String baseCurrency = CurrencyUnit.EUR;
 
             // Create security list
-            List<String[]> securityList = new ArrayList<String[]>();
+            List<String[]> securityList = new ArrayList<>();
 
             // Set patter of security names
             String patterOfSecurityNames = "";
 
             for (int i = lines.length - 1; i >= 1; i--)
             {
-                Matcher m1 = pAccountingNumber.matcher(lines[i]);
-                if (m1.matches())
-                    context.put("accountingNumber", m1.group("accountingNumber"));
+                Matcher m = pAccountingNumber.matcher(lines[i]);
+                if (m.matches())
+                    context.put("accountingNumber", m.group("accountingNumber"));
 
-                m1 = pNameIsin.matcher(lines[i]);
-                if (m1.matches())
+                m = pNameIsin.matcher(lines[i]);
+                if (m.matches())
                 {
                     // Search the base currency in the block
                     for (int ii = i; ii < endOfLineOfSecurityTransactionBlock; ii++)
                     {
-                        Matcher m2 = pBaseCurrency.matcher(lines[ii]);
-                        if (m2.matches())
-                            baseCurrency = m2.group("baseCurrency");
+                        Matcher mBaseCurrency = pBaseCurrency.matcher(lines[ii]);
+                        if (mBaseCurrency.matches())
+                            baseCurrency = mBaseCurrency.group("baseCurrency");
                     }
 
                     // @formatter:off
                     // Stringbuilder:
                     // security_(security name)_(currency)_(start@line)_(end@line) = isin
-                    //  
+                    //
                     // Example:
                     // Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
                     // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
-                    //  
+                    //
                     // Fonds: UniGlobal ISIN: DE0008491051 Verwaltungsvergütung: 1,20 % p. a.
                     // Hinweis: UniProfiRente Altersvorsorgevertrag
                     //  - gefördert -
                     // Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
-                    //  
+                    //
                     // Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
                     // UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
                     // LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
@@ -286,14 +280,14 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     if (i != (endOfLineOfSecurityTransactionBlock - 1))
                     {
                         StringBuilder securityListKey = new StringBuilder("security_");
-                        securityListKey.append(trim(m1.group("name"))).append("_");
+                        securityListKey.append(trim(m.group("name"))).append("_");
                         securityListKey.append(baseCurrency).append("_");
                         securityListKey.append(Integer.toString(i + 1)).append("_");
                         securityListKey.append(Integer.toString(((endOfLineOfSecurityTransactionBlock))));
-                        context.put(securityListKey.toString(), m1.group("isin"));
+                        context.put(securityListKey.toString(), m.group("isin"));
 
                         // Add security to securityList
-                        String[] security = {m1.group("isin"), trim(m1.group("name"))};
+                        String[] security = {m.group("isin"), trim(m.group("name"))};
                         securityList.add(security);
                     }
                     else
@@ -313,7 +307,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
 
                         // Add security to securityList
-                        String[] security = {m1.group("isin"), trim(m1.group("name"))};
+                        String[] security = {m.group("isin"), trim(m.group("name"))};
                         securityList.add(security);
                     }
 
@@ -334,11 +328,11 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
             // Characters that have to be escaped in regular expressions
             patterOfSecurityNames = patterOfSecurityNames
-                            .replaceAll("\\(", "\\\\(")
-                            .replaceAll("\\)", "\\\\)")
-                            .replaceAll("\\.", "\\\\.")
+                            .replace("(", "\\(")
+                            .replace(")", "\\)")
+                            .replace(".", "\\.")
                             .replaceAll("\\-", "\\\\-")
-                            .replaceAll("\\+", "\\\\+");
+                            .replace("+", "\\+");
 
             for (int i = lines.length - 1; i >= 0; i--)
             {
@@ -346,7 +340,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 Matcher m = pSearchSecurity.matcher(lines[i]);
                 if (m.matches())
                 {
-                    for (String[] security : securityList) 
+                    for (String[] security : securityList)
                     {
                         if (m.group("name").equals(security[1]))
                         {
@@ -377,12 +371,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // 18.07.2017
         // 17.07.2017 Kauf 2.125,00
         // Anlage 2.125,00 0,00 148,75 14,286
-        // 
+        //
         // 19.11.2020 Verkauf *1 18.103,67 63,38 -285,637
-        //  
+        //
         // 27.11.2017
         // 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
-        // 
+        //
         // 01.03.2022 Anlage 4,24 25,5849 0,166
         // @formatter:on
         Transaction<BuySellEntry> pdfTransaction1 = new Transaction<>();
@@ -532,7 +526,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // inklusive Solidaritätszuschlag
         // 27.11.2017
         // 2 4.11.2017 Wiederanlage 94,78 0,00 142,61 0,665
-        //  
+        //
         // Ausschüttung *1 362,80
         // abgeführte Kapitalertragsteuer 0,00
         // inklusive Solidaritätszuschlag
@@ -872,7 +866,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -883,7 +877,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -903,7 +897,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -914,7 +908,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -933,7 +927,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\d.]+,\\d+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -944,7 +938,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax1>[\\d.]+,\\d+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax2>[\\d.]+,\\d+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -1072,8 +1066,8 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
     {
         for (String key : context.keySet())
         {
-            String[] parts = key.split("_"); //$NON-NLS-1$
-            if (parts[0].equalsIgnoreCase("security")) //$NON-NLS-1$
+            String[] parts = key.split("_");
+            if ("security".equalsIgnoreCase(parts[0]))
             {
                 if (startTransactionLine >= Integer.parseInt(parts[3]) && startTransactionLine <= Integer.parseInt(parts[4]))
                 {

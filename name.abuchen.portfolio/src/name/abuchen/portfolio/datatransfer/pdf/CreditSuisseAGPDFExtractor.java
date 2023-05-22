@@ -22,7 +22,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("CREDIT SUISSE"); //$NON-NLS-1$
+        addBankIdentifier("CREDIT SUISSE");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -31,7 +31,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Credit Suisse AG"; //$NON-NLS-1$
+        return "Credit Suisse AG";
     }
 
     private void addBuySellTransaction()
@@ -55,7 +55,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Ihr (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

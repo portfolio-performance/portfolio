@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -28,33 +27,26 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
+    private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*"); //$NON-NLS-1$
-        Boolean bJointAccount = false;
+        Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
 
         for (String line : lines)
         {
-            Matcher m = pJointAccount.matcher(line);
-            if (m.matches())
+            if (pJointAccount.matcher(line).matches())
             {
-                context.put(isJointAccount, Boolean.TRUE.toString());
-                bJointAccount = true;
+                context.putBoolean(IS_JOINT_ACCOUNT, true);
                 break;
             }
         }
-
-        if (!bJointAccount)
-            context.put(isJointAccount, Boolean.FALSE.toString());
-
     };
 
     public INGDiBaPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("ING-DiBa AG"); //$NON-NLS-1$
+        addBankIdentifier("ING-DiBa AG");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -65,7 +57,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "ING-DiBa AG"; //$NON-NLS-1$
+        return "ING-DiBa AG";
     }
 
     private void addBuySellTransaction()
@@ -110,7 +102,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                 + "Verk. Teil\\-\\/Bezugsr\\.)|"
                                 + "R.ckzahlung|"
                                 + "Einl.sung)$")
-                .assign((t, v) -> {                    
+                .assign((t, v) -> {
                     if ("Verkauf".equals(v.get("type"))
                             || "Verk. Teil-/Bezugsr.".equals(v.get("type"))
                             || "Rückzahlung".equals(v.get("type"))
@@ -471,9 +463,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -628,7 +620,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -641,7 +633,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -663,7 +655,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -676,7 +668,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -698,7 +690,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -711,7 +703,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));

@@ -16,7 +16,7 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("OPEN BANK"); //$NON-NLS-1$
+        addBankIdentifier("OPEN BANK");
 
         addBuySellTransaction();
     }
@@ -24,7 +24,7 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Open Bank S.A."; //$NON-NLS-1$
+        return "Open Bank S.A.";
     }
 
     private void addBuySellTransaction()
@@ -48,7 +48,7 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("RÜCKERSTATTUNG") || v.get("type").equals("MAXIMAL VERFÜGBARE ERSTATTUNG"))
+                    if ("RÜCKERSTATTUNG".equals(v.get("type")) || "MAXIMAL VERFÜGBARE ERSTATTUNG".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

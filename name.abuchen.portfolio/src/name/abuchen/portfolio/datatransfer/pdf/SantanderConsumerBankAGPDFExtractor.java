@@ -20,7 +20,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Santander Consumer Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("Santander Consumer Bank AG");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -29,7 +29,7 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Santander Consumer Bank AG"; //$NON-NLS-1$
+        return "Santander Consumer Bank AG";
     }
 
     private void addBuySellTransaction()

@@ -28,11 +28,11 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Raiffeisenbank"); //$NON-NLS-1$
-        addBankIdentifier("RB Augsburger Land West eG"); //$NON-NLS-1$
-        addBankIdentifier("Raiffeisenlandesbank"); //$NON-NLS-1$
-        addBankIdentifier("Freisinger Bank eG"); //$NON-NLS-1$
-        addBankIdentifier("VR Bank"); //$NON-NLS-1$
+        addBankIdentifier("Raiffeisenbank");
+        addBankIdentifier("RB Augsburger Land West eG");
+        addBankIdentifier("Raiffeisenlandesbank");
+        addBankIdentifier("Freisinger Bank eG");
+        addBankIdentifier("VR Bank");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -43,7 +43,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Raiffeisenbank Bankgruppe"; //$NON-NLS-1$
+        return "Raiffeisenbank Bankgruppe";
     }
 
     private void addBuySellTransaction()
@@ -68,7 +68,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(Gesch.ftsart:|Wertpapier Abrechnung) (?<type>(Kauf|Verkauf|R.cknahme Fonds)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Fonds"))
+                    if ("Verkauf".equals(v.get("type")) || "Rücknahme Fonds".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -558,7 +558,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("H"))
+                    if ("H".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.DEPOSIT);
                 })
 
@@ -594,7 +594,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
                         int year = Integer.parseInt(context.get("year")) + 1;
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + Integer.toString(year)));
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
                     }
                     else
                     {
@@ -643,7 +643,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("S"))
+                    if ("S".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.INTEREST_CHARGE);
                 })
 
@@ -663,7 +663,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
                         int year = Integer.parseInt(context.get("year")) + 1;
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + Integer.toString(year)));
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
                     }
                     else
                     {
@@ -695,7 +695,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [\\.,\\d]+ (?<type>[S|H])$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("H"))
+                    if ("H".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.FEES_REFUND);
                 })
 
@@ -721,7 +721,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
                         int year = Integer.parseInt(context.get("year")) + 1;
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + Integer.toString(year)));
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
                     }
                     else
                     {
@@ -750,7 +750,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                     if (context.get("nr").compareTo("01") == 0  && Integer.parseInt(v.get("month")) < 3)
                     {
                         int year = Integer.parseInt(context.get("year")) + 1;
-                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + Integer.toString(year)));
+                        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
                     }
                     else
                     {
@@ -777,7 +777,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("n").optional()
                 .match("^Zu (?<n>Lasten) .* \\-[\\.,\\d]+ [\\w]{3}.*$")
                 .match("^Belastung KESt bei aussch.ttungsgleichen Erträgen .*$")
-                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
         transaction
                 // @formatter:off
@@ -786,7 +786,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -796,7 +796,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -806,7 +806,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\d.]+,\\d+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -816,7 +816,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Quellensteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -826,7 +826,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -836,7 +836,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^KESt ausl.ndische Dividende: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -846,7 +846,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -856,7 +856,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Umsatzsteuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -866,7 +866,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kursgewinn\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -876,7 +876,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
@@ -886,7 +886,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .section("creditableWithHoldingTax", "currency").optional()
                 .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                 });
     }
@@ -961,25 +961,25 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 
