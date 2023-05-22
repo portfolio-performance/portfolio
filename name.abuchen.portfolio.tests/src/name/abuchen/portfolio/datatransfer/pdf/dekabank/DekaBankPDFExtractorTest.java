@@ -1,9 +1,33 @@
 package name.abuchen.portfolio.datatransfer.pdf.dekabank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
@@ -725,7 +749,7 @@ public class DekaBankPDFExtractorTest
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
-        
+
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("FR0010296061"));
@@ -1223,7 +1247,7 @@ public class DekaBankPDFExtractorTest
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("iShares J.P. Morgan USD EM Bond EUR Hedged UCITS ETF (Dist)"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
-        
+
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("FR0010296061"));
@@ -9630,7 +9654,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-02-18T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(9.135 - 0.539 - 0.574 - 0.546 - 0.573 - 0.564 
+        assertThat(transaction.getShares(), is(Values.Share.factorize(9.135 - 0.539 - 0.574 - 0.546 - 0.573 - 0.564
                                                                         - 0.588 - 0.608 - 0.636 - 0.622 - 0.615 - 0.032)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -10839,7 +10863,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-02-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(15.716 - 0.460 - 0.475 - 0.471 - 0.489 - 0.496 - 0.508 
+        assertThat(transaction.getShares(), is(Values.Share.factorize(15.716 - 0.460 - 0.475 - 0.471 - 0.489 - 0.496 - 0.508
                         - 0.516 - 0.521 - 0.493 - 0.496 - 0.499 - 0.129)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -11994,7 +12018,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check 3rd dividends transaction 
+        // check 3rd dividends transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -12516,7 +12540,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check 12th buy sell transaction 
+        // check 12th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -13331,7 +13355,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check 13th buy sell transaction 
+        // check 13th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -20579,9 +20603,7 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-22T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 4.693 + 1.817 + 0.416 + 9.869 + 
-                                                                        0.083 + 0.741 + 0.287 + 0.066 + 1.560 
-                                                                        + 0.013 - 0.471)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 4.693 + 1.817 + 0.416 + 9.869 + 0.083 - 0.471)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
 
@@ -20740,5 +20762,924 @@ public class DekaBankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht22.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2008"));
+    }
+
+    @Test
+    public void testQuartalsbericht23()
+    {
+        DekaBankPDFExtractor extractor = new DekaBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Quartalsbericht23.txt"), errors);
+
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(17L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(20));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0230155797"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-Renten konservativ"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 2nd security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DK2J6P1"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-RentenStrategie Global CF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(0.739), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 35.40), hasGrossValue("EUR", 35.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(0.265), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 24.60), hasGrossValue("EUR", 24.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 1st dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-22"), hasShares(8.083 - 0.180), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 4th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-22"), hasShares(0.180), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 5th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-04-15"), hasShares(5.460), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 261.53), hasGrossValue("EUR", 261.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 6th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(2.907), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 261.53), hasGrossValue("EUR", 261.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 7th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-04-16"), hasShares(0.016), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.77), hasGrossValue("EUR", 0.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 8th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-16"), hasShares(0.009), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.77), hasGrossValue("EUR", 0.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 9th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-05-13"), hasShares(2.968), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.51), hasGrossValue("EUR", 142.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 10th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-13"), hasShares(1.556), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.51), hasGrossValue("EUR", 142.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 11th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-05-14"), hasShares(0.002), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 12th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-14"), hasShares(0.004), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 13th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-08"), hasShares(2.953), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.79), hasGrossValue("EUR", 142.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 14th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-08"), hasShares(1.562), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.79), hasGrossValue("EUR", 142.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 15th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-09"), hasShares(0.00041348), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 16th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-09"), hasShares(0.00021808), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 17th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-26"), hasShares(3.056), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 147.82), hasGrossValue("EUR", 147.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 18th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-26"), hasShares(1.606), //
+                        hasSource("Quartalsbericht23.txt"), hasNote(null), //
+                        hasAmount("EUR", 147.82), hasGrossValue("EUR", 147.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testQuartalsbericht24()
+    {
+        DekaBankPDFExtractor extractor = new DekaBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Quartalsbericht24.txt"), errors);
+
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(90L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(98));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check 1st security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0230155797"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-Renten konservativ"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 2nd security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DK2CDS0"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-DividendenStrategie CF (A)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 3rd security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DK2J6P1"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-RentenStrategie Global CF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(0.739), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 35.40), hasGrossValue("EUR", 35.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(0.265), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 24.60), hasGrossValue("EUR", 24.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 3rd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-22"), hasShares(0.180), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 1st dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-05-22"), hasShares(0.00 + 4.128 - 0.180), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 16.10), hasGrossValue("EUR", 16.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 1st delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2020-08-18"), hasShares(1.800), //
+                        hasSource("Quartalsbericht24.txt"), hasNote("Zulagenzahlung 2019"), //
+                        hasAmount("EUR", 276.75), hasGrossValue("EUR", 276.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2020-08-18"), hasShares(4.128), //
+                        hasSource("Quartalsbericht24.txt"), hasNote("Zulagenzahlung 2019"), //
+                        hasAmount("EUR", 398.25), hasGrossValue("EUR", 398.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 4th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-13"), hasShares(0.122), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 18.47), hasGrossValue("EUR", 18.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-11-13"), hasShares(9.359 + 5.036 - 5.036 - 0.122), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 18.47), hasGrossValue("EUR", 18.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 5th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-01"), hasShares(5.036), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 805.00), hasGrossValue("EUR", 805.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 6th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-01"), hasShares(5.036), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 805.00), hasGrossValue("EUR", 805.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        //  check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorOrderCancellationUnsupported, //
+                        sale( //
+                                hasDate("2020-12-01"), hasShares(5.036), //
+                                hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                                hasAmount("EUR", 805.00), hasGrossValue("EUR", 805.00), //
+                                hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check 7th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-03"), hasShares(2.741), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 425.21), hasGrossValue("EUR", 425.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 8th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-03"), hasShares(4.341), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 425.21), hasGrossValue("EUR", 425.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 9th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-04"), hasShares(0.881), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 135.01), hasGrossValue("EUR", 135.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 10th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-04"), hasShares(1.374), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 135.01), hasGrossValue("EUR", 135.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 11th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-06"), hasShares(1.328), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 130.26), hasGrossValue("EUR", 130.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 12th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-06"), hasShares(0.867), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 130.26), hasGrossValue("EUR", 130.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 13th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-09"), hasShares(0.009), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.23), hasGrossValue("EUR", 1.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 14th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-09"), hasShares(0.013), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.23), hasGrossValue("EUR", 1.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 15th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-11"), hasShares(1.885), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 264.47), hasGrossValue("EUR", 264.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 16th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-11"), hasShares(2.761), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 264.47), hasGrossValue("EUR", 264.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 17th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-12"), hasShares(2.909), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 274.76), hasGrossValue("EUR", 274.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 18th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-12"), hasShares(5.658), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 274.76), hasGrossValue("EUR", 274.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 19th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-13"), hasShares(0.008), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.38), hasGrossValue("EUR", 0.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 20th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-13"), hasShares(0.004), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.38), hasGrossValue("EUR", 0.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 21th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-03-16"), hasShares(4.256), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 389.76), hasGrossValue("EUR", 389.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 22th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-03-16"), hasShares(8.060), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 389.76), hasGrossValue("EUR", 389.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 23th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-04-15"), hasShares(5.460), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 261.53), hasGrossValue("EUR", 261.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 24th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-15"), hasShares(2.907), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 261.53), hasGrossValue("EUR", 261.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 25th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-04-16"), hasShares(0.016), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.77), hasGrossValue("EUR", 0.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 26th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-16"), hasShares(0.009), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.77), hasGrossValue("EUR", 0.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 27th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-05-13"), hasShares(2.968), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.51), hasGrossValue("EUR", 142.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 28th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-13"), hasShares(1.556), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.51), hasGrossValue("EUR", 142.51), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 29th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-05-14"), hasShares(0.002), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 30th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-14"), hasShares(0.004), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 31th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-08"), hasShares(2.953), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.79), hasGrossValue("EUR", 142.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 32th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-08"), hasShares(1.562), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 142.79), hasGrossValue("EUR", 142.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 33th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-09"), hasShares(0.00041348), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 34th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-09"), hasShares(0.00021808), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 35th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-06-26"), hasShares(3.056), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 147.82), hasGrossValue("EUR", 147.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 36th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-26"), hasShares(1.606), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 147.82), hasGrossValue("EUR", 147.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 37th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-24"), hasShares(1.613), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 150.10), hasGrossValue("EUR", 150.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 38th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-24"), hasShares(1.019), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 150.10), hasGrossValue("EUR", 150.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 39th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-27"), hasShares(0.004), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.36), hasGrossValue("EUR", 0.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 40th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-27"), hasShares(0.002), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.36), hasGrossValue("EUR", 0.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 41th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-18"), hasShares(1.621), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 151.81), hasGrossValue("EUR", 151.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 42th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-18"), hasShares(1.024), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 151.81), hasGrossValue("EUR", 151.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 43th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-19"), hasShares(0.00020347), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 44th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-19"), hasShares(0.00032014), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 45th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-20"), hasShares(2.949), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.43), hasGrossValue("EUR", 276.43), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 46th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-20"), hasShares(1.878), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.43), hasGrossValue("EUR", 276.43), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 47th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-21"), hasShares(0.014), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.32), hasGrossValue("EUR", 1.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 48th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-21"), hasShares(0.009), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.32), hasGrossValue("EUR", 1.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 49th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-07"), hasShares(2.970), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 279.61), hasGrossValue("EUR", 279.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 50th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-07"), hasShares(1.897), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 279.61), hasGrossValue("EUR", 279.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 51th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-09"), hasShares(1.890), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 277.99), hasGrossValue("EUR", 277.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 52th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-09"), hasShares(2.954), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 277.99), hasGrossValue("EUR", 277.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 53th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-10"), hasShares(0.005), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.75), hasGrossValue("EUR", 0.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 54th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-10"), hasShares(0.008), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.75), hasGrossValue("EUR", 0.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 55th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-18"), hasShares(2.985), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 281.35), hasGrossValue("EUR", 281.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 56th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-18"), hasShares(1.895), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 281.35), hasGrossValue("EUR", 281.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 57th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-21"), hasShares(0.001), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 58th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-21"), hasShares(0.001), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 59th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-22"), hasShares(1.945), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 282.46), hasGrossValue("EUR", 282.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 60th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-22"), hasShares(3.004), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 282.46), hasGrossValue("EUR", 282.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 61th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-23"), hasShares(0.085), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 7.94), hasGrossValue("EUR", 7.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 62th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-23"), hasShares(0.054), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 7.94), hasGrossValue("EUR", 7.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 63th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-28"), hasShares(2.989), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 279.25), hasGrossValue("EUR", 279.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 64th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-28"), hasShares(1.912), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 279.25), hasGrossValue("EUR", 279.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 65th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-29"), hasShares(0.002), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 66th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-09-29"), hasShares(0.003), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 67th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-08"), hasShares(2.951), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.74), hasGrossValue("EUR", 276.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 68th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-08"), hasShares(1.864), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.74), hasGrossValue("EUR", 276.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 69th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-23"), hasShares(1.900), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 278.84), hasGrossValue("EUR", 278.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 70th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-23"), hasShares(2.965), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 278.84), hasGrossValue("EUR", 278.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 71th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-26"), hasShares(0.023), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 2.20), hasGrossValue("EUR", 2.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 72th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-26"), hasShares(0.015), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 2.20), hasGrossValue("EUR", 2.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 73th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-27"), hasShares(2.942), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.70), hasGrossValue("EUR", 276.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 74th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-27"), hasShares(1.914), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.70), hasGrossValue("EUR", 276.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 75th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-29"), hasShares(1.970), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 275.86), hasGrossValue("EUR", 275.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 76th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-29"), hasShares(2.929), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 275.86), hasGrossValue("EUR", 275.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 77th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-30"), hasShares(1.906), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 267.96), hasGrossValue("EUR", 267.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 78th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-30"), hasShares(2.848), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 267.96), hasGrossValue("EUR", 267.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 79th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-02"), hasShares(1.820), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 257.62), hasGrossValue("EUR", 257.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 80th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-02"), hasShares(2.739), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 257.62), hasGrossValue("EUR", 257.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 81th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-04"), hasShares(2.790), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 262.87), hasGrossValue("EUR", 262.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 82th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-04"), hasShares(1.807), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 262.87), hasGrossValue("EUR", 262.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 83th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-05"), hasShares(0.022), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.20), hasGrossValue("EUR", 3.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 84th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-05"), hasShares(0.034), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.20), hasGrossValue("EUR", 3.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 85th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-09"), hasShares(2.851), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 270.31), hasGrossValue("EUR", 270.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 86th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-09"), hasShares(1.819), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 270.31), hasGrossValue("EUR", 270.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 87th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10"), hasShares(0.001), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 88th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-10"), hasShares(0.001), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.10), hasGrossValue("EUR", 0.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 89th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-12"), hasShares(2.910), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.42), hasGrossValue("EUR", 276.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 90th buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-12"), hasShares(1.790), //
+                        hasSource("Quartalsbericht24.txt"), hasNote(null), //
+                        hasAmount("EUR", 276.42), hasGrossValue("EUR", 276.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-12-31"), hasShares(0), //
+                        hasSource("Quartalsbericht24.txt"), hasNote("Depotpreis 2020"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        //  check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupported, //
+                        fee( //
+                            hasDate("2020-12-31"), hasShares(0), //
+                            hasSource("Quartalsbericht24.txt"), hasNote("Depotpreis 2020"), //
+                            hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                            hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testQuartalsbericht25()
+    {
+        DekaBankPDFExtractor extractor = new DekaBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Quartalsbericht25.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DK2CDS0"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka-DividendenStrategie CF (A)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-31"), hasShares(0.215), //
+                        hasSource("Quartalsbericht25.txt"), hasNote(null), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-28"), hasShares(0.212), //
+                        hasSource("Quartalsbericht25.txt"), hasNote(null), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 3rd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-30"), hasShares(0.216), //
+                        hasSource("Quartalsbericht25.txt"), hasNote(null), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 4th buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-01-02"), hasShares(2.695), //
+                        hasSource("Quartalsbericht25.txt"), hasNote(null), //
+                        hasAmount("EUR", 475.00), hasGrossValue("EUR", 475.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

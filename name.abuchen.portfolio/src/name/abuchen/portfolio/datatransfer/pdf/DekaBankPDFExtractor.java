@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -635,8 +636,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             Pattern pShares = Pattern.compile("^.* ([\\.,\\d]+)?(?<addShare>(?<type>[\\-\\+\\s]+)[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSharesTotal = Pattern.compile("^Bestand am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(?<name>.*) ([\\s]+)?([\\.,\\d]+) ([\\s\\*]+)?([\\.,\\d]+) ([\\s]+)?(?<sharesTotal>[\\.,\\d]+).*$");
             Pattern pSecurityName = Pattern.compile("^(Zulagenzahlung([\\s]+)?([\\d]{4})?"
-                            + "|.*Ertrag|.*Tausch|.*zahlung|.*preis|.*buchung|.*verwendung|.*Verwendung|.*Aufl.sung|.*einzug|.*erstattung)?"
-                            + "(?<name>.*) ([\\s])?([\\.,\\d]+) ([\\s])?([\\.,\\d]+)?(?<addShare>(?<type>[\\-\\+\\s]+)[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+                            + "|.*Ertrag|.*Tausch|.*zahlung|.*preis|.*buchung|.*verwendung|.*Verwendung|.*Aufl.sung|.*einzug|.*erstattung|.*Thesaurierung|.*forderung)?"
+                            + "(?<name>.*) ([\\s])?([\\.,\\d]+) ([\\s])?([\\.,\\d]+) ([\\s])?([\\.,\\d]+)?(?<addShare>(?<type>[\\-\\+\\s]+)[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
 
             Pattern pDepotFeeDate = Pattern.compile("^Depotpreis(?! (inkl|incl)\\.) [\\.,\\d]+ [\\.,\\d]+[\\-\\+\\s]+[\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<depotFeeDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pContractFeeDate = Pattern.compile("^Vertragsgeb.hr .*[\\.,\\d]+ [\\.,\\d]+ [\\-\\+\\s]+[\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<contractFeeDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
@@ -728,13 +729,12 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             SharesListHelper sharesListHelper = new SharesListHelper();
             context.putType(sharesListHelper);
 
-            // Extract security information using pSecurity pattern
+            // Extract shareItems information using pSharesTotal pattern
             List<ShareItem> shareItems = new ArrayList<>();
 
             for (SecurityItem securityItem : securityListHelper.items)
             {
                 long shares = 0;
-                long sharesTotal = 0;
 
                 // Searches for the regex pattern of sharesTotal in the current line
                 for (int i = securityItem.lineNoEnd; i > securityItem.lineNoStart; i--)
@@ -742,7 +742,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     Matcher mSharesTotal = pSharesTotal.matcher(lines[i]);
                     if (mSharesTotal.matches())
                     {
-                        sharesTotal = asShares(mSharesTotal.group("sharesTotal"));
+                        shares = asShares(mSharesTotal.group("sharesTotal"));
                         break;
                     }
                 }
@@ -763,7 +763,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                         if (shares == 0)
                         {
-                            shares = isPositive ? (sharesTotal - shareItem.addShare) : (sharesTotal + shareItem.addShare);
+                            shares += shareItem.addShare;
                             shareItem.shares = shares;
                         }
                         else
@@ -780,7 +780,6 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             for (int i = lines.length - 1 ; i >= 0; i--)
             {
                 long shares = 0;
-                long sharesTotal = 0;
 
                 Matcher mSharesTotal = pSharesTotal.matcher(lines[i]);
                 if (mSharesTotal.matches())
@@ -791,7 +790,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     {
                         if (securityItem.name.contains(trimmedName) && !trimmedName.isEmpty())
                         {
-                            sharesTotal = asShares(mSharesTotal.group("sharesTotal"));
+                            shares = asShares(mSharesTotal.group("sharesTotal"));
+
                             for (int ii = i + 1 ; ii >= 0; ii--)
                             {
                                 Matcher mISIN = pISIN.matcher(lines[ii]);
@@ -799,7 +799,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                     break;
 
                                 Matcher mSecurityName = pSecurityName.matcher(lines[ii]);
-                                if (mSecurityName.matches() && securityItem.name.contains(trim(mSharesTotal.group("name"))))
+                                if (mSecurityName.matches() && securityItem.name.contains(trim(mSecurityName.group("name"))))
                                 {
                                     boolean isPositive = !"-".equals(trim(mSecurityName.group("type")));
 
@@ -811,7 +811,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                     if (shares == 0)
                                     {
-                                        shares = isPositive ? (sharesTotal - shareItem.addShare) : (sharesTotal + shareItem.addShare);
+                                        shares += shareItem.addShare;
                                         shareItem.shares = shares;
                                     }
                                     else
@@ -839,7 +839,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Block buySellBlock = new Block("^(Lastschrifteinzug"
+                        + "|Storno Lastschrifteinzug"
                         + "|Verkauf( \\/ Tausch)?(?! aus Ertrag)"
+                        + "|Zulagenr.ckforderung"
                         + "|Kauf( aus Ertrag| \\/ Tausch)?(?! (aus )?(Zulagenzahlung|Steuererstattung))"
                         + "|Thesaurierung \\/ Kauf aus Ertrag"
                         + "|Aussch.ttung \\/ Kauf aus Ertrag"
@@ -863,6 +865,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Lastschrifteinzug 250,00 198,660000 +1,258 01.04.2021 01.04.2021
                             // Lastschrifteinzug 1.000,00 59,320000 + 16,858 28.06.2005 28.06.2005
+                            // Storno Lastschrifteinzug Deka-DividendenStrategi 805,00 159,850000 -5,036 21.12.2020 01.12.2020
                             // Verkauf 2.039,96 102,810000 -19,842 11.05.2021 11.05.2021
                             // Kauf 36,00 216,100000 +0,167 18.07.2022 18.07.2022
                             // Kauf 34,00 55,240000 + 0,615 28.02.2005 28.02.2005
@@ -871,11 +874,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             // Depotpreis 10,00 69,740000 - 0,143 16.12.2005 16.12.2005
                             // Vertragsgebühr 5,00 49,040000 - 0,102 15.12.2006 15.12.2006
                             // Thesaurierung / Kauf aus Ertrag 100 0,00 72,270000 +0,000 12.01.2018 29.12.2017
+                            // Zulagenrückforderung Deka-DividendenStrategi 475,00 176,250000 -2,695 02.01.2023 02.01.2023
                             // @formatter:on
                             section -> section
-                                    .attributes("note", "amount", "type", "shares", "date")
+                                    .attributes("note", "amount", "amountPerShare", "type", "shares", "date")
                                     .match("^(?<note>(Lastschrifteinzug"
+                                                    + "|Storno Lastschrifteinzug"
                                                     + "|Verkauf( \\/ Tausch)?(?! aus Ertrag)"
+                                                    + "|Zulagenr.ckforderung"
                                                     + "|Kauf( aus Ertrag| \\/ Tausch)?(?! aus Steuererstattung)"
                                                     + "|Thesaurierung \\/ Kauf aus Ertrag"
                                                     + "|Aussch.ttung \\/ Kauf aus Ertrag"
@@ -887,7 +893,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "|Entgelt Aufl.sung"
                                                     + "|Vertragspreis(?! (\\(zu Lasten (Girokonto|Vertrag)\\)|gesamt|[\\-\\+\\.,\\d]+)))) "
                                                     + "(?<amount>[\\.,\\d]+) "
-                                                    + "[\\.,\\d]+"
+                                                    + "(?<amountPerShare>[\\.,\\d]+)"
                                                     + "(?<type>[\\-\\+\\s]+)"
                                                     + "(?<shares>[\\.,\\d]+) "
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
@@ -898,6 +904,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         // Is type --> "-" change from BUY to SELL
                                         if ("-".equals(trim(v.get("type"))))
                                             t.setType(PortfolioTransaction.Type.SELL);
+
+                                        if ("Storno Lastschrifteinzug".equals(v.get("type")))
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
@@ -922,6 +931,28 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
+
+                                        // @formatter:off
+                                        // Deka indicates only up to 3 digits after the decimal point.
+                                        // If the purchase or sale of shares is smaller, then we calculate the shares.
+                                        //
+                                        // Verkauf / Tausch Deka-Renten konservativ 0,02 48,370000 +0,000 09.06.2020 09.06.2020
+                                        // Kauf / Tausch Deka-RentenStrategie 0,02 91,710000 +0,000 09.06.2020 09.06.2020
+                                        //
+                                        // @formatter:on
+                                        if (t.getPortfolioTransaction().getShares() == 0 && t.getPortfolioTransaction().getAmount() != 0)
+                                        {
+                                            if (trim(v.get("note")).startsWith("Verkauf"))
+                                                t.setType(PortfolioTransaction.Type.SELL);
+
+                                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                                            BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+
+                                            int sharesPrecision = Values.Share.precision() * 2;
+                                            BigDecimal shares = amount.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
+
+                                            t.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
+                                        }
 
                                         // Formatting some notes
                                         if ("Depotpreis".equals(trim(v.get("note"))))
@@ -943,19 +974,23 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Lastschrifteinzug Deka-BR 100 80,00 103,190000 +0,775 08.06.2022 08.06.2022
                             // Lastschrifteinzug Deka-BR 100 80,00 39,880000  +2,006 08.06.2012 08.06.2012
+                            // Storno Lastschrifteinzug Deka-DividendenStrategi 805,00 159,850000 -5,036 21.12.2020 01.12.2020
                             // Abrechnungsbetrag Thesaurierung Deka-BR 100 4,39 39,790000  +0,110 02.07.2012 02.07.2012
                             // Thesaurierung / Kauf aus Ertrag Deka-BR 100 0,00 72,270000 +0,000 12.01.2018 29.12.2017
                             // Schädliche Verwendung Deka-BR 100 23.190,32 84,050000 -275,911 24.11.2020 24.11.2020
                             // Entgelt Auflösung Deka-BR 100 48,74 84,050000 -0,580 24.11.2020 24.11.2020
                             // Verkauf / Tausch Deka-Renten konservativ 340,80 47,890000 -7,116 16.04.2020 16.04.2020
+                            // Zulagenrückforderung Deka-DividendenStrategi 475,00 176,250000 -2,695 02.01.2023 02.01.2023
                             //
                             // Vertragspreis Deka-DividendenStrategi 1,95 148,480000 -0,013 24.08.2020 24.08.2020
                             // e CF (A
                             // @formatter:on
                             section -> section
-                                    .attributes("note", "name", "amount", "type", "shares", "date")
+                                    .attributes("note", "name", "amount", "amountPerShare", "type", "shares", "date")
                                     .match("^(?<note>(Lastschrifteinzug"
+                                                    + "|Storno Lastschrifteinzug"
                                                     + "|Verkauf( \\/ Tausch)?(?! aus Ertrag)"
+                                                    + "|Zulagenr.ckforderung"
                                                     + "|Kauf( aus Ertrag| \\/ Tausch)?(?! aus Steuererstattung)"
                                                     + "|Thesaurierung \\/ Kauf aus Ertrag"
                                                     + "|Aussch.ttung \\/ Kauf aus Ertrag"
@@ -968,7 +1003,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "|Vertragspreis(?! (\\(zu Lasten (Girokonto|Vertrag)\\)|gesamt|[\\-\\+\\.,\\d]+)))) "
                                                     + "(?<name>.*) "
                                                     + "(?<amount>[\\.,\\d]+) "
-                                                    + "[\\.,\\d]+"
+                                                    + "(?<amountPerShare>[\\.,\\d]+)"
                                                     + "(?<type>[\\-\\+\\s]+)"
                                                     + "(?<shares>[\\.,\\d]+) "
                                                     + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
@@ -979,6 +1014,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         // Is type --> "-" change from BUY to SELL
                                         if ("-".equals(trim(v.get("type"))))
                                             t.setType(PortfolioTransaction.Type.SELL);
+
+                                        if ("Storno Lastschrifteinzug".equals(v.get("note")))
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
@@ -1004,6 +1042,28 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
 
+                                        // @formatter:off
+                                        // Deka indicates only up to 3 digits after the decimal point.
+                                        // If the purchase or sale of shares is smaller, then we calculate the shares.
+                                        //
+                                        // Verkauf / Tausch Deka-Renten konservativ 0,02 48,370000 +0,000 09.06.2020 09.06.2020
+                                        // Kauf / Tausch Deka-RentenStrategie 0,02 91,710000 +0,000 09.06.2020 09.06.2020
+                                        //
+                                        // @formatter:on
+                                        if (t.getPortfolioTransaction().getShares() == 0 && t.getPortfolioTransaction().getAmount() != 0)
+                                        {
+                                            if (trim(v.get("note")).startsWith("Verkauf"))
+                                                t.setType(PortfolioTransaction.Type.SELL);
+
+                                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                                            BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+
+                                            int sharesPrecision = Values.Share.precision() * 2;
+                                            BigDecimal shares = amount.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
+
+                                            t.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
+                                        }
+
                                         // Formatting some notes
                                         if ("Depotpreis".equals(trim(v.get("note"))))
                                             t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
@@ -1022,11 +1082,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                     })
                     )
 
-            .wrap(t -> {
+            .wrap((t, ctx) -> {
                 BuySellEntryItem item = new BuySellEntryItem(t);
 
                 if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
                     item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                if (ctx.getString(FAILURE) != null)
+                    item.setFailureMessage(ctx.getString(FAILURE));
 
                 return item;
             }));
@@ -1247,7 +1310,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                     + "|Aussch.ttung \\/ Kauf aus Ertrag"
                                                     + "|Abrechnungsbetrag Ausschüttung"
                                                     + "|Abrechnungsbetrag Thesaurierung"
-                                                    + "|Ertragsaussch.ttung-Storno"
+                                                    + "|Ertragsaussch.ttung\\-Storno"
                                                     + "|Kauf aus Ertrag"
                                                     + "|Thesaurierung \\/ Kauf aus Ertrag)) "
                                                     + "(?<amount>[\\.,\\d]+) "
@@ -1349,6 +1412,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
                                         else
                                         {
+
                                             Optional<SecurityItem> securityItemByName = securityListHelper.findItemByName(trim(v.get("name")));
                                             if (securityItemByName.isPresent())
                                             {
