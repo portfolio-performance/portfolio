@@ -19,7 +19,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("UniCredit Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("UniCredit Bank AG");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -28,7 +28,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "UniCredit Bank AG / HypoVereinsbank (HVB)"; //$NON-NLS-1$
+        return "UniCredit Bank AG / HypoVereinsbank (HVB)";
     }
 
     private void addBuySellTransaction()
@@ -52,7 +52,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^W e r t p a p i e r \\- A b r e c h n u n g ([\\s]+)?(?<type>(K a u f| V e r k a u f))( .*)?$")
                 .assign((t, v) -> {
-                    if (stripBlanks(v.get("type")).equals("Verkauf"))
+                    if ("Verkauf".equals(stripBlanks(v.get("type"))))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -232,7 +232,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Wertpapierprovision* EUR 41,09- 
+                // Wertpapierprovision* EUR 41,09-
                 .section("currency", "fee").optional()
                 .match("^Wertpapierprovision\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?( .*)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));

@@ -26,8 +26,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Deutsche Bank"); //$NON-NLS-1$
-        addBankIdentifier("DB Privat- und Firmenkundenbank AG"); //$NON-NLS-1$
+        addBankIdentifier("Deutsche Bank");
+        addBankIdentifier("DB Privat- und Firmenkundenbank AG");
 
         addBuySellTransaction();
         addBuySellPartialExecutionsTransaction();
@@ -38,7 +38,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Deutsche Bank Privat- und Geschäftskunden AG"; //$NON-NLS-1$
+        return "Deutsche Bank Privat- und Geschäftskunden AG";
     }
 
     private void addBuySellTransaction()
@@ -62,7 +62,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -136,7 +136,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren \\/ Zusammenfassung von Teilausf.hrungen$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -262,7 +262,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Kontoauszug vom", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("[\\d]{3} [\\d]+ [\\d]{2} (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+");
             Pattern pYear = Pattern.compile("Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
@@ -279,12 +279,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // Formatting:
         // Buchung | Valuta | Vorgang | Soll | Haben
-        //  
+        //
         // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
         // Mustermann, Max
         // IBAN DE1111110000111111
         // BIC OSDDDE81XXX
-        // 
+        //
         // 07.12. 07.12. SEPA Überweisung von + 562,00
         // Unser Sparverein
         // Verwendungszweck/ Kundenreferenz
@@ -324,7 +324,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
                     // Is sign --> "-" change from DEPOSIT to REMOVAL
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.REMOVAL);
 
                     // Formatting some notes
@@ -344,11 +344,11 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                     // @formatter:off
                     // If we have fees, then we set the amount to 0.00
-                    //  
+                    //
                     // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
                     // Saldo der Abschlussposten
                     // @formatter:on
-                    if (v.get("note1").equals("Saldo der Abschlussposten"))
+                    if ("Saldo der Abschlussposten".equals(v.get("note1")))
                         t.setAmount(0L);
                 })
 
@@ -361,7 +361,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // Formatting:
         // Buchung | Valuta | Vorgang | Soll | Haben
-        //  
+        //
         // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
         // Saldo der Abschlussposten
         // @formatter:on
@@ -449,7 +449,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        // If the provision fee and the fee refund are the same, 
+        // If the provision fee and the fee refund are the same,
         // then we set a flag and don't book provision fee.
         transaction
                 // Provision EUR 3,13
@@ -470,7 +470,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         checkAndSetFee(fee, t, type.getCurrentContext());
                     }
 
-                    type.getCurrentContext().put("noProvision", "X");
+                    type.getCurrentContext().putBoolean("noProvision", true);
                 })
 
                 // Provision EUR 3,13
@@ -482,7 +482,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                     Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
-                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    if (!type.getCurrentContext().getBoolean("noProvision"))
                     {
                         if (fee.subtract(discount).isPositive())
                         {
@@ -490,7 +490,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             checkAndSetFee(fee, t, type.getCurrentContext());
                         }
 
-                        type.getCurrentContext().put("noProvision", "X");
+                        type.getCurrentContext().putBoolean("noProvision", true);
                     }
                 })
 
@@ -503,7 +503,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                     Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
-                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    if (!type.getCurrentContext().getBoolean("noProvision"))
                     {
                         if (fee.subtract(discount).isPositive())
                         {
@@ -511,7 +511,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             checkAndSetFee(fee, t, type.getCurrentContext());
                         }
 
-                        type.getCurrentContext().put("noProvision", "X");
+                        type.getCurrentContext().putBoolean("noProvision", true);
                     }
                 });
 
@@ -521,7 +521,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    if (!type.getCurrentContext().getBoolean("noProvision"))
                         processFeeEntries(t, v, type);
                 })
 

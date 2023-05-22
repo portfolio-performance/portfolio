@@ -19,7 +19,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("European Bank for Financial Services GmbH"); //$NON-NLS-1$
+        addBankIdentifier("European Bank for Financial Services GmbH");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -32,7 +32,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "European Bank for Financial Services GmbH"; //$NON-NLS-1$
+        return "European Bank for Financial Services GmbH";
     }
 
     private void addBuySellTransaction()
@@ -90,25 +90,25 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                 + "|Wiederanlage Fondsertrag"
                                 + "|Wiederanlage Ertragsaussch.ttung)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf")
-                                    || v.get("type").equals("Entgelt Verkauf")
-                                    || v.get("type").equals("Entgeltbelastung Verkauf")
-                                    || v.get("type").equals("Entnahmeplan")
-                                    || v.get("type").equals("Fondsumschichtung (Abgang)"))
+                    if ("Verkauf".equals(v.get("type"))
+                                    || "Entgelt Verkauf".equals(v.get("type"))
+                                    || "Entgeltbelastung Verkauf".equals(v.get("type"))
+                                    || "Entnahmeplan".equals(v.get("type"))
+                                    || "Fondsumschichtung (Abgang)".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
                 })
 
-                // Here we set a flag for all entries 
+                // Here we set a flag for all entries
                 // which should be skipped.
-                // If this is not done, it can happen that taxes and fees 
+                // If this is not done, it can happen that taxes and fees
                 // are included from the following entries
                 .section("type").optional()
                 .match("^(?<type>Fondsertrag) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Fondsertrag"))
-                        type.getCurrentContext().put("skipTransaction", Boolean.TRUE.toString());
+                    if ("Fondsertrag".equals(v.get("type")))
+                        type.getCurrentContext().putBoolean("skipTransaction", true);
                 })
 
                 // Kauf 300,00 EUR mit Kursdatum 20.11.2019 in Depotposition 1234567890.01
@@ -327,8 +327,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Entgeltbelastung Verkauf) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
 
-                .wrap(t -> {                   
-                    if (type.getCurrentContext().get("skipTransaction") == null)
+                .wrap(t -> {
+                    if (!type.getCurrentContext().getBoolean("skipTransaction"))
                         return new BuySellEntryItem(t);
 
                     // If we have multiple entries in the document,
@@ -500,7 +500,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // The advance tax payment is always paid in local currency.
         // If the security is in foreign currency,
         // the exchange rate is missing in the document for posting.
-        // 
+        //
         // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.21
         // Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
         // Ref. Nr. 000/22012021, Buchungsdatum 22.01.2021
@@ -510,9 +510,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // 0,03 EUR 0,00 EUR 0,00 EUR
         // Belastung der angefallenen Steuern in Höhe von 0,03 EUR erfolgt durch Verkauf aus Depotposition xxx.21 mit Ref. Nr.
         // 000/22012021
-        // 
+        //
         // --------------------------------------------------------
-        // 
+        //
         // Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
         // Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
         // Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
@@ -667,7 +667,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>Eingang) externer .bertrag .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Eingang"))
+                    if ("Eingang".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 })
 

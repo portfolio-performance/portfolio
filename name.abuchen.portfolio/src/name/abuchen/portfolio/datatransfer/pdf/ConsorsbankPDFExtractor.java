@@ -22,16 +22,17 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
+    private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^(abzgl\\. Kapitalertragssteuer|KAPST) anteilig 50,00.*$"); //$NON-NLS-1$
+        Pattern pJointAccount = Pattern.compile("^(abzgl\\. Kapitalertragssteuer|KAPST) anteilig 50,00.*$");
+
         for (String line : lines)
         {
-            Matcher m = pJointAccount.matcher(line);
-            if (m.matches())
+            if (pJointAccount.matcher(line).matches())
             {
                 context.putBoolean(IS_JOINT_ACCOUNT, true);
                 break;
@@ -43,9 +44,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Consorsbank"); //$NON-NLS-1$
-        addBankIdentifier("POSTFACH 17 43"); //$NON-NLS-1$
-        addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
+        addBankIdentifier("Consorsbank");
+        addBankIdentifier("POSTFACH 17 43");
+        addBankIdentifier("Cortal Consors");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -58,10 +59,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Consorsbank"; //$NON-NLS-1$
+        return "Consorsbank";
     }
 
-    @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(?i)(Kauf"
@@ -93,11 +93,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 + "|VERK\\. TEIL\\-\\/BEZUGSR\\."
                                 + "|VERKAUF KAPITALMA.*) ([\\s]+)?AM .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("VERKAUF") 
-                        || v.get("type").equals("Verkauf")
-                        || v.get("type").equals("VERK. TEIL-/BEZUGSR.")
-                        || v.get("type").equals("VERKAUF KAPITALMAßN.")
-                        || v.get("type").equals("VERKAUF KAPITALMASSN."))
+                    if ("VERKAUF".equals(v.get("type"))
+                        || "Verkauf".equals(v.get("type"))
+                        || "VERK. TEIL-/BEZUGSR.".equals(v.get("type"))
+                        || "VERKAUF KAPITALMAßN.".equals(v.get("type"))
+                        || "VERKAUF KAPITALMASSN.".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -106,7 +106,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                                 // @formatter:off
                                 // COMS.-MSCI WORL.T.U.ETF I ETF110 LU0392494562
-                                // Kurs 37,650000 EUR P.ST. NETTO  
+                                // Kurs 37,650000 EUR P.ST. NETTO
                                 // Preis pro Anteil 25,640000 EUR
                                 // @formatter:on
                                 section -> section
@@ -353,7 +353,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addDividendeTransaction()
     {
         DocumentType type = new DocumentType("(?i)(Dividendengutschrift|Ertragsgutschrift)");
@@ -377,9 +376,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                                 // @formatter:off
-                                // ST                    1.370,00000          WKN:  ETF110                 
-                                //            COMS.-MSCI WORL.T.U.ETF I                                    
-                                //            Namens-Aktien o.N.                                           
+                                // ST                    1.370,00000          WKN:  ETF110
+                                //            COMS.-MSCI WORL.T.U.ETF I
+                                //            Namens-Aktien o.N.
                                 // ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015
                                 // @formatter:on
                                 section -> section
@@ -476,7 +475,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 .optionalOneOf(
                                 // @formatter:off
-                                // BRUTTO                                        USD                180,00 
+                                // BRUTTO                                        USD                180,00
                                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55
                                 // @formatter:on
                                 section -> section
@@ -561,7 +560,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addEncashmentTransaction()
     {
         DocumentType type = new DocumentType("Einl.sung");
@@ -624,7 +622,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addAdvanceTaxTransaction()
     {
         DocumentType type = new DocumentType("Vorabpauschale");
@@ -686,7 +683,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
 
@@ -729,7 +725,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
 
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
@@ -741,7 +737,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    @SuppressWarnings("nls")
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
@@ -786,13 +781,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("GUTSCHRIFT"))
+                    if ("GUTSCHRIFT".equals(v.get("note")))
                         v.put("note", "Gutschrift");
 
-                    if (v.get("note").equals("D-GUTSCHRIFT"))
+                    if ("D-GUTSCHRIFT".equals(v.get("note")))
                         v.put("note", "D-Gutschrift");
 
-                    if (v.get("note").equals("EURO-UEBERW."))
+                    if ("EURO-UEBERW.".equals(v.get("note")))
                         v.put("note", "Euro-Überweisung");
 
                     t.setNote(v.get("note"));
@@ -828,10 +823,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("UEBERWEISUNG"))
+                    if ("UEBERWEISUNG".equals(v.get("note")))
                         v.put("note", "Überweisung");
 
-                    if (v.get("note").equals("EURO-UEBERW."))
+                    if ("EURO-UEBERW.".equals(v.get("note")))
                         v.put("note", "Euro-Überweisung");
 
                     t.setNote(v.get("note"));
@@ -866,7 +861,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("ABSCHLUSS"))
+                    if ("ABSCHLUSS".equals(v.get("note")))
                         v.put("note", "Abschluss");
 
                     t.setNote(v.get("note"));
@@ -879,7 +874,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -962,7 +956,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^KAPST [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1063,7 +1057,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^SOLZ [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1204,7 +1198,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction

@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -22,15 +21,16 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class DABPDFExtractor extends AbstractPDFExtractor
 {
     public DABPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("DAB Bank"); //$NON-NLS-1$
-        addBankIdentifier("DAB bank AG"); //$NON-NLS-1$
-        addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$
+        addBankIdentifier("DAB Bank");
+        addBankIdentifier("DAB bank AG");
+        addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -42,10 +42,9 @@ public class DABPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DAB Bank / BNP Paribas S.A."; //$NON-NLS-1$
+        return "DAB Bank / BNP Paribas S.A.";
     }
 
-    @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(Kauf|Verkauf|Gesamtf.lligkeit)");
@@ -261,14 +260,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addBuySellTaxReturnBlock(type);
     }
 
-    @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
         DocumentType type = new DocumentType("(Dividendengutschrift|Ertr.gnisgutschrift|Ertragsgutschrift)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Postfach .*|Ertr.gnisgutschrift (aus|VERSANDARTENSCHLUESSEL).*)$");
-        
+
         type.addBlock(block);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -541,7 +539,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addDeliveryInOutbountInTransaction()
     {
         DocumentType type = new DocumentType("(Einbuchung|Split|Freie Lieferung)");
@@ -720,7 +717,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
         DocumentType type = new DocumentType("Steuerausgleich f.r das Jahr [\\d]{4}");
@@ -783,7 +779,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new);
     }
 
-    @SuppressWarnings("nls")
     private void addBuySellTaxReturnBlock(DocumentType type)
     {
         Block block = new Block("^(Kauf|Verkauf|Gesamtf.lligkeit) .*$", "Dieser Beleg wird .*$");
@@ -946,7 +941,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    @SuppressWarnings("nls")
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus)", (context, lines) -> {
@@ -1144,7 +1138,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         // If we have a tax refunds,
@@ -1152,7 +1145,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         transaction
                 .section("n").optional()
                 .match("^zu versteuern \\(negativ\\) (?<n>.*)$")
-                .assign((t, v) -> type.getCurrentContext().put("negative", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
 
         transaction
                 // @formatter:off
@@ -1161,7 +1154,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "withHoldingTax").optional()
                 .match("^ausl.ndische Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<withHoldingTax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
@@ -1181,7 +1174,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "creditableWithHoldingTax").optional()
                 .match("^.*davon anrechenbare (US\\-)?Quellensteuer .* ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                 })
 
@@ -1191,7 +1184,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("label", "currency", "tax").optional()
                 .match("^(?<label>.*) Kapitalertrags(s)?teuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) 
+                    if (!type.getCurrentContext().getBoolean("negative")
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
                         processTaxEntries(t, v, type);
                 })
@@ -1202,7 +1195,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1212,7 +1205,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("label", "currency", "tax").optional()
                 .match("^(?<label>.*) Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) 
+                    if (!type.getCurrentContext().getBoolean("negative")
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltener"))
                         processTaxEntries(t, v, type);
                 })
@@ -1223,7 +1216,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1233,7 +1226,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("label", "currency", "tax").optional()
                 .match("^(?<label>.*) Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative"))
+                    if (!type.getCurrentContext().getBoolean("negative")
                                     && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
                         processTaxEntries(t, v, type);
                 })
@@ -1244,7 +1237,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kirchensteuer ([\\s]+)?(?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)(\\-)?$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1291,7 +1284,6 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction

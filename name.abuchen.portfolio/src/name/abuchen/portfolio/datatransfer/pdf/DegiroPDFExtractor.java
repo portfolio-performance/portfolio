@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -39,7 +38,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("DEGIRO");  //$NON-NLS-1$
+        addBankIdentifier("DEGIRO");
 
         addAccountStatementTransactions();
         addDepotStatementTransactions();
@@ -49,7 +48,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DEGIRO"; //$NON-NLS-1$
+        return "DEGIRO";
     }
 
     private void addDividendeTransaction()
@@ -129,13 +128,13 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // Einbuchung:
             // 19-07-2017 00:00 Währungswechsel 1,1528 EUR 0,75 EUR 1.783,89
             // 03-08-2019 06:55 02-08-2019 Währungswechsel (Ausbuchung) 1,1120 USD -3,84 USD -0,00
-            // 
+            //
             // 23-03-2021 08:17 22-03-2021 FX Debit EUR 9.12 EUR -2,681.14
             // 23-03-2021 08:17 22-03-2021 FX Debit 1.4958 CAD -13.65 CAD 0.00
-            // 
+            //
             // 17-11-2021 07:38 16-11-2021 Währungswechsel (Einbuchung) CHF 2.02 CHF 1'185.08
             // 17-11-2021 07:38 16-11-2021 Währungswechsel (Ausbuchung) 1.0760 USD -2.18 USD 0.00
-            // 
+            //
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
             // 13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
             //
@@ -178,7 +177,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // Ausbuchung:
             // 19-07-2017 00:00 Währungswechsel USD -0,86 USD 0,00
             // 03-08-2019 06:55 02-08-2019 Währungswechsel (Einbuchung) EUR 3,45 EUR 1.552,27
-            // 
+            //
             // 16-03-2021 09:24 15-03-2021 FX Debit EUR 31.66 EUR -1,542.30
             // 16-03-2021 09:24 15-03-2021 FX Debit 1.1942 USD -37.82 USD -0.00
             //
@@ -251,7 +250,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 item.baseAmount = item.termAmount;
                                 item.termCurrency = mBase.group("currency");
                                 item.termAmount = asAmount(mBase.group("amount"));
-                            } 
+                            }
                             exchangeRateHelper.items.add(item);
                             break;
                         }
@@ -276,9 +275,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             DividendTransactionHelper dividendeTransactionHelper = new DividendTransactionHelper();
             context.putType(dividendeTransactionHelper);
 
-            for (int i = 0; i < lines.length; i++)
+            for (String line : lines)
             {
-                Matcher m = pDividendeTransactions.matcher(lines[i]);
+                Matcher m = pDividendeTransactions.matcher(line);
                 if (m.matches())
                 {
                     DividendeTransactionsItem item = new DividendeTransactionsItem();
@@ -432,7 +431,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 15-06-2019 06:44 14-06-2019 Währungswechsel (Ausbuchung) 1,1219 USD -0,34 USD 0,00
         // (...)
         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
-        // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06 
+        // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
         // -------------------------------------
         // 05-07-2019 06:49 04-07-2019 Währungswechsel (Einbuchung) EUR 10,12 EUR 2.119,03
         // 05-07-2019 06:49 04-07-2019 Währungswechsel (Ausbuchung) 1,1297 USD -11,44 USD -0,00
@@ -464,22 +463,22 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // -------------------------------------
         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend Tax CAD -4.55 CAD -4.55
-        // 
+        //
         // **********************************
         // Calculation of taxes:            *
         // **********************************
         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividende USD 0,40 USD 0,34
         // 14-06-2019 07:55 14-06-2019 THE KRAFT HEINZ COMPAN US5007541064 Dividendensteuer USD -0,06 USD -0,06
-        // 
+        //
         // Gross amount: 0,40 USD + 0,06 USD = 0,46 USD
-        // 
+        //
         // **********************************
         // Calculation of taxes and fee:    *
         // **********************************
         // 12-06-2019 09:12 11-06-2019 NOKIA CORPORATION SPON US6549022043 Dividende USD 1,74 USD 2,36
         // 12-06-2019 09:12 11-06-2019 NOKIA CORPORATION SPON US6549022043 Dividendensteuer USD -0,52 USD 0,62
         // 12-06-2019 09:12 11-06-2019 NOKIA CORPORATION SPON US6549022043 ADR/GDR Weitergabegebühr USD -0,08 USD 1,14
-        // 
+        //
         // ExchangeRage: 0,8851124093 --> 0,89
         // Gross amount in EUR: (1,74 * 0,89) + (0,52 * 0,89) + (0,08 * 0,89) = 2,0826 EUR
         // @formatter:on
@@ -506,10 +505,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         // 22-03-2021 07:39 19-03-2021 MANULIFE FINANCIAL COR CA56501R1064 Dividend CAD 18.20 CAD 13.65
                                         // 31-03-2022 07:36 30-03-2022 ISHARES GLOB HIG YLD CORP BOND UCITS IE00B74DQ490 Dividendo USD 24,19 USD 24,19
                                         // 30-09-2022 07:25 29-09-2022 T. ROWE PRICE GROUP I US74144T1088 Dividendo USD 31,20 USD 26,52
-                                        // 
+                                        //
                                         // -------------------------------------
                                         // Date of currency exchange is different from the dividend date
-                                        // 
+                                        //
                                         // 27-06-2022 07:30 24-06-2022 Valuta Creditering EUR 497,44 EUR 2.648,76
                                         // 27-06-2022 07:30 24-06-2022 Valuta Debitering 1,0582 USD -526,37 USD 0,00
                                         // 26-06-2022 06:41 24-06-2022 VANGUARD TOTAL INTERNA US9219097683 Dividend USD 751,95 USD 526,37
@@ -557,7 +556,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                 t.getDateTime().toLocalDate());
 
                                                 // @formatter:off
-                                                // If no exchange rate is found, 
+                                                // If no exchange rate is found,
                                                 // search for the exchange rate on the value date
                                                 // @formatter:on
                                                 if (!item.isPresent())
@@ -728,7 +727,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             DocumentContext context = type.getCurrentContext();
                             Money fee = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("feeFx")));
-                            
+
                             Optional<CurrencyExchangeItem> item = context.getType(CurrencyExchangeItem.class);
                             if (item.isPresent() && v.get("isin").equalsIgnoreCase(t.getSecurity().getIsin()))
                             {
@@ -844,16 +843,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setNote(v.get("note") + ": " + v.get("isin"));
-                            
+
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.TAXES);
 
                             // @formatter:off
                             // Sometimes the dividend tax is settled without a dividend transaction.
                             //
-                            // To capture this, we note all these dividend transactions and look for whether 
+                            // To capture this, we note all these dividend transactions and look for whether
                             // this tax belongs to a dividend transaction or not.
-                            // 
+                            //
                             // If there is no dividend transaction, then we record this tax.
                             // @formatter:on
 
@@ -871,7 +870,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                     Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
                                                     t.getDateTime().toLocalDate());
-                                    
+
                                     if (item.isPresent())
                                     {
                                         Money converted = Money.of(item.get().baseCurrency,
@@ -1034,22 +1033,22 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // -------------------------------------
         // 03-07-2019 11:47 30-06-2019 Einrichtung von Handelsmodalitäten 2019 (New York Stock EUR -0,54 EUR 22,16
         // 01-02-2019 16:31 31-01-2019 Einrichtung von Handelsmodalitäten 2019 (NASDAQ - NDQ) EUR 2,50 EUR 108,21
-        //  
+        //
         // 30-06-2017 00:00 Einrichtung von EUR -2,50 EUR 1.116,79
         // Handelsmodalitäten
         // 2017
-        // 
+        //
         // 31-08-2017 00:00 Einrichtung von EUR -0,89 EUR 35,63
         // Handelsmodalitäten
         // 2017
-        //  
+        //
         // 02-09-2021 21:29 31-08-2021 DEGIRO Aansluitingskosten 2021 (Borsa Italiana S.p.A. - EUR -2,50 EUR 12,91
         // MIL)
         //
         // 01-06-2022 19:55 31-05-2022 Giro Exchange Connection Fee 2022 EUR -1,01 EUR -6,39
         // 02-10-2021 10:46 30-09-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -1,24 EUR 206,99
         // 05-07-2022 08:32 30-06-2022 Giro Exchange Connection Fee 2022 EUR -2,50 EUR 7.390,07
-        // 
+        //
         // 28-04-2022 15:33 27-04-2022 JINKOSOLAR HOLDING COM US47759T1007 ADR/GDR Weitergabegebühr USD -0,01 USD 0,64
         // 29-04-2022 17:34 18-08-2021 GAZPROM PAO US3682872078 ADR/GDR Weitergabegebühr USD 7,12 USD 11,93
         //
@@ -1111,7 +1110,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "(?<type>\\s(\\-)?)"
                                                     + "(?<amount>[\\.,'\\d\\s]+) "
                                                     + "[\\w]{3} "
-                                                    + "(\\-)?[\\.,'\\d\\s]+$") 
+                                                    + "(\\-)?[\\.,'\\d\\s]+$")
                                     .match("^(?<note2>[\\d]{4} \\(.*\\)).*$")
                                     .assign((t, v) -> {
                                         t.setDateTime(asDate(v.get("date"), v.get("time")));
@@ -1135,7 +1134,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "(?<type>\\s(\\-)?)"
                                                     + "(?<amount>[\\.,'\\d\\s]+) "
                                                     + "[\\w]{3} "
-                                                    + "(\\-)?[\\.,'\\d\\s]+$") 
+                                                    + "(\\-)?[\\.,'\\d\\s]+$")
                                     .assign((t, v) -> {
                                         t.setDateTime(asDate(v.get("date"), v.get("time")));
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1168,9 +1167,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Sometimes the ADR/GDR transfer fee is settled without a dividend transaction.
                                         //
-                                        // To capture this, we remember all this dividend transactions and search for whether 
+                                        // To capture this, we remember all this dividend transactions and search for whether
                                         // these charges belong to a dividend transaction or not.
-                                        // 
+                                        //
                                         // If there is no dividend transaction, then we record this fee.
                                         // @formatter:on
 
@@ -1188,7 +1187,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                                 Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
                                                                 t.getDateTime().toLocalDate());
-                                                
+
                                                 if (item.isPresent())
                                                 {
                                                     Money converted = Money.of(item.get().baseCurrency,
@@ -1328,12 +1327,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     }
 
     /**
-     * Information: 
-     * 
+     * Information:
+     *
      * If you make changes to the regEx, the examples will help you
      * to adjust it correctly. Always check where and on which side the
      * currency, amount, exchange rate and fees are!
-     *  
+     *
      * Please do not delete these examples!
      */
     private void addDepotStatementTransactions()
@@ -1380,7 +1379,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'\\d]+) "
-                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} " 
+                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) "
                                                 + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "(?<exchangeRate>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
@@ -1405,7 +1404,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
 
-                                    long amountFx = asAmount(v.get("amountFx")); 
+                                    long amountFx = asAmount(v.get("amountFx"));
                                     String currencyFx = asCurrencyCode(v.get("currency"));
 
                                     if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
@@ -1459,7 +1458,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setType(PortfolioTransaction.Type.SELL);
                                         t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
-                                    else 
+                                    else
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
@@ -1513,7 +1512,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
                                         t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
-                                    } 
+                                    }
                                     else
                                     {
                                         t.setShares(asShares(v.get("shares")));
@@ -1576,7 +1575,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setType(PortfolioTransaction.Type.SELL);
                                         t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
-                                    else 
+                                    else
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
@@ -1684,7 +1683,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setType(PortfolioTransaction.Type.SELL);
                                         t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
                                     }
-                                    else 
+                                    else
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
@@ -1720,7 +1719,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // -------------------------------------
                             // Formatting:
                             // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Total amount
-                            // -------------------------------------          
+                            // -------------------------------------
                             // 08-02-2019 13:27 ODX2 C11000.00 08FEB19 DE000C25KFE8 ERX -3 EUR 0,00 EUR 0,00 EUR 0,00 EUR 0,00
                             // 09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
                             // @formatter:on
@@ -1731,9 +1730,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'\\d]+) "
-                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} " 
-                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} " 
-                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} " 
+                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} "
+                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
+                                                + "[\\w]{3} (\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} "
                                                 + "([\\s]+)?(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1759,7 +1758,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // -------------------------------------
                             // Formatting:
                             // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Total amount
-                            // -------------------------------------     
+                            // -------------------------------------
                             // 13-03-2018 00:00 BAUMOT GROUP AG O.N DE000A2DAM11 XET -350 1,84 EUR 644,00 EUR 644,00 EUR 644,00 EUR
                             // 22-07-2020 00:00 PHARMA MAR SA ES0169501022 MAD 21 114,66 EUR -2 407,86 EUR -2 407,86 EUR -2 407,86 EUR
                             // @formatter:on
@@ -1798,7 +1797,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // -------------------------------------
                             // Formatting:
                             // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local market value | Fee | Total amount
-                            // -------------------------------------  
+                            // -------------------------------------
                             // 07-02-2019 12:22 ODX2 C11200.00 08FEB19 DE000C25KFN9 ERX 1 EUR 30,00 EUR -150,00 EUR -150,00 EUR -0,90 EUR -150,90
                             // 01-04-2019 15:35 DEUTSCHE BANK AG NA O.N DE0005140008 XET -136 EUR 7,45 EUR 1.013,20 EUR 1.013,20 EUR -2,26 EUR 1.010,94
                             // 01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
@@ -1828,7 +1827,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setType(PortfolioTransaction.Type.SELL);
                                         t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
-                                    } 
+                                    }
                                     else
                                     {
                                         t.setShares(asShares(v.get("shares")));
@@ -1852,16 +1851,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} ([\\s]+)?"
-                                                + "(?<shares>[\\-\\.,'\\d]+) "  
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} " 
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} " 
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} " 
+                                                + "(?<shares>[\\-\\.,'\\d]+) "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
                                                 + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date"), v.get("time")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                     t.setAmount(asAmount(v.get("amount")));
 
                                     if (v.get("shares").startsWith("-"))
@@ -1897,16 +1896,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} [\\w]{4} ([\\s]+)?"
-                                                + "(?<shares>[\\-\\.,'\\d]+) "  
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} " 
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} " 
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} " 
+                                                + "(?<shares>[\\-\\.,'\\d]+) "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
                                                 + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date"), v.get("time")));
-                                    t.setCurrencyCode(asCurrencyCode(v.get("currency"))); 
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                     t.setAmount(asAmount(v.get("amount")));
 
                                     if (v.get("shares").startsWith("-"))
@@ -2016,10 +2015,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             // Search date and time of dividend transaction using date+time and
             // ISIN.
 
-            for (int i = 0; i < items.size(); i++) // NOSONAR
+            for (DividendeTransactionsItem item : items)
             {
-                DividendeTransactionsItem item = items.get(i);
-
                 if (item.dateTime.equals(dateTime) && item.isin.equals(isin))
                     return Optional.of(item);
             }
@@ -2027,11 +2024,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             return Optional.empty();
         }
     }
-    
+
     /**
      * Represents two lines in the account statement for a currency exchange
      * ("Währungswechsel" or "FX Debit").
-     * 
+     *
      * <pre>
      *  amount in base currency x exchange rate = amount in term currency
      * </pre>
@@ -2072,25 +2069,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 
@@ -2100,25 +2097,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 
@@ -2128,25 +2125,25 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 

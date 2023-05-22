@@ -24,7 +24,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Swissquote Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("Swissquote Bank AG");
 
         addBuySellTransaction();
         addDividendsTransaction();
@@ -35,7 +35,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Swissquote Bank AG / Yuh (powerd by Swissquote Bank AG)"; //$NON-NLS-1$
+        return "Swissquote Bank AG / Yuh (powerd by Swissquote Bank AG)";
     }
 
     private void addBuySellTransaction()

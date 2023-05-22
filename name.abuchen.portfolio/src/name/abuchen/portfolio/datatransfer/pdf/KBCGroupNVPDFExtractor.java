@@ -16,7 +16,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("KBC BANK NV"); //$NON-NLS-1$
+        addBankIdentifier("KBC BANK NV");
 
         addBuySellTransaction();
     }
@@ -24,7 +24,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "KBC Group NV"; //$NON-NLS-1$
+        return "KBC Group NV";
     }
 
     private void addBuySellTransaction()

@@ -30,9 +30,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("S Broker AG & Co. KG"); //$NON-NLS-1$
-        addBankIdentifier("Sparkasse"); //$NON-NLS-1$
-        addBankIdentifier("Stadtsparkasse"); //$NON-NLS-1$
+        addBankIdentifier("S Broker AG & Co. KG");
+        addBankIdentifier("Sparkasse");
+        addBankIdentifier("Stadtsparkasse");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -43,7 +43,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "S Broker AG & Co. KG / Sparkasse / StarMoney"; //$NON-NLS-1$
+        return "S Broker AG & Co. KG / Sparkasse / StarMoney";
     }
 
     private void addBuySellTransaction()
@@ -1363,14 +1363,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         transaction
                 .section("n").optional()
                 .match("^zu versteuern \\(negativ\\) (?<n>.*)$")
-                .assign((t, v) -> type.getCurrentContext().put("negative", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
 
         // If we have a gross reinvestment,
         // we set a flag and don't book tax below.
         transaction
                 .section("n").optional()
                 .match("^(?<n>Ertragsthesaurierung)$")
-                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
         transaction
                 // @formatter:off
@@ -1379,7 +1379,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^einbehaltene Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1389,7 +1389,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1399,7 +1399,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1409,7 +1409,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^einbehaltener Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1419,7 +1419,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1429,7 +1429,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1439,7 +1439,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1449,7 +1449,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1459,7 +1459,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1469,7 +1469,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("withHoldingTax", "currency").optional()
                 .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
@@ -1478,7 +1478,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("creditableWithHoldingTax", "currency").optional()
                 .match("^Anrechenbare Quellensteuer .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
+                .assign((t, v) -> {
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
+                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                })
 
                 // @formatter:off
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,04
@@ -1486,7 +1489,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("creditableWithHoldingTax", "currency").optional()
                 .match("^davon anrechenbare Quellensteuer Fondseingangsseite (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                 })
 
@@ -1496,7 +1499,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "creditableWithHoldingTax").optional()
                 .match("^davon anrechenbare US\\-Quellensteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                 });
     }

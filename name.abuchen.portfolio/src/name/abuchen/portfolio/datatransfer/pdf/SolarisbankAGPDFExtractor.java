@@ -14,10 +14,10 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
-    
+
     private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\w{3})$";
     private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Kartenzahlung|.berweisung|SEPA-Lastschrift|SEPA\\-.berweisung)(?<note>.*) (?<amount>\\-[\\.,\\d]+) (?<currency>\\w{3})$";
-    
+
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -26,8 +26,8 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
     public SolarisbankAGPDFExtractor(Client client)
     {
         super(client);
-        
-        addBankIdentifier("Solarisbank"); //$NON-NLS-1$
+
+        addBankIdentifier("Solarisbank");
 
         addAccountStatementTransaction();
     }
@@ -35,9 +35,9 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Solarisbank AG"; //$NON-NLS-1$
+        return "Solarisbank AG";
     }
-    
+
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Rechnungsabschluss");
@@ -52,7 +52,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
     }
 
-    
+
     private Transaction<AccountTransaction> depositTransaction(String regex)
     {
         return new Transaction<AccountTransaction>().subject(() -> {

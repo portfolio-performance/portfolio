@@ -24,8 +24,8 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("MLP Banking AG"); //$NON-NLS-1$
-        addBankIdentifier("MLP FDL AG"); //$NON-NLS-1$
+        addBankIdentifier("MLP Banking AG");
+        addBankIdentifier("MLP FDL AG");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -35,7 +35,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "MLP Banking AG"; //$NON-NLS-1$
+        return "MLP Banking AG";
     }
 
     private void addBuySellTransaction()
@@ -62,7 +62,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -92,7 +92,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     t.setShares(asShares(v.get("shares")));
 
                     // Handshake, if there is a tax refund
-                    context.put("shares", v.get("shares"));  
+                    context.put("shares", v.get("shares"));
                 })
 
                 // Schlusstag 14.01.2021
@@ -159,10 +159,10 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                 .match("^.* (?<type>(Aussch.ttung|Dividende|Ertrag|Thesaurierung brutto)) pro (St\\.|St.ck) [\\.,\\d]+ [\\w]{3}$")
                 .match("^Ausmachender Betrag [\\.,\\d]+(?<sign>(\\+|\\-))? (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("+"))
+                    if ("Thesaurierung brutto".equals(v.get("type")) && "+".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                    if (v.get("type").equals("Thesaurierung brutto") && v.get("sign").equals("-"))
+                    if ("Thesaurierung brutto".equals(v.get("type")) && "-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
@@ -259,9 +259,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
 
                     // Is sign --> "S" change from DEPOSIT to REMOVAL
-                    if (v.get("sign").equals("S"))
+                    if ("S".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.REMOVAL);
-                    
+
                     // create a long date from the year in the context
                     t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
@@ -269,7 +269,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("LASTSCHRIFTEINR."))
+                    if ("LASTSCHRIFTEINR.".equals(v.get("note")))
                         v.put("note", "Lastschrifteinr.");
 
                     t.setNote(v.get("note"));
@@ -300,9 +300,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is sign --> "S" change from FEES_REFUND to FEES
-                                            if (v.get("sign").equals("S"))
+                                            if ("S".equals(v.get("sign")))
                                                 t.setType(AccountTransaction.Type.FEES);
-                                            
+
                                             // create a long date from the year in the context
                                             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
@@ -310,16 +310,16 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                            if ("DEPOTPREIS".equals(v.get("note1")))
                                                 v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                            if ("DEPOTENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                            if ("VERWALTUNGSENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                            if ("VERMOEGENSDEPOT".equals(v.get("note1")))
                                                 v.put("note1", "Vermögensdepot");
 
                                             t.setNote(v.get("note1") + " " + v.get("note2"));
@@ -333,9 +333,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is sign --> "S" change from FEES_REFUND to FEES
-                                            if (v.get("sign").equals("S"))
+                                            if ("S".equals(v.get("sign")))
                                                 t.setType(AccountTransaction.Type.FEES);
-                                            
+
                                             // create a long date from the year in the context
                                             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
@@ -343,28 +343,28 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                            if ("DEPOTPREIS".equals(v.get("note1")))
                                                 v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                            if ("DEPOTENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                            if ("VERWALTUNGSENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                            if ("VERMOEGENSDEPOT".equals(v.get("note1")))
                                                 v.put("note1", "Vermögensdepot");
 
-                                            if (v.get("note3").equals("QUARTAL I"))
+                                            if ("QUARTAL I".equals(v.get("note3")))
                                                 v.put("note3", "Q1/");
 
-                                            if (v.get("note3").equals("QUARTAL II"))
+                                            if ("QUARTAL II".equals(v.get("note3")))
                                                 v.put("note3", "Q2/");
 
-                                            if (v.get("note3").equals("QUARTAL III"))
+                                            if ("QUARTAL III".equals(v.get("note3")))
                                                 v.put("note3", "Q3/");
 
-                                            if (v.get("note3").equals("QUARTAL IV"))
+                                            if ("QUARTAL IV".equals(v.get("note3")))
                                                 v.put("note3", "Q4/");
 
                                             t.setNote(v.get("note1") + " " + v.get("note3") + v.get("note2"));
@@ -378,9 +378,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is sign --> "S" change from FEES_REFUND to FEES
-                                            if (v.get("sign").equals("S"))
+                                            if ("S".equals(v.get("sign")))
                                                 t.setType(AccountTransaction.Type.FEES);
-                                            
+
                                             // create a long date from the year in the context
                                             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
@@ -388,28 +388,28 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("DEPOTPREIS"))
+                                            if ("DEPOTPREIS".equals(v.get("note1")))
                                                 v.put("note1", "Depotpreis");
 
-                                            if (v.get("note1").equals("DEPOTENTGELT"))
+                                            if ("DEPOTENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Depotentgelt");
 
-                                            if (v.get("note1").equals("VERWALTUNGSENTGELT"))
+                                            if ("VERWALTUNGSENTGELT".equals(v.get("note1")))
                                                 v.put("note1", "Verwaltungsentgeld");
 
-                                            if (v.get("note1").equals("VERMOEGENSDEPOT"))
+                                            if ("VERMOEGENSDEPOT".equals(v.get("note1")))
                                                 v.put("note1", "Vermögensdepot");
 
-                                            if (v.get("note3").equals("QUARTAL I"))
+                                            if ("QUARTAL I".equals(v.get("note3")))
                                                 v.put("note3", "Q1/");
 
-                                            if (v.get("note3").equals("QUARTAL II"))
+                                            if ("QUARTAL II".equals(v.get("note3")))
                                                 v.put("note3", "Q2/");
 
-                                            if (v.get("note3").equals("QUARTAL III"))
+                                            if ("QUARTAL III".equals(v.get("note3")))
                                                 v.put("note3", "Q3/");
 
-                                            if (v.get("note3").equals("QUARTAL IV"))
+                                            if ("QUARTAL IV".equals(v.get("note3")))
                                                 v.put("note3", "Q4/");
 
                                             t.setNote(v.get("note1") + " " + v.get("note3") + v.get("note2"));
@@ -424,9 +424,9 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             // Is sign --> "S" change from FEES_REFUND to FEES
-                                            if (v.get("sign").equals("S"))
+                                            if ("S".equals(v.get("sign")))
                                                 t.setType(AccountTransaction.Type.FEES);
-                                            
+
                                             // create a long date from the year in the context
                                             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
 
@@ -434,7 +434,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
 
                                             // Formatting some notes
-                                            if (v.get("note1").equals("ERSTATTUNG VERTRIEBSFOLGEPROVISION"))
+                                            if ("ERSTATTUNG VERTRIEBSFOLGEPROVISION".equals(v.get("note1")))
                                                 v.put("note1", "Erstattung Vertriebsfolgeprovision");
 
                                             t.setNote(v.get("note1") + " " + v.get("note2"));

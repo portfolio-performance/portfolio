@@ -61,7 +61,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^([\\s]+)?(?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }

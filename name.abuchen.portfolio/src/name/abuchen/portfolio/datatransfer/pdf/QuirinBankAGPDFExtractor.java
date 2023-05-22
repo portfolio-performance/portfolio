@@ -22,8 +22,8 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("quirin bank AG"); //$NON-NLS-1$
-        addBankIdentifier("Quirin Privatbank AG"); //$NON-NLS-1$
+        addBankIdentifier("quirin bank AG");
+        addBankIdentifier("Quirin Privatbank AG");
 
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
@@ -35,7 +35,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Quirin Privatbank AG"; //$NON-NLS-1$
+        return "Quirin Privatbank AG";
     }
 
     private void addBuySellTransaction_Format01()
@@ -59,7 +59,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -127,7 +127,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -138,7 +138,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 //
                 // Nominal/Stück Hewlett-Packard Co. Registered Shares DL -,01
                 // ST 150 ISIN US4282361033
-                // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR 
+                // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR
                 .section("name", "isin", "currency")
                 .match("^Nominal\\/St.ck (?<name>.*)$")
                 .match("^ST [\\.,\\d]+ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
@@ -191,7 +191,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR 
+                // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR
                 // Devisenkurs  1,267300
                 .section("fxGross", "fxCurrency", "gross", "currency", "exchangeRate").optional()
                 .match("^.* Kurswert ([\\-\\s])?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) ([\\-\\s])?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
@@ -268,7 +268,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
-                // Devisenkurs  1,309900  
+                // Devisenkurs  1,309900
                 .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
                 .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
                 .match("^(Bruttobetrag|Gross Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
@@ -328,7 +328,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^ST (?<shares>[\\.,\\d]+) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Zahlungstag 27.01.2010  
+                // Zahlungstag 27.01.2010
                 .section("date")
                 .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
@@ -340,7 +340,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 // The net amount is determined on the taxes and
                 // withholding taxes.
                 // formatter:on
-                
+
                 // Dividenden für 01.10.2008-30.09.2009 Bruttobetrag  83,20 EUR
                 // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
                 .section("amount", "currency")

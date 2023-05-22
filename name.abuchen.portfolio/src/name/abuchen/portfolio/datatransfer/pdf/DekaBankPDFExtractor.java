@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
@@ -40,7 +39,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("DekaBank"); //$NON-NLS-1$
+        addBankIdentifier("DekaBank");
 
         addBuySellTransaction();
         addSwapBuyTransaction();
@@ -54,7 +53,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DekaBank Deutsche Girozentrale"; //$NON-NLS-1$
+        return "DekaBank Deutsche Girozentrale";
     }
 
     private void addBuySellTransaction()
@@ -88,7 +87,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                 // ISIN: DE000DK0ECT0 Unterdepot: 00 Auftragsnummer: 8103 1017
                                 // =Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00 EUR 494,260000 Anteilumsatz: 8,093
                                 //
-                                // Fondsbezeichnung: Deka-GeldmarktPlan TF 
+                                // Fondsbezeichnung: Deka-GeldmarktPlan TF
                                 // ISIN: LU0268059614 Unterkonto: 00 Auftragsnummer: 8101 2521
                                 // = Abrechnungsbetrag EUR 400,00 EUR 400,00 EUR 996,160000 Anteilumsatz: 0,402
                                 // @formatter:on
@@ -383,7 +382,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 ,
                                 // @formatter:off
-                                // Fondsbezeichnung: AriDeka CF 
+                                // Fondsbezeichnung: AriDeka CF
                                 // ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
                                 // +Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
                                 // @formatter:on
@@ -473,7 +472,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 ,
                                 // @formatter:off
-                                // Fondsbezeichnung: AriDeka CF 
+                                // Fondsbezeichnung: AriDeka CF
                                 // ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
                                 // +Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
                                 // @formatter:on
@@ -547,7 +546,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("noTax").optional()
                 .match("^(?<noTax>\\+).*Verrechnete Steuern [\\w]{3} [\\.,\\d]+.*$")
-                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"))
+                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true))
 
                 .wrap(t -> {
                     // If we have multiple entries in the document, then
@@ -656,7 +655,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 if (mContractFeeDate.matches())
                     context.put("contractFeeDate", mContractFeeDate.group("contractFeeDate"));
             }
-                            
+
             // Create a helper to store the list of security items found in the document
             SecurityListHelper securityListHelper = new SecurityListHelper();
             context.putType(securityListHelper);
@@ -1401,9 +1400,9 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                                 // @formatter:off
-                                // Vertragspreis (zu Lasten Girokonto) -10,00  
+                                // Vertragspreis (zu Lasten Girokonto) -10,00
                                 // Vertragspreis (zu Lasten Vertrag)  0,00
-                                // Weitere Preise (zu Lasten Girokonto) 0,00  
+                                // Weitere Preise (zu Lasten Girokonto) 0,00
                                 // Weitere Preise (zu Lasten Vertrag)  0,00
                                 // Vertragspreis -10,00
                                 // Abschluss- und Vertriebskosten (Ausgabeaufschlag) -21,06
@@ -1427,7 +1426,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             // Formatting some notes
                                             if (t.getNote().startsWith("Abschluss"))
                                                 t.setNote("Abschluss-/ Vertriebskosten");
-                                            
+
                                             t.setNote(t.getNote() + " " + t.getDateTime().getYear());
                                         })
                                 ,
@@ -1518,15 +1517,15 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
-                                // Depotpreis inkl. 19% Mehrwertsteuer (MwSt): 
+                                // Depotpreis inkl. 19% Mehrwertsteuer (MwSt):
                                 // 12,50 EUR inkl. 2,00 EUR MwSt wurden für 2019 belastet
                                 // per 31.12.2019
                                 //
-                                // D epotpreis inkl. 19% MwSt: 
+                                // D epotpreis inkl. 19% MwSt:
                                 // 10,00 EUR wurden für 2012 belastet
                                 // Jahresdepotauszug per 31.12.2012
                                 //
-                                // Depotpreis inkl. Mehrwertsteuer (MwSt): 
+                                // Depotpreis inkl. Mehrwertsteuer (MwSt):
                                 // 0,00 EUR
                                 // @formatter:on
                                 section -> section
@@ -1579,7 +1578,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                     .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                             ,
                             // @formatter:off
-                            // Fondsbezeichnung: AriDeka CF 
+                            // Fondsbezeichnung: AriDeka CF
                             // ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
                             // +Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
                             // @formatter:on
@@ -1651,7 +1650,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^([\\-|\\+]).*Verrechnete Steuern (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 });
     }

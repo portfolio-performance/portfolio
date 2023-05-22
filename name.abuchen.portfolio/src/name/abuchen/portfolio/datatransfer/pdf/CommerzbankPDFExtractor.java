@@ -29,9 +29,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("C O M M E R Z B A N K"); //$NON-NLS-1$
-        addBankIdentifier("Commerzbank AG"); //$NON-NLS-1$
-        addBankIdentifier("COBADE"); //$NON-NLS-1$
+        addBankIdentifier("C O M M E R Z B A N K");
+        addBankIdentifier("Commerzbank AG");
+        addBankIdentifier("COBADE");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -42,7 +42,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Commerzbank AG"; //$NON-NLS-1$
+        return "Commerzbank AG";
     }
 
     private void addBuySellTransaction()
@@ -66,7 +66,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("(?<type>W e r t p a p i e r v e r k a u f)")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("W e r t p a p i e r v e r k a u f"))
+                    if ("W e r t p a p i e r v e r k a u f".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -85,7 +85,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // S t . 2 0 0 EUR 2 0 1 , 7 0 
+                // S t . 2 0 0 EUR 2 0 1 , 7 0
                 // Summe S t . 2 5 0 EUR 1 9 1 , 0 0 8 6 4 EUR 4 7 . 7 5 2 , 1 6
                 .section("shares")
                 .match("^(Summe )?S([\\s]+)?t([\\s]+)?\\. (?<shares>[\\.,\\d\\s]+) .*$")
@@ -146,7 +146,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(abgef.hrte Steuern|erstattete Steuern) [\\w]{3}(?<type>[\\-\\s]+)?[\\.,\\d\\s]+$")
                 .assign((t, v) -> {
-                    if (stripBlanks(v.get("type")).equals("-"))
+                    if ("-".equals(stripBlanks(v.get("type"))))
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
@@ -235,7 +235,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 // zum D e v i s e n k u r s : EUR/USD 1 ,098400 EUR 6 1 , 3 0
                 .section("fxCurrency", "fxGross", "exchangeRate", "baseCurrency", "termCurrency", "currency").optional()
                 .match("^B r u t t o b e t r a g : (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d\\s]+)$")
-                .match("^.* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d\\s]+) (?<currency>[\\w]{3}) [\\.,\\d\\s]+$")                     
+                .match("^.* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d\\s]+) (?<currency>[\\w]{3}) [\\.,\\d\\s]+$")
                 .assign((t, v) -> {
                     v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
 
@@ -278,7 +278,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
                 {
-                    if (m.group("currency").equals("Euro"))
+                    if ("Euro".equals(m.group("currency")))
                         context.put("currency", CurrencyUnit.EUR);
                 }
 
@@ -303,7 +303,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));          
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                             t.setCurrencyCode(context.get("currency"));
                         })
@@ -324,7 +324,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));     
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                             t.setCurrencyCode(context.get("currency"));
                         })

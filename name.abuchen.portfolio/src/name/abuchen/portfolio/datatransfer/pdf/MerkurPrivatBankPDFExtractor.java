@@ -17,7 +17,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Umsatzsteuer-ID DE198159260"); //$NON-NLS-1$
+        addBankIdentifier("Umsatzsteuer-ID DE198159260");
 
         addBuySellTransaction();
     }
@@ -25,7 +25,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "MERKUR PRIVATBANK KGaA"; //$NON-NLS-1$
+        return "MERKUR PRIVATBANK KGaA";
     }
 
     private void addBuySellTransaction()
@@ -41,25 +41,25 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
         });
 
         // @formatter:off
-        // Wertpapier Abrechnung Kauf 
+        // Wertpapier Abrechnung Kauf
         // @formatter:on
         Block firstRelevantLine = new Block("^Am Marktplatz.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction // @formatter:off
-                        // Wertpapier Abrechnung Verkauf 
+                        // Wertpapier Abrechnung Verkauf
                         // or
-                        // Wertpapier Abrechnung Kauf 
+                        // Wertpapier Abrechnung Kauf
                         // @formatter:on
                         .section("type").match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*").assign((t, v) -> {
-                            if (v.get("type").equals("Verkauf"))
+                            if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         // @formatter:off
                         // Stück 600 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
-                        // REGISTERED SHARES 1C O.N.     
+                        // REGISTERED SHARES 1C O.N.
                         // @formatter:on
                         .section("name", "name1", "isin", "wkn", "currency")
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
