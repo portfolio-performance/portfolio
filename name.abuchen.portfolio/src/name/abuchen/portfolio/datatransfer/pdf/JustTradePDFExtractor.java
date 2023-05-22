@@ -14,7 +14,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 public class JustTradePDFExtractor extends AbstractPDFExtractor
 {
     /***
-     * Information: 
+     * Information:
      * Sutor always provides the amount in EUR, column "Betrag in EUR"
      */
 
@@ -22,9 +22,9 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("justTRADE"); //$NON-NLS-1$
-        addBankIdentifier("Sutor"); //$NON-NLS-1$
-        addBankIdentifier("SUTOR BANK"); //$NON-NLS-1$
+        addBankIdentifier("justTRADE");
+        addBankIdentifier("Sutor");
+        addBankIdentifier("SUTOR BANK");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -34,7 +34,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Sutor Bank / justTRADE"; //$NON-NLS-1$
+        return "Sutor Bank / justTRADE";
     }
 
     private void addBuySellTransaction()
@@ -58,7 +58,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(Transaktionsart: |Wertpapier Abrechnung )?(?<type>(Kauf|Verkauf|F.lligkeit\\/Verfall))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Fälligkeit/Verfall"))
+                    if ("Verkauf".equals(v.get("type")) || "Fälligkeit/Verfall".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -100,7 +100,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (v.get("name").endsWith(":"))
                         v.put("name", v.get("name").substring(0, v.get("name").length()-1));
-                    
+
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -143,11 +143,11 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if (v.get("currency").equals("€"))
+                                            if ("€".equals(v.get("currency")))
                                                 v.put("currency", CurrencyUnit.EUR);
                                             else
                                                 v.put("currency", CurrencyUnit.USD);
-                                                
+
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
@@ -199,7 +199,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (v.get("name").endsWith(":"))
                         v.put("name", v.get("name").substring(0, v.get("name").length()-1));
-                    
+
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -254,7 +254,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^.* (?<type>(Kauf|Verkauf|Geb.hrentilgung)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Gebührentilgung"))
+                    if ("Verkauf".equals(v.get("type")) || "Gebührentilgung".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -640,7 +640,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("Kapitalertragssteuer: (?<currency>\\p{Sc})(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> {
-                    if (v.get("currency").equals("€"))
+                    if ("€".equals(v.get("currency")))
                         v.put("currency", CurrencyUnit.EUR);
                     else
                         v.put("currency", CurrencyUnit.USD);
@@ -657,7 +657,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("Solidarit.tszuschlag: (?<currency>\\p{Sc})(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> {
-                    if (v.get("currency").equals("€"))
+                    if ("€".equals(v.get("currency")))
                         v.put("currency", CurrencyUnit.EUR);
                     else
                         v.put("currency", CurrencyUnit.USD);
@@ -674,7 +674,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("Kirchensteuer: (?<currency>\\p{Sc})(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> {
-                    if (v.get("currency").equals("€"))
+                    if ("€".equals(v.get("currency")))
                         v.put("currency", CurrencyUnit.EUR);
                     else
                         v.put("currency", CurrencyUnit.USD);

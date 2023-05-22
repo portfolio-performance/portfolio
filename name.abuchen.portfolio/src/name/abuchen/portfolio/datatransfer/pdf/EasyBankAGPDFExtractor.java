@@ -26,7 +26,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("easybank Service Center"); //$NON-NLS-1$
+        addBankIdentifier("easybank Service Center");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -36,7 +36,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Easybank AG"; //$NON-NLS-1$
+        return "Easybank AG";
     }
 
     private void addBuySellTransaction()
@@ -60,13 +60,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Gesch.ftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
-                // Titel: DE000A0F5UK5  i S h . S T . E u . 6 00 Bas.Res.U.ETF DE 
-                // Inhaber-Anlageaktien               
-                // Kurs: 66,88 EUR 
+                // Titel: DE000A0F5UK5  i S h . S T . E u . 6 00 Bas.Res.U.ETF DE
+                // Inhaber-Anlageaktien
+                // Kurs: 66,88 EUR
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -112,7 +112,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         )
 
-                // Zu Lasten IBAN AT00 0000 0000 0000 0000 -468,43 EUR 
+                // Zu Lasten IBAN AT00 0000 0000 0000 0000 -468,43 EUR
                 .section("amount", "currency")
                 .match("^(Zu Lasten|Zu Gunsten) .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -157,7 +157,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                             if (t.getPortfolioTransaction().getNote() == null)
                                                 t.setNote(trim(v.get("note")));
                                             else
-                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note"))); //$NON-NLS-1$
+                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note")));
                                         })
                                 ,
                                 // Limit: 42,500000
@@ -168,7 +168,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                             if (t.getPortfolioTransaction().getNote() == null)
                                                 t.setNote(trim(v.get("note")));
                                             else
-                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note"))); //$NON-NLS-1$
+                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note")));
                                         })
                         )
 
@@ -192,9 +192,9 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                // Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG  
+                // Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG
                 // AKTIEN O.N.
-                // Dividende: 1,9 EUR 
+                // Dividende: 1,9 EUR
                 .section("isin", "name", "name1", "currency").optional()
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -206,10 +206,10 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
-                // Titel: DE000A14J587  t h y s s e n k r u p p AG                    
+                // Titel: DE000A14J587  t h y s s e n k r u p p AG
                 // Medium Term Notes v.15(25)
                 // Kup. 25.2.2023/GZJ Endfälligkeit 25.2.2025
-                // Zinsertrag für 365 Tage: 50,-- EUR 
+                // Zinsertrag für 365 Tage: 50,-- EUR
                 .section("isin", "name", "name1", "currency").optional()
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -235,7 +235,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .match("^(?<shares>[\\.,\\d]+) (?<notation>[\\w]{3}).*$")
                                         .assign((t, v) -> {
                                             // Percentage quotation, workaround for bonds
-                                            if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stk"))
+                                            if (v.get("notation") != null && !"Stk".equalsIgnoreCase(v.get("notation")))
                                             {
                                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -261,7 +261,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         )
 
-                // Zu Gunsten IBAN AT12 1234 1234 1234 1234 123,75 EUR 
+                // Zu Gunsten IBAN AT12 1234 1234 1234 1234 123,75 EUR
                 .section("amount", "currency")
                 .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -270,8 +270,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .optionalOneOf(
-                                // Ertrag: 0,279 USD 
-                                // Bruttoertrag: 336,16 USD 
+                                // Ertrag: 0,279 USD
+                                // Bruttoertrag: 336,16 USD
                                 // Devisenkurs: 1,06145 (11.5.2022) 316,70 EUR
                                 section -> section
                                         .attributes("termCurrency","fxGross", "fxCurrency", "exchangeRate", "currency")
@@ -415,7 +415,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Kapitalertragsteuer: -52,25 EUR 
+                // Kapitalertragsteuer: -52,25 EUR
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
@@ -434,17 +434,17 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^KESt Ausl.ndische Dividende: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Quellensteuer: -327,58 EUR 
+                // Quellensteuer: -327,58 EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
-                // Quellensteuer US-Emittent: -54,80 USD 
+                // Quellensteuer US-Emittent: -54,80 USD
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
-                // Umsatzsteuer: -0,62 EUR 
+                // Umsatzsteuer: -0,62 EUR
                 .section("tax", "currency").optional()
                 .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
@@ -463,12 +463,12 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Fremde Settlementspesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Fremde Spesen: -2,86 EUR 
+                // Fremde Spesen: -2,86 EUR
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Eigene Spesen: -1,28 EUR 
+                // Eigene Spesen: -1,28 EUR
                 .section("fee", "currency").optional()
                 .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
@@ -478,8 +478,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Devisenprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Grundgebühr: -3,-- EUR 
-                // Grundgebühr: -7,95 EUR 
+                // Grundgebühr: -3,-- EUR
+                // Grundgebühr: -7,95 EUR
                 .section("fee", "currency").optional()
                 .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))

@@ -27,26 +27,19 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class PostbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String isJointAccount = "isJointAccount"; //$NON-NLS-1$
+    private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*"); //$NON-NLS-1$
-        Boolean bJointAccount = false;
+        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*");
 
         for (String line : lines)
         {
-            Matcher m = pJointAccount.matcher(line);
-            if (m.matches())
+            if (pJointAccount.matcher(line).matches())
             {
-                context.put(isJointAccount, Boolean.TRUE.toString());
-                bJointAccount = true;
+                context.putBoolean(IS_JOINT_ACCOUNT, true);
                 break;
             }
         }
-
-        if (!bJointAccount)
-            context.put(isJointAccount, Boolean.FALSE.toString());
-
     };
 
     private static class PeriodicHelper
@@ -73,7 +66,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     /**
      * Represents the period on the account statement for the year and the currency
-     * 
+     *
      * <pre>
      *  year per period = year of transaction date
      *  currency per period = base currency of transaction
@@ -97,7 +90,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Postbank"); //$NON-NLS-1$
+        addBankIdentifier("Postbank");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -107,7 +100,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Deutsche Postbank AG"; //$NON-NLS-1$
+        return "Deutsche Postbank AG";
     }
 
     private void addBuySellTransaction()
@@ -141,7 +134,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Investmentfonds"))
+                    if ("Verkauf".equals(v.get("type")) || "Rücknahme Investmentfonds".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -164,7 +157,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<notation>(St.ck|[\\w]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
-                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("Stück"))
+                    if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
                         t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -220,7 +213,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                // Limit 43,00 EUR 
+                // Limit 43,00 EUR
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -232,7 +225,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                     if (t.getNote() == null)
                         t.setNote(trim(v.get("note")));
                     else
-                        t.setNote(trim(v.get("note") + " | " + t.getNote())); //$NON-NLS-1$
+                        t.setNote(trim(v.get("note") + " | " + t.getNote()));
                 })
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -379,7 +372,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                                 ,
-                                // Devisenkurs EUR / USD  0,9997  
+                                // Devisenkurs EUR / USD  0,9997
                                 // Zinsertrag 166,25 USD 166,30+ EUR
                                 section -> section
                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
@@ -417,7 +410,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* Art der Dividende (?<note>.*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                // Bestandsstichtag 13.09.2022 Laufzeit Zinsschein 180 Tag(e)     
+                // Bestandsstichtag 13.09.2022 Laufzeit Zinsschein 180 Tag(e)
                 .section("note").optional()
                 .match("^.* (?<note>Zinsschein .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -442,13 +435,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
             for (int i = 0; i < lines.length; i++)
             {
-                Matcher m = pTransactionPeriod.matcher(lines[i]);
-                if (m.matches())
+                Matcher mTransactionPeriod = pTransactionPeriod.matcher(lines[i]);
+                if (mTransactionPeriod.matches())
                 {
                     PeriodicItem item = new PeriodicItem();
                     item.periodicStartLine = i;
-                    item.year = Integer.parseInt(m.group("year"));
-                    item.baseCurrency = asCurrencyCode(m.group("baseCurrency"));
+                    item.year = Integer.parseInt(mTransactionPeriod.group("year"));
+                    item.baseCurrency = asCurrencyCode(mTransactionPeriod.group("baseCurrency"));
 
                     periodicHelper.items.add(item);
                 }
@@ -485,13 +478,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         t.setAmount(asAmount(v.get("amount")));
 
                         // Formatting some notes
-                        if (v.get("note").equals("D Gut SEPA"))
+                        if ("D Gut SEPA".equals(v.get("note")))
                             v.put("note", "Dauerauftrag");
 
                         // Formatting some notes
-                        if (v.get("note").equals("Gutschr.SEPA"))
+                        if ("Gutschr.SEPA".equals(v.get("note")))
                             v.put("note", "SEPA Überweisungsgutschrift");
-                        
+
                         t.setNote(v.get("note"));
                     }
                 })
@@ -532,9 +525,9 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         t.setAmount(asAmount(v.get("amount")));
 
                         // Formatting some notes
-                        if (v.get("note").equals("SEPA Überw. Einzel"))
+                        if ("SEPA Überw. Einzel".equals(v.get("note")))
                             v.put("note", "SEPA Überweisungslastschrift");
-                        
+
                         t.setNote(v.get("note"));
                     }
                 })
@@ -571,7 +564,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -582,7 +575,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -607,7 +600,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -618,7 +611,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));
@@ -643,7 +636,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -654,7 +647,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$")
                 .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (Boolean.parseBoolean(type.getCurrentContext().get(isJointAccount)))
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
                         // Account 1
                         v.put("currency", v.get("currency1"));

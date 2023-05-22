@@ -22,7 +22,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("NIBC Direct"); //$NON-NLS-1$
+        addBankIdentifier("NIBC Direct");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -31,7 +31,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "NIBC Bank N.V."; //$NON-NLS-1$
+        return "NIBC Bank N.V.";
     }
 
     private void addBuySellTransaction()
@@ -58,12 +58,12 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
                 // Stück 13 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
-                // REGISTERED SHARES USD DIS.ON       
+                // REGISTERED SHARES USD DIS.ON
                 // ACCIONES NOM. EO -,10
                 // Handels-/Ausführungsplatz Quotrix (gemäß Weisung)
                 // Kurswert 1.029,99- EUR

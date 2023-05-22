@@ -23,7 +23,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Commonwealth Securities Limited"); //$NON-NLS-1$
+        addBankIdentifier("Commonwealth Securities Limited");
 
         addBuySellTransaction();
     }
@@ -31,7 +31,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Commonwealth Securities Limited"; //$NON-NLS-1$
+        return "Commonwealth Securities Limited";
     }
 
     private void addBuySellTransaction()
@@ -41,9 +41,9 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -64,7 +64,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^WE HAVE (?<type>SOLD) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("SOLD"))
+                    if ("SOLD".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

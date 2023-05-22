@@ -13,14 +13,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
     public HelloBankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Hellobank"); //$NON-NLS-1$
-        addBankIdentifier("Hello bank!"); //$NON-NLS-1$
+        addBankIdentifier("Hellobank");
+        addBankIdentifier("Hello bank!");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -30,10 +31,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Hello Bank"; //$NON-NLS-1$
+        return "Hello Bank";
     }
 
-    @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("Gesch.ftsart: (Kauf|Verkauf|Kauf aus Dauerauftrag)");
@@ -55,12 +55,12 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Gesch.ftsart: (?<type>(Kauf|Verkauf|Kauf aus Dauerauftrag))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
-                // Titel: NO0003054108  M a r i n e  H a r v est ASA   
-                // Kurs: 140 NOK 
+                // Titel: NO0003054108  M a r i n e  H a r v est ASA
+                // Kurs: 140 NOK
                 .section("isin", "name", "nameContinued", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
@@ -88,7 +88,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Zu Lasten IBAN AT44 1925 0654 0668 9002 -1.118,80 EUR 
+                // Zu Lasten IBAN AT44 1925 0654 0668 9002 -1.118,80 EUR
                 .section("amount", "currency")
                 .match("^(Zu Lasten|Zu Gunsten) .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -96,9 +96,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Kurswert: -10.360,-- NOK 
-                // -10.360,-- NOK 
-                // Devisenkurs: 9,486 (3.7.2017) -1.092,14 EUR 
+                // Kurswert: -10.360,-- NOK
+                // -10.360,-- NOK
+                // Devisenkurs: 9,486 (3.7.2017) -1.092,14 EUR
                 .section("termCurrency", "fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
                 .match("^Kurs: [\\-\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
                 .match("^Kurswert: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
@@ -119,7 +119,6 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
         DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
@@ -134,9 +133,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                // Titel: NO0003054108  M a r i n e  H a r v est ASA                 
-                // Navne-Aksjer NK 7,50               
-                // Dividende: 3,2 NOK 
+                // Titel: NO0003054108  M a r i n e  H a r v est ASA
+                // Navne-Aksjer NK 7,50
+                // Dividende: 3,2 NOK
                 .section("isin", "name", "nameContinued", "currency")
                 .match("^Titel: (?<isin>[\\w]{12}) (?<name>.*)$")
                 .match("^(?<nameContinued>.*)$")
@@ -153,7 +152,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // Zu Gunsten IBAN AT44 1925 0654 0668 9002 48,71 EUR 
+                // Zu Gunsten IBAN AT44 1925 0654 0668 9002 48,71 EUR
                 .section("amount", "currency")
                 .match("^Zu Gunsten .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -161,9 +160,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Dividende: 3,2 NOK 
-                // Bruttoertrag: 640,-- NOK 
-                // Devisenkurs: 9,308 (5.9.2017) 49,85 EUR 
+                // Dividende: 3,2 NOK
+                // Bruttoertrag: 640,-- NOK
+                // Devisenkurs: 9,308 (5.9.2017) 49,85 EUR
                 .section("termCurrency","fxGross", "fxCurrency", "exchangeRate", "baseCurrency").optional()
                 .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$")
                 .match("^Bruttoertrag: (?<fxGross>[\\-\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
@@ -186,7 +185,6 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addInboundDelivery()
     {
         DocumentType type = new DocumentType("Freier Erhalt");
@@ -202,9 +200,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                     return transaction;
                 })
 
-                // Titel: DK0060534915  N o v o - N o r d i s k AS                    
-                // Navne-Aktier B DK -,20             
-                // Lieferpflichtiger: Depotnummer: 99147 
+                // Titel: DK0060534915  N o v o - N o r d i s k AS
+                // Navne-Aktier B DK -,20
+                // Lieferpflichtiger: Depotnummer: 99147
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>\\S*) (?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -212,7 +210,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     if (!v.get("name1").startsWith("Kurs") || !v.get("name1").startsWith("Verwahrart"))
                         v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-                    
+
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
@@ -237,56 +235,54 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Kapitalertragsteuer: -254,10 AUD 
+                // Kapitalertragsteuer: -254,10 AUD
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // KESt Ausländische Dividende: -176,01 NOK 
+                // KESt Ausländische Dividende: -176,01 NOK
                 .section("tax", "currency").optional()
                 .match("^KESt Ausl.ndische Dividende: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
-                // Quellensteuer US-Emittent: -3,05 USD 
+                // Quellensteuer US-Emittent: -3,05 USD
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
-                // Quellensteuer: -8,81 EUR 
+                // Quellensteuer: -8,81 EUR
                 .section("withHoldingTax", "currency").optional()
                 .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
-                // Umsatzsteuer: -0,19 EUR 
+                // Umsatzsteuer: -0,19 EUR
                 .section("tax", "currency").optional()
                 .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // Fremde Spesen: -25,20 EUR 
+                // Fremde Spesen: -25,20 EUR
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Eigene Spesen: -6,42 EUR 
+                // Eigene Spesen: -6,42 EUR
                 .section("fee", "currency").optional()
                 .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Inkassoprovision: -0,95 EUR 
+                // Inkassoprovision: -0,95 EUR
                 .section("fee", "currency").optional()
                 .match("^Inkassoprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Grundgebühr: -1,46 EUR 
+                // Grundgebühr: -1,46 EUR
                 .section("fee", "currency").optional()
                 .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));

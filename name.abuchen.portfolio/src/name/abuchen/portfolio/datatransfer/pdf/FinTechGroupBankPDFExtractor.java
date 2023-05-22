@@ -32,10 +32,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("biw AG"); //$NON-NLS-1$
-        addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("flatex Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("flatexDEGIRO Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("biw AG");
+        addBankIdentifier("FinTech Group Bank AG");
+        addBankIdentifier("flatex Bank AG");
+        addBankIdentifier("flatexDEGIRO Bank AG");
 
         addBuySellTransaction();
         addSummaryStatementBuySellTransaction();
@@ -53,7 +53,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "flatexDEGIRO Bank AG / FinTech Group Bank AG / biw AG"; //$NON-NLS-1$
+        return "flatexDEGIRO Bank AG / FinTech Group Bank AG / biw AG";
     }
 
     private void addBuySellTransaction()
@@ -136,7 +136,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
 
                         if (t.getPortfolioTransaction().getType().isPurchase())
-                            type.getCurrentContext().put("isPurchaseBonds", "X");
+                            type.getCurrentContext().putBoolean("isPurchaseBonds", true);
                     }
                     else
                     {
@@ -246,7 +246,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
                                                 t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
@@ -268,7 +268,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
@@ -294,7 +294,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
                                                 t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
@@ -316,7 +316,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
@@ -485,7 +485,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
                                             {
-                                                type.getCurrentContext().put("negative", "X");
+                                                type.getCurrentContext().putBoolean("negative", true);
 
                                                 Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
 
@@ -499,7 +499,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                             }
                                             else if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
                                             {
-                                                type.getCurrentContext().put("negative", "X");
+                                                type.getCurrentContext().putBoolean("negative", true);
 
                                                 t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
                                                 t.setAmount(asAmount(v.get("gross")));
@@ -518,7 +518,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
                                             {
-                                                type.getCurrentContext().put("negative", "X");
+                                                type.getCurrentContext().putBoolean("negative", true);
 
                                                 t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
                                                 t.setAmount(asAmount(v.get("gross")));
@@ -543,7 +543,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
@@ -566,7 +566,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                             {
-                                                type.getCurrentContext().put("negativeTax", "X");
+                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
                                                 t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
@@ -765,7 +765,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negative", "X");
+                                            type.getCurrentContext().putBoolean("negative", true);
 
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
@@ -804,7 +804,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negative", "X");
+                                            type.getCurrentContext().putBoolean("negative", true);
 
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
@@ -952,7 +952,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
-                    type.getCurrentContext().put("negative", "X");
+                    type.getCurrentContext().putBoolean("negative", true);
 
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(v.get("amount")));
@@ -1574,6 +1574,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Depotausgang|Gutschrifts\\- \\/ Belastungsanzeige)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^([\\s]+)?Frankfurt( am Main)?, ([\\s]+)?(den )?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+
             for (String line : lines)
             {
                 Matcher mDate = pDate.matcher(line);
@@ -1900,6 +1901,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("Wertpapierabrechnung Vorabpauschale", (context, lines) -> {
             Pattern pDate = Pattern.compile("^Buchungsdatum ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$");
+
             for (String line : lines)
             {
                 Matcher m = pDate.matcher(line);
@@ -2158,7 +2160,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             if (!t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
@@ -2186,7 +2188,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<currency>[\\w]{3}) ([\\s]+)?\\-(?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -2205,7 +2207,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             if (!t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
@@ -2234,7 +2236,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -2330,7 +2332,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs ([\\s]+)?: (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             if (!t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
@@ -2358,7 +2360,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            type.getCurrentContext().put("negativeTax", "X");
+                                            type.getCurrentContext().putBoolean("negativeTax", true);
 
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -2446,7 +2448,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                     if (v.get("negative").startsWith("-"))
-                        type.getCurrentContext().put("negative", "X");
+                        type.getCurrentContext().putBoolean("negative", true);
                 })
 
                 .optionalOneOf(
@@ -2457,7 +2459,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("exchangeRate", "fxAmount", "fxCurrency")
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* Provision([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2469,7 +2471,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                 t.setMonetaryAmount(amount);
                                             }
-                                            else if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
                                                 t.setAmount(asAmount(v.get("fxAmount")));
@@ -2483,7 +2485,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^.* Provision([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                 t.setAmount(asAmount(v.get("amount")));
@@ -2499,7 +2501,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("exchangeRate", "fxCurrency", "fxAmount")
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* Provision([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2520,7 +2522,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                 t.setAmount(asAmount(v.get("amount")));
@@ -2538,7 +2540,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Eigene Spesen([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2550,7 +2552,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
                                             }
-                                            else if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2564,7 +2566,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^.* Eigene Spesen([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2582,7 +2584,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Eigene Spesen([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2594,7 +2596,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
                                             }
-                                            else if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2608,7 +2610,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2626,7 +2628,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2638,7 +2640,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
                                             }
-                                            else if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2652,7 +2654,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^.* \\*Fremde Spesen([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2670,7 +2672,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
                                             {
                                                 Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
 
@@ -2682,7 +2684,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
                                             }
-                                            else if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2696,7 +2698,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            if ("X".equals(type.getCurrentContext().get("negative")) && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
                                             {
                                                 Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
@@ -2880,7 +2882,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("withHoldingTax", "currency").optional()
                 .match("^.* Gez\\. (Quellenst\\.|Quellensteuer)([:\\s]+)? (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 })
 
@@ -2892,7 +2894,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                     {
                         Money tax = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("tax")));
 
@@ -2918,7 +2920,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                     {
                         Money tax = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("tax")));
 
@@ -2943,7 +2945,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("^.* \\*\\*\\*Einbeh\\. SichSt([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                     {
                         Money tax = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("tax")));
 
@@ -2968,7 +2970,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^.* \\*Einbeh\\. Steuer([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -2978,7 +2980,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^.* Einbeh\\. Steuer\\*([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -2988,7 +2990,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Steuerbetrag\\*\\* .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negativeTax")) && !"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                         processTaxEntries(t, v, type);
                 });
     }
@@ -3005,7 +3007,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* Provision([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                     {
                         Money fee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
 
@@ -3030,7 +3032,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                     {
                         Money fee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
 
@@ -3056,7 +3058,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* Eigene Spesen([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3066,7 +3068,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3077,7 +3079,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3087,7 +3089,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3097,7 +3099,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* Gesamtgeb.hr([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")))
+                    if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3107,7 +3109,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* Zinsbetrag([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && "X".equals(type.getCurrentContext().get("isPurchaseBonds")))
+                    if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -3117,7 +3119,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^.* Zinsbetrag([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && "X".equals(type.getCurrentContext().get("isPurchaseBonds")))
+                    if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
                         processFeeEntries(t, v, type);
                 });
     }
@@ -3125,17 +3127,17 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);

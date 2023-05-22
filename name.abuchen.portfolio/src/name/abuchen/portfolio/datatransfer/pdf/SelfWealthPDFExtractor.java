@@ -20,8 +20,8 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("SelfWealth"); //$NON-NLS-1$
-        addBankIdentifier("Selfwealth"); //$NON-NLS-1$
+        addBankIdentifier("SelfWealth");
+        addBankIdentifier("Selfwealth");
 
         addBuySellTransaction();
     }
@@ -29,7 +29,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "SelfWealth Ltd"; //$NON-NLS-1$
+        return "SelfWealth Ltd";
     }
 
     private void addBuySellTransaction()
@@ -54,7 +54,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Buy|Sell)) Confirmation$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Sell"))
+                    if ("Sell".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

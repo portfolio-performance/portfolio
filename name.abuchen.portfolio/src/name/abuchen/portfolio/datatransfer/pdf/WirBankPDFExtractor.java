@@ -25,7 +25,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("WIR Bank"); //$NON-NLS-1$
+        addBankIdentifier("WIR Bank");
 
         addDepositTransaction();
         addBuySellTransaction();
@@ -37,7 +37,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "WIR Bank Genossenschaft"; //$NON-NLS-1$
+        return "WIR Bank Genossenschaft";
     }
 
     private void addDepositTransaction()
@@ -90,7 +90,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(B.rsenabrechnung|Exchange Settlement) \\- (?<type>(Kauf|Verkauf|Buy|Sell)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Sell"))
+                    if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -230,7 +230,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(Dividendenart|Type of dividend): (?<type>(R.ckerstattung Quellensteuer|Refund withholding tax))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Rückerstattung Quellensteuer") || v.get("type").equals("Refund withholding tax"))
+                    if ("Rückerstattung Quellensteuer".equals(v.get("type")) || "Refund withholding tax".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
                 })
 
@@ -285,7 +285,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // Betrag USD 34.26
-                                // Umrechnungskurs CHF/USD 
+                                // Umrechnungskurs CHF/USD
                                 // 0.91759 CHF 31.44
                                 section -> section
                                         .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
@@ -333,18 +333,18 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

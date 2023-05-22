@@ -26,13 +26,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("BROKERJET"); //$NON-NLS-1$
-        addBankIdentifier("Brokerjet Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("ERSTE BANK"); //$NON-NLS-1$
-        addBankIdentifier("FB-Nr."); //$NON-NLS-1$
-        addBankIdentifier("Sparkasse Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("www.sparkasse.at"); //$NON-NLS-1$
-        addBankIdentifier("www.erstebank.at"); //$NON-NLS-1$
+        addBankIdentifier("BROKERJET");
+        addBankIdentifier("Brokerjet Bank AG");
+        addBankIdentifier("ERSTE BANK");
+        addBankIdentifier("FB-Nr.");
+        addBankIdentifier("Sparkasse Bank AG");
+        addBankIdentifier("www.sparkasse.at");
+        addBankIdentifier("www.erstebank.at");
 
         addBuySellTransaction_DocFormat01();
         addBuySellTransaction_DocFormat02();
@@ -44,7 +44,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Erste Bank Gruppe / Österreichischen Sparkassenverbands / BrokerJet"; //$NON-NLS-1$
+        return "Erste Bank Gruppe / Österreichischen Sparkassenverbands / BrokerJet";
     }
 
     private void addBuySellTransaction_DocFormat01()
@@ -68,7 +68,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(IHR )?(?<type>(KAUF|VERKAUF))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("VERKAUF"))
+                    if ("VERKAUF".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -356,7 +356,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^.*(?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -1086,25 +1086,25 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 
@@ -1114,25 +1114,25 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 
@@ -1142,25 +1142,25 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int apostrophe = value.indexOf("\'"); //$NON-NLS-1$
+        int apostrophe = value.indexOf("\'");
         if (apostrophe >= 0)
         {
-            language = "de"; //$NON-NLS-1$
-            country = "CH"; //$NON-NLS-1$
+            language = "de";
+            country = "CH";
         }
         else
         {
-            int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-            int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+            int lastDot = value.lastIndexOf(".");
+            int lastComma = value.lastIndexOf(",");
 
             // returns the greater of two int values
             if (Math.max(lastDot, lastComma) == lastDot)
             {
-                language = "en"; //$NON-NLS-1$
-                country = "US"; //$NON-NLS-1$
+                language = "en";
+                country = "US";
             }
         }
 

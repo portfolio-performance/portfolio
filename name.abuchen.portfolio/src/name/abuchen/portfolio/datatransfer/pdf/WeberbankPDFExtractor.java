@@ -19,9 +19,9 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("BLZ 101 201 00"); //$NON-NLS-1$
-        addBankIdentifier("BLZ 10120100"); //$NON-NLS-1$
-        addBankIdentifier("BIC WELADED1WBB"); //$NON-NLS-1$
+        addBankIdentifier("BLZ 101 201 00");
+        addBankIdentifier("BLZ 10120100");
+        addBankIdentifier("BIC WELADED1WBB");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -30,7 +30,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Weberbank AG"; //$NON-NLS-1$
+        return "Weberbank AG";
     }
 
     private void addBuySellTransaction()
@@ -54,7 +54,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

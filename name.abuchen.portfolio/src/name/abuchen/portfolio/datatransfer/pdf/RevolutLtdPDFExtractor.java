@@ -26,7 +26,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Revolut Trading Ltd"); //$NON-NLS-1$
+        addBankIdentifier("Revolut Trading Ltd");
 
         addBuySellTransaction();
         addAccountStatementTransaction();
@@ -35,7 +35,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Revolut Trading Ltd."; //$NON-NLS-1$
+        return "Revolut Trading Ltd.";
     }
 
     private void addBuySellTransaction()
@@ -49,7 +49,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
             entry.setType(PortfolioTransaction.Type.BUY);
             return entry;
         });
-        
+
         Block firstRelevantLine = new Block("^Order details$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -59,7 +59,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^.* (?<type>Sell) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Sell"))
+                    if ("Sell".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -91,8 +91,8 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 
     /***
      * Information:
-     * We cannot import in the bank statement the purchases, 
-     * sales, dividends, etc. because the amounts of price and 
+     * We cannot import in the bank statement the purchases,
+     * sales, dividends, etc. because the amounts of price and
      * number of shares are not correctly reported.
      */
     private void addAccountStatementTransaction()
