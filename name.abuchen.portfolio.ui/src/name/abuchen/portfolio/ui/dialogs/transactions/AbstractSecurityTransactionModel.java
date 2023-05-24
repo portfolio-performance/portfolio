@@ -196,10 +196,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
      * quote (2 digits currently) and the exchange rate (4 digits), the gross
      * value and converted gross value are checked against a range.
      */
-    private IStatus calculateStatus()
+    protected IStatus calculateStatus()
     {
+        if (shares < 0L)
+            return ValidationStatus.error(String.format(Messages.CellEditor_NotANumber, shares));
+
         if (shares == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
+
+        if (quote.signum() == -1)
+            return ValidationStatus.error(String.format(Messages.CellEditor_NotANumber, quote));
 
         if ((grossValue == 0L || convertedGrossValue == 0L) && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus
@@ -274,7 +280,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         // do not auto-suggest shares and quote when editing an existing transaction
         if (hasSource())
             return;
-        
+
         if (type == PortfolioTransaction.Type.SELL || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
         {
             boolean hasPosition = false;
@@ -622,7 +628,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         }
     }
 
-    private long calculateTotal()
+    protected long calculateTotal()
     {
         long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
 
