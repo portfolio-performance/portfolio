@@ -63,6 +63,7 @@ import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -255,8 +256,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             this.tickerSymbol = model.getTickerSymbol();
 
-            if (this.tickerSymbol.isEmpty() && feed != null
-                            && (feed.getId().startsWith(YAHOO) || feed.getId().equals(LeewayQuoteFeed.ID)))
+            if (this.tickerSymbol.isEmpty() && feed != null && (feed.getId().startsWith(YAHOO) //
+                            || feed.getId().equals(LeewayQuoteFeed.ID) //
+                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {
                 setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));
             }
@@ -358,6 +360,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         if (comboExchange != null && feed.getId() != null && (feed.getId().startsWith(YAHOO) //
                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                         || feed.getId().equals(LeewayQuoteFeed.ID) //
+                        || feed.getId().equals(TwelveDataQuoteFeed.ID) //
                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
@@ -498,7 +501,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
                                         || feed.getId().equals(PortfolioReportQuoteFeed.ID) //
-                                        || feed.getId().equals(LeewayQuoteFeed.ID));
+                                        || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                        || feed.getId().equals(TwelveDataQuoteFeed.ID));
 
         boolean feedURL = feed != null && feed.getId() != null && //
                         (feed.getId().equals(HTMLTableQuoteFeed.ID) //
@@ -776,6 +780,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && //
                         (feed.getId().startsWith(YAHOO) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                        || feed.getId().equals(TwelveDataQuoteFeed.ID) //
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
@@ -906,8 +911,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (!exchangeSelected)
                 comboExchange.setSelection(null);
 
-            if (this.tickerSymbol == null || this.tickerSymbol.isEmpty()
-                            && (feed.getId().startsWith(YAHOO) || feed.getId().equals(LeewayQuoteFeed.ID)))
+            if (this.tickerSymbol == null || this.tickerSymbol.isEmpty() && //
+                            (feed.getId().startsWith(YAHOO) //
+                                            || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {
                 setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));
             }

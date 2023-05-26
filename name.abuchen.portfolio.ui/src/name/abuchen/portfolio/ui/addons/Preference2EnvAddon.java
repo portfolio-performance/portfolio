@@ -16,6 +16,8 @@ import name.abuchen.portfolio.online.impl.FinnhubSearchProvider;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewaySearchProvider;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
+import name.abuchen.portfolio.online.impl.TwelveDataSearchProvider;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.util.FormatHelper;
@@ -65,8 +67,15 @@ public class Preference2EnvAddon
 
     @Inject
     @Optional
-    public void setDivvyDiaryApiKey(
-                    @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
+    public void setTwelveDataApiKey(@Preference(value = UIConstants.Preferences.TWELVEDATA_API_KEY) String twelvedataApiKey)
+    {
+        Factory.getQuoteFeed(TwelveDataQuoteFeed.class).setApiKey(twelvedataApiKey);
+        Factory.getSearchProvider(TwelveDataSearchProvider.class).setApiKey(twelvedataApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setDivvyDiaryApiKey(@Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
     {
         Factory.getDividendFeed(DivvyDiaryDividendFeed.class).setApiKey(divvyDiaryApiKey);
         Factory.getSearchProvider(DivvyDiarySearchProvider.class).setApiKey(divvyDiaryApiKey);

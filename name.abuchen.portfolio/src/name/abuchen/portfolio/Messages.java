@@ -158,10 +158,20 @@ public class Messages extends NLS
     public static String LabelReportingPeriodYTD;
     public static String LabelSearchAll;
     public static String LabelSearchBond;
+    public static String LabelSearchCloseEndFund;
+    public static String LabelSearchCryptoCurrency;
+    public static String LabelSearchCurrency;
     public static String LabelSearchETC;
     public static String LabelSearchETF;
+    public static String LabelSearchETN;
     public static String LabelSearchFund;
+    public static String LabelSearchFuture;
+    public static String LabelSearchIndex;
+    public static String LabelSearchPreferredStock;
+    public static String LabelSearchMutualFund;
+    public static String LabelSearchReit;
     public static String LabelSearchShare;
+    public static String LabelSearchWarrant;
     public static String LabelSecurity;
     public static String LabelSecurityPrice;
     public static String LabelStatementOfAssets;
@@ -270,6 +280,7 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
     public static String MsgErrorTransactionTypeNotSupported;
+    public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;
