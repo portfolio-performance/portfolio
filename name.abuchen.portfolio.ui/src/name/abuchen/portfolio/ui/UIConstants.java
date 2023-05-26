@@ -183,6 +183,8 @@ public interface UIConstants
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
         String LEEWAY_API_KEY = "LEEWAY_API_KEY"; //$NON-NLS-1$
+
+        String TWELVEDATA_API_KEY = "TWELVEDATA_API_KEY"; //$NON-NLS-1$
         
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
 

@@ -36,6 +36,7 @@
 			<filename>exchange-labels</filename>
 			<excludes>
 				<string>leeway.*</string>
+				<string>mic-ISO-10383.*</string>
 			</excludes>
 		</artifact>
 		<artifact>

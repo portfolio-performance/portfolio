@@ -38,6 +38,7 @@ import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -223,6 +224,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return KrakenQuoteFeed.ID + getModel().getTickerSymbol();
         else if (LeewayQuoteFeed.ID.equals(getFeed()))
             return LeewayQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (TwelveDataQuoteFeed.ID.equals(getFeed()))
+            return TwelveDataQuoteFeed.ID + getModel().getTickerSymbol();
         else if (CoinGeckoQuoteFeed.ID.equals(getFeed()))
             return CoinGeckoQuoteFeed.ID //
                             + getModel().getTickerSymbol() //
