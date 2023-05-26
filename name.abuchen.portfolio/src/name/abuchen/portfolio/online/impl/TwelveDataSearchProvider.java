@@ -13,56 +13,56 @@ import org.json.simple.JSONValue;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.util.Isin;
 import name.abuchen.portfolio.util.WebAccess;
 
 /**
- * @see https://leeway.tech/api-doc/general?lang=ger&dataapi=true
- * @implNote https://api.leeway.tech/swagger_output.json
- * @apiNote There are only 50 API/day available, so only query with validated
- *          ISIN.
- *          Returns marketplaces which also have historical prices.
+ * @see https://cran.r-project.org/web/packages/td/td.pdf
+ * @implNote https://twelvedata.com/docs#getting-started
+ * @apiNote There are only 800 API/day and 8 API/minute available.
+ *          The stock exchanges are created using the four-digit market identifier codes. 
+ *          These are listed according to ISO-10383.
  *
  * @formatter:off
- * @array [
- *          {
- *              "Code": "SAP",
- *              "Exchange": "XETRA",
- *              "Name": "SAP SE",
- *              "Type": "Common Stock",
- *              "ISIN": "DE0007164600",
- *              "previousClose": 122.6,
- *              "previousCloseDate": "2023-05-09",
- *              "countryName": "Germany",
- *              "currencyCode": "EUR"
- *          }
- *        ]
+ * @json {
+ *          "data": [
+ *                      {
+ *                      "symbol": "SAP",
+ *                      "instrument_name": "SAP SE",
+ *                      "exchange": "XETR",
+ *                      "mic_code": "XETR",
+ *                      "exchange_timezone": "Europe/Berlin",
+ *                      "instrument_type": "Common Stock",
+ *                      "country": "Germany",
+ *                      "currency": "EUR"
+ *                      }
+ *              ]
+ *         "status": "ok"
+ *      }
  * @formatter:on
  */
 
-public class LeewaySearchProvider implements SecuritySearchProvider
+public class TwelveDataSearchProvider implements SecuritySearchProvider
 {
     static class Result implements ResultItem
     {
         private String symbol;
-        private String exchange;
         private String name;
+        private String exchange;
         private String type;
-        private String isin;
         private String currencyCode;
 
         @SuppressWarnings("nls")
         public static Result from(JSONObject json)
         {
             // Extract values from the JSON object
-            String tickerSymbol = (String) json.get("Code");
-            String exchange = (String) json.get("Exchange");
-            String name = (String) json.get("Name");
-            String type = (String) json.get("Type");
-            String isin = (String) json.get("ISIN");
-            String currencyCode = (String) json.get("currencyCode");
+            String tickerSymbol = (String) json.get("symbol");
+            String name = (String) json.get("instrument_name");
+            String exchange = (String) json.get("mic_code");
+            String type = (String) json.get("instrument_type");
+            String currencyCode = (String) json.get("currency");
 
-            // Convert the security type using the SecuritySearchProvider instance
+            // Convert the security type using the SecuritySearchProvider
+            // instance
             type = SecuritySearchProvider.convertType(trim(type.toLowerCase()));
 
             // Combine the symbol and exchange codes to create the security ID
@@ -70,17 +70,16 @@ public class LeewaySearchProvider implements SecuritySearchProvider
             symbol.append(".");
             symbol.append(exchange);
 
-            return new Result(isin, symbol.toString(), currencyCode, name, type, exchange);
+            return new Result(symbol.toString(), name, exchange, type, currencyCode);
         }
 
-        public Result(String isin, String symbol, String currencyCode, String name, String type, String exchange)
+        public Result(String symbol, String name, String exchange, String type, String currencyCode)
         {
-            this.isin = isin;
             this.symbol = symbol;
             this.name = name;
+            this.exchange = exchange;
             this.type = type;
             this.currencyCode = currencyCode;
-            this.exchange = exchange;
         }
 
         @Override
@@ -110,7 +109,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public String getIsin()
         {
-            return isin;
+            return null;
         }
 
         @Override
@@ -143,14 +142,13 @@ public class LeewaySearchProvider implements SecuritySearchProvider
             Security security = new Security();
             security.setName(name);
             security.setTickerSymbol(symbol);
-            security.setIsin(isin);
             security.setCurrencyCode(currencyCode);
-            security.setFeed(LeewayQuoteFeed.ID);
+            security.setFeed(TwelveDataQuoteFeed.ID);
             return security;
         }
     }
 
-    private static final String NAME = "PWP Leeway UG"; //$NON-NLS-1$
+    private static final String NAME = "Twelve Data"; //$NON-NLS-1$
     private String apiKey;
 
     @Override
@@ -169,27 +167,32 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     {
         List<ResultItem> answer = new ArrayList<>();
 
-        if (Isin.isValid(query))
-            addISINSearchPage(answer, query.trim());
+        addStockSearchPage(answer, query.trim());
 
         return answer;
     }
 
     @SuppressWarnings("nls")
-    private void addISINSearchPage(List<ResultItem> answer, String query) throws IOException
+    private void addStockSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query)
-                        .addParameter("apitoken", apiKey)
+        String json = new WebAccess("api.twelvedata.com", "/symbol_search") //
+                        .addParameter("apikey", apiKey) //
+                        .addParameter("symbol", query) //
                         .get();
 
-        extract(answer, array);
+        extract(answer, json);
     }
 
-    void extract(List<ResultItem> answer, String array)
+    void extract(List<ResultItem> answer, String json)
     {
-        JSONArray jsonArray = (JSONArray) JSONValue.parse(array);
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
 
-        if (jsonArray.isEmpty())
+        if (jsonObject.isEmpty())
+            return;
+
+        JSONArray jsonArray = (JSONArray) jsonObject.get("data"); //$NON-NLS-1$
+
+        if (jsonArray == null || jsonArray.isEmpty())
             return;
 
         for (Object element : jsonArray)

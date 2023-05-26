@@ -1056,6 +1056,7 @@ public class Messages extends NLS
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
+    public static String PrefDescriptionTwelveData;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
     public static String PrefFinnhubAPIKey;
@@ -1100,6 +1101,8 @@ public class Messages extends NLS
     public static String PrefTitleLeeway;
     public static String PrefTitlePortfolioReport;
     public static String PrefTitleQuandl;
+    public static String PrefTitleTwelveData;
+    public static String PrefTwelveDataAPIKey;
     public static String PresetsPrefPageDescription;
     public static String PresetsPrefPageNow;
     public static String PresetsPrefPageStartOfDay;
