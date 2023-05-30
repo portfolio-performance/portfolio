@@ -273,6 +273,7 @@ public class SecuritiesChart
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
         SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits), //
+        SHOW_PERCENTAGE_AXIS(Messages.LabelChartDetailSettingsShowPercentageAxis), //
         SHOW_MAIN_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesMain), //
         SHOW_PERCENTAGE_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesPercentage);
 
@@ -672,6 +673,7 @@ public class SecuritiesChart
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         subMenuChartSettings.add(new Separator());
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_AXIS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES));
         manager.add(subMenuChartScaling);
@@ -713,6 +715,12 @@ public class SecuritiesChart
                     case PURCHASEPRICE:
                         chartConfig.remove(ChartDetails.CLOSING);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
+                        break;
+                    case SHOW_MAIN_HORIZONTAL_LINES:
+                        chartConfig.remove(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES);
+                        break;
+                    case SHOW_PERCENTAGE_HORIZONTAL_LINES:
+                        chartConfig.remove(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
                         break;
                     default:
                         break;
@@ -896,14 +904,20 @@ public class SecuritiesChart
             {
                 yAxis3rd.setRange(new Range(yAxis1st.getRange().lower / firstQuote - 1,
                                 yAxis1st.getRange().upper / firstQuote - 1));
-                // hide percentage axis in logarithmic mode
-                yAxis3rd.getTick().setVisible(!chartConfig.contains(ChartDetails.SCALING_LOG));
             }
 
             yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
             yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
+            // hide percentage axis in logarithmic mode
+            yAxis3rd.getTick().setVisible(chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_AXIS)
+                            && !chartConfig.contains(ChartDetails.SCALING_LOG));
+
+            // ensure that at least one set of horizontal lines is shown
+            if (!chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES)
+                            && !chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES))
+                chartConfig.add(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
 
             if (chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
                 yAxis1st.getGrid().setStyle(LineStyle.DOT);
@@ -1082,8 +1096,7 @@ public class SecuritiesChart
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
-        @SuppressWarnings("nls")
-        String lineID = smaSeries + " (" + smaDaysWording + ")";
+        String lineID = smaSeries + " (" + smaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(smaLines.getDates());
@@ -1104,8 +1117,7 @@ public class SecuritiesChart
         if (emaLines == null || emaLines.getValues() == null || emaLines.getDates() == null)
             return;
 
-        @SuppressWarnings("nls")
-        String lineID = emaSeries + " (" + emaDaysWording + ")";
+        String lineID = emaSeries + " (" + emaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         ILineSeries lineSeriesEMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesEMA.setXDateSeries(emaLines.getDates());
