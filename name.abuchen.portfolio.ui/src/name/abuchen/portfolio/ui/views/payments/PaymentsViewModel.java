@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
@@ -31,9 +29,6 @@ import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
 public class PaymentsViewModel
@@ -131,11 +126,10 @@ public class PaymentsViewModel
 
     private List<UpdateListener> listeners = new ArrayList<>();
 
-    private final AbstractFinanceView view;
     private CurrencyConverter converter;
     private final Client client;
 
-    private final ClientFilterMenu clientFilter;
+    private Client filteredClient;
 
     private int startYear;
     private int noOfmonths;
@@ -148,24 +142,11 @@ public class PaymentsViewModel
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
 
-    public PaymentsViewModel(AbstractFinanceView view, IPreferenceStore preferences, CurrencyConverter converter,
-                    Client client)
+    public PaymentsViewModel(CurrencyConverter converter, Client client)
     {
-        this.view = view;
         this.converter = converter;
         this.client = client;
-
-        this.clientFilter = new ClientFilterMenu(client, preferences, filter -> recalculate());
-
-        String selection = preferences
-                        .getString(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
-        if (selection != null)
-            this.clientFilter.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                            .ifPresent(this.clientFilter::select);
-
-        this.clientFilter.addListener(filter -> preferences.putValue(
-                        PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
-                        this.clientFilter.getSelectedItem().getUUIDs()));
+        this.filteredClient = client;
     }
 
     public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired)
@@ -181,11 +162,6 @@ public class PaymentsViewModel
     /* package */Client getClient()
     {
         return client;
-    }
-
-    public ClientFilterMenu getClientFilterMenu()
-    {
-        return clientFilter;
     }
 
     public int getStartYear()
@@ -211,6 +187,11 @@ public class PaymentsViewModel
     public Line getSumRetired()
     {
         return sumRetired;
+    }
+
+    public void setFilteredClient(Client filteredClient)
+    {
+        this.filteredClient = filteredClient;
     }
 
     public Mode getMode()
@@ -296,9 +277,6 @@ public class PaymentsViewModel
         this.sumRetired = new Line(null, useConsolidateRetired, this.noOfmonths);
         this.transactions = new ArrayList<>();
 
-        Client filteredClient = clientFilter.getSelectedFilter().filter(client);
-        view.setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-
         EnumSet<Mode> processGainTx = EnumSet.of(Mode.TRADES, Mode.ALL);
         if (processGainTx.contains(mode))
         {
@@ -356,9 +334,9 @@ public class PaymentsViewModel
                     {
                         PortfolioTransaction.Type type = transaction.getType();
                         if (type == PortfolioTransaction.Type.DELIVERY_INBOUND
-                                || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            value = transaction.getMonetaryAmount()
-                                        .with(converter.at(transaction.getDateTime())).getAmount();
+                                        || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
                         if (type.isLiquidation())
                             value *= -1;
                     }

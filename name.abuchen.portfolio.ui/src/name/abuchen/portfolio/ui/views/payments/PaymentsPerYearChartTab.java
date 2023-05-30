@@ -182,7 +182,7 @@ public class PaymentsPerYearChartTab extends AbstractChartTab
 
                 barSeries.setYSeries(seriesX);
 
-                barSeries.setBarColor(getColor(year));
+                barSeries.setBarColor(PaymentsColors.getColor(year));
                 barSeries.setBarPadding(25);
                 barSeries.enableStack(true);
             }
