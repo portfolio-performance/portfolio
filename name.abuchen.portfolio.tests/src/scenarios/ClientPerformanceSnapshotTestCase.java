@@ -16,9 +16,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Position;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 
 @SuppressWarnings("nls")
@@ -49,14 +47,6 @@ public class ClientPerformanceSnapshotTestCase
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.35))));
         assertThat(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
-
-        Category cat = performance.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS);
-        System.out.println(cat.getLabel() + ":" + cat.getValuation());
-        for (Position p : cat.getPositions())
-        {
-            System.out.println(p.getLabel() + ":" + p.getValue());
-        }
-
         assertThat(performance.getValue(CategoryType.EARNINGS),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.54))));
         assertThat(performance.getValue(CategoryType.FEES),
