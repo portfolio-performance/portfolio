@@ -237,10 +237,11 @@ public final class Security implements Attributable, InvestmentVehicle
      */
     public String getTickerSymbolWithoutStockMarket()
     {
-        if (tickerSymbol != null && !tickerSymbol.isEmpty() && tickerSymbol.contains(".")) //$NON-NLS-1$
-            return tickerSymbol.substring(0, tickerSymbol.indexOf('.'));
-        else
-            return tickerSymbol;
+        if (tickerSymbol == null)
+            return null;
+
+        int p = tickerSymbol.indexOf('.');
+        return p >= 0 ? tickerSymbol.substring(0, p) : tickerSymbol;
     }
 
     public String getWkn()

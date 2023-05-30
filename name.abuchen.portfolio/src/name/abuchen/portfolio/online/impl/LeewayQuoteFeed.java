@@ -225,20 +225,19 @@ public class LeewayQuoteFeed implements QuoteFeed
     {
         List<Exchange> answer = new ArrayList<>();
 
-        if (subject.getTickerSymbol() == null)
+        String tickerSymbol = subject.getTickerSymbol();
+        if (tickerSymbol == null)
             return answer;
 
         // Extract the exchange from the ticker symbol, if present
-        String securityExchange = null;
-        if (subject.getTickerSymbol().contains(".")) //$NON-NLS-1$
-            securityExchange = subject.getTickerSymbol().substring(subject.getTickerSymbol().indexOf('.') + 1)
-                            .toUpperCase();
+        int p = tickerSymbol.indexOf('.');
+        String securityExchange = p >= 0 ? tickerSymbol.substring(p + 1).toUpperCase() : null;
 
         // Extract the symbol from the ticker symbol without the stock market
         // information
-        String symbol = subject.getTickerSymbolWithoutStockMarket();
+        String symbol = p >= 0 ? tickerSymbol.substring(0, p).trim().toUpperCase() : tickerSymbol.trim().toUpperCase();
 
-        if (symbol != null && !symbol.trim().isEmpty())
+        if (!symbol.trim().isEmpty())
         {
             // Get a list of all exchange keys
             List<String> exchangeKeys = ExchangeLabels.getAllExchangeKeys("leeway."); //$NON-NLS-1$
@@ -248,7 +247,7 @@ public class LeewayQuoteFeed implements QuoteFeed
             if (securityExchange != null && !exchangeKeys.contains(securityExchange))
                 answer.add(createExchange(symbol + "." + securityExchange)); //$NON-NLS-1$
 
-            exchangeKeys.forEach(e -> answer.add(createExchange(symbol.trim().toUpperCase() + "." + e))); //$NON-NLS-1$
+            exchangeKeys.forEach(e -> answer.add(createExchange(symbol + "." + e))); //$NON-NLS-1$
         }
 
         return answer;
