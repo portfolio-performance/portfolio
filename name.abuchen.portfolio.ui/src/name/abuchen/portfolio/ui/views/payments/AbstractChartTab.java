@@ -7,12 +7,9 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.swtchart.Chart;
@@ -29,22 +26,6 @@ import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
 public abstract class AbstractChartTab implements PaymentsTab
 {
-    private static final int[][] COLORS = new int[][] { //
-                    new int[] { 140, 86, 75 }, //
-                    new int[] { 227, 119, 194 }, //
-                    new int[] { 127, 127, 127 }, //
-                    new int[] { 188, 189, 34 }, //
-                    new int[] { 23, 190, 207 }, //
-                    new int[] { 114, 124, 201 }, //
-                    new int[] { 250, 115, 92 }, //
-                    new int[] { 253, 182, 103 }, //
-                    new int[] { 143, 207, 112 }, //
-                    new int[] { 87, 207, 253 }, //
-                    new int[] { 31, 119, 180 }, //
-                    new int[] { 255, 127, 14 }, //
-                    new int[] { 44, 160, 44 }, //
-                    new int[] { 214, 39, 40 }, //
-                    new int[] { 148, 103, 189 } }; //
 
     @Inject
     protected PaymentsViewModel model;
@@ -120,14 +101,6 @@ public abstract class AbstractChartTab implements PaymentsTab
     }
 
     protected abstract void attachTooltipTo(Chart chart);
-
-    protected Color getColor(int year)
-    {
-        RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
-                        COLORS[year % COLORS.length][1], //
-                        COLORS[year % COLORS.length][2]);
-        return resources.createColor(ColorDescriptor.createFrom(rgb));
-    }
 
     private void updateChart()
     {

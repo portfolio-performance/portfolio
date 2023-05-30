@@ -46,7 +46,7 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
             }
             lineSeries.setYSeries(series);
 
-            lineSeries.setLineColor(getColor(year));
+            lineSeries.setLineColor(PaymentsColors.getColor(year));
             lineSeries.setLineWidth(2);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setAntialias(SWT.ON);

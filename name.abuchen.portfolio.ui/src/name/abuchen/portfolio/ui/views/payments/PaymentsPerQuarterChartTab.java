@@ -160,7 +160,7 @@ public class PaymentsPerQuarterChartTab extends AbstractChartTab
             }
             barSeries.setYSeries(series);
 
-            barSeries.setBarColor(getColor(year));
+            barSeries.setBarColor(PaymentsColors.getColor(year));
             barSeries.setBarPadding(25);
         }
     }

@@ -24,16 +24,18 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsView extends AbstractFinanceView
@@ -54,6 +56,7 @@ public class PaymentsView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory factory;
 
+    private ClientFilterMenu clientFilterMenu;
     private PaymentsViewModel model;
 
     private CTabFolder folder;
@@ -62,7 +65,26 @@ public class PaymentsView extends AbstractFinanceView
     public void setupModel()
     {
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new PaymentsViewModel(this, preferences, converter, client);
+        model = new PaymentsViewModel(converter, client);
+
+        // setup filter
+        clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
+            Client filteredClient = filter.filter(client);
+            model.setFilteredClient(filteredClient);
+            setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+            model.recalculate();
+        });
+
+        // for legacy reasons, the key is stored with the name PaymentsViewModel
+        String selection = preferences
+                        .getString(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+        if (selection != null)
+            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                            .ifPresent(clientFilterMenu::select);
+
+        clientFilterMenu.addListener(filter -> preferences.putValue(
+                        PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
+                        clientFilterMenu.getSelectedItem().getUUIDs()));
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
@@ -144,10 +166,10 @@ public class PaymentsView extends AbstractFinanceView
         toolBar.add(new StartYearSelectionDropDown(model));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
-                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
-                        model.getClientFilterMenu()::menuAboutToShow);
-        model.getClientFilterMenu().addListener(f -> dropDown.setImage(
-                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+                        clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
+                        clientFilterMenu::menuAboutToShow);
+        clientFilterMenu.addListener(f -> dropDown
+                        .setImage(clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
         toolBar.add(dropDown);
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
