@@ -102,32 +102,6 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
         }
     }
 
-    public enum Average
-    {
-        AVERAGE(Messages.HeatmapOrnamentAverage);
-
-        private String label;
-
-        private Average(String label)
-        {
-            this.label = label;
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-    }
-
-    static class AverageConfig extends EnumBasedConfig<Average>
-    {
-        public AverageConfig(WidgetDelegate<?> delegate)
-        {
-            super(delegate, Messages.HeatmapOrnamentAverage, Average.class, Dashboard.Config.LAYOUT, Policy.MULTIPLE);
-        }
-    }
-
     public InvestmentHeatmapWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
