@@ -1056,10 +1056,8 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
                                             BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
 
-                                            int sharesPrecision = Values.Share.precision() * 2;
-                                            BigDecimal shares = amount.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
-
-                                            t.setShares(Math.round(shares.doubleValue() * Values.Share.factor()));
+                                            BigDecimal shares = amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                                            t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                                         }
 
                                         // Formatting some notes
