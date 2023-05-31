@@ -226,6 +226,10 @@ public abstract class AbstractPDFExtractor implements Extractor
             return client.getBaseCurrency();
 
         CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+        if (unit != null)
+            return unit.getCurrencyCode();
+
+        unit = CurrencyUnit.getInstanceBySymbol(currency.trim());
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
