@@ -88,8 +88,7 @@ public abstract class AbstractChartToolTip implements Listener
 
         switch (event.type)
         {
-            case SWT.Dispose:
-            case SWT.MouseUp:
+            case SWT.Dispose, SWT.MouseUp:
                 showToolTip = false;
                 closeToolTip();
                 break;
@@ -192,8 +191,12 @@ public abstract class AbstractChartToolTip implements Listener
         x = Math.max(x, 0);
 
         int y = event.y + size.y + PADDING > plotArea.height ? event.y - size.y - PADDING : event.y + PADDING;
-        y = Math.max(y, 0);
+
+        // if the tool tip is bigger than height of the plot area (for example
+        // on the dashboard), then let the tool tip extend over the bottom
+        // (instead of extending over the top of the chart)
         y = Math.min(y, plotArea.height - size.y - PADDING);
+        y = Math.max(y, 0);
 
         Point pt = getPlotArea().toDisplay(x, y);
         return new Rectangle(pt.x, pt.y, size.x, size.y);
