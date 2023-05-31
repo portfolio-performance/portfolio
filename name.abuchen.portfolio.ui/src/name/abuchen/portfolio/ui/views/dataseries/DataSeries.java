@@ -147,8 +147,7 @@ public final class DataSeries implements Adaptable
         }
 
         if (isBenchmark())
-            buf.append(" "); //$NON-NLS-1$
-            buf.append(Messages.ChartSeriesBenchmarkSuffix);
+            buf.append(" ").append(Messages.ChartSeriesBenchmarkSuffix); //$NON-NLS-1$
 
         return buf.toString();
     }
