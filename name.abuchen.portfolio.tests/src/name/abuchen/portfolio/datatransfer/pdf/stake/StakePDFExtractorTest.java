@@ -131,7 +131,7 @@ public class StakePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertNull(security.getIsin());
         assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("FLT);
+        assertThat(security.getTickerSymbol(), is("FLT");
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
@@ -173,7 +173,7 @@ public class StakePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertNull(security.getIsin());
         assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("FMG);
+        assertThat(security.getTickerSymbol(), is("FMG");
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check buy sell transaction
