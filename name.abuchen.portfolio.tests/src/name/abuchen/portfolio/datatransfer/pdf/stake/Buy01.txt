@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+BUY CONFIRMATION
+SUMMARY
+JOHN DOE
+TICKER FLT.ASX
+1 Long Road
+QUANTITY
+SYDNEY, NSW 2000 512
+EFFECTIVE PRICE $20.43
+The following securities have been purchased on your behalf
+QUANTITY 512
+EFFECTIVE PRICE $20.43 TICKER FLT.ASX
+VALUE A$10,455.04 EXECUTION DATE 27-05-2022
+ORDER TYPE LIMIT HIN 12345678
+CONFIRMATION NUMBER 0000001 PID 3556
+SETTLEMENT DATE 01-06-2022 ACCOUNT NUMBER 123456
+BROKERAGE & GST A$3.00 SIDE BUY
+ORDER DATE 27-05-2022
+AMOUNT DUE & PAYABLE A$10,458.04 Funds have already been deducted from your buying power. No action
+is required by you to facilitate settlement.
+This trade was executed and cleared by Stake’s This confirmation tax document is issued by Stakeshop Pty Ltd and is issued subject to directiongs,
+executing broker Finclear Pty Ltd decisions and requirements of the Market Operators, the ASIC Market Integrity Rules, the Market
+Operating Rules and where relevant, the Settlement Rules and the correction of any errors and/or
+ABN 63 607 164 714 as a participant of ASX and CHI-X. This confirmation
+is issued subject to the directions, decisions and requirements of the omissions.
+market operator for the market on which this transaction was executed. Stakeshop Pty Ltd, trading as Stake, ACN 610105505, is an authorised representative (Authorised
+You agree that the trade confirmation made available to you via your Stake Representative No. 1241398) of Sanlam Private Wealth Pty Ltd (Australian Financial Services
+account are deemed as received. For more information, please refer to
+Terms and Conditions Licence No. 337927) and Airwallex Pty Ltd (Australian Financial Services Licence No. 487221).Stake’s

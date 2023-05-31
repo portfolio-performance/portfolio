@@ -82,6 +82,7 @@ public class PDFImportAssistant
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
         extractors.add(new SolarisbankAGPDFExtractor(client));
+        extractors.add(new StakePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
