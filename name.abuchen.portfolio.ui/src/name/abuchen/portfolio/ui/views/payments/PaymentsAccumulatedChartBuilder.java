@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.ui.views.payments;
 
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
 
 import org.eclipse.swt.SWT;
 import org.swtchart.Chart;
+import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries.SeriesType;
@@ -14,8 +17,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 
-public class PaymentsAccumulatedChartTab extends AbstractChartTab
+public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
 {
+
     @Override
     public String getLabel()
     {
@@ -23,7 +27,20 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
     }
 
     @Override
-    protected void createSeries()
+    public void configure(Chart chart)
+    {
+        IAxis xAxis = chart.getAxisSet().getXAxis(0);
+        xAxis.enableCategory(true);
+        // format symbols returns 13 values as some calendars have 13 months
+        xAxis.setCategorySeries(Arrays.copyOfRange(new DateFormatSymbols().getMonths(), 0, 12));
+
+        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
+        toolTip.enableCategory(true);
+        toolTip.setDefaultValueFormat(new AmountNumberFormat());
+    }
+
+    @Override
+    public void createSeries(Chart chart, PaymentsViewModel model)
     {
         LocalDate now = LocalDate.now();
         boolean isJanuary = now.getMonth() == Month.JANUARY;
@@ -32,7 +49,7 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
         {
             int year = model.getStartYear() + (index / 12);
 
-            ILineSeries lineSeries = (ILineSeries) getChart().getSeriesSet().createSeries(SeriesType.LINE,
+            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             String.valueOf(year));
             lineSeries.setDescription(lineSeries.getId());
 
@@ -56,18 +73,10 @@ public class PaymentsAccumulatedChartTab extends AbstractChartTab
             // least a symbol is drawn for the January data point
             if (isJanuary && year == now.getYear())
             {
-                lineSeries.setSymbolSize(1);
+                lineSeries.setSymbolSize(2);
                 lineSeries.setSymbolType(PlotSymbolType.SQUARE);
             }
 
         }
-    }
-
-    @Override
-    protected void attachTooltipTo(Chart chart)
-    {
-        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
-        toolTip.enableCategory(true);
-        toolTip.setDefaultValueFormat(new AmountNumberFormat());
     }
 }

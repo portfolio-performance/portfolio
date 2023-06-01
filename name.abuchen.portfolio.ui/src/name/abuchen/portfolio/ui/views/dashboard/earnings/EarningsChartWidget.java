@@ -25,31 +25,51 @@ import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
+import name.abuchen.portfolio.ui.views.payments.PaymentsChartBuilder;
+import name.abuchen.portfolio.ui.views.payments.PaymentsPerMonthChartBuilder;
+import name.abuchen.portfolio.ui.views.payments.PaymentsPerQuarterChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsPerYearChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsByYearWidget extends WidgetDelegate<PaymentsViewModel>
+public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
 {
     private Label title;
     private Chart chart;
-    private PaymentsPerYearChartBuilder chartBuilder = new PaymentsPerYearChartBuilder();
+    private PaymentsChartBuilder chartBuilder;
 
     private CurrencyConverter converter;
 
-    public EarningsByYearWidget(Widget widget, DashboardData data)
+    private EarningsChartWidget(Widget widget, DashboardData data, PaymentsChartBuilder chartBuilder,
+                    int defaultYearOffset)
     {
         super(widget, data);
+        this.chartBuilder = chartBuilder;
 
         addConfig(new ChartShowYAxisConfig(this, true));
 
         addConfig(new ClientFilterConfig(this));
-        addConfig(new StartYearConfig(this, 10));
+        addConfig(new StartYearConfig(this, defaultYearOffset));
         addConfig(new EarningTypeConfig(this));
         addConfig(new GrossNetTypeConfig(this));
         addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
+    }
+
+    public static EarningsChartWidget perYear(Widget widget, DashboardData data)
+    {
+        return new EarningsChartWidget(widget, data, new PaymentsPerYearChartBuilder(), 10);
+    }
+
+    public static EarningsChartWidget perQuarter(Widget widget, DashboardData data)
+    {
+        return new EarningsChartWidget(widget, data, new PaymentsPerQuarterChartBuilder(), 4);
+    }
+
+    public static EarningsChartWidget perMonth(Widget widget, DashboardData data)
+    {
+        return new EarningsChartWidget(widget, data, new PaymentsPerMonthChartBuilder(), 4);
     }
 
     @Override
