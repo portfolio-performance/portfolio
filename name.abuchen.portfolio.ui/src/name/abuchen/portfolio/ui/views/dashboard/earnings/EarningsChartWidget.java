@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.dashboard.earnings;
 
 import java.util.function.Supplier;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -9,6 +11,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.ISeries;
@@ -17,6 +21,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
@@ -24,11 +29,14 @@ import name.abuchen.portfolio.ui.views.dashboard.ChartShowYAxisConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
+import name.abuchen.portfolio.ui.views.dashboard.HoverButton;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.payments.PaymentsChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsPerMonthChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsPerQuarterChartBuilder;
 import name.abuchen.portfolio.ui.views.payments.PaymentsPerYearChartBuilder;
+import name.abuchen.portfolio.ui.views.payments.PaymentsView;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewInput;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -39,6 +47,9 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
     private PaymentsChartBuilder chartBuilder;
 
     private CurrencyConverter converter;
+
+    @Inject
+    private PortfolioPart part;
 
     private EarningsChartWidget(Widget widget, DashboardData data, PaymentsChartBuilder chartBuilder,
                     int defaultYearOffset)
@@ -108,6 +119,23 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
 
         container.layout();
 
+        HoverButton.build(title, container, chart, chart.getPlotArea()).withListener(new HyperlinkAdapter()
+        {
+            @Override
+            public void linkActivated(HyperlinkEvent e)
+            {
+                int tab = chartBuilder.getTabIndex();
+                int startYear = get(StartYearConfig.class).getStartYear();
+                String clientFilter = get(ClientFilterConfig.class).getSelectedItem().getUUIDs();
+                EarningType earningsType = get(EarningTypeConfig.class).getValue();
+                PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
+                GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
+
+                part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, clientFilter, mode,
+                                grossNetType == GrossNetType.GROSS, false));
+            }
+        });
+
         return container;
     }
 
@@ -123,13 +151,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
 
         return () -> (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
             PaymentsViewModel model = new PaymentsViewModel(converter, getClient());
-
-            PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.EARNINGS;
-            if (earningsType == EarningType.DIVIDENDS)
-                mode = PaymentsViewModel.Mode.DIVIDENDS;
-            else if (earningsType == EarningType.INTEREST)
-                mode = PaymentsViewModel.Mode.INTEREST;
-
+            PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
             model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false);
             model.setFilteredClient(clientFilter.filter(getClient()));
             model.recalculate();
