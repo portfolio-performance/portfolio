@@ -25,13 +25,15 @@ import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class PaymentsPerYearChartBuilder
+public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 {
     private static class DividendPerYearToolTip extends TimelineChartToolTip
     {
         public DividendPerYearToolTip(Chart chart)
         {
             super(chart);
+
+            enableCategory(true);
         }
 
         @Override
@@ -115,6 +117,13 @@ public class PaymentsPerYearChartBuilder
         }
     }
 
+    @Override
+    public String getLabel()
+    {
+        return Messages.LabelPaymentsPerYear;
+    }
+
+    @Override
     public void configure(Chart chart)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
@@ -130,11 +139,10 @@ public class PaymentsPerYearChartBuilder
         yAxis.setPosition(Position.Secondary);
         yAxis.getTick().setFormat(new ThousandsNumberFormat());
 
-        DividendPerYearToolTip toolTip = new DividendPerYearToolTip(chart);
-        toolTip.enableCategory(true);
-
+        new DividendPerYearToolTip(chart);
     }
 
+    @Override
     public void createSeries(Chart chart, PaymentsViewModel model)
     {
         chart.setData(PaymentsViewModel.class.getSimpleName(), model);

@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.views.payments;
 
-import java.text.DateFormatSymbols;
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -24,13 +21,14 @@ import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
-public abstract class AbstractChartTab implements PaymentsTab
+public class PaymentsChartTab implements PaymentsTab
 {
 
     @Inject
     protected PaymentsViewModel model;
 
     private LocalResourceManager resources;
+    private PaymentsChartBuilder chartBuilder;
     private Chart chart;
 
     @Inject
@@ -41,7 +39,10 @@ public abstract class AbstractChartTab implements PaymentsTab
             chart.redraw();
     }
 
-    protected abstract void createSeries();
+    protected void setChartBuilder(PaymentsChartBuilder chartBuilder)
+    {
+        this.chartBuilder = chartBuilder;
+    }
 
     protected Chart getChart()
     {
@@ -51,6 +52,12 @@ public abstract class AbstractChartTab implements PaymentsTab
     protected LocalResourceManager getResources()
     {
         return resources;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return chartBuilder.getLabel();
     }
 
     @Override
@@ -75,10 +82,8 @@ public abstract class AbstractChartTab implements PaymentsTab
 
         xAxis.enableCategory(true);
 
-        // format symbols returns 13 values as some calendars have 13 months
-        xAxis.setCategorySeries(Arrays.copyOfRange(new DateFormatSymbols().getMonths(), 0, 12));
-
-        createSeries();
+        chartBuilder.configure(chart);
+        chartBuilder.createSeries(chart, model);
 
         chart.getAxisSet().adjustRange();
 
@@ -93,14 +98,10 @@ public abstract class AbstractChartTab implements PaymentsTab
             yAxis.getTick().setFormat(new AmountNumberFormat());
         }
 
-        attachTooltipTo(chart);
-
         model.addUpdateListener(this::updateChart);
 
         return chart;
     }
-
-    protected abstract void attachTooltipTo(Chart chart);
 
     private void updateChart()
     {
@@ -110,7 +111,7 @@ public abstract class AbstractChartTab implements PaymentsTab
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            createSeries();
+            chartBuilder.createSeries(chart, model);
 
             chart.getAxisSet().adjustRange();
         }
@@ -120,5 +121,4 @@ public abstract class AbstractChartTab implements PaymentsTab
         }
         chart.redraw();
     }
-
 }

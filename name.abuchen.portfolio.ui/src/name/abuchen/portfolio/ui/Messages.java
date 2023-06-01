@@ -605,6 +605,8 @@ public class Messages extends NLS
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;
+    public static String LabelEarningsPerMonth;
+    public static String LabelEarningsPerQuarter;
     public static String LabelEarningsPerYear;
     public static String LabelExpand;
     public static String LabelExpandAll;

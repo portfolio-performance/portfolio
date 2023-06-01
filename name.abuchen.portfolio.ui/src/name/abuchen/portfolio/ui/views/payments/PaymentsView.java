@@ -215,10 +215,10 @@ public class PaymentsView extends AbstractFinanceView
         createTab(folder, Images.VIEW_TABLE, PaymentsPerMonthMatrixTab.class);
         createTab(folder, Images.VIEW_TABLE, PaymentsPerQuarterMatrixTab.class);
         createTab(folder, Images.VIEW_TABLE, PaymentsPerYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerMonthChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerQuarterChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, PaymentsAccumulatedChartTab.class);
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerMonthChartBuilder());
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerQuarterChartBuilder());
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerYearChartBuilder());
+        createChartTab(folder, Images.VIEW_LINECHART, new PaymentsAccumulatedChartBuilder());
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
@@ -233,6 +233,18 @@ public class PaymentsView extends AbstractFinanceView
     private void createTab(CTabFolder folder, Images image, Class<? extends PaymentsTab> tabClass)
     {
         PaymentsTab tab = this.make(tabClass, model);
+        Control control = tab.createControl(folder);
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(tab.getLabel());
+        item.setControl(control);
+        item.setData(tab);
+        item.setImage(image.image());
+    }
+
+    private void createChartTab(CTabFolder folder, Images image, PaymentsChartBuilder chartBuilder)
+    {
+        PaymentsChartTab tab = this.make(PaymentsChartTab.class, model);
+        tab.setChartBuilder(chartBuilder);
         Control control = tab.createControl(folder);
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(tab.getLabel());
