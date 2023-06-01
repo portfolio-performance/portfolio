@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.ui.views.payments;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -40,13 +41,6 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsView extends AbstractFinanceView
 {
-    private static final String KEY_TAB = PaymentsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
-    private static final String KEY_YEAR = PaymentsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
-    private static final String KEY_MODE = PaymentsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
-    private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
-    private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
-                    + "-use-consolidate-retired"; //$NON-NLS-1$
-
     @Inject
     private Client client;
 
@@ -56,14 +50,25 @@ public class PaymentsView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory factory;
 
+    private PaymentsViewInput viewInput;
     private ClientFilterMenu clientFilterMenu;
     private PaymentsViewModel model;
 
     private CTabFolder folder;
 
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) PaymentsViewInput viewInput)
+    {
+        this.viewInput = viewInput;
+    }
+
     @PostConstruct
     public void setupModel()
     {
+        if (viewInput == null)
+            viewInput = PaymentsViewInput.fromPreferences(preferences);
+
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         model = new PaymentsViewModel(converter, client);
 
@@ -75,47 +80,32 @@ public class PaymentsView extends AbstractFinanceView
             model.recalculate();
         });
 
-        // for legacy reasons, the key is stored with the name PaymentsViewModel
-        String selection = preferences
-                        .getString(PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+        String selection = viewInput.getClientFilter();
         if (selection != null)
-            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                            .ifPresent(clientFilterMenu::select);
-
-        clientFilterMenu.addListener(filter -> preferences.putValue(
-                        PaymentsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
-                        clientFilterMenu.getSelectedItem().getUUIDs()));
-
-        int year = preferences.getInt(KEY_YEAR);
-        LocalDate now = LocalDate.now();
-        if (year < 1900 || year > now.getYear())
-            year = now.getYear() - 2;
-
-        PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.ALL;
-        String prefMode = preferences.getString(KEY_MODE);
-
-        if (prefMode != null && !prefMode.isEmpty())
         {
-            try
-            {
-                mode = PaymentsViewModel.Mode.valueOf(prefMode);
-            }
-            catch (Exception ignore)
-            {
-                // use default mode
-            }
+            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                            .ifPresent(item -> {
+                                clientFilterMenu.select(item);
+                                Client filteredClient = item.getFilter().filter(client);
+                                model.setFilteredClient(filteredClient);
+                                setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
+                                // no recalculation needed as it is done as part
+                                // of the model#configure call
+                            });
         }
 
-        boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
-        boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
+        clientFilterMenu.addListener(
+                        filter -> viewInput.setClientFilter(clientFilterMenu.getSelectedItem().getUUIDs()));
 
-        model.configure(year, mode, useGrossValue, useConsolidateRetired);
+        model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
+                        viewInput.isUseConsolidateRetired());
 
         model.addUpdateListener(() -> {
-            preferences.setValue(KEY_YEAR, model.getStartYear());
-            preferences.setValue(KEY_MODE, model.getMode().name());
-            preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
-            preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, model.usesConsolidateRetired());
+            viewInput.setYear(model.getStartYear());
+            viewInput.setMode(model.getMode());
+            viewInput.setUseGrossValue(model.usesGrossValue());
+            viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
         });
     }
 
@@ -221,11 +211,13 @@ public class PaymentsView extends AbstractFinanceView
         createChartTab(folder, Images.VIEW_LINECHART, new PaymentsAccumulatedChartBuilder());
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
-        int tab = preferences.getInt(KEY_TAB);
+        int tab = viewInput.getTab();
         if (tab < 0 || tab > 7)
             tab = 0;
         folder.setSelection(tab);
-        folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));
+        folder.addDisposeListener(e -> viewInput.setTab(folder.getSelectionIndex()));
+
+        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences));
 
         return folder;
     }

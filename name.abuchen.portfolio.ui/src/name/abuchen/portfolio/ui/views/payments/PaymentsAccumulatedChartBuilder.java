@@ -27,6 +27,12 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
+    public int getTabIndex()
+    {
+        return 6;
+    }
+
+    @Override
     public void configure(Chart chart)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);

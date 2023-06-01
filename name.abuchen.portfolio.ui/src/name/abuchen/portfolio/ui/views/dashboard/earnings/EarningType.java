@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
 enum EarningType
 {
@@ -33,5 +34,20 @@ enum EarningType
     public boolean isIncluded(AccountTransaction t)
     {
         return predicate.test(t);
+    }
+
+    public PaymentsViewModel.Mode getPaymentsViewModelMode()
+    {
+        switch (this)
+        {
+            case EARNINGS:
+                return PaymentsViewModel.Mode.EARNINGS;
+            case DIVIDENDS:
+                return PaymentsViewModel.Mode.DIVIDENDS;
+            case INTEREST:
+                return PaymentsViewModel.Mode.INTEREST;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

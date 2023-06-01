@@ -124,6 +124,12 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
+    public int getTabIndex()
+    {
+        return 5;
+    }
+
+    @Override
     public void configure(Chart chart)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);

@@ -128,6 +128,12 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
+    public int getTabIndex()
+    {
+        return 4;
+    }
+
+    @Override
     public void configure(Chart chart)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
