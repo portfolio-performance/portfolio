@@ -23,6 +23,7 @@ public class HoverButton
     private IHyperlinkListener listener;
 
     private Shell hoverShell;
+    private long timestamp;
 
     private HoverButton(Control leadingControl, Control... others)
     {
@@ -58,12 +59,22 @@ public class HoverButton
     {
         if (hoverShell != null && hoverShell.isVisible())
         {
-            hoverShell.setVisible(false);
+            timestamp = event.time;
+
+            event.display.timerExec(300, () -> {
+                if (timestamp == event.time && hoverShell != null && hoverShell.isVisible())
+                {
+                    hoverShell.setVisible(false);
+                }
+            });
+
         }
     }
 
-    private void onMouseEnter(Event evnet)
+    private void onMouseEnter(Event event)
     {
+        timestamp = 0;
+
         if (hoverShell == null)
         {
             hoverShell = new Shell(leadingControl.getShell(), SWT.MODELESS | SWT.SHADOW_OUT);
@@ -80,7 +91,9 @@ public class HoverButton
             // only the enter listener to avoid flickering (which, however,
             // leaves the shell visible in some cases)
             hoverShell.addListener(SWT.MouseEnter, this::onMouseEnter);
+            hoverShell.addListener(SWT.MouseExit, this::onMouseExit);
             button.addListener(SWT.MouseEnter, this::onMouseEnter);
+            button.addListener(SWT.MouseExit, this::onMouseExit);
         }
 
         if (!hoverShell.isVisible())
@@ -94,6 +107,5 @@ public class HoverButton
 
             hoverShell.setVisible(true);
         }
-
     }
 }
