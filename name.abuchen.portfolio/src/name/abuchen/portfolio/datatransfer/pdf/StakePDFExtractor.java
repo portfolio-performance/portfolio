@@ -64,7 +64,7 @@ public class StakePDFExtractor extends AbstractPDFExtractor
 
                         // EFFECTIVE PRICE $20.43 TICKER FLT.ASX
                         .section("tickerSymbol", "currency")
-                        .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[\\w.]*)$")
+                        .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[\\w]{3,4})\\..*$")
                         .match("^VALUE (?<currency>[\\w]{1}\\p{Sc}).*") //
                         .assign((t, v) -> {
                             // the PDF does not include the name of the
