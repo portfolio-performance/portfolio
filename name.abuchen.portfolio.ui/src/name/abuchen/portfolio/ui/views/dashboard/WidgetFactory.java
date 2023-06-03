@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
@@ -206,6 +207,8 @@ public enum WidgetFactory
 
     HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, Messages.ClientEditorLabelPerformance,
                     YearlyPerformanceHeatmapWidget::new),
+
+    EARNINGS(Messages.LabelEarningsTransactionList, Messages.LabelEarnings, EarningsListWidget::new),
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
 

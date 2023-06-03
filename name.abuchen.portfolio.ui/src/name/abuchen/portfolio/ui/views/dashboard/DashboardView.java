@@ -473,7 +473,7 @@ public class DashboardView extends AbstractHistoricView
         return scrolledComposite;
     }
 
-    private void updateScrolledCompositeMinSize()
+    public void updateScrolledCompositeMinSize()
     {
         // because this method can be called *after* calculating data in the
         // background, all widgets can already be disposed
