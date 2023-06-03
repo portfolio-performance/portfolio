@@ -375,6 +375,7 @@ public class Messages extends NLS
     public static String CSVImportSeparatorTab;
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
+    public static String DescriptionDashboardUse;
     public static String DescriptionDataRelativeToReportingPeriod;
     public static String DesktopAPIBrowserActionNotSupported;
     public static String DesktopAPIErrorOpeningURL;
@@ -609,6 +610,7 @@ public class Messages extends NLS
     public static String LabelEarningsPerQuarter;
     public static String LabelEarningsPerYear;
     public static String LabelEarningsTransactionList;
+    public static String LabelEmptyDashboard;
     public static String LabelExpand;
     public static String LabelExpandAll;
     public static String LabelExpenses;
@@ -798,6 +800,7 @@ public class Messages extends NLS
     public static String LabelSuffix_PreTax;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
+    public static String LabelTemplate;
     public static String LabelTheme;
     public static String LabelToday;
     public static String LabelToolTipDividendDetails;
