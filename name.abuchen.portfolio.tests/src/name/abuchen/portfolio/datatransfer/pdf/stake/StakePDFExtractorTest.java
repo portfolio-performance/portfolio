@@ -31,6 +31,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.StakePDFExtractor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class StakePDFExtractorTest
@@ -49,9 +50,35 @@ public class StakePDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn(null), hasTicker("FLT.ASX"), //
-                        hasName("FLT.ASX"), //
+                        hasIsin(null), hasWkn(null), hasTicker("FLT"), //
+                        hasName("FLT"), //
                         hasCurrencyCode("AUD"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-05-27"), hasShares(512), //
+                        hasSource("Buy01.txt"), hasNote("0000001"), //
+                        hasAmount("AUD", 10458.04), hasGrossValue("AUD", 10455.04), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 3.00))));
+    }
+
+    @Test
+    public void testSecurityBuy01_matchExistingSecurityByTickerWithoutExchange()
+    {
+        Client client = new Client();
+
+        Security flt = new Security("FLT", "AUD");
+        flt.setTickerSymbol("FLT.AX");
+        client.addSecurity(flt);
+
+        StakePDFExtractor extractor = new StakePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(purchase( //
                         hasDate("2022-05-27"), hasShares(512), //
@@ -74,8 +101,8 @@ public class StakePDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn(null), hasTicker("LLL.ASX"), //
-                        hasName("LLL.ASX"), //
+                        hasIsin(null), hasWkn(null), hasTicker("LLL"), //
+                        hasName("LLL"), //
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(purchase( //
@@ -99,8 +126,8 @@ public class StakePDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn(null), hasTicker("FLT.ASX"), //
-                        hasName("FLT.ASX"), //
+                        hasIsin(null), hasWkn(null), hasTicker("FLT"), //
+                        hasName("FLT"), //
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(sale( //
@@ -124,8 +151,8 @@ public class StakePDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn(null), hasTicker("FMG.ASX"), //
-                        hasName("FMG.ASX"), //
+                        hasIsin(null), hasWkn(null), hasTicker("FMG"), //
+                        hasName("FMG"), //
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(sale( //
