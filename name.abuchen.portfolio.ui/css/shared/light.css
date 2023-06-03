@@ -58,6 +58,11 @@ CTabItem:selected {
 	background-color: #ECECEC;
 }
 
+.hoverbutton Shell,
+.hoverbutton ImageHyperlink {
+	background-color: white;
+}
+
 .chart {
 	background-color: white;
 	axis-color: black;

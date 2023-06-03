@@ -28,6 +28,11 @@ CTabFolder {
 	background-color: #515658;
 }
 
+.hoverbutton Shell,
+.hoverbutton ImageHyperlink {
+	background-color: #302E30;
+}
+
 .chart {
 	background-color: #515658;
 	axis-color: #A0A0A0;

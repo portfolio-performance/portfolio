@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 
 /**
@@ -61,8 +62,8 @@ public class HoverButton
         {
             timestamp = event.time;
 
-            event.display.timerExec(300, () -> {
-                if (timestamp == event.time && hoverShell != null && hoverShell.isVisible())
+            event.display.timerExec(200, () -> {
+                if (timestamp == event.time && hoverShell != null && !hoverShell.isDisposed() && hoverShell.isVisible())
                 {
                     hoverShell.setVisible(false);
                 }
@@ -78,10 +79,12 @@ public class HoverButton
         if (hoverShell == null)
         {
             hoverShell = new Shell(leadingControl.getShell(), SWT.MODELESS | SWT.SHADOW_OUT);
+            hoverShell.setData(UIConstants.CSS.CLASS_NAME, "hoverbutton"); //$NON-NLS-1$
             hoverShell.setBackground(Colors.WHITE);
             hoverShell.setLayout(new FillLayout());
             ImageHyperlink button = new ImageHyperlink(hoverShell, SWT.NONE);
             button.setImage(Images.VIEW_SHARE.image());
+            button.setData(UIConstants.CSS.CLASS_NAME, "hoverbutton"); //$NON-NLS-1$
             button.setBackground(Colors.WHITE);
             button.addHyperlinkListener(listener);
             hoverShell.pack();
@@ -102,8 +105,7 @@ public class HoverButton
             Rectangle hoverBounds = hoverShell.getBounds();
 
             int locationX = controlBounds.x + controlBounds.width - hoverBounds.width;
-            int locationY = controlBounds.y;
-            hoverShell.setLocation(leadingControl.toDisplay(locationX, locationY));
+            hoverShell.setLocation(leadingControl.toDisplay(locationX, 0));
 
             hoverShell.setVisible(true);
         }
