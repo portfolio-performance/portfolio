@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.raiffeisenbankgruppe;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -1731,6 +1732,32 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1870.70))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Lohn/Gehalt"));
+    }
+
+    @Test
+    public void testDepotauszug01()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-05-08"), hasAmount("EUR", 5000.00), //
+                        hasSource("Depotauszug01.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-05-17"), hasAmount("EUR", 5000.00), //
+                        hasSource("Depotauszug01.txt"), hasNote("Gutschrift"))));
     }
 
     @Test
