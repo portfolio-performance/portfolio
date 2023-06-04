@@ -38,6 +38,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addDeliveryInOutBoundTransaction();
         addAccountStatementTransactions();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -767,6 +768,55 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 }));
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Auszug .*[\\d]+\\/[\\d]+ vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}", (context, lines) -> {
+            Pattern pYear = Pattern.compile("^Auszug .*[\\d]+\\/[\\d]+ vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4})$");
+            Pattern pCurrency = Pattern.compile("^Datum Buchungstext .* (?<currency>[\\w]{3})$");
+
+            for (String line : lines)
+            {
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
+
+                Matcher mYear = pYear.matcher(line);
+                if (mYear.matches())
+                    context.put("year", mYear.group("year"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 08.05 Gutschrift                                     0805         5.000,00
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2} Gutschrift .* [\\d]{4} .* [\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                .subject(() -> {
+                    AccountTransaction t = new AccountTransaction();
+                    t.setType(AccountTransaction.Type.DEPOSIT);
+                    return t;
+                })
+
+                .section("date", "note", "amount")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}) (?<note>Gutschrift) .* [\\d]{4} .* (?<amount>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+
+                    // create a long date from the year in the context
+                    if (v.get("date") != null)
+                        t.setDateTime(asDate(v.get("date") + "." + context.get("year")));
+
+                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setNote(v.get("note"));
+                })
+
+                .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
