@@ -226,7 +226,11 @@ public class EarningsListWidget extends WidgetDelegate<Model>
                     final MonthData monthData = months.get(monthOfYear - 1);
 
                     Money value = grossNetType == GrossNetType.GROSS ? tx.getGrossValue() : tx.getMonetaryAmount();
-                    monthData.sum = monthData.sum.add(value.with(converter.at(tx.getDateTime())));
+
+                    monthData.sum = tx.getType().isCredit()
+                                    ? monthData.sum.add(value.with(converter.at(tx.getDateTime())))
+                                    : monthData.sum.subtract(value.with(converter.at(tx.getDateTime())));
+
                     monthData.transactions.add(new TransactionPair<>(account, tx));
                 }
             }
@@ -308,8 +312,11 @@ public class EarningsListWidget extends WidgetDelegate<Model>
         name.addListener(SWT.MouseUp, event -> view.setInformationPaneInput(pair.getTransaction().getSecurity()));
 
         Label earning = new Label(composite, SWT.RIGHT);
-        earning.setText(Values.Money.format(grossNetType == GrossNetType.GROSS ? pair.getTransaction().getGrossValue()
-                        : pair.getTransaction().getMonetaryAmount(), getClient().getBaseCurrency()));
+        Money value = grossNetType == GrossNetType.GROSS ? pair.getTransaction().getGrossValue()
+                        : pair.getTransaction().getMonetaryAmount();
+        if (pair.getTransaction().getType().isDebit())
+            value = value.multiply(-1);
+        earning.setText(Values.Money.format(value, getClient().getBaseCurrency()));
 
         FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(earning, -5, SWT.LEFT));
         FormDataFactory.startingWith(earning).right(new FormAttachment(100));
