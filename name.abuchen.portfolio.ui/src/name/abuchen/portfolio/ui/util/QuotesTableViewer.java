@@ -83,6 +83,11 @@ public class QuotesTableViewer
         tableViewer.setInput(new String[] { message });
     }
 
+    public void setMessages(String[] messages)
+    {
+        tableViewer.setInput(messages);
+    }
+
     public void refresh()
     {
         tableViewer.refresh();

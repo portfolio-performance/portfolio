@@ -179,19 +179,25 @@ public class TwelveDataQuoteFeed implements QuoteFeed
             // If any error with your plan, the response is
             //
             // @formatter:off
-            // { "code":XXX,"message":"error message","status":"error" } // NOSONAR
+            // { "code":123,"message":"error message","status":"error" } // NOSONAR
             // @formatter:on
             if (json != null && !json.isEmpty() && json.containsKey("code") && "error".equals(json.get("status")))
             {
-                PortfolioLog.error(MessageFormat.format(json.get("message").toString(), json.get("code").toString()));
-                return QuoteFeedData.withError(new IOException(
-                                MessageFormat.format(json.get("message").toString(), json.get("code").toString())));
+                final String msg = String.join(" ", getName(), String.valueOf(json.get("message")),
+                                String.valueOf(json.get("code")));
+
+                PortfolioLog.error(msg);
+
+                // attach the error response
+                data.addResponse(webaccess.getURL(), response.json);
+                data.addError(new IOException(msg));
+                return data;
             }
 
             // Check if the json contains a non-empty JSON array
             if (json != null && !json.isEmpty() && json.containsKey("values") && !"error".equals(json.get("status")))
             {
-                if (json.get("values") instanceof JSONArray jsonArray)
+                if (json.get("values") instanceof JSONArray jsonArray) // NOSONAR
                 {
                     // cache response if it is a valid non-empty array
                     if (!jsonArray.isEmpty())
@@ -234,20 +240,19 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     {
         List<Exchange> answer = new ArrayList<>();
 
-        if (subject.getTickerSymbol() == null)
+        final String tickerSymbol = subject.getTickerSymbol();
+        if (tickerSymbol == null)
             return answer;
 
         // Extract the exchange from the ticker symbol, if present
-        String securityExchange = null;
-        if (subject.getTickerSymbol().contains(".")) //$NON-NLS-1$
-            securityExchange = subject.getTickerSymbol().substring(subject.getTickerSymbol().indexOf('.') + 1)
-                            .toUpperCase();
+        int p = tickerSymbol.indexOf('.');
+        String securityExchange = p >= 0 ? tickerSymbol.substring(p + 1).toUpperCase() : null;
 
         // Extract the symbol from the ticker symbol without the stock market
         // information
-        String symbol = subject.getTickerSymbolWithoutStockMarket();
+        String symbol = p >= 0 ? tickerSymbol.substring(0, p).trim().toUpperCase() : tickerSymbol.trim().toUpperCase();
 
-        if (symbol != null && !symbol.trim().isEmpty())
+        if (!symbol.isEmpty())
         {
             // Get a list of all exchange keys
             List<String> exchangeKeys = ExchangeLabels.getAllExchangeKeys("mic-ISO-10383."); //$NON-NLS-1$
@@ -255,10 +260,9 @@ public class TwelveDataQuoteFeed implements QuoteFeed
             // If a security exchange is specified and it's not present in the
             // exchange keys, add the symbol to the answer list
             if (securityExchange != null && !exchangeKeys.contains(securityExchange))
-                answer.add(new Exchange(symbol + "." + securityExchange, //$NON-NLS-1$
-                                ExchangeLabels.getString("unknowStockExchange"))); //$NON-NLS-1$
+                answer.add(createExchange(symbol + "." + securityExchange)); //$NON-NLS-1$
 
-            exchangeKeys.forEach(e -> answer.add(createExchange(symbol.trim().toUpperCase() + "." + e))); //$NON-NLS-1$
+            exchangeKeys.forEach(e -> answer.add(createExchange(symbol + "." + e))); //$NON-NLS-1$
         }
 
         return answer;
