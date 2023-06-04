@@ -246,34 +246,28 @@ public class TwelveDataQuoteFeed implements QuoteFeed
 
         // Extract the exchange from the ticker symbol, if present
         int p = tickerSymbol.indexOf('.');
-        String securityExchange = p >= 0 ? tickerSymbol.substring(p + 1).toUpperCase() : null;
+        final String securityExchange = p >= 0 ? tickerSymbol.substring(p + 1).toUpperCase() : null;
 
         // Extract the symbol from the ticker symbol without the stock market
         // information
-        String symbol = p >= 0 ? tickerSymbol.substring(0, p).trim().toUpperCase() : tickerSymbol.trim().toUpperCase();
+        final String symbol = p >= 0 ? tickerSymbol.substring(0, p).trim().toUpperCase()
+                        : tickerSymbol.trim().toUpperCase();
 
         if (!symbol.isEmpty())
         {
             // Get a list of all exchange keys
-            List<String> exchangeKeys = ExchangeLabels.getAllExchangeKeys("mic-ISO-10383."); //$NON-NLS-1$
+            List<String> exchangeKeys = MarketIdentifierCodes.getAllMarketIdentifierCodes();
 
             // If a security exchange is specified and it's not present in the
             // exchange keys, add the symbol to the answer list
             if (securityExchange != null && !exchangeKeys.contains(securityExchange))
-                answer.add(createExchange(symbol + "." + securityExchange)); //$NON-NLS-1$
+                answer.add(new Exchange(tickerSymbol, tickerSymbol));
 
-            exchangeKeys.forEach(e -> answer.add(createExchange(symbol + "." + e))); //$NON-NLS-1$
+            exchangeKeys.forEach(e -> answer.add(new Exchange(symbol + "." + e, //$NON-NLS-1$
+                            MarketIdentifierCodes.getLabel(e))));
         }
 
         return answer;
-    }
-
-    private Exchange createExchange(String symbol)
-    {
-        int e = symbol.indexOf('.');
-        String exchange = e >= 0 ? symbol.substring(e) : ".default"; //$NON-NLS-1$
-        String label = ExchangeLabels.getString("mic-ISO-10383" + exchange); //$NON-NLS-1$
-        return new Exchange(symbol, label);
     }
 
     private long asPrice(Object number)

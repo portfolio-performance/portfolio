@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -187,12 +186,10 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
 
         List<MarketInfo> marketInfos = JClient.GSON.fromJson(markets.get(), collectionType);
 
-        return marketInfos
-                        .stream().map(
-                                        m -> new Exchange(m.getMarketCode(),
-                                                        MessageFormat.format(Messages.LabelXwithCurrencyY,
-                                                                        m.getMarketCode(), m.getCurrencyCode())))
-                        .collect(Collectors.toList());
+        return marketInfos.stream()
+                        .map(m -> new Exchange(m.getMarketCode(), MessageFormat.format(Messages.LabelXwithCurrencyY,
+                                        MarketIdentifierCodes.getLabel(m.getMarketCode()), m.getCurrencyCode())))
+                        .toList();
     }
 
 }
