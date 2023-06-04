@@ -13,6 +13,12 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @implNote The PDF does not include the name of the security.
+ *           The ticker symbol is used to identify the security.
+ *           The currency of Stake is AUD (A$).
+ */
+
 @SuppressWarnings("nls")
 public class StakePDFExtractor extends AbstractPDFExtractor
 {
@@ -49,51 +55,59 @@ public class StakePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                        // Is type --> "Sell" change from BUY to SELL
-                        .section("type").optional() //
-                        .match("^(?<type>(BUY|SELL)) CONFIRMATION$") //
-                        .assign((t, v) -> {
-                            if ("SELL".equals(v.get("type")))
-                                t.setType(PortfolioTransaction.Type.SELL);
-                        })
+                // Is type --> "Sell" change from BUY to SELL
+                .section("type").optional()
+                .match("^(?<type>(BUY|SELL)) CONFIRMATION$")
+                .assign((t, v) -> {
+                    if ("SELL".equals(v.get("type")))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
 
-                        // QUANTITY 512
-                        .section("shares") //
-                        .match("^QUANTITY (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                // @formatter:off
+                // EFFECTIVE PRICE $20.43 TICKER FLT.ASX
+                // @formatter:on
+                .section("tickerSymbol", "currency")
+                .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[\\w]{3,4})\\..*$")
+                .match("^VALUE (?<currency>[A-Z]\\p{Sc}).*$")
+                .assign((t, v) -> {
+                    v.put("name", v.get("tickerSymbol"));
 
-                        // EFFECTIVE PRICE $20.43 TICKER FLT.ASX
-                        .section("tickerSymbol", "currency")
-                        .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[\\w]{3,4})\\..*$")
-                        .match("^VALUE (?<currency>[\\w]{1}\\p{Sc}).*") //
-                        .assign((t, v) -> {
-                            // the PDF does not include the name of the
-                            // security; if it is created, identify it at least
-                            // by the ticker
-                            v.put("name", v.get("tickerSymbol"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                    t.setSecurity(getOrCreateSecurity(v));
+                })
 
-                        // VALUE A$10,455.04 EXECUTION DATE 27-05-2022
-                        .section("date") //
-                        .match("^VALUE A\\p{Sc}[\\.,\\d]+ EXECUTION DATE (?<date>[\\d]+-.*-[\\d]{4})$")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                // @formatter:off
+                // QUANTITY 512
+                // @formatter:on
+                .section("shares")
+                .match("^QUANTITY (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // AMOUNT DUE & PAYABLE A$10,458.04 Funds have already
-                        // been deducted from your buying power. No action
-                        .section("currency", "amount")
-                        .match("^AMOUNT DUE & PAYABLE (?<currency>[\\w]{1}\\p{Sc})(?<amount>[\\.,\\d]+) .*")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                // @formatter:off
+                // VALUE A$10,455.04 EXECUTION DATE 27-05-2022
+                // @formatter:on
+                .section("date")
+                .match("^VALUE [A-Z]\\p{Sc}[\\.,\\d]+ EXECUTION DATE (?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4})$")
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                        // CONFIRMATION NUMBER 0000001 PID 3556
-                        .section("note").optional()//
-                        .match("^CONFIRMATION NUMBER (?<note>.*) PID 3556$")
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                // @formatter:off
+                // AMOUNT DUE & PAYABLE A$10,458.04 Funds have already
+                // been deducted from your buying power. No action
+                // @formatter:on
+                .section("currency", "amount")
+                .match("^AMOUNT DUE & PAYABLE (?<currency>[A-Z]\\p{Sc})(?<amount>[\\.,\\d]+) .*$")
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
 
-                        .wrap(BuySellEntryItem::new);
+                // @formatter:off
+                // CONFIRMATION NUMBER 0000001 PID 3556
+                // @formatter:on
+                .section("note").optional()
+                .match("^CONFIRMATION NUMBER (?<note>.*) PID .*$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
@@ -101,10 +115,12 @@ public class StakePDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                        // BROKERAGE & GST A$3.00 SIDE BUY
-                        .section("fee", "currency").optional() //
-                        .match("^BROKERAGE & GST (?<currency>[\\w]{1}\\p{Sc})(?<fee>[\\.,\\d]+) SIDE (BUY|SELL)$")
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                // @formatter:off
+                // BROKERAGE & GST A$3.00 SIDE BUY
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^BROKERAGE & GST (?<currency>[A-Z]\\p{Sc})(?<fee>[\\.,\\d]+) SIDE (BUY|SELL)$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
