@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu.ClientFilterStorageHelper;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 
 class ClientFilterMigration
@@ -58,7 +59,7 @@ class ClientFilterMigration
 
     private void moveFiltersIntoClientFile(List<ClientFilterMenu.Item> clientFilters)
     {
-        ConfigurationSet set = client.getSettings().getConfigurationSet("ClientFilterDropDown"); //$NON-NLS-1$
+        ConfigurationSet set = ClientFilterStorageHelper.getFilterConfigurationSet(client);
         clientFilters.forEach(cf -> set.add(new Configuration(cf.getIdent(), cf.getLabel(), cf.getUUIDs())));
     }
 
@@ -112,7 +113,7 @@ class ClientFilterMigration
         String link = preferenceStore.getString(prefKey);
         if (oldToNewIdentMap.containsKey(link))
         {
-            ConfigurationSet set = client.getSettings().getConfigurationSet("client-filter-usages"); //$NON-NLS-1$
+            ConfigurationSet set = ClientFilterStorageHelper.getFilterUsagesConfigurationSet(client);
             set.add(new Configuration(prefKey, "", oldToNewIdentMap.get(link))); //$NON-NLS-1$
         }
     }

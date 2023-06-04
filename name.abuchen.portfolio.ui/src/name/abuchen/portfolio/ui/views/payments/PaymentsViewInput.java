@@ -7,6 +7,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu.ClientFilterStorageHelper;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 
 public class PaymentsViewInput
@@ -108,8 +109,7 @@ public class PaymentsViewInput
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
 
-        Optional<String> filterIdent = ClientFilterMenu.ClientFilterStorageHelper.getSelectedFilter(client,
-                        KEY_USED_FILTER);
+        Optional<String> filterIdent = ClientFilterStorageHelper.getSelectedFilter(client, KEY_USED_FILTER);
 
         PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
@@ -140,7 +140,6 @@ public class PaymentsViewInput
         preferences.setValue(KEY_USE_GROSS_VALUE, useGrossValue);
         preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, useConsolidateRetired);
 
-        filterIdent.ifPresent(ident -> ClientFilterMenu.ClientFilterStorageHelper.saveSelectedFilter(client,
-                        KEY_USED_FILTER, ident));
+        filterIdent.ifPresent(ident -> ClientFilterStorageHelper.saveSelectedFilter(client, KEY_USED_FILTER, ident));
     }
 }

@@ -385,19 +385,19 @@ public final class ClientFilterMenu implements IMenuListener
 
     public static class ClientFilterStorageHelper
     {
-        public static final String PREF_KEY_FILTER_DEFINITIONS = ClientFilterDropDown.class.getSimpleName();
+        public static final String PREF_KEY_FILTER_DEFINITIONS = "client-filter-definitions"; //$NON-NLS-1$
         /**
          * Key for configuration set where all usages/references of client
          * filters are stored
          **/
         private static final String PREF_KEY_FILTER_USAGES = "client-filter-usages"; //$NON-NLS-1$
 
-        private static ConfigurationSet getFilterUsagesConfigurationSet(Client client)
+        public static ConfigurationSet getFilterUsagesConfigurationSet(Client client)
         {
             return client.getSettings().getConfigurationSet(PREF_KEY_FILTER_USAGES);
         }
 
-        private static ConfigurationSet getFilterConfigurationSet(Client client)
+        public static ConfigurationSet getFilterConfigurationSet(Client client)
         {
             return client.getSettings().getConfigurationSet(PREF_KEY_FILTER_DEFINITIONS);
         }
