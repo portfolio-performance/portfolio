@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
@@ -51,6 +53,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "(Kauf"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
+                        + "|SAVINGS PLAN"
                         + "|Ex.cution de l.investissement programm.) .*"
                         + "|REINVESTIERUNG)");
         this.addDocumentTyp(type);
@@ -66,6 +69,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "(Kauf"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
+                        + "|SAVINGS PLAN"
                         + "|Ex.cution de l.investissement programm.) .*"
                         + "|REINVESTIERUNG)");
         type.addBlock(firstRelevantLine);
@@ -74,7 +78,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
-                .match("^((Limit|Stop\\-Market|Market)\\-Order )?(?<type>(Kauf|Verkauf|Sparplanausf.hrung|Ex.cution de l.investissement programm.)) .*$")
+                .match("^((Limit|Stop\\-Market|Market)\\-Order )?"
+                                + "(?<type>(Kauf"
+                                + "|Verkauf"
+                                + "|Sparplanausf.hrung"
+                                + "|SAVINGS PLAN"
+                                + "|Ex.cution de l.investissement programm.))"
+                                + " .*$")
                 .assign((t, v) -> {
                     if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
@@ -89,7 +99,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:on
                                 section -> section
                                         .attributes("name", "currency", "isin", "nameContinued")
-                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                                         .match("^(?<nameContinued>.*)$")
                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -127,6 +137,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                                 ,
                                 // @formatter:off
+                                // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("shares")
+                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. .*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US")))
+                                ,
+                                // @formatter:off
                                 // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                 // 2 Reinvestierung Vodafone Group PLC 22 Stk.
                                 // @formatter:on
@@ -159,10 +177,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 ,
                                 // @formatter:off
                                 // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
+                                // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
                                 // @formatter:on
                                 section -> section
                                         .attributes("date")
-                                        .match("^Sparplanausf.hrung .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$")
+                                        .match("^(Sparplanausf.hrung|Savings plan) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
                                 ,
 
@@ -1356,5 +1375,43 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
                 });
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }
