@@ -2,13 +2,13 @@
 <?pde version="3.8"?>
 <target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.26/R-4.26-202211231800/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.26.0.v20221123-2302"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.26.0.v20221123-2302"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.1900.v20221108-1024"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1900.v20221108-1024"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.26.0.v20221123-2302"/>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/eclipse/updates/4.27/R-4.27-202303020300/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.27.0.v20230220-1431"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.27.0.v20230220-1431"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.2000.v20221201-0912"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2000.v20221201-0912"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.27.0.v20230302-0300"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>

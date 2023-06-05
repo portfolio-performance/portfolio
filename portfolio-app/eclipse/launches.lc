@@ -14,6 +14,7 @@ eclipse configuration PortfolioPerformance {
 	feature org.eclipse.ecf.filetransfer.feature;
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
+	plugin org.apache.felix.scr;
 	
 	ignore name.abuchen.portfolio.junit;
 	ignore name.abuchen.portfolio.tests;
@@ -55,6 +56,7 @@ abstract junit-plugin configuration TestBase {
 	feature org.eclipse.ecf.filetransfer.feature;
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
+	plugin org.apache.felix.scr;
 
 	ignore org.eclipse.jdt.annotation;
 	ignore org.eclipse.ui;
