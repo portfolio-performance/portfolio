@@ -19,9 +19,9 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
-public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
+public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 {
-    public SantanderConsumerBankAGPDFExtractor(Client client)
+    public SantanderConsumerBankPDFExtractor(Client client)
     {
         super(client);
 
