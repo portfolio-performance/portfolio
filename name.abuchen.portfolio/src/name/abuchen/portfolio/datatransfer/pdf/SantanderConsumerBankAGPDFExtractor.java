@@ -3,6 +3,10 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -12,6 +16,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
@@ -21,15 +26,17 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Santander Consumer Bank AG");
+        addBankIdentifier("Santander Consumer Bank GmbH");
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Santander Consumer Bank AG";
+        return "Santander Consumer Bank";
     }
 
     private void addBuySellTransaction()
@@ -184,5 +191,99 @@ public class SantanderConsumerBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("fee", "currency").optional()
                 .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
+            // Find currency
+            // € 0,00 € 38,98 € 40,64 € 1,66 € 6,63 € 1,66
+            final Pattern pCurrency = Pattern
+                            .compile("^(?<currency>[\\w]{1}\\p{Sc}) [\\.,\\d]+ [\\w]{1}\\p{Sc} [\\.,\\d]+.*");
+
+            for (String line : lines)
+            {
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                {
+                    context.put("currency", mCurrency.group("currency"));
+                    break;
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        // 31.05.2023 31.05.2023 -1,66 38,98 Kapitalertragsteuer
+        Block taxesBlock = new Block("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Kapitalertragsteuer).*");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("date", "amount")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Kapitalertragsteuer).*")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // 31.05.2023 31.05.2023 6,63 40,64 Zinsgutschrift Habenzinsen
+        Block interestBlock = new Block(
+                        "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Zinsgutschrift) (?<note>.*)");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.INTEREST);
+                            return entry;
+                        })
+
+                        .section("date", "amount", "note")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Zinsgutschrift) (?<note>.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(TextUtil.replaceMultipleBlanks(v.get("note")).trim());
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // 19.05.2023 19.05.2023 34,00 34,01 Einzahlung von ...
+        Block depositBlock = new Block(
+                        "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Einzahlung) (?<note>.*)");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DEPOSIT);
+                            return entry;
+                        })
+
+                        .section("date", "amount", "note")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d-]+) ([\\.,\\d-]+) (Einzahlung) (?<note>.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(TextUtil.replaceMultipleBlanks(v.get("note")).trim());
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }
