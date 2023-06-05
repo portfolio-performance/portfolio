@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.santanderconsumerbankag;
+package name.abuchen.portfolio.datatransfer.pdf.santanderconsumerbank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -30,7 +30,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.SantanderConsumerBankAGPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SantanderConsumerBankPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -43,12 +43,12 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class SantanderConsumerBankAGPDFExtractorTest
+public class SantanderConsumerBankPDFExtractorTest
 {
     @Test
     public void testWertpapierKauf01()
     {
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(new Client());
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -92,7 +92,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(new Client());
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(new Client());
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
         Client client = new Client();
         client.addSecurity(security);
 
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(client);
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -228,7 +228,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(new Client());
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -271,7 +271,7 @@ public class SantanderConsumerBankAGPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        SantanderConsumerBankAGPDFExtractor extractor = new SantanderConsumerBankAGPDFExtractor(new Client());
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
