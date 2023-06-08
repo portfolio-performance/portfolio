@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.63.1
+-----------------------------------------
+Selfwealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au
+This trade was executed and cleared by FNZ Custodians (Australia) Pty Ltd (trading as “FNZ Securities”)
+AFSL 507452 ABN 88 624 689 694
+Buy Confirmation
+FS Dolr rMN  Account Number: t3481399
+lasY TwY A/C Reference No: 433059
+YNcnOkiAJ Trade Date: 5 May 2023
+3 oiJF Odsp Settlement Date: 7 May 2023
+mVTkfe neR Market: ASX
+2000, AUS
+WE HAVE BOUGHT ON YOUR ACCOUNT
+This Day: FNZ Securities has bought for you
+Quantity Security Code Security Description Price +1 Consideration Currency
+3,795 MBH MAGGIE BEER HOLDINGS LTD 0.18 $683.10 AUD
+Brokerage* $9.50 AUD
+Misc Fees & Charges $0.00 AUD
+Adviser Fee* $0.00 AUD
+Total Amount Payable $692.60 AUD
+GST included in this invoice is $0.86
+The confirmation is a tax invoice ­ please retain for tax purposes. If this confirmation does not correspond with your records please contact us immediately at
+support@selfwealth.com.au
+Settlement Instructions All consideration and any information or documents required by FNZ Securities must be provided to by 9am on the Settlement Date. This transaction
+will be settled from your linked cash account or in accordance with your instructions on the Settlement Date.
+Message:
+Complete Order
+* Inclusive of GST
++1 Standard Financial Rounding Applied (if applicable)
+This confirmation is provided to you by each of Selfwealth and FNZ Securities. The Brokerage and Adviser fees set out in this confirmation are charged by Selfwealth,
+not FNZ Securities. FNZ Securities will charge a fee to Selfwealth for providing these services to you.
+The above transaction(s) and this confirmation are issued subject to: (a) the directions, decisions and requirements of the operation of the relevant Market, ASIC
+Market Integrity Rules, the Market Operator Rules, the Clearing Rules and where relevant the Settlement Rules; (b) the customs and usages of the relevant Market;
+and (c) the correction of errors and omissions. The transaction(s) recorded in this confirmation may have been executed on either ASX or Cboe.
+FNZ Securities AFSL 507452 ABN 88 624 689 694 is a Trading Participant of ASX, a Participant of Cboe, and a General Participant of ASX Clear and a General
+Settlement Participant of ASX Settlement.
+Generated At: 5 May 2023 1:09:28 PM
+Page: 1 of 1
