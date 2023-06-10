@@ -57,7 +57,7 @@ public class TradeCollector
             if (pair.getTransaction() instanceof PortfolioTransaction)
                 return ((PortfolioTransaction) pair.getTransaction()).getType().isPurchase();
             else if (pair.getTransaction() instanceof AccountTransaction)
-                return ((AccountTransaction) pair.getTransaction()).getType().isCredit();
+                return ((AccountTransaction) pair.getTransaction()).getType().isDebit();
 
             return false;
         }
