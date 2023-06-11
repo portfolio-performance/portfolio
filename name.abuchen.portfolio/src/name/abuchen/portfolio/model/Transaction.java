@@ -420,6 +420,16 @@ public abstract class Transaction implements Annotated, Adaptable
     }
 
     /**
+     * Remove all units by unit type
+     */
+    public void removeUnits(Unit.Type type)
+    {
+        units = units == null ? new ArrayList<>() : units;
+        units.removeIf(unit -> unit.getType() == type);
+        updatedAt = Instant.now();
+    }
+
+    /**
      * Returns the sum of units in transaction currency
      */
     public Money getUnitSum(Unit.Type type)

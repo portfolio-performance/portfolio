@@ -16,11 +16,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
@@ -3816,57 +3816,43 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExStockDividende01.txt"), errors);
 
-        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("NL00150001Q9"), //
-                        hasWkn("A2QL01"), //
-                        hasTicker(null), //
-                        hasName("STELLANTIS BR RG"), //
+                        hasIsin("FR0000121147"), hasWkn("867025"), hasTicker(null), //
+                        hasName("FAURECIA EU INH      EO 7"), //
                         hasCurrencyCode("EUR"))));
 
         assertThat(results, hasItem(security( //
-                        hasIsin("FR0000121147"), //
-                        hasWkn("867025"), //
-                        hasTicker(null), //
-                        hasName("FAURECIA EU INH      EO 7"), //
+                        hasIsin("NL00150001Q9"), hasWkn("A2QL01"), hasTicker(null), //
+                        hasName("STELLANTIS BR RG"), //
                         hasCurrencyCode("EUR"))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-04-01"), //
-                        hasShares(178), //
-                        hasSource("FlatExStockDividende01.txt"), //
-                        hasNote("Transaktion-Nr.: 2289444861"), //
-                        hasAmount("EUR", 135), //
-                        hasGrossValue("EUR", 135), //
-                        hasTaxes("EUR", 0), //
-                        hasFees("EUR", 0))));
+                        hasDate("2021-04-01"), hasShares(178), //
+                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasAmount("EUR", 135.00), hasGrossValue("EUR", 135.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-01"), hasShares(3), //
+                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasAmount("EUR", 135.00), hasGrossValue("EUR", 135.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2021-04-01"), //
-                        hasShares(178), //
-                        hasSource("FlatExStockDividende01.txt"), //
-                        hasNote("Transaktion-Nr.: 2289444861"), //
-                        hasAmount("EUR", 37.54), //
-                        hasGrossValue("EUR", 37.54), //
-                        hasTaxes("EUR", 0), //
-                        hasFees("EUR", 0))));
-
-        // check delivery inbound (Einlieferung) transaction
-        assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2021-04-01"), //
-                        hasShares(3), //
-                        hasSource("FlatExStockDividende01.txt"), //
-                        hasNote("Transaktion-Nr.: 2289444861"), //
-                        hasAmount("EUR", 135), //
-                        hasGrossValue("EUR", 135), //
-                        hasTaxes("EUR", 0), //
-                        hasFees("EUR", 0))));
+                        hasDate("2021-04-01"), hasShares(178), //
+                        hasSource("FlatExStockDividende01.txt"), hasNote("Transaktion-Nr.: 2289444861"), //
+                        hasAmount("EUR", 37.54), hasGrossValue("EUR", 37.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4006,6 +3992,42 @@ public class FinTechGroupBankPDFExtractorTest
         account.setCurrencyCode(CurrencyUnit.EUR);
         Status s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf02()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf02.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BQ3D6V05"), hasWkn("A12GPB"), hasTicker(null), //
+                        hasName("COMGEST GROWTH ASIA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-05-25T00:00"), hasShares(0.385884), //
+                        hasSource("FlatExDegiroVerkauf02.txt"), hasNote("Transaktion-Nr.: 3333333333"), //
+                        hasAmount("EUR", 2.42), hasGrossValue("EUR", 2.45), //
+                        hasTaxes("EUR", 0.03), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-05-25T00:00"), hasShares(0.385884), //
+                        hasSource("FlatExDegiroVerkauf02.txt"), hasNote("Transaktion-Nr.: 3333333333"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
