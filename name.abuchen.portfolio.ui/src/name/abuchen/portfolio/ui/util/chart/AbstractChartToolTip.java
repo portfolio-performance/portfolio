@@ -190,16 +190,13 @@ public abstract class AbstractChartToolTip implements Listener
         int x = event.x + (size.x / 2) > plotArea.width ? plotArea.width - size.x : event.x - (size.x / 2);
         x = Math.max(x, 0);
 
-        int y = event.y + size.y + PADDING > plotArea.height ? event.y - size.y - PADDING : event.y + PADDING;
+        Point pt = getPlotArea().toDisplay(x, event.y);
+        // show above
+        int y = pt.y - size.y - PADDING;
+        if (y < PADDING)
+            y = PADDING;
 
-        // if the tool tip is bigger than height of the plot area (for example
-        // on the dashboard), then let the tool tip extend over the bottom
-        // (instead of extending over the top of the chart)
-        y = Math.min(y, plotArea.height - size.y - PADDING);
-        y = Math.max(y, 0);
-
-        Point pt = getPlotArea().toDisplay(x, y);
-        return new Rectangle(pt.x, pt.y, size.x, size.y);
+        return new Rectangle(pt.x, y, size.x, size.y);
     }
 
     protected final Composite getPlotArea()

@@ -76,6 +76,7 @@ public enum Images
     NEXT("next.png"), //$NON-NLS-1$
     PREVIOUS("previous.png"), //$NON-NLS-1$
     CHEVRON("chevron.png"), //$NON-NLS-1$
+    DOT_HORIZONAL("dot_horizontal.png"), //$NON-NLS-1$
     INTERVAL("interval.png"), //$NON-NLS-1$
     NEW_TRANSACTION("new_transaction.png"), //$NON-NLS-1$
     INVERT_EXCHANGE_RATE("invert_exchange_rate.png"), //$NON-NLS-1$

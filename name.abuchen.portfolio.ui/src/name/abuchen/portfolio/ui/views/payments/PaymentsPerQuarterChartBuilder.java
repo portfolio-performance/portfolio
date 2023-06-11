@@ -2,8 +2,6 @@ package name.abuchen.portfolio.ui.views.payments;
 
 import java.util.List;
 
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -19,6 +17,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -58,7 +57,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
 
             final Composite container = new Composite(parent, SWT.NONE);
             container.setBackgroundMode(SWT.INHERIT_FORCE);
-            GridLayoutFactory.swtDefaults().numColumns(1 + noOfYears).applyTo(container);
+            container.setLayout(new TabularLayout(noOfYears + 1, 1, 1));
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setText(Messages.ColumnSecurity);
@@ -68,7 +67,6 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
                 ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
                 label.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor());
                 label.setText(String.valueOf(model.getStartYear() + year));
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
             }
 
             lines.forEach(line -> {
@@ -83,7 +81,6 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
                         value += line.getValue(mQuarter);
                     l = new Label(container, SWT.RIGHT);
                     l.setText(Values.Amount.format(value));
-                    GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
                 }
             });
 
@@ -100,7 +97,6 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
                         value += model.getSumRetired().getValue(mQuarter);
                     ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
                     cl.setText(Values.Amount.format(value));
-                    GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
                 }
             }
 
@@ -116,7 +112,6 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
                 ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
                 cl.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor());
                 cl.setText(Values.Amount.format(value));
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
             }
         }
     }
