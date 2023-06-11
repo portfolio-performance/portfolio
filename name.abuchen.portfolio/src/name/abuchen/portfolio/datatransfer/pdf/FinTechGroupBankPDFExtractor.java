@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -38,6 +39,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("flatexDEGIRO Bank AG");
 
         addBuySellTransaction();
+        addBuyStockDividendeTransaction();
         addSummaryStatementBuySellTransaction();
         addSellTransaction();
         addSellForOptionsTransaction();
@@ -85,8 +87,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Stornierung Wertpapierabrechnung Kauf Fonds
                 .section("type").optional()
                 .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                 .oneOf(
                                 // @formatter:off
@@ -364,6 +365,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     // Finally, we remove the flag.
                     type.getCurrentContext().remove("isPurchaseBonds");
 
+                    // If in a sale the fees are higher than the amount,
+                    // then the fees are handled in a separate transaction.
+                    if (t.getPortfolioTransaction().getType().isLiquidation()
+                                    && t.getPortfolioTransaction().getMonetaryAmount().isLessThan(t.getPortfolioTransaction().getUnitSum(Type.FEE)))
+                    {
+                        t.getPortfolioTransaction().removeUnits(Type.FEE);
+                        type.getCurrentContext().putBoolean("separateFeeTransaction", true);
+                    }
+
                     BuySellEntryItem item = new BuySellEntryItem(t);
 
                     if (ctx.getString(FAILURE) != null)
@@ -375,6 +385,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addBuySellTaxReturnBlock(type);
+        addBuySellFeeBlock(type);
     }
 
     private void addSummaryStatementBuySellTransaction()
@@ -1147,19 +1158,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                         )
 
-                .wrap(t -> {
-                    // The final amount is negative. The taxes incurred
-                    // are processed in a separate transaction.
-                    // Finally, we remove the flag.
-                    type.getCurrentContext().remove("negative");
-
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                .wrap(TransactionItem::new);
 
         addStockDividendeTaxReturnBlock(type);
-        addStockDividendeTransactionDeliveryInbound(type);
 
         block.set(pdfTransaction);
     }
@@ -1255,16 +1256,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addStockDividendeTransactionDeliveryInbound(DocumentType type)
+    private void addBuyStockDividendeTransaction()
     {
-        Block block = new Block("^Stockdividende.*$");
+        DocumentType type = new DocumentType("Stockdividende");
+        this.addDocumentTyp(type);
 
-        type.addBlock(block);
-        block.set(new Transaction<PortfolioTransaction>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
 
+        Block firstRelevantLine = new Block("^Stockdividende$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
                 .subject(() -> {
-                    PortfolioTransaction entry = new PortfolioTransaction();
-                    entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                    BuySellEntry entry = new BuySellEntry();
+                    entry.setType(PortfolioTransaction.Type.BUY);
                     return entry;
                 })
 
@@ -1302,7 +1313,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
                 .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // @formatter:off
                 // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1340,7 +1351,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                         )
 
-                .wrap(TransactionItem::new));
+                .wrap(BuySellEntryItem::new);
     }
 
     private void addDepotStatementTransaction()
@@ -2276,6 +2287,165 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
+    private void addBuySellFeeBlock(DocumentType type)
+    {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.FEES);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                .oneOf(
+                                // @formatter:off
+                                // Nr.123441244/1  Kauf            C.S.-MSCI PACIF.T.U.ETF I (LU0392495023/ETF114)
+                                // Kurs           4,424000 EUR           Kurswert       EUR             44,24
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$")
+                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
+                                // Kurs           29,0000 %               Kurswert       EUR             7.250,00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf) ([\\s]+)?(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$")
+                                        .match("^.* Kurswert([\\s]+)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
+                                // Ausgeführt    :    1.000,000000 EUR     Kurswert      :           1.690,00 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?(Kauf|Verkauf)([\\s]+)? (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$")
+                                        .match("^.* Kurswert([\\s]+)?: ([\\s]+)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
+
+                // @formatter:off
+                // Ausgeführt     25.000,00000 EUR
+                // Ausgeführt    :              29 St.     Kurswert      :             751,68 EUR
+                // Ausgeführt     10 St.
+                // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
+                // @formatter:on
+                .section("shares", "notation")
+                .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})).*$")
+                .assign((t, v) -> {
+                    // Percentage quotation, workaround for bonds
+                    if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                    {
+                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                    }
+                    else
+                    {
+                        t.setShares(asShares(v.get("shares")));
+                    }
+                })
+
+                // @formatter:off
+                // An den  Ausführungszeit   13:59 Häusern 5
+                // ZZZZ ZZ Ausführungszeit    17:30 Uhr.
+                // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                // @formatter:on
+                .section("time").optional()
+                .match("^.* Ausf.hrungszeit ([\\s]+)?(?<time>[\\d]{2}:[\\d]{2}).*$")
+                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                // @formatter:off
+                // Max Mustermann Schlusstag        03.12.2015o
+                // ZZZZZ ZZZZ Handelstag         10.04.2019xan
+                // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                // @formatter:on
+                .section("date")
+                .match("^.* (Handelstag|Schlusstag) ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .assign((t, v) -> {
+                    if (type.getCurrentContext().get("time") != null)
+                        t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                    else
+                        t.setDateTime(asDate(v.get("date")));
+                })
+
+                .oneOf(
+                                // @formatter:off
+                                // Endbetrag      EUR               -50,30
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^.* Endbetrag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(\\-)?(?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // @formatter:off
+                                //                                         Endbetrag     :              -2,42 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^(.* )?Endbetrag([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
+
+                .optionalOneOf(
+                                // @formatter:off
+                                //   unter der Transaktion-Nr.: 132465978
+                                //   unter der Transaktion-Nr. : 1111111111
+                                // Transaktionsnummer: 921414163
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                ,
+                                // @formatter:off
+                                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                // 1301138113.
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
+                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                        )
+
+                .wrap(t -> {
+                    // Since it is a separate fee transaction, we record it.
+                    if (type.getCurrentContext().getBoolean("separateFeeTransaction"))
+                    {
+                        t.setMonetaryAmount(t.getUnitSum(Type.FEE));
+                        t.clearUnits();
+                    }
+                    else
+                    {
+                        t.setAmount(0L);
+                    }
+
+                    // Finally, we remove the flag.
+                    type.getCurrentContext().remove("separateFeeTransaction");
+
+                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                        return new TransactionItem(t);
+                    return null;
+                });
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
     private void addSummaryStatementTaxReturnBlock(DocumentType type)
     {
         Block block = new Block("^Nr\\.[\\d]+\\/[\\d]+ ([\\s]+)?Verkauf ([\\s]+)?(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$");
@@ -3011,18 +3181,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     {
                         Money fee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
 
-                        if (!fee.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                        if (t instanceof name.abuchen.portfolio.model.Transaction tx)
                         {
-                            Money fxFee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
-
-                            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-
-                            fee = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
-                                            BigDecimal.valueOf(fxFee.getAmount()).multiply(exchangeRate)
-                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                            checkAndSetFee(fee, tx, type.getCurrentContext());
                         }
-
-                        checkAndSetFee(fee, t, type.getCurrentContext());
+                        else if (t instanceof BuySellEntry buysell)
+                        {
+                            checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
+                        }
                     }
                 })
 
@@ -3036,18 +3202,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     {
                         Money fee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
 
-                        if (!fee.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                        if (t instanceof name.abuchen.portfolio.model.Transaction tx)
                         {
-                            Money fxFee = Money.of(asCurrencyCode(v.get("currency")),asAmount(v.get("fee")));
-
-                            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-
-                            fee = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
-                                            BigDecimal.valueOf(fxFee.getAmount()).multiply(exchangeRate)
-                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                            checkAndSetFee(fee, tx, type.getCurrentContext());
                         }
-
-                        checkAndSetFee(fee, t, type.getCurrentContext());
+                        else if (t instanceof BuySellEntry buysell)
+                        {
+                            checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
+                        }
                     }
                 })
 
