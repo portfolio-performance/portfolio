@@ -3,8 +3,6 @@ package name.abuchen.portfolio.ui.views.payments;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
@@ -22,6 +20,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
+import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -66,7 +65,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
             final Composite container = new Composite(parent, SWT.NONE);
             container.setBackgroundMode(SWT.INHERIT_FORCE);
-            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
+            container.setLayout(new TabularLayout(2, 1, 1));
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setText(Messages.ColumnSecurity);
@@ -74,7 +73,6 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
             ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
             label.setBackdropColor(barColor);
             label.setText(String.valueOf(model.getStartYear() + year));
-            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
 
             lines.forEach(line -> {
                 Label l = new Label(container, SWT.NONE);
@@ -86,7 +84,6 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
                 l = new Label(container, SWT.RIGHT);
                 l.setText(Values.Amount.format(value));
-                GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
             });
 
             if (model.usesConsolidateRetired())
@@ -100,7 +97,6 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
                 ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
                 cl.setText(Values.Amount.format(value));
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
             }
 
             Label lSum = new Label(container, SWT.NONE);
@@ -113,7 +109,6 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
             ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
             cl.setBackdropColor(barColor);
             cl.setText(Values.Amount.format(value));
-            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(cl);
         }
     }
 
