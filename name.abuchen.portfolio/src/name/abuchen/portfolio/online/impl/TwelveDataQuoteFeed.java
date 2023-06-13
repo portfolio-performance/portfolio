@@ -135,7 +135,7 @@ public class TwelveDataQuoteFeed implements QuoteFeed
             securityExchange = security.getTickerSymbol().substring(security.getTickerSymbol().indexOf('.') + 1)
                             .toUpperCase();
 
-        if (apiKey == null)
+        if (apiKey == null || apiKey.isBlank())
         {
             PortfolioLog.error(Messages.MsgErrorTwelveDataAPIKeyMissing);
             return QuoteFeedData.withError(new IllegalArgumentException(Messages.MsgErrorTwelveDataAPIKeyMissing));

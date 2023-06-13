@@ -166,7 +166,7 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
     {
         List<ResultItem> answer = new ArrayList<>();
 
-        if (apiKey != null)
+        if (apiKey != null && !apiKey.isBlank())
             addStockSearchPage(answer, query.trim());
 
         return answer;
