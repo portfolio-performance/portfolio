@@ -349,6 +349,8 @@ The structure of the PDF importers is as follows:
 
 * Client
 	* `addBankIdentifier` --> Unique recognition feature of the PDF document
+* Bank name
+  	* `getLabel` --> display label of bank/broker, e.g. *Deutsche Bank Privat- und Geschäftskunden AG*
 * Transaction types (basic types)
 	* `addBuySellTransaction` --> Purchase and sale ( single settlement )
 	* `addSummaryStatementBuySellTransaction`  --> Purchase and sale ( multiple settlements )
@@ -365,8 +367,6 @@ The structure of the PDF importers is as follows:
   	* `addReinvestTransaction` --> Reinvestment transaction
   	* `addTaxReturnBlock` --> Tax refund
   	* `addFeeReturnBlock` --> Fee refund
-* Bank name
-  	* `getLabel` --> display label of bank/broker, e.g. *Deutsche Bank Privat- und Geschäftskunden AG*
 * Taxes and fees
   	* `addTaxesSectionsTransaction` --> handling of taxes
   	* `addFeesSectionsTransaction` --> handling of fees
@@ -456,7 +456,11 @@ Via the application menu, users can create a test case file. The test file is th
 	* `KreditKontoauszug01.txt` --> Credit card account statement
 	* `Depotauszug01.txt` --> security account transaction history (settlement account)
 * Samples
-	*  one transaction per PDF: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
+	* From April 2023 we will use the simplified notation of test cases (preferred variant)
+	   * [Baader Bank](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/baaderbank/BaaderBankPDFExtractorTest.java) with `testWertpapierKauf23()`
+	   * [Sbroker](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testDividende11()`
+	   * [Sbroker](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testGiroKontoauszug10()`
+	*  one transaction per PDF (old version): [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
 	* supporting securities with multiple currencies: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) with `testWertpapierKauf09()` / `testWertpapierKauf09WithSecurityInEUR()` and `testDividende10()`/`testDividende10WithSecurityInEUR()`
 		* Background: in the PP model, the currency of the transaction always must match the currency of the security and its historical prices. However, sometimes securities are purchased on an different exchange with prices in an another currency. The importer try to handle this case automatically. This is reflected in the two test cases
 	* multiple transactions per PDF: [DKB AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java) with `testGiroKontoauszug01()`
