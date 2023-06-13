@@ -134,7 +134,7 @@ public class LeewayQuoteFeed implements QuoteFeed
     {
         String securityTickerSymbol = trim(security.getTickerSymbol()).toUpperCase();
 
-        if (apiKey == null)
+        if (apiKey == null || apiKey.isBlank())
         {
             PortfolioLog.error(Messages.MsgErrorLeewayAPIKeyMissing);
             return QuoteFeedData.withError(new IllegalArgumentException(Messages.MsgErrorLeewayAPIKeyMissing));

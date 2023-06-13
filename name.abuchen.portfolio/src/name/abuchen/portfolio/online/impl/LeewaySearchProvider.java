@@ -169,7 +169,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     {
         List<ResultItem> answer = new ArrayList<>();
 
-        if (Isin.isValid(query))
+        if (apiKey != null && !apiKey.isBlank() && Isin.isValid(query))
             addISINSearchPage(answer, query.trim());
 
         return answer;
