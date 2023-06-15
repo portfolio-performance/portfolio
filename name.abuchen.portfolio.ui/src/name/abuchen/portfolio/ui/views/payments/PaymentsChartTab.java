@@ -17,6 +17,7 @@ import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
@@ -26,6 +27,9 @@ public class PaymentsChartTab implements PaymentsTab
 
     @Inject
     protected PaymentsViewModel model;
+
+    @Inject
+    protected AbstractFinanceView view;
 
     private LocalResourceManager resources;
     private PaymentsChartBuilder chartBuilder;
@@ -82,7 +86,7 @@ public class PaymentsChartTab implements PaymentsTab
 
         xAxis.enableCategory(true);
 
-        chartBuilder.configure(chart);
+        chartBuilder.configure(chart, data -> view.setInformationPaneInput(data));
         chartBuilder.createSeries(chart, model);
 
         chart.getAxisSet().adjustRange();

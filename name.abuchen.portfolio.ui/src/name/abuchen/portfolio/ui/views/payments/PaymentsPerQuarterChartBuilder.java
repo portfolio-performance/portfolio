@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.ui.views.payments;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -14,10 +14,10 @@ import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.TabularDataSource;
+import name.abuchen.portfolio.ui.util.TabularDataSource.Column;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
-import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -25,9 +25,12 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
 {
     private static class DividendPerQuarterChartToolTip extends TimelineChartToolTip
     {
-        public DividendPerQuarterChartToolTip(Chart chart)
+        private Consumer<TabularDataSource> selectionListener;
+
+        public DividendPerQuarterChartToolTip(Chart chart, Consumer<TabularDataSource> selectionListener)
         {
             super(chart);
+            this.selectionListener = selectionListener;
 
             enableCategory(true);
         }
@@ -38,6 +41,19 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
             PaymentsViewModel model = (PaymentsViewModel) getChart().getData(PaymentsViewModel.class.getSimpleName());
 
             int quarter = (Integer) getFocusedObject();
+
+            IAxis xAxis = getChart().getAxisSet().getXAxes()[0];
+            TabularDataSource source = new TabularDataSource(
+                            Messages.LabelPaymentsPerQuarter + " - " + xAxis.getCategorySeries()[quarter], //$NON-NLS-1$
+                            builder -> buildTabularData(model, quarter, builder));
+
+            source.createPlainComposite(parent);
+
+            selectionListener.accept(source);
+        }
+
+        private void buildTabularData(PaymentsViewModel model, int quarter, TabularDataSource.Builder builder)
+        {
             int totalNoOfMonths = model.getNoOfMonths();
 
             List<Line> lines = model.getLines().stream() //
@@ -55,64 +71,60 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
 
             int noOfYears = (totalNoOfMonths / 12) + (totalNoOfMonths % 12 > quarter * 3 ? 1 : 0);
 
-            final Composite container = new Composite(parent, SWT.NONE);
-            container.setBackgroundMode(SWT.INHERIT_FORCE);
-            container.setLayout(new TabularLayout(noOfYears + 1, 1, 1));
-
-            Label topLeft = new Label(container, SWT.NONE);
-            topLeft.setText(Messages.ColumnSecurity);
-
+            builder.addColumns(new Column(Messages.ColumnSecurity, SWT.LEFT).withLogo());
             for (int year = 0; year < noOfYears; year++)
             {
-                ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
-                label.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor());
-                label.setText(String.valueOf(model.getStartYear() + year));
+                builder.addColumns(new Column(String.valueOf(model.getStartYear() + year))
+                                .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
+                                .withFormatter(cell -> Values.Amount.format((long) cell)));
             }
 
             lines.forEach(line -> {
-                Label l = new Label(container, SWT.NONE);
-                l.setText(TextUtil.tooltip(line.getVehicle().getName()));
+                Object[] row = new Object[noOfYears + 1];
+                row[0] = line.getVehicle();
 
+                int index = 1;
                 for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
                 {
                     int mLimit = m + 3;
                     long value = 0;
                     for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                         value += line.getValue(mQuarter);
-                    l = new Label(container, SWT.RIGHT);
-                    l.setText(Values.Amount.format(value));
+                    row[index++] = value;
                 }
+                builder.addRow(row);
             });
 
             if (model.usesConsolidateRetired())
             {
-                Label lSumRetired = new Label(container, SWT.NONE);
-                lSumRetired.setText(Messages.LabelPaymentsConsolidateRetired);
+                Object[] row = new Object[noOfYears + 1];
+                row[0] = Messages.LabelPaymentsConsolidateRetired;
 
+                int index = 1;
                 for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
                 {
                     int mLimit = m + 3;
                     long value = 0;
                     for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                         value += model.getSumRetired().getValue(mQuarter);
-                    ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-                    cl.setText(Values.Amount.format(value));
+                    row[index++] = value;
                 }
+                builder.addRow(row);
             }
 
-            Label lSum = new Label(container, SWT.NONE);
-            lSum.setText(Messages.ColumnSum);
+            Object[] row = new Object[noOfYears + 1];
+            row[0] = Messages.ColumnSum;
 
+            int index = 1;
             for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
             {
                 int mLimit = m + 3;
                 long value = 0;
                 for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
                     value += model.getSum().getValue(mQuarter);
-                ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-                cl.setBackdropColor(((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor());
-                cl.setText(Values.Amount.format(value));
+                row[index++] = value;
             }
+            builder.addFooter(row);
         }
     }
 
@@ -129,7 +141,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
-    public void configure(Chart chart)
+    public void configure(Chart chart, Consumer<TabularDataSource> selectionListener)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTick().setVisible(true);
@@ -146,7 +158,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
         yAxis.setPosition(Position.Secondary);
         yAxis.getTick().setFormat(new ThousandsNumberFormat());
 
-        new DividendPerQuarterChartToolTip(chart);
+        new DividendPerQuarterChartToolTip(chart, selectionListener);
 
     }
 
@@ -179,7 +191,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
             }
             barSeries.setYSeries(series);
 
-            barSeries.setBarColor(PaymentsColors.getColor(year));
+            barSeries.setBarColor(PaymentsColors.getColor(chart.getDisplay(), year));
             barSeries.setBarPadding(25);
         }
     }

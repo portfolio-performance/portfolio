@@ -107,7 +107,10 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
 
         chart.getLegend().setVisible(false);
 
-        chartBuilder.configure(chart);
+        // do not update information pane with tooltip data b/c we cannot
+        // control the lifecycle of the data
+        chartBuilder.configure(chart, data -> {
+        });
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());

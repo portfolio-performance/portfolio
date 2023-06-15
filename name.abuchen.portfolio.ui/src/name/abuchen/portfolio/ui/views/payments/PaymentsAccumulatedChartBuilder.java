@@ -4,6 +4,7 @@ import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.swtchart.Chart;
@@ -14,6 +15,7 @@ import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 
@@ -33,7 +35,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
-    public void configure(Chart chart)
+    public void configure(Chart chart, Consumer<TabularDataSource> selectionListener)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.enableCategory(true);
@@ -69,7 +71,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
             }
             lineSeries.setYSeries(series);
 
-            lineSeries.setLineColor(PaymentsColors.getColor(year));
+            lineSeries.setLineColor(PaymentsColors.getColor(chart.getDisplay(), year));
             lineSeries.setLineWidth(2);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setAntialias(SWT.ON);

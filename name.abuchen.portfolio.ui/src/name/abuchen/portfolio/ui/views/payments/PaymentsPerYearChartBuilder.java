@@ -2,11 +2,10 @@ package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -17,10 +16,10 @@ import org.swtchart.LineStyle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.TabularDataSource;
+import name.abuchen.portfolio.ui.util.TabularDataSource.Column;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
-import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
-import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -28,9 +27,12 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 {
     private static class DividendPerYearToolTip extends TimelineChartToolTip
     {
-        public DividendPerYearToolTip(Chart chart)
+        private Consumer<TabularDataSource> selectionListener;
+
+        public DividendPerYearToolTip(Chart chart, Consumer<TabularDataSource> selectionListener)
         {
             super(chart);
+            this.selectionListener = selectionListener;
 
             enableCategory(true);
         }
@@ -40,17 +42,20 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         {
             PaymentsViewModel model = (PaymentsViewModel) getChart().getData(PaymentsViewModel.class.getSimpleName());
 
-            final int year = (Integer) getFocusedObject();
+            int year = (Integer) getFocusedObject();
+
+            TabularDataSource source = new TabularDataSource(
+                            Messages.LabelPaymentsPerYear + " - " + (model.getStartYear() + year), //$NON-NLS-1$
+                            builder -> buildTabularData(model, year, builder));
+
+            source.createPlainComposite(parent);
+
+            selectionListener.accept(source);
+        }
+
+        private void buildTabularData(PaymentsViewModel model, int year, TabularDataSource.Builder builder)
+        {
             int totalNoOfMonths = model.getNoOfMonths();
-
-            Color barColor = Colors.DARK_BLUE;
-
-            IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[0];
-            if (barSeries.isStackEnabled())
-            {
-                barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[year];
-                barColor = barSeries.getBarColor();
-            }
 
             List<Line> lines = model.getLines().stream() //
                             .filter(line -> {
@@ -63,52 +68,33 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
                             .sorted((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                             .toList();
 
-            final Composite container = new Composite(parent, SWT.NONE);
-            container.setBackgroundMode(SWT.INHERIT_FORCE);
-            container.setLayout(new TabularLayout(2, 1, 1));
-
-            Label topLeft = new Label(container, SWT.NONE);
-            topLeft.setText(Messages.ColumnSecurity);
-
-            ColoredLabel label = new ColoredLabel(container, SWT.CENTER);
-            label.setBackdropColor(barColor);
-            label.setText(String.valueOf(model.getStartYear() + year));
+            builder.addColumns( //
+                            new Column(Messages.ColumnSecurity, SWT.LEFT).withLogo(),
+                            new Column(String.valueOf(model.getStartYear() + year))
+                                            .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
+                                            .withFormatter(cell -> Values.Amount.format((long) cell)));
 
             lines.forEach(line -> {
-                Label l = new Label(container, SWT.NONE);
-                l.setText(TextUtil.tooltip(line.getVehicle().getName()));
-
                 long value = 0;
                 for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
                     value += line.getValue(m);
 
-                l = new Label(container, SWT.RIGHT);
-                l.setText(Values.Amount.format(value));
+                builder.addRow(line.getVehicle(), value);
             });
 
             if (model.usesConsolidateRetired())
             {
-                Label lSumRetired = new Label(container, SWT.NONE);
-                lSumRetired.setText(Messages.LabelPaymentsConsolidateRetired);
-
                 long value = 0;
                 for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
                     value += model.getSumRetired().getValue(m);
 
-                ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-                cl.setText(Values.Amount.format(value));
+                builder.addRow(Messages.LabelPaymentsConsolidateRetired, value);
             }
-
-            Label lSum = new Label(container, SWT.NONE);
-            lSum.setText(Messages.ColumnSum);
 
             long value = 0;
             for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
                 value += model.getSum().getValue(m);
-
-            ColoredLabel cl = new ColoredLabel(container, SWT.RIGHT);
-            cl.setBackdropColor(barColor);
-            cl.setText(Values.Amount.format(value));
+            builder.addFooter(Messages.ColumnSum, value);
         }
     }
 
@@ -125,7 +111,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
     }
 
     @Override
-    public void configure(Chart chart)
+    public void configure(Chart chart, Consumer<TabularDataSource> selectionListener)
     {
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTick().setVisible(true);
@@ -140,7 +126,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         yAxis.setPosition(Position.Secondary);
         yAxis.getTick().setFormat(new ThousandsNumberFormat());
 
-        new DividendPerYearToolTip(chart);
+        new DividendPerYearToolTip(chart, selectionListener);
     }
 
     @Override
@@ -192,7 +178,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
                 barSeries.setYSeries(seriesX);
 
-                barSeries.setBarColor(PaymentsColors.getColor(year));
+                barSeries.setBarColor(PaymentsColors.getColor(chart.getDisplay(), year));
                 barSeries.setBarPadding(25);
                 barSeries.enableStack(true);
             }
