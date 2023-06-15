@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,9 +31,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.TabularLayout;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TabularDataSource implements Named
 {
@@ -175,6 +178,46 @@ public class TabularDataSource implements Named
         }
     }
 
+    private final class ComparatorImplementation implements Comparator<Object>
+    {
+        private final Column column;
+        private final int colIndex;
+
+        private ComparatorImplementation(Column column, int colIndex)
+        {
+            this.column = column;
+            this.colIndex = colIndex;
+        }
+
+        @Override
+        public int compare(Object row1, Object row2)
+        {
+            if (row1 instanceof FooterRow)
+            {
+                int direction = ColumnViewerSorter.SortingContext.getSortDirection();
+                return direction == SWT.UP ? 1 : -1;
+            }
+            else if (row2 instanceof FooterRow)
+            {
+                int direction = ColumnViewerSorter.SortingContext.getSortDirection();
+                return direction == SWT.UP ? -1 : 1;
+            }
+
+            Object cell1 = ((Object[]) row1)[colIndex];
+            Object cell2 = ((Object[]) row2)[colIndex];
+
+            if (cell1 instanceof Long m1 && cell2 instanceof Long m2)
+                return m1.compareTo(m2);
+
+            String s1 = cell1 instanceof String || column.formatter == null ? String.valueOf(cell1)
+                            : column.formatter.apply(cell1);
+            String s2 = cell2 instanceof String || column.formatter == null ? String.valueOf(cell2)
+                            : column.formatter.apply(cell2);
+
+            return s1.compareTo(s2);
+        }
+    }
+
     private static final class FooterRow
     {
         public FooterRow(Object[] row)
@@ -239,7 +282,7 @@ public class TabularDataSource implements Named
         for (Column column : data.columns)
         {
             ColoredLabel l = new ColoredLabel(container, column.align);
-            l.setText(column.label);
+            l.setText(TextUtil.tooltip(column.label));
             if (column.backgroundColor != null)
                 l.setBackdropColor(column.backgroundColor);
         }
@@ -250,7 +293,8 @@ public class TabularDataSource implements Named
             {
                 Column column = data.columns.get(ii);
                 Label l = new Label(container, column.align);
-                l.setText(column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii]));
+                l.setText(TextUtil.tooltip(
+                                column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii])));
             }
         }
 
@@ -262,7 +306,8 @@ public class TabularDataSource implements Named
                 ColoredLabel l = new ColoredLabel(container, column.align);
                 if (column.backgroundColor != null)
                     l.setBackdropColor(column.backgroundColor);
-                l.setText(column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii]));
+                l.setText(TextUtil.tooltip(
+                                column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii])));
             }
         }
 
@@ -296,6 +341,8 @@ public class TabularDataSource implements Named
             tableColumn.getColumn().setText(column.label);
             tableColumn.setLabelProvider(new TabularLabelProvider(client, column, index));
             tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(index == 0 ? 220 : 60));
+
+            ColumnViewerSorter.create(new ComparatorImplementation(column, index)).attachTo(tableViewer, tableColumn);
         }
 
         tableViewer.setContentProvider(new TabularDataProvider());
