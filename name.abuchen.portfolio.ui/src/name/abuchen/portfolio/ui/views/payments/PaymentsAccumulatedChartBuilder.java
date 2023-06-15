@@ -71,7 +71,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
             }
             lineSeries.setYSeries(series);
 
-            lineSeries.setLineColor(PaymentsColors.getColor(chart.getDisplay(), year));
+            lineSeries.setLineColor(PaymentsColors.getColor(year));
             lineSeries.setLineWidth(2);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setAntialias(SWT.ON);

@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -61,7 +60,7 @@ public class TabularDataSource implements Named
     {
         private String label;
         private Function<Object, String> formatter;
-        private ColorDescriptor backgroundColor;
+        private Color backgroundColor;
         private int align = SWT.RIGHT;
         private boolean hasLogo = false;
 
@@ -82,7 +81,7 @@ public class TabularDataSource implements Named
             return this;
         }
 
-        public Column withBackgroundColor(ColorDescriptor color)
+        public Column withBackgroundColor(Color color)
         {
             this.backgroundColor = color;
             return this;
@@ -178,7 +177,7 @@ public class TabularDataSource implements Named
             ColoredLabel l = new ColoredLabel(container, column.align);
             l.setText(column.label);
             if (column.backgroundColor != null)
-                l.setBackdropColor(column.backgroundColor.createColor(parent.getDisplay()));
+                l.setBackdropColor(column.backgroundColor);
         }
 
         for (Object[] row : data.rows)
@@ -198,7 +197,7 @@ public class TabularDataSource implements Named
                 Column column = data.columns.get(ii);
                 ColoredLabel l = new ColoredLabel(container, column.align);
                 if (column.backgroundColor != null)
-                    l.setBackdropColor(column.backgroundColor.createColor(parent.getDisplay()));
+                    l.setBackdropColor(column.backgroundColor);
                 l.setText(column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii]));
             }
         }
@@ -267,16 +266,14 @@ public class TabularDataSource implements Named
                 public Color getForeground(Object element)
                 {
                     return element instanceof FooterRow && column.backgroundColor != null
-                                    ? Colors.getTextColor(column.backgroundColor.createColor(parent.getDisplay()))
+                                    ? Colors.getTextColor(column.backgroundColor)
                                     : null;
                 }
 
                 @Override
                 public Color getBackground(Object element)
                 {
-                    return element instanceof FooterRow && column.backgroundColor != null
-                                    ? column.backgroundColor.createColor(parent.getDisplay())
-                                    : null;
+                    return element instanceof FooterRow ? column.backgroundColor : null;
                 }
 
             });

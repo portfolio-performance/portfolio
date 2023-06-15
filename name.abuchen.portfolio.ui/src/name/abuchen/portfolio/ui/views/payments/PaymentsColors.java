@@ -1,47 +1,34 @@
 package name.abuchen.portfolio.ui.views.payments;
 
-import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class PaymentsColors
 {
-    private static final int[][] COLORS = new int[][] { //
-                    new int[] { 140, 86, 75 }, //
-                    new int[] { 227, 119, 194 }, //
-                    new int[] { 127, 127, 127 }, //
-                    new int[] { 188, 189, 34 }, //
-                    new int[] { 23, 190, 207 }, //
-                    new int[] { 114, 124, 201 }, //
-                    new int[] { 250, 115, 92 }, //
-                    new int[] { 253, 182, 103 }, //
-                    new int[] { 143, 207, 112 }, //
-                    new int[] { 87, 207, 253 }, //
-                    new int[] { 31, 119, 180 }, //
-                    new int[] { 255, 127, 14 }, //
-                    new int[] { 44, 160, 44 }, //
-                    new int[] { 214, 39, 40 }, //
-                    new int[] { 148, 103, 189 } }; //
+    private static final Color[] COLORS = new Color[] { //
+                    Colors.getColor(140, 86, 75), //
+                    Colors.getColor(227, 119, 194), //
+                    Colors.getColor(127, 127, 127), //
+                    Colors.getColor(188, 189, 34), //
+                    Colors.getColor(23, 190, 207), //
+                    Colors.getColor(114, 124, 201), //
+                    Colors.getColor(250, 115, 92), //
+                    Colors.getColor(253, 182, 103), //
+                    Colors.getColor(143, 207, 112), //
+                    Colors.getColor(87, 207, 253), //
+                    Colors.getColor(31, 119, 180), //
+                    Colors.getColor(255, 127, 14), //
+                    Colors.getColor(44, 160, 44), //
+                    Colors.getColor(214, 39, 40), //
+                    Colors.getColor(148, 103, 189) }; //
 
     private PaymentsColors()
     {
     }
 
-    public static Color getColor(Display display, int year)
+    public static Color getColor(int year)
     {
-        RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
-                        COLORS[year % COLORS.length][1], //
-                        COLORS[year % COLORS.length][2]);
-        return ColorDescriptor.createFrom(rgb).createColor(display);
+        return COLORS[year % COLORS.length];
     }
-
-    public static ColorDescriptor getColor(int year)
-    {
-        RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
-                        COLORS[year % COLORS.length][1], //
-                        COLORS[year % COLORS.length][2]);
-        return ColorDescriptor.createFrom(rgb);
-    }
-
 }

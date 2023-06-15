@@ -178,7 +178,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
                 barSeries.setYSeries(seriesX);
 
-                barSeries.setBarColor(PaymentsColors.getColor(chart.getDisplay(), year));
+                barSeries.setBarColor(PaymentsColors.getColor(year));
                 barSeries.setBarPadding(25);
                 barSeries.enableStack(true);
             }

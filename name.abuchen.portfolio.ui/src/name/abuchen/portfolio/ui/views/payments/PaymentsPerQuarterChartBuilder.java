@@ -191,7 +191,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
             }
             barSeries.setYSeries(series);
 
-            barSeries.setBarColor(PaymentsColors.getColor(chart.getDisplay(), year));
+            barSeries.setBarColor(PaymentsColors.getColor(year));
             barSeries.setBarPadding(25);
         }
     }
