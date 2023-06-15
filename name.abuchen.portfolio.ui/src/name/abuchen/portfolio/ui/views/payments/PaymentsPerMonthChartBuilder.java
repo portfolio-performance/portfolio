@@ -160,7 +160,7 @@ public class PaymentsPerMonthChartBuilder implements PaymentsChartBuilder
                 series[ii] = model.getSum().getValue(index + ii) / Values.Amount.divider();
             barSeries.setYSeries(series);
 
-            barSeries.setBarColor(PaymentsColors.getColor(chart.getDisplay(), year));
+            barSeries.setBarColor(PaymentsColors.getColor(year));
             barSeries.setBarPadding(25);
         }
 
