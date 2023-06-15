@@ -43,7 +43,7 @@ public class TabularDataSource implements Named
     {
         private List<Column> columns = new ArrayList<>();
         private List<Object[]> rows = new ArrayList<>();
-        private List<Object[]> footer = new ArrayList<>();
+        private FooterRow footer;
 
         public void addColumns(Column... columns)
         {
@@ -58,12 +58,12 @@ public class TabularDataSource implements Named
             rows.add(cells);
         }
 
-        public void addFooter(Object... cells)
+        public void setFooter(Object... cells)
         {
             if (cells.length != columns.size())
                 throw new UnsupportedOperationException();
 
-            footer.add(cells);
+            footer = new FooterRow(cells);
         }
     }
 
@@ -112,13 +112,17 @@ public class TabularDataSource implements Named
         {
             Builder source = (Builder) inputElement;
 
-            Object[] elements = new Object[source.rows.size() + source.footer.size()];
-            source.rows.toArray(elements);
-
-            for (int ii = source.rows.size(); ii < elements.length; ii++)
-                elements[ii] = new FooterRow(source.footer.get(ii - source.rows.size()));
-
-            return elements;
+            if (source.footer == null)
+            {
+                return source.rows.toArray();
+            }
+            else
+            {
+                Object[] elements = new Object[source.rows.size() + 1];
+                source.rows.toArray(elements);
+                elements[elements.length - 1] = source.footer;
+                return elements;
+            }
         }
     }
 
@@ -277,7 +281,7 @@ public class TabularDataSource implements Named
 
         final Composite container = new Composite(parent, SWT.NONE);
         container.setBackgroundMode(SWT.INHERIT_FORCE);
-        container.setLayout(new TabularLayout(data.columns.size(), 1, data.footer.size()));
+        container.setLayout(new TabularLayout(data.columns.size(), 1, data.footer != null ? 1 : 0));
 
         for (Column column : data.columns)
         {
@@ -298,16 +302,16 @@ public class TabularDataSource implements Named
             }
         }
 
-        for (Object[] row : data.footer)
+        if (data.footer != null)
         {
-            for (int ii = 0; ii < row.length; ii++)
+            for (int ii = 0; ii < data.footer.row.length; ii++)
             {
                 Column column = data.columns.get(ii);
                 ColoredLabel l = new ColoredLabel(container, column.align);
                 if (column.backgroundColor != null)
                     l.setBackdropColor(column.backgroundColor);
-                l.setText(TextUtil.tooltip(
-                                column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii])));
+                l.setText(TextUtil.tooltip(column.formatter != null ? column.formatter.apply(data.footer.row[ii])
+                                : String.valueOf(data.footer.row[ii])));
             }
         }
 

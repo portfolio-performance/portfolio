@@ -124,7 +124,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
                     value += model.getSum().getValue(mQuarter);
                 row[index++] = value;
             }
-            builder.addFooter(row);
+            builder.setFooter(row);
         }
     }
 
