@@ -1911,7 +1911,11 @@ public class SBrokerPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(16L));
         assertThat(results.size(), is(16));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
         // get transactions
@@ -2090,7 +2094,11 @@ public class SBrokerPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(8L));
         assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
         // get transactions
@@ -2212,7 +2220,11 @@ public class SBrokerPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(12L));
         assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
         // get transactions
@@ -2351,7 +2363,11 @@ public class SBrokerPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
         // get transactions
@@ -2400,7 +2416,11 @@ public class SBrokerPDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
         // get transactions
@@ -3854,5 +3874,31 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.97))));
         assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("2% für Währungsumrechnung"));
+    }
+
+    @Test
+    public void testKreditKontoauszug03()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-02-24"), hasAmount("EUR", 33.10), //
+                        hasSource("KreditKontoauszug03.txt"), hasNote("ALIEXPRESS.COM, Luxembourg"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2020-02-24"), hasAmount("EUR", 0.58), //
+                        hasSource("KreditKontoauszug03.txt"), hasNote("1,75% für Einsatz der Karte im Ausland"))));
     }
 }

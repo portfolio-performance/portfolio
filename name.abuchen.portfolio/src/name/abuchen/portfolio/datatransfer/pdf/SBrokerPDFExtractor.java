@@ -1344,7 +1344,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
                                 + "[\\.,\\d]+"
                                 + "([\\s])?\\-$")
-                .match("^(?<note>[\\.,\\d]+% f.r W.hrungsumrechnung) (?<amount>[\\.,\\d]+)([\\s])?\\-$")
+                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?\\-$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
