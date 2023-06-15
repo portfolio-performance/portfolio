@@ -121,7 +121,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     }
 
     @Override
-    protected Object getFocusObjectAt(Event event)
+    protected final Object getFocusObjectAt(Event event)
     {
         return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
     }

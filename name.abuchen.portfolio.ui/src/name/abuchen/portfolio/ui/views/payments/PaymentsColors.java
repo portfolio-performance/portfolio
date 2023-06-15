@@ -3,8 +3,7 @@ package name.abuchen.portfolio.ui.views.payments;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-
-import name.abuchen.portfolio.ui.util.swt.ActiveShell;
+import org.eclipse.swt.widgets.Display;
 
 public class PaymentsColors
 {
@@ -29,11 +28,20 @@ public class PaymentsColors
     {
     }
 
-    public static Color getColor(int year)
+    public static Color getColor(Display display, int year)
     {
         RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
                         COLORS[year % COLORS.length][1], //
                         COLORS[year % COLORS.length][2]);
-        return ColorDescriptor.createFrom(rgb).createColor(ActiveShell.get().getDisplay());
+        return ColorDescriptor.createFrom(rgb).createColor(display);
     }
+
+    public static ColorDescriptor getColor(int year)
+    {
+        RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
+                        COLORS[year % COLORS.length][1], //
+                        COLORS[year % COLORS.length][2]);
+        return ColorDescriptor.createFrom(rgb);
+    }
+
 }

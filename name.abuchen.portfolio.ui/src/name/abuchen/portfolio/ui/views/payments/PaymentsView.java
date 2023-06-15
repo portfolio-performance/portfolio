@@ -71,6 +71,7 @@ public class PaymentsView extends AbstractFinanceView
 
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         model = new PaymentsViewModel(converter, client);
+        setToContext(PaymentsViewModel.class.getName(), model);
 
         // setup filter
         clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
@@ -248,7 +249,7 @@ public class PaymentsView extends AbstractFinanceView
     @Override
     protected void addPanePages(List<InformationPanePage> pages)
     {
-        super.addPanePages(pages);
+        pages.add(make(PaymentsTooltipPane.class));
         pages.add(make(SecurityPriceChartPane.class));
         pages.add(make(HistoricalPricesPane.class));
         pages.add(make(TransactionsPane.class));
