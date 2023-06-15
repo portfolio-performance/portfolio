@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -19,12 +21,18 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.views.AccountContextMenu;
+import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 
 public class TabularDataSource implements Named
 {
@@ -108,6 +116,62 @@ public class TabularDataSource implements Named
                 elements[ii] = new FooterRow(source.footer.get(ii - source.rows.size()));
 
             return elements;
+        }
+    }
+
+    private static final class TabularLabelProvider extends ColumnLabelProvider
+    {
+        private final Column column;
+        private final Client client;
+        private final int colIndex;
+
+        private TabularLabelProvider(Client client, Column column, int colIndex)
+        {
+            this.column = column;
+            this.client = client;
+            this.colIndex = colIndex;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            if (element instanceof FooterRow footerRow)
+            {
+                Object value = footerRow.row[colIndex];
+                if (value instanceof String s)
+                    return s;
+                if (column.formatter != null)
+                    return column.formatter.apply(value);
+                return String.valueOf(value);
+            }
+            else
+            {
+                Object[] row = (Object[]) element;
+                return column.formatter != null ? column.formatter.apply(row[colIndex]) : String.valueOf(row[colIndex]);
+            }
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            if (column.hasLogo && element instanceof Object[] row)
+                return LogoManager.instance().getDefaultColumnImage(row[colIndex], client.getSettings());
+
+            return null;
+        }
+
+        @Override
+        public Color getForeground(Object element)
+        {
+            return element instanceof FooterRow && column.backgroundColor != null
+                            ? Colors.getTextColor(column.backgroundColor)
+                            : null;
+        }
+
+        @Override
+        public Color getBackground(Object element)
+        {
+            return element instanceof FooterRow ? column.backgroundColor : null;
         }
     }
 
@@ -205,7 +269,7 @@ public class TabularDataSource implements Named
         return container;
     }
 
-    public Composite createTableViewer(Client client, Composite parent)
+    public Composite createTableViewer(Client client, AbstractFinanceView owner, Composite parent)
     {
         if (data == null)
         {
@@ -227,62 +291,41 @@ public class TabularDataSource implements Named
         for (int index = 0; index < data.columns.size(); index++)
         {
             Column column = data.columns.get(index);
-            final int colIndex = index;
 
-            TableViewerColumn col = new TableViewerColumn(tableViewer, column.align);
-            col.getColumn().setText(column.label);
-            col.setLabelProvider(new ColumnLabelProvider()
-            {
-                @Override
-                public String getText(Object element)
-                {
-                    if (element instanceof FooterRow footerRow)
-                    {
-                        Object value = footerRow.row[colIndex];
-                        if (value instanceof String s)
-                            return s;
-                        if (column.formatter != null)
-                            return column.formatter.apply(value);
-                        return String.valueOf(value);
-                    }
-                    else
-                    {
-                        Object[] row = (Object[]) element;
-                        return column.formatter != null ? column.formatter.apply(row[colIndex])
-                                        : String.valueOf(row[colIndex]);
-                    }
-                }
-
-                @Override
-                public Image getImage(Object element)
-                {
-                    if (column.hasLogo && element instanceof Object[] row)
-                        return LogoManager.instance().getDefaultColumnImage(row[colIndex], client.getSettings());
-
-                    return null;
-                }
-
-                @Override
-                public Color getForeground(Object element)
-                {
-                    return element instanceof FooterRow && column.backgroundColor != null
-                                    ? Colors.getTextColor(column.backgroundColor)
-                                    : null;
-                }
-
-                @Override
-                public Color getBackground(Object element)
-                {
-                    return element instanceof FooterRow ? column.backgroundColor : null;
-                }
-
-            });
-            tableLayout.setColumnData(col.getColumn(), new ColumnPixelData(index == 0 ? 220 : 60));
+            TableViewerColumn tableColumn = new TableViewerColumn(tableViewer, column.align);
+            tableColumn.getColumn().setText(column.label);
+            tableColumn.setLabelProvider(new TabularLabelProvider(client, column, index));
+            tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(index == 0 ? 220 : 60));
         }
 
         tableViewer.setContentProvider(new TabularDataProvider());
         tableViewer.setInput(data);
 
+        hookContextMenu(owner, tableViewer);
+
         return container;
+    }
+
+    private void hookContextMenu(AbstractFinanceView owner, TableViewer tableViewer)
+    {
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(menuManager -> {
+            IStructuredSelection selection = tableViewer.getStructuredSelection();
+            if (!selection.isEmpty() && selection.getFirstElement() instanceof Object[] row)
+            {
+                if (row[0] instanceof Security security)
+                    new SecurityContextMenu(owner).menuAboutToShow(menuManager, security);
+                else if (row[0] instanceof Account account)
+                    new AccountContextMenu(owner).menuAboutToShow(menuManager, account, null);
+            }
+
+        });
+
+        Menu contextMenu = menuMgr.createContextMenu(tableViewer.getTable().getShell());
+        tableViewer.getTable().setMenu(contextMenu);
+        tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
+
+        tableViewer.getTable().addDisposeListener(e -> contextMenu.dispose());
     }
 }

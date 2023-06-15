@@ -10,11 +10,15 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 
 public class PaymentsTooltipPane implements InformationPanePage
 {
+    @Inject
+    private AbstractFinanceView view;
+
     @Inject
     private Client client;
 
@@ -65,7 +69,7 @@ public class PaymentsTooltipPane implements InformationPanePage
         if (input instanceof TabularDataSource dataSource)
         {
             this.source = dataSource;
-            tableViewer = dataSource.createTableViewer(client, container);
+            tableViewer = dataSource.createTableViewer(client, view, container);
             container.layout();
         }
     }
