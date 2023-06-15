@@ -105,7 +105,7 @@ public class PaymentsPerMonthChartBuilder implements PaymentsChartBuilder
             int index = 1;
             for (int m = month; m < totalNoOfMonths; m += 12)
                 row[index++] = model.getSum().getValue(m);
-            builder.addFooter(row);
+            builder.setFooter(row);
         }
     }
 

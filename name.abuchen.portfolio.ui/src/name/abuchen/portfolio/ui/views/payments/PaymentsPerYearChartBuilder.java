@@ -94,7 +94,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
             long value = 0;
             for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
                 value += model.getSum().getValue(m);
-            builder.addFooter(Messages.ColumnSum, value);
+            builder.setFooter(Messages.ColumnSum, value);
         }
     }
 
