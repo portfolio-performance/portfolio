@@ -85,11 +85,15 @@ public class PaymentsViewModel
         private long[] values;
         private long sum;
 
+        /** number of transactions that make up the values */
+        private int[] numTransactions;
+
         public Line(InvestmentVehicle vehicle, boolean consolidateRetired, int length)
         {
             this.vehicle = vehicle;
             this.consolidateRetired = consolidateRetired;
             this.values = new long[length];
+            this.numTransactions = new int[length];
         }
 
         public InvestmentVehicle getVehicle()
@@ -110,6 +114,11 @@ public class PaymentsViewModel
         public long getSum()
         {
             return sum;
+        }
+
+        public int getNumTransations(int index)
+        {
+            return numTransactions[index];
         }
 
         public int getNoOfMonths()
@@ -353,15 +362,18 @@ public class PaymentsViewModel
                         {
                             sumRetired.values[index] += value;
                             sumRetired.sum += value;
+                            sumRetired.numTransactions[index] += 1;
                         }
                         else
                         {
                             Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, false, noOfmonths));
                             line.values[index] += value;
                             line.sum += value;
+                            line.numTransactions[index] += 1;
                         }
                         sum.values[index] += value;
                         sum.sum += value;
+                        sum.numTransactions[index] += 1;
                     }
                 }
             }
@@ -437,16 +449,21 @@ public class PaymentsViewModel
                     {
                         sumRetired.values[index] += value;
                         sumRetired.sum += value;
+                        sumRetired.numTransactions[index] += 1;
+
                     }
                     else
                     {
                         Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, false, noOfmonths));
                         line.values[index] += value;
                         line.sum += value;
+                        line.numTransactions[index] += 1;
                     }
 
                     sum.values[index] += value;
                     sum.sum += value;
+                    sum.numTransactions[index] += 1;
+
                 }
             }
         }

@@ -69,7 +69,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
                             .toList();
 
             builder.addColumns( //
-                            new Column(Messages.ColumnSecurity, SWT.LEFT).withLogo(),
+                            new Column(Messages.ColumnSecurity, SWT.LEFT, 220).withLogo(),
                             new Column(String.valueOf(model.getStartYear() + year))
                                             .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
                                             .withFormatter(cell -> Values.Amount.format((long) cell)));

@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -21,6 +22,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 
@@ -28,6 +31,8 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.TabularLayout;
@@ -35,6 +40,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
+import name.abuchen.portfolio.ui.views.TransactionContextMenu;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TabularDataSource implements Named
@@ -72,18 +78,25 @@ public class TabularDataSource implements Named
         private String label;
         private Function<Object, String> formatter;
         private Color backgroundColor;
+        private int width = 60;
         private int align = SWT.RIGHT;
         private boolean hasLogo = false;
 
         public Column(String label)
         {
-            this.label = label;
+            this(label, SWT.RIGHT, 60);
         }
 
         public Column(String label, int align)
         {
+            this(label, align, 60);
+        }
+
+        public Column(String label, int align, int width)
+        {
             this.label = label;
             this.align = align;
+            this.width = width;
         }
 
         public Column withFormatter(Function<Object, String> formatter)
@@ -210,13 +223,22 @@ public class TabularDataSource implements Named
             Object cell1 = ((Object[]) row1)[colIndex];
             Object cell2 = ((Object[]) row2)[colIndex];
 
-            if (cell1 instanceof Long m1 && cell2 instanceof Long m2)
+            if (cell1 instanceof Long l1 && cell2 instanceof Long l2)
+                return l1.compareTo(l2);
+            else if (cell1 instanceof Money m1 && cell2 instanceof Money m2)
                 return m1.compareTo(m2);
 
             String s1 = cell1 instanceof String || column.formatter == null ? String.valueOf(cell1)
                             : column.formatter.apply(cell1);
             String s2 = cell2 instanceof String || column.formatter == null ? String.valueOf(cell2)
                             : column.formatter.apply(cell2);
+
+            if (s1 == null && s2 == null)
+                return 0;
+            else if (s1 == null)
+                return -1;
+            else if (s2 == null)
+                return 1;
 
             return s1.compareTo(s2);
         }
@@ -271,6 +293,21 @@ public class TabularDataSource implements Named
         this.label = name;
     }
 
+    public void attachToolTipTo(Control control)
+    {
+        ToolTip toolTip = new ToolTip(control, ToolTip.NO_RECREATE, false)
+        {
+            @Override
+            protected Composite createToolTipContentArea(Event event, Composite parent)
+            {
+                return createPlainComposite(parent);
+            }
+        };
+
+        toolTip.setPopupDelay(0);
+        toolTip.activate();
+    }
+
     public Composite createPlainComposite(Composite parent)
     {
         if (data == null)
@@ -297,8 +334,12 @@ public class TabularDataSource implements Named
             {
                 Column column = data.columns.get(ii);
                 Label l = new Label(container, column.align);
-                l.setText(TextUtil.tooltip(
-                                column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii])));
+
+                String text = column.formatter != null ? column.formatter.apply(row[ii]) : String.valueOf(row[ii]);
+                if (text == null)
+                    text = ""; //$NON-NLS-1$
+
+                l.setText(TextUtil.tooltip(text));
             }
         }
 
@@ -344,7 +385,7 @@ public class TabularDataSource implements Named
             TableViewerColumn tableColumn = new TableViewerColumn(tableViewer, column.align);
             tableColumn.getColumn().setText(column.label);
             tableColumn.setLabelProvider(new TabularLabelProvider(client, column, index));
-            tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(index == 0 ? 220 : 60));
+            tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(column.width));
 
             ColumnViewerSorter.create(new ComparatorImplementation(column, index)).attachTo(tableViewer, tableColumn);
         }
@@ -369,6 +410,9 @@ public class TabularDataSource implements Named
                     new SecurityContextMenu(owner).menuAboutToShow(menuManager, security);
                 else if (row[0] instanceof Account account)
                     new AccountContextMenu(owner).menuAboutToShow(menuManager, account, null);
+                else if (row[0] instanceof TransactionPair<?>)
+                    new TransactionContextMenu(owner).menuAboutToShow(menuManager, true,
+                                    new StructuredSelection(row[0]));
             }
 
         });
