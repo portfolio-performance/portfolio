@@ -44,7 +44,8 @@ public class UploadToDivvyDiaryHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
+                    @org.eclipse.e4.core.di.annotations.Optional @Preference(UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey,
+                    @org.eclipse.e4.core.di.annotations.Optional @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures)
     {
         if (divvyDiaryApiKey == null)
         {
@@ -56,7 +57,7 @@ public class UploadToDivvyDiaryHandler
             DivvyDiaryUploader uploader = new DivvyDiaryUploader(divvyDiaryApiKey);
 
             retrieveAndPickPortfolio(shell, uploader)
-                            .ifPresent(portfolioId -> uploadPortfolio(clientInput, uploader, portfolioId));
+                            .ifPresent(portfolioId -> uploadPortfolio(clientInput, uploader, portfolioId, enableExperimentalFeatures));
         });
 
     }
@@ -110,7 +111,7 @@ public class UploadToDivvyDiaryHandler
         return Optional.empty();
     }
 
-    private void uploadPortfolio(ClientInput clientInput, DivvyDiaryUploader uploader, Long portfolioId)
+    private void uploadPortfolio(ClientInput clientInput, DivvyDiaryUploader uploader, Long portfolioId, boolean enableExperimentalFeatures)
     {
         new AbstractClientJob(clientInput.getClient(), Messages.DivvyDiaryMsgUploading)
         {
@@ -122,7 +123,7 @@ public class UploadToDivvyDiaryHandler
                     CurrencyConverter converter = new CurrencyConverterImpl(clientInput.getExchangeRateProviderFacory(),
                                     clientInput.getClient().getBaseCurrency());
 
-                    uploader.upload(getClient(), converter, portfolioId);
+                    uploader.upload(getClient(), converter, portfolioId, enableExperimentalFeatures);
 
                     Display.getDefault().asyncExec(() -> MessageDialog.openInformation(ActiveShell.get(),
                                     Messages.LabelInfo, Messages.DivvyDiaryUploadSuccessfulMsg));
