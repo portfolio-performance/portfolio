@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -59,7 +60,7 @@ public class OpenPreferenceDialogHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
-                    IThemeEngine themeEngine)
+                    @Optional @Named(UIConstants.Parameter.PAGE) String page, IThemeEngine themeEngine)
     {
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
@@ -108,8 +109,9 @@ public class OpenPreferenceDialogHandler
         };
 
         // if the dialog reopens with the previously selected node, some of the
-        // nodes are not visible. Workaround: make sure not previous node exists
-        dialog.setSelectedNode(null);
+        // nodes are not visible. Either the selected node it given by the
+        // incoming parameters or it is deselected
+        dialog.setSelectedNode(page);
 
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
         dialog.create();

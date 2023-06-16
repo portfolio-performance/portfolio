@@ -251,7 +251,9 @@
   <commands xmi:id="_Vr7H8B3VEeOYjJVcrtNJyA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
   <commands xmi:id="_8B-l8KSiEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.clearerrorlog" commandName="%command.errorlog.clearlog" description=""/>
   <commands xmi:id="_h9fugKz0EeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.openerrorlogtext" commandName="%command.errorlog.openlog"/>
-  <commands xmi:id="_7aSvMLdLEeO0acAVfaNMbA" elementId="org.eclipse.ui.window.preferences" commandName="openPreferenceDialog"/>
+  <commands xmi:id="_7aSvMLdLEeO0acAVfaNMbA" elementId="org.eclipse.ui.window.preferences" commandName="openPreferenceDialog">
+    <parameters xmi:id="_P4IYwAx9Ee6sSLPjYVyvlw" elementId="name.abuchen.portfolio.ui.param.page" name="page"/>
+  </commands>
   <commands xmi:id="_48Q94POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.command.saveAs" commandName="saveAsCommand">
     <parameters xmi:id="_-VGq0POhEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.param.file-type" name="file-type" optional="false"/>
     <parameters xmi:id="_otbBwNzZEeyUBtACSRat_Q" elementId="name.abuchen.portfolio.ui.param.create-copy" name="create-copy"/>
