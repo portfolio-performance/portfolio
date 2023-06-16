@@ -818,6 +818,7 @@ public class Messages extends NLS
     public static String FilterOnlyProfitableTrades;
     public static String LabelTradesTurnoverRate;
     public static String LabelTradingActivityChart;
+    public static String LabelTransactionCount;
     public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelTransfer;

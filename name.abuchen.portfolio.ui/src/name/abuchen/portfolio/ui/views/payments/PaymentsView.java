@@ -210,6 +210,7 @@ public class PaymentsView extends AbstractFinanceView
         createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerQuarterChartBuilder());
         createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerYearChartBuilder());
         createChartTab(folder, Images.VIEW_LINECHART, new PaymentsAccumulatedChartBuilder());
+        createTab(folder, Images.CALENDAR_OFF, PaymentsYearlyOverviewTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = viewInput.getTab();
