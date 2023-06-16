@@ -1,8 +1,4 @@
 autoEnabled=true
-bindingSuggestionsDisabled=false
+bindingSuggestionsDisabled=true
 eclipse.preferences.version=1
 fileExclusions=GLOB\:**/Messages.java
-idePrefixKey=
-projectKey=name.abuchen.portfolio\:portfolio-app
-serverId=SonarCloud/buchen-github
-sqPrefixKey=name.abuchen.portfolio
