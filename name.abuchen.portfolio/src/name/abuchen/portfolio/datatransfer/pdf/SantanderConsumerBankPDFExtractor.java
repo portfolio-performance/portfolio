@@ -164,35 +164,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
     }
-
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
-    {
-        transaction
-                // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
-                .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
-
-                // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
-                .section("creditableWithHoldingTax", "currency").optional()
-                .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
-    }
-
-    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
-    {
-        transaction
-                // Provision 7,90- EUR
-                .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
-                .section("fee", "currency").optional()
-                .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
+    
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
@@ -285,5 +257,33 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
+                .section("withHoldingTax", "currency").optional()
+                .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
+                .section("creditableWithHoldingTax", "currency").optional()
+                .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+                // Provision 7,90- EUR
+                .section("fee", "currency").optional()
+                .match("^Provision (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
+                .section("fee", "currency").optional()
+                .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
