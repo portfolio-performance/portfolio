@@ -94,8 +94,7 @@ public class SecurityListView extends AbstractFinanceView
         {
             manager.add(new SimpleAction(Messages.SecurityMenuNewSecurity, a -> {
                 SearchSecurityWizardDialog dialog = new SearchSecurityWizardDialog(
-                                Display.getDefault().getActiveShell(), SecurityListView.this,
-                                SecurityListView.this.watchlist, getClient());
+                                Display.getDefault().getActiveShell(), getClient());
                 if (dialog.open() == Window.OK)
                     openEditDialog(dialog.getSecurity());
             }));
