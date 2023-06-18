@@ -1,0 +1,172 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+Sparkasse
+S
+Schweinfurt-Haßberge
+341 00 00  81
+Herrn
+Ihr Ansprechpartner:
+Max Musterfrau
+Max Mustermann
+Kundenberatung Hofheim
+Ortsteil
+Marktplatz 7
+Strasse 7
+97461 Hofheim
+99999 Stadt
+Telefon 09521 58-764
+Fax 09521 58-499
+Max.Musterfrau@sparkasse-sw-has.de
+ 
+ 
+ 
+1. Oktober 2020
+Kontoauszug 12/2020 Seite 1 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 9999 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 01.09.2020, Auszug Nr.   11            4.035,20+
+15.09.2020 15.09.2020
+Überweisung online
+              39,52-
+HOffmann GmbH
+KNr 9999999 RNr 93073475293
+DATUM 15.09.2020, 17.02 UHR
+1.TAN 047271
+f0926ab85-2562171-17013355-20200915
+21.09.2020 21.09.2020
+Überweisung online
+              28,68-
+HOffmann GmbH
+KNr 9999999 RNr 9307482454
+DATUM 20.09.2020, 18.01 UHR
+9d7fdf2de-1091140-18011051-20200920
+25.09.2020 25.09.2020
+Lastschrift
+               9,75-
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+. FRAENK, Ihr Einkauf bei FRAENK
+1010111111111 PAYPAL
+4CU2224VNSRPG
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+28.09.2020 28.09.2020
+Überweisung online
+           3.830,16-
+HOffmann GmbH
+KNr 9999999 RNr 9307480666
+DATUM 25.09.2020, 20.08 UHR
+1.TAN 433876
+988d9900b-1743765-18120313-20200920
+29.09.2020 29.09.2020
+Lohn, Gehalt, Rente
+           4.343,22+
+ZF FRIEDRICHSHAFEN A
+Lohn/Gehalt 99999999/202009
+30.09.2020 30.09.2020
+Dauerauftrag
+             500,00-
+Max Mustermann
+ETF
+30.09.2020 01.10.2020
+Entgeltabrechnung
+               3,20-
+siehe Anlage Nr. 1
+30.09.2020 01.10.2020
+Abrechnung 30.09.2020
+               0,00+
+siehe Anlage Nr. 2
+ Kontostand am 30.09.2020 um 20:02 Uhr
+           4.967,11+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 12/2020 Seite 2 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 9999 9999 99 Max Mustermann
+Anzahl Anlagen
+2
+Ihr Dispositionskredit EUR:
+2.000,00
+  
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 12/2020 Seite 3 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 9999 9999 99 Max Mustermann
+Entgeltabschluss: Anlage     1
+Entgelte vom 01.09.2020 bis 30.09.2020                               3,20-
+Grundpreis (Kontoführung)                              2,00-
+Zahlungsverkehr                                        1,20-
+                                                            --------------
+Abrechnung 30.09.2020                                                3,20-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20200930-BY044-00010832563
+  
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 12/2020 Seite 4 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 9999 9999 99 Max Mustermann
+Rechnungsabschluss: Anlage     2
+Kontostand in EUR am 30.09.2020                                 1.967,11 +
+                                                            --------------
+Abrechnungszeitraum vom 01.07.2020 bis 30.09.2020
+Abrechnung 30.09.2020                                                0,00+
+Sollzinssätze am 30.09.2020
+10,0500 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
+10,0500 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+  
+Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+der Entwicklung des 3-Monats-Euribor.
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Kontostand/Rechnungsabschluss in EUR am 30.09.2020              1.967,11 +
+Rechnungsnummer: 20200930-BY044-00011111111
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe

@@ -1,0 +1,298 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+             Frankfurt, 01.07.2022
+0101012000002648355410
+Herrn
+Max Mustermann
+Strasse 7
+99999 Stadt
+Kontoauszug Nr:    002/2022                              Seite 1 von 6
+Kontonummer :      1009999999      IBAN: DE49 1013 0800 9999 9999 99
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    31.03.2022                     in EUR             1.481,75+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.04.     31.03.  Zinsabschluss  01.01.2022 - 31.03.2022                1,16-
+01.04.     05.04.  Kundenhandel FX Kauf CHF Devisenkurs                  0,01-
+                   1.018000                                                   
+01.04.     05.04.  Ausführung ORDER Kauf DE000ETF9082                  100,00-
+                   189139416
+01.04.     05.04.  Ausführung ORDER Kauf IE00BM67HK77                  100,00-
+                   189145207                                                  
+01.04.     05.04.  Ausführung ORDER Kauf IE00BNH72088                  200,00-
+                   189153902
+01.04.     05.04.  Ausführung ORDER Kauf LU0533032008                  100,00-
+                   189140153                                                  
+01.04.     05.04.  Ausführung ORDER Kauf LU1900068328                  100,00-
+                   189140847
+01.04.     05.04.  Ausführung ORDER Kauf LU1681038243                  100,00-
+                   189145210                                                  
+04.04.     04.04.  Überweisung                                      2.000,00+
+                   CASH
+                   BYLADEM1KSW
+                   DE09999999999999999999
+                   Max Mustermann und Max Mustermann
+                   KREF: BYLADEM1KSWG2C09364467194n5
+04.04.     06.04.  Kundenhandel FX Verkauf USD Devisenkurs              22,98+
+                   1.103880                                                   
+05.04.     06.04.  Überweisung                                     -1.800,00-
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410 0113101010000101
+Kontoauszug Nr:    002/2022                              Seite 2 von 6
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+07.04.     11.04.  Kundenhandel FX Verkauf USD Devisenkurs               5,82+
+                   1.095520                                                   
+08.04.     12.04.  Ausführung ORDER Kauf US88160R1014                  957,02-
+                   189478179
+08.04.     12.04.  Ausführung ORDER Kauf US09247X1019                1.363,35-
+                   189262774                                                  
+13.04.     04.03.  Depotservicegebühr US09075V1026                       0,09-
+13.04.     19.04.  Kundenhandel FX Verkauf USD Devisenkurs              14,83+
+                   1.088060                                                   
+13.04.     19.04.  Kundenhandel FX Verkauf CHF Devisenkurs              16,08+
+                   1.018420
+16.04.     19.04.  Depotgebühren 01.01.2022 - 31.01.2022,               10,84-
+                   Depot-Nr. 1001111111, inkl. MwSt.                          
+16.04.     19.04.  Depotgebühren 01.02.2022 - 28.02.2022,                9,99-
+                   Depot-Nr. 1001111111, inkl. MwSt.
+16.04.     19.04.  Depotgebühren 01.03.2022 - 31.03.2022,                9,85-
+                   Depot-Nr. 1001111111, inkl. MwSt.                          
+19.04.     21.04.  Ausführung ORDER Kauf PLOPTTC00011                1.006,90-
+                   189725030
+19.04.     21.04.  Kundenhandel FX Verkauf USD Devisenkurs               2,12+
+                   1.084700                                                   
+19.04.     20.04.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C10957995875k4
+21.04.     21.04.  Dividendenzahlung SE0012673267                       10,93+
+22.04.     26.04.  Ausführung ORDER Kauf US09075V1026                  680,66-
+                   189482025
+25.04.     27.04.  Ausführung ORDER Kauf DE0007229007                  993,50-
+                   189251737                                                  
+25.04.     27.04.  Kundenhandel FX Verkauf USD Devisenkurs               2,56+
+                   1.076660
+25.04.     26.04.  Überweisung                                       1.250,00+
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: BYLADEM1KSWG2C11555858594f6                          
+27.04.     29.04.  Ausführung ORDER Kauf US70450Y1038                  561,30-
+                   220053726
+28.04.     02.05.  Ausführung ORDER Kauf US69608A1088                  528,20-
+                   189482029                                                  
+28.04.     29.04.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C11861127478n7
+29.04.     03.05.  Ausführung ORDER Kauf JP3236200006                  790,90-
+                   220149594                                                  
+02.05.     02.05.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410
+Kontoauszug Nr:    002/2022                              Seite 3 von 6
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C12043786447i2
+02.05.     04.05.  Ausführung ORDER Kauf DE000A3H2226                  507,90-
+                   189251834                                                  
+02.05.     04.05.  Kundenhandel FX Verkauf USD Devisenkurs               5,42+
+                   1.057430
+02.05.     04.05.  Ausführung ORDER Kauf DE000A2NB7S2                  994,30-
+                   189252019                                                  
+02.05.     04.05.  Ausführung ORDER Kauf LU1900068328                  100,00-
+                   220182217
+02.05.     03.05.  Überweisung                                       1.500,00+
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: BYLADEM1KSWG2C12251335612h9                          
+02.05.     03.05.  Überweisung                                         600,00+
+                   ETF
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: 4085-06-11-14.26.20.404420-2021051
+02.05.     04.05.  Ausführung ORDER Kauf DE000ETF9082                  100,00-
+                   220180849                                                  
+02.05.     04.05.  Ausführung ORDER Kauf IE00BM67HK77                  100,00-
+                   220186391
+02.05.     04.05.  Ausführung ORDER Kauf IE00BNH72088                  200,00-
+                   220194700                                                  
+02.05.     04.05.  Ausführung ORDER Kauf LU0533032008                  100,00-
+                   220181526
+02.05.     04.05.  Ausführung ORDER Kauf LU1681038243                  100,00-
+                   220186396                                                  
+09.05.     11.05.  Ausführung ORDER Kauf JP3236200006                  744,30-
+                   220395005
+09.05.     11.05.  Ausführung ORDER Kauf SE0012673267                1.030,90-
+                   220299407                                                  
+09.05.     11.05.  Ausführung ORDER Kauf US88160R1014                  768,83-
+                   189986331
+09.05.     10.05.  Überweisung                                       2.500,00+
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: BYLADEM1KSWG2C12963092119f5                          
+10.05.     22.04.  Depotservicegebühr US47215P1066                       1,34-
+12.05.     16.05.  Ausführung ORDER Kauf US88160R1014                  681,56-
+                   220397042                                                  
+13.05.     13.05.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C13268984282f1
+16.05.     18.05.  Ausführung ORDER Kauf SE0008294953                  997,90-
+                   220586134                                                  
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410
+Kontoauszug Nr:    002/2022                              Seite 4 von 6
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+16.05.     17.05.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C13655855994n8
+17.05.     19.05.  Kundenhandel FX Verkauf USD Devisenkurs               5,13+
+                   1.057830                                                   
+17.05.     17.05.  Dividendenzahlung SE0008294953                       30,67+
+23.05.     25.05.  Ausführung ORDER Kauf US29786A1060                  693,80-
+                   220464608                                                  
+26.05.     30.05.  Ausführung ORDER Kauf DE000A1ML7J1                1.025,80-
+                   221147159
+26.05.     31.05.  Kundenhandel FX Verkauf USD Devisenkurs               2,56+
+                   1.076450                                                   
+26.05.     27.05.  Überweisung                                       1.500,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C14638584229f2
+30.05.     31.05.  Überweisung                                         600,00+
+                   ETF                                                        
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: 4085-06-11-14.26.20.404420-2021051                   
+01.06.     03.06.  Ausführung ORDER Kauf CH0130293662                1.061,98-
+                   189431984
+01.06.     03.06.  Ausführung ORDER Kauf IE00BNH72088                  200,00-
+                   221307914                                                  
+01.06.     03.06.  Ausführung ORDER Kauf LU0533032008                  100,00-
+                   221294695
+01.06.     03.06.  Ausführung ORDER Kauf DE000ETF9082                  100,00-
+                   221294034                                                  
+01.06.     03.06.  Ausführung ORDER Kauf IE00BM67HK77                  100,00-
+                   221299451
+01.06.     03.06.  Ausführung ORDER Kauf LU1900068328                  100,00-
+                   221295345                                                  
+01.06.     03.06.  Ausführung ORDER Kauf LU1681038243                  100,00-
+                   221299456
+02.06.     02.06.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: BYLADEM1KSWG2C15269456964k1                          
+13.06.     13.06.  Dividendenzahlung JP3236200006                        6,57+
+13.06.     15.06.  Ausführung ORDER Kauf CH1175448666                1.007,70-
+                   221653700                                                  
+13.06.     14.06.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW
+                   DE99999999999999999999
+                   Max Mustermann
+                   KREF: BYLADEM1KSWG2C16456799779j5
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410
+Kontoauszug Nr:    002/2022                              Seite 5 von 6
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+14.06.     16.06.  Kundenhandel FX Verkauf USD Devisenkurs               8,47+
+                   1.047490                                                   
+16.06.     20.06.  Ausführung ORDER Kauf DK0010272202                  527,90-
+                   220464613
+16.06.     21.06.  Kundenhandel FX Verkauf USD Devisenkurs              68,42+
+                   1.044550                                                   
+16.06.     20.06.  Ausführung ORDER Kauf PLOPTTC00011                  580,30-
+                   221857046
+16.06.     17.06.  Überweisung                                       1.000,00+
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: BYLADEM1KSWG2C16741317935i9                          
+17.06.     21.06.  Kundenhandel FX Verkauf GBP Devisenkurs              10,45+
+                   0.859630
+21.06.     21.06.  Gebühr Tax Voucher WKN A0NFN3                         5,90-
+21.06.     23.06.  Kundenhandel FX Verkauf USD Devisenkurs              14,63+
+                   1.058870
+23.06.     23.06.  Dividendenzahlung DE0006095003                        6,03+
+23.06.     23.06.  Dividendenzahlung DE000A3MQR73                       14,07+
+24.06.     24.06.  Dividendenzahlung DE000A0TGJ55                       52,08+
+24.06.     28.06.  Kundenhandel FX Verkauf USD Devisenkurs               7,84+
+                   1.056900
+27.06.     29.06.  Kundenhandel FX Verkauf USD Devisenkurs               8,64+
+                   1.062290                                                   
+30.06.     05.07.  Kundenhandel FX Verkauf USD Devisenkurs               1,77+
+                   1.046810
+30.06.     01.07.  Überweisung                                         600,00+
+                   ETF                                                        
+                   BYLADEM1KSW                                                
+                   DE99999999999999999999                                     
+                   Max Mustermann                                             
+                   KREF: 4085-06-11-14.26.20.404420-2021051                   
+Neuer Saldo 30.06.2022 Nr. 002/2022         Währung EUR                705,64+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410
+Kontoauszug Nr:    002/2022                              Seite 6 von 6
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatexDEGIRO Bank AG
+      Revision
+      Postfach 100551
+      41405 Neuss
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002648355410

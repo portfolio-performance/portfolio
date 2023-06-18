@@ -23,8 +23,8 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Bank SLM AG"); //$NON-NLS-1$
-        addBankIdentifier("Spar + Leihkasse"); //$NON-NLS-1$
+        addBankIdentifier("Bank SLM AG");
+        addBankIdentifier("Spar + Leihkasse");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -33,7 +33,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Bank SLM AG"; //$NON-NLS-1$
+        return "Bank SLM AG";
     }
 
     private void addBuySellTransaction()
@@ -56,11 +56,11 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^B.rsenabrechnung \\- (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
-                // 17'000 Inhaber-Aktien 
+                // 17'000 Inhaber-Aktien
                 // Nokia Corp
                 // Valor: 472672
                 // Total Kurswert EUR -74'120.00

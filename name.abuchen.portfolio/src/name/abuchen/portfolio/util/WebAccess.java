@@ -227,7 +227,7 @@ public class WebAccess
 
     private String buildMessage(URI uri, int statusCode)
     {
-        String message = uri.toString() + " --> " + statusCode; //$NON-NLS-1$
+        String message = String.valueOf(statusCode);
         try
         {
             String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
@@ -238,6 +238,7 @@ public class WebAccess
         {
             // ignore -> unable to retrieve message
         }
+        message += " --> " + uri.toString(); //$NON-NLS-1$
         return message;
     }
 

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -31,11 +32,11 @@ import name.abuchen.portfolio.money.Values;
 public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
 {
     /**
-     * Information: 
+     * Information:
      * Wealthsimple Investments Inc. is a CAD-based financial
      * services company. The currency is $CAD.
-     * 
-     * All securities are specified in $CAD. 
+     *
+     * All securities are specified in $CAD.
      * However, there is an exchange rate in $USD.
      */
 
@@ -43,7 +44,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Wealthsimple Inc."); //$NON-NLS-1$
+        addBankIdentifier("Wealthsimple Inc.");
 
         addDepotStatementTransaction();
     }
@@ -51,7 +52,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Wealthsimple Investments Inc."; //$NON-NLS-1$
+        return "Wealthsimple Investments Inc.";
     }
 
     private void addDepotStatementTransaction()
@@ -156,7 +157,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     Map<String, String> context = type.getCurrentContext();
 
                     // Is type --> "Out" change from DEPOSIT to REMOVAL
-                    if (v.get("type").equals("Out"))
+                    if ("Out".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.REMOVAL);
 
                     t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
@@ -202,7 +203,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     DocumentContext context = type.getCurrentContext();
 
                     // Is type --> "Out" change from BUY to SELL
-                    if (v.get("type").equals("Sold"))
+                    if ("Sold".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -445,18 +446,30 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     return entry;
                 })
 
-                .section("month", "day", "name")
-                .match("^(?<month>[\\w]{3,4}) (?<day>[\\d]{2}) (?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) .*$")
+                .section("month", "day", "name", "shares", "amount")
+                .match("^(?<month>[\\w]{3,4}) "
+                                + "(?<day>[\\d]{2}) "
+                                + "(?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) "
+                                + "(?<shares>[\\.,\\d]+) "
+                                + "shares [\\s\\–]{2,3} "
+                                + "\\p{Sc}(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     DocumentContext context = type.getCurrentContext();
 
+                    v.put("currency", asCurrencyCode(context.get("currency")));
+
+                    v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgMissingTickerSymbol, trim(v.get("name"))));
+
                     t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
-                    t.setNote(v.get("name") + " -> " + t.getDateTime());
+                    t.setShares(asShares(v.get("shares")));
+
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                .wrap(t -> {
+                .wrap((t, ctx) -> {
                     TransactionItem item = new TransactionItem(t);
-                    item.setFailureMessage(MessageFormat.format(Messages.MsgMissingTickerSymbol, t.getNote()));
+                    item.setFailureMessage(ctx.getString(FAILURE));
                     return item;
                 }));
 
@@ -518,10 +531,8 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         {
             // Search date of dividend transaction using date and tickerSymbol.
 
-            for (int i = 0; i < items.size(); i++) // NOSONAR
+            for (DividendTaxTransactionsItem item : items)
             {
-                DividendTaxTransactionsItem item = items.get(i);
-
                 if (item.dateTime.equals(dateTime) && item.tickerSymbol.equals(tickerSymbol))
                     return Optional.of(item);
             }
@@ -554,10 +565,8 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         {
             // Search for date of fee tax by date.
 
-            for (int i = 0; i < items.size(); i++) // NOSONAR
+            for (FeeTaxTransactionsItem item : items)
             {
-                FeeTaxTransactionsItem item = items.get(i);
-
                 if (item.dateTime.equals(dateTime))
                     return Optional.of(item);
             }
@@ -586,10 +595,8 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         {
             // Search by date of fee refund by date.
 
-            for (int i = 0; i < items.size(); i++) // NOSONAR
+            for (FeeRefundTransactionsItem item : items)
             {
-                FeeRefundTransactionsItem item = items.get(i);
-
                 if (item.dateTime.equals(dateTime))
                     return Optional.of(item);
             }

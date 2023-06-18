@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
@@ -28,7 +27,6 @@ import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -209,29 +207,11 @@ public class ChartWidget extends WidgetDelegate<Object>
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        ImageHyperlink button = new ImageHyperlink(container, SWT.NONE);
-        button.setImage(Images.VIEW_SHARE.image());
-        button.addHyperlinkListener(new HyperlinkAdapter()
-        {
-            @Override
-            public void linkActivated(HyperlinkEvent e)
-            {
-                Class<? extends AbstractFinanceView> view = useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS //
-                                ? StatementOfAssetsHistoryView.class
-                                : PerformanceChartView.class;
-
-                ChartViewConfig config = new ChartViewConfig(get(ChartConfig.class).getUUID(),
-                                get(ReportingPeriodConfig.class).getReportingPeriod());
-
-                part.activateView(view, config);
-            }
-        });
 
         chart = new TimelineChart(container);
         chart.getTitle().setVisible(false);
@@ -247,6 +227,22 @@ public class ChartWidget extends WidgetDelegate<Object>
         GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).span(2, 1).applyTo(chart);
 
         getDashboardData().getStylingEngine().style(chart);
+
+        HoverButton.build(title, container, chart, chart.getPlotArea()).withListener(new HyperlinkAdapter()
+        {
+            @Override
+            public void linkActivated(HyperlinkEvent e)
+            {
+                Class<? extends AbstractFinanceView> view = useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS //
+                                ? StatementOfAssetsHistoryView.class
+                                : PerformanceChartView.class;
+
+                ChartViewConfig config = new ChartViewConfig(get(ChartConfig.class).getUUID(),
+                                get(ReportingPeriodConfig.class).getReportingPeriod());
+
+                part.activateView(view, config);
+            }
+        });
 
         container.layout();
 

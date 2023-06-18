@@ -1,0 +1,169 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+Sparkasse
+S
+Sparkasse Schweinfurt-Haßberge                    
+Schweinfurt-Haßberge
+Herrn
+Ihr Ansprechpartner:
+Max Mustermann
+Lena Hochrein
+Strasse
+Kundenberatung Hofheim
+Strasse 7 Marktplatz 7
+97461 Hofheim
+99999 Stadt
+Telefon 09521 58-764
+Fax 09521 58-499
+lena.hochrein@sparkasse-sw-has.de
+1. Januar 2023
+Kontoauszug 19/2022 Seite 1 von 4
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99 
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+            3.597,57
+Kontostand am 02.12.2022, Auszug Nr.   18
+              -10,00
+09.12.2022 Lastschrift
+PayPal Europe S.a.r.l. et Cie S.C.A 1023976021348 . 
+Telekom Deutschland GmbH, Ihr Einkauf bei Telekom Deut 
+schland GmbH AWV-MELDEPFLICHT BEACHTEN HOTLINE 
+BUNDESBANK: (0800) 1234-111 1023976021348 
+4CU2224VNSRPG Gläubiger-ID: 
+LU96ZZZ0000000000000000058
+              -98,07
+12.12.2022 Kartenzahlung
+OKTAN TANKSTELLE SCHWEINFURT//Schwe infurt/DE 
+2022-12-09T16:21 Debitk.5 2026-12
+             -250,00
+27.12.2022 Überweisung online
+solarisBank AG BISON App DATUM 26.12.2022, 11.09 UHR 
+363bb30941-447687-11091196-20221226
+              -10,00
+28.12.2022 Rechnung / Wert: 30.12.2022
+Auslandszahlungsverkehr 20221228-BY044-00016356071 
+siehe Anlage Nr. 1
+               23,35
+28.12.2022 GutschriftÜberweisung / Wert: 30.12.2022
+IBAN CH7100115001510002902/ BEI Schweizerische 
+National Ref.: 221228044A000003 Betrag CHF 23,10 Kurs 
+EUR/CHF 0,989200 EUR-Ggw. 23,35 Entgeltinformationen 
+finden Sie auf der sep. Rechnung. /ADRS CH-3003 Bern, 
+CC:CH /ROC/0321396686///URI/NO.PS 
+CD/INT-1052-0080505113/520. 3265.722 VST 3P1N018M 
+Urspr. CHF 23,10 ADRS /Eidg. Steuerverwaltun 
+gEigerstrasse 65CH-3003 Ber n, CC:CH/
+            1.111,11
+29.12.2022 Lohn, Gehalt, Rente
+ZF FRIEDRICHSHAFEN A Lohn/Gehalt 99999999/202212
+             -600,00
+30.12.2022 Dauerauftrag
+Max Mustermann ETF
+               -4,60
+30.12.2022 Entgeltabrechnung / Wert: 01.01.2023
+siehe Anlage Nr. 2
+                0,00
+30.12.2022 Abrechnung 30.12.2022 / Wert: 01.01.2023
+siehe Anlage Nr. 3
+            5.736,45
+Kontostand am 30.12.2022 um 23:04 Uhr
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 3
+Ihr Kreditlimit EUR: 2.000,00
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 19/2022 Seite 2 von 4
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  Max Mustermann
+Rechnung: Anlage     1
+Rechnungsdatum:  28.12.2022
+Rechnungsnummer: 20221228-BY044-00016356071
+Auslandszahlungsverkehr - Gutschrift einer Überweisung
+     1x Entgelt                                         10,00 EUR
+     Gutschrift einer Überweisung (Auslandsüberweisung)
+     vom 28.12.2022
+     Auftragskonto EUR                        190999999
+     Auftrag                           221228044A000003
+     AG-Name 1: Eidg. Steuerverwaltung
+  
+     AG-Name 2: Eigerstrasse 65
+     Gebührenregelung SHA
+     Betrag                                   23,10 CHF
+     Kurs                                  0,989200 CHF
+     Gegenwert                                23,35 EUR
+     Provision                                10,00 EUR
+Rechnungsbetrag                                                   10,00 EUR
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 19/2022 Seite 3 von 4
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  Max Mustermann
+Entgeltabschluss: Anlage     2
+Entgelte vom 01.12.2022 bis 30.12.2022                               4,60-
+Grundpreis (Kontoführung)                              4,00-
+Zahlungsverkehr                                        0,60-
+                                                            --------------
+Abrechnung 30.12.2022                                                4,60-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20221230-BY044-00016445466
+  
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 19/2022 Seite 4 von 4
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  Max Mustermann
+Rechnungsabschluss: Anlage     3
+Kontostand in EUR am 30.12.2022                                 5.736,45 +
+                                                            --------------
+Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022
+Abrechnung 31.12.2022                                                0,00+
+Sollzinssätze am 30.12.2022
+ 9,7000 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
+12,7000 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+  
+Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+der Entwicklung des 3-Monats-Euribor.
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Kontostand/Rechnungsabschluss in EUR am 30.12.2022              5.736,45 +
+Rechnungsnummer: 20221230-BY044-00016445465
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+l Einwendungen gegen den Kontoauszug teilen Sie uns bitte unverzüglich mit.
+l  Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben. 
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige 
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Werstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der 
+Einlösung.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als 
+Rechnung im Sinne des UStG.
+l Bitte beachten Sie: Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+
+```

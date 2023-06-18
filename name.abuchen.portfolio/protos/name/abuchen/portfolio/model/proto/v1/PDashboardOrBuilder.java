@@ -42,14 +42,14 @@ public interface PDashboardOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; configuration = 2;</code>
    */
-
-  java.lang.String getConfigurationOrDefault(
+  /* nullable */
+java.lang.String getConfigurationOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; configuration = 2;</code>
    */
-
   java.lang.String getConfigurationOrThrow(
       java.lang.String key);
 

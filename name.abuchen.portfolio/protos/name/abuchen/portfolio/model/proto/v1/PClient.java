@@ -24,6 +24,7 @@ private static final long serialVersionUID = 0L;
     watchlists_ = java.util.Collections.emptyList();
     taxonomies_ = java.util.Collections.emptyList();
     dashboards_ = java.util.Collections.emptyList();
+    baseCurrency_ = "";
   }
 
   @java.lang.Override
@@ -33,176 +34,6 @@ private static final long serialVersionUID = 0L;
     return new PClient();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
-  private PClient(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 8: {
-
-            version_ = input.readInt32();
-            break;
-          }
-          case 18: {
-            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              securities_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PSecurity>();
-              mutable_bitField0_ |= 0x00000001;
-            }
-            securities_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PSecurity.parser(), extensionRegistry));
-            break;
-          }
-          case 26: {
-            if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-              accounts_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PAccount>();
-              mutable_bitField0_ |= 0x00000002;
-            }
-            accounts_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PAccount.parser(), extensionRegistry));
-            break;
-          }
-          case 34: {
-            if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-              portfolios_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PPortfolio>();
-              mutable_bitField0_ |= 0x00000004;
-            }
-            portfolios_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PPortfolio.parser(), extensionRegistry));
-            break;
-          }
-          case 42: {
-            if (!((mutable_bitField0_ & 0x00000008) != 0)) {
-              transactions_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PTransaction>();
-              mutable_bitField0_ |= 0x00000008;
-            }
-            transactions_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PTransaction.parser(), extensionRegistry));
-            break;
-          }
-          case 50: {
-            if (!((mutable_bitField0_ & 0x00000010) != 0)) {
-              plans_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PInvestmentPlan>();
-              mutable_bitField0_ |= 0x00000010;
-            }
-            plans_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.parser(), extensionRegistry));
-            break;
-          }
-          case 58: {
-            if (!((mutable_bitField0_ & 0x00000020) != 0)) {
-              watchlists_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PWatchlist>();
-              mutable_bitField0_ |= 0x00000020;
-            }
-            watchlists_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PWatchlist.parser(), extensionRegistry));
-            break;
-          }
-          case 66: {
-            if (!((mutable_bitField0_ & 0x00000040) != 0)) {
-              taxonomies_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PTaxonomy>();
-              mutable_bitField0_ |= 0x00000040;
-            }
-            taxonomies_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PTaxonomy.parser(), extensionRegistry));
-            break;
-          }
-          case 74: {
-            if (!((mutable_bitField0_ & 0x00000080) != 0)) {
-              dashboards_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PDashboard>();
-              mutable_bitField0_ |= 0x00000080;
-            }
-            dashboards_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PDashboard.parser(), extensionRegistry));
-            break;
-          }
-          case 82: {
-            if (!((mutable_bitField0_ & 0x00000100) != 0)) {
-              properties_ = com.google.protobuf.MapField.newMapField(
-                  PropertiesDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000100;
-            }
-            com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-            properties__ = input.readMessage(
-                PropertiesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-            properties_.getMutableMap().put(
-                properties__.getKey(), properties__.getValue());
-            break;
-          }
-          case 90: {
-            name.abuchen.portfolio.model.proto.v1.PSettings.Builder subBuilder = null;
-            if (settings_ != null) {
-              subBuilder = settings_.toBuilder();
-            }
-            settings_ = input.readMessage(name.abuchen.portfolio.model.proto.v1.PSettings.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(settings_);
-              settings_ = subBuilder.buildPartial();
-            }
-
-            break;
-          }
-          default: {
-            if (!parseUnknownField(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      if (((mutable_bitField0_ & 0x00000001) != 0)) {
-        securities_ = java.util.Collections.unmodifiableList(securities_);
-      }
-      if (((mutable_bitField0_ & 0x00000002) != 0)) {
-        accounts_ = java.util.Collections.unmodifiableList(accounts_);
-      }
-      if (((mutable_bitField0_ & 0x00000004) != 0)) {
-        portfolios_ = java.util.Collections.unmodifiableList(portfolios_);
-      }
-      if (((mutable_bitField0_ & 0x00000008) != 0)) {
-        transactions_ = java.util.Collections.unmodifiableList(transactions_);
-      }
-      if (((mutable_bitField0_ & 0x00000010) != 0)) {
-        plans_ = java.util.Collections.unmodifiableList(plans_);
-      }
-      if (((mutable_bitField0_ & 0x00000020) != 0)) {
-        watchlists_ = java.util.Collections.unmodifiableList(watchlists_);
-      }
-      if (((mutable_bitField0_ & 0x00000040) != 0)) {
-        taxonomies_ = java.util.Collections.unmodifiableList(taxonomies_);
-      }
-      if (((mutable_bitField0_ & 0x00000080) != 0)) {
-        dashboards_ = java.util.Collections.unmodifiableList(dashboards_);
-      }
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PClient_descriptor;
@@ -229,7 +60,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int VERSION_FIELD_NUMBER = 1;
-  private int version_;
+  private int version_ = 0;
   /**
    * <code>int32 version = 1;</code>
    * @return The version.
@@ -240,6 +71,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SECURITIES_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PSecurity> securities_;
   /**
    * <code>repeated .name.abuchen.portfolio.PSecurity securities = 2;</code>
@@ -280,6 +112,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ACCOUNTS_FIELD_NUMBER = 3;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PAccount> accounts_;
   /**
    * <code>repeated .name.abuchen.portfolio.PAccount accounts = 3;</code>
@@ -320,6 +153,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PORTFOLIOS_FIELD_NUMBER = 4;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PPortfolio> portfolios_;
   /**
    * <code>repeated .name.abuchen.portfolio.PPortfolio portfolios = 4;</code>
@@ -360,6 +194,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TRANSACTIONS_FIELD_NUMBER = 5;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PTransaction> transactions_;
   /**
    * <code>repeated .name.abuchen.portfolio.PTransaction transactions = 5;</code>
@@ -400,6 +235,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PLANS_FIELD_NUMBER = 6;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlan> plans_;
   /**
    * <code>repeated .name.abuchen.portfolio.PInvestmentPlan plans = 6;</code>
@@ -440,6 +276,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int WATCHLISTS_FIELD_NUMBER = 7;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PWatchlist> watchlists_;
   /**
    * <code>repeated .name.abuchen.portfolio.PWatchlist watchlists = 7;</code>
@@ -480,6 +317,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TAXONOMIES_FIELD_NUMBER = 8;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PTaxonomy> taxonomies_;
   /**
    * <code>repeated .name.abuchen.portfolio.PTaxonomy taxonomies = 8;</code>
@@ -520,6 +358,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DASHBOARDS_FIELD_NUMBER = 9;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PDashboard> dashboards_;
   /**
    * <code>repeated .name.abuchen.portfolio.PDashboard dashboards = 9;</code>
@@ -571,6 +410,7 @@ private static final long serialVersionUID = 0L;
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "");
   }
+  @SuppressWarnings("serial")
   private com.google.protobuf.MapField<
       java.lang.String, java.lang.String> properties_;
   private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -581,18 +421,16 @@ private static final long serialVersionUID = 0L;
     }
     return properties_;
   }
-
   public int getPropertiesCount() {
     return internalGetProperties().getMap().size();
   }
   /**
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
-
   @java.lang.Override
   public boolean containsProperties(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     return internalGetProperties().getMap().containsKey(key);
   }
   /**
@@ -607,7 +445,6 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
   @java.lang.Override
-
   public java.util.Map<java.lang.String, java.lang.String> getPropertiesMap() {
     return internalGetProperties().getMap();
   }
@@ -615,11 +452,12 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
   @java.lang.Override
-
-  public java.lang.String getPropertiesOrDefault(
+  public /* nullable */
+java.lang.String getPropertiesOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+      /* nullable */
+java.lang.String defaultValue) {
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetProperties().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -628,10 +466,9 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
   @java.lang.Override
-
   public java.lang.String getPropertiesOrThrow(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetProperties().getMap();
     if (!map.containsKey(key)) {
@@ -663,7 +500,46 @@ private static final long serialVersionUID = 0L;
    */
   @java.lang.Override
   public name.abuchen.portfolio.model.proto.v1.PSettingsOrBuilder getSettingsOrBuilder() {
-    return getSettings();
+    return settings_ == null ? name.abuchen.portfolio.model.proto.v1.PSettings.getDefaultInstance() : settings_;
+  }
+
+  public static final int BASECURRENCY_FIELD_NUMBER = 12;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object baseCurrency_ = "";
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The baseCurrency.
+   */
+  @java.lang.Override
+  public java.lang.String getBaseCurrency() {
+    java.lang.Object ref = baseCurrency_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      baseCurrency_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The bytes for baseCurrency.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getBaseCurrencyBytes() {
+    java.lang.Object ref = baseCurrency_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      baseCurrency_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -716,7 +592,10 @@ private static final long serialVersionUID = 0L;
     if (settings_ != null) {
       output.writeMessage(11, getSettings());
     }
-    unknownFields.writeTo(output);
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 12, baseCurrency_);
+    }
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -775,7 +654,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(11, getSettings());
     }
-    size += unknownFields.getSerializedSize();
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, baseCurrency_);
+    }
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -815,7 +697,9 @@ private static final long serialVersionUID = 0L;
       if (!getSettings()
           .equals(other.getSettings())) return false;
     }
-    if (!unknownFields.equals(other.unknownFields)) return false;
+    if (!getBaseCurrency()
+        .equals(other.getBaseCurrency())) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
 
@@ -868,7 +752,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + SETTINGS_FIELD_NUMBER;
       hash = (53 * hash) + getSettings().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (37 * hash) + BASECURRENCY_FIELD_NUMBER;
+    hash = (53 * hash) + getBaseCurrency().hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -1007,87 +893,82 @@ private static final long serialVersionUID = 0L;
 
     // Construct using name.abuchen.portfolio.model.proto.v1.PClient.newBuilder()
     private Builder() {
-      maybeForceBuilderInitialization();
+
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-      maybeForceBuilderInitialization();
-    }
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3
-              .alwaysUseFieldBuilders) {
-        getSecuritiesFieldBuilder();
-        getAccountsFieldBuilder();
-        getPortfoliosFieldBuilder();
-        getTransactionsFieldBuilder();
-        getPlansFieldBuilder();
-        getWatchlistsFieldBuilder();
-        getTaxonomiesFieldBuilder();
-        getDashboardsFieldBuilder();
-      }
+
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       version_ = 0;
-
       if (securitiesBuilder_ == null) {
         securities_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
       } else {
+        securities_ = null;
         securitiesBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000002);
       if (accountsBuilder_ == null) {
         accounts_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);
       } else {
+        accounts_ = null;
         accountsBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000004);
       if (portfoliosBuilder_ == null) {
         portfolios_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
       } else {
+        portfolios_ = null;
         portfoliosBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000008);
       if (transactionsBuilder_ == null) {
         transactions_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
       } else {
+        transactions_ = null;
         transactionsBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000010);
       if (plansBuilder_ == null) {
         plans_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
       } else {
+        plans_ = null;
         plansBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000020);
       if (watchlistsBuilder_ == null) {
         watchlists_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
       } else {
+        watchlists_ = null;
         watchlistsBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000040);
       if (taxonomiesBuilder_ == null) {
         taxonomies_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
       } else {
+        taxonomies_ = null;
         taxonomiesBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000080);
       if (dashboardsBuilder_ == null) {
         dashboards_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000080);
       } else {
+        dashboards_ = null;
         dashboardsBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00000100);
       internalGetMutableProperties().clear();
-      if (settingsBuilder_ == null) {
-        settings_ = null;
-      } else {
-        settings_ = null;
+      settings_ = null;
+      if (settingsBuilder_ != null) {
+        settingsBuilder_.dispose();
         settingsBuilder_ = null;
       }
+      baseCurrency_ = "";
       return this;
     }
 
@@ -1114,123 +995,106 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PClient buildPartial() {
       name.abuchen.portfolio.model.proto.v1.PClient result = new name.abuchen.portfolio.model.proto.v1.PClient(this);
-      int from_bitField0_ = bitField0_;
-      result.version_ = version_;
+      buildPartialRepeatedFields(result);
+      if (bitField0_ != 0) { buildPartial0(result); }
+      onBuilt();
+      return result;
+    }
+
+    private void buildPartialRepeatedFields(name.abuchen.portfolio.model.proto.v1.PClient result) {
       if (securitiesBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           securities_ = java.util.Collections.unmodifiableList(securities_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.securities_ = securities_;
       } else {
         result.securities_ = securitiesBuilder_.build();
       }
       if (accountsBuilder_ == null) {
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           accounts_ = java.util.Collections.unmodifiableList(accounts_);
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.accounts_ = accounts_;
       } else {
         result.accounts_ = accountsBuilder_.build();
       }
       if (portfoliosBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000008) != 0)) {
           portfolios_ = java.util.Collections.unmodifiableList(portfolios_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
         }
         result.portfolios_ = portfolios_;
       } else {
         result.portfolios_ = portfoliosBuilder_.build();
       }
       if (transactionsBuilder_ == null) {
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000010) != 0)) {
           transactions_ = java.util.Collections.unmodifiableList(transactions_);
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.transactions_ = transactions_;
       } else {
         result.transactions_ = transactionsBuilder_.build();
       }
       if (plansBuilder_ == null) {
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000020) != 0)) {
           plans_ = java.util.Collections.unmodifiableList(plans_);
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.plans_ = plans_;
       } else {
         result.plans_ = plansBuilder_.build();
       }
       if (watchlistsBuilder_ == null) {
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000040) != 0)) {
           watchlists_ = java.util.Collections.unmodifiableList(watchlists_);
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
         }
         result.watchlists_ = watchlists_;
       } else {
         result.watchlists_ = watchlistsBuilder_.build();
       }
       if (taxonomiesBuilder_ == null) {
-        if (((bitField0_ & 0x00000040) != 0)) {
+        if (((bitField0_ & 0x00000080) != 0)) {
           taxonomies_ = java.util.Collections.unmodifiableList(taxonomies_);
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.taxonomies_ = taxonomies_;
       } else {
         result.taxonomies_ = taxonomiesBuilder_.build();
       }
       if (dashboardsBuilder_ == null) {
-        if (((bitField0_ & 0x00000080) != 0)) {
+        if (((bitField0_ & 0x00000100) != 0)) {
           dashboards_ = java.util.Collections.unmodifiableList(dashboards_);
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000100);
         }
         result.dashboards_ = dashboards_;
       } else {
         result.dashboards_ = dashboardsBuilder_.build();
       }
-      result.properties_ = internalGetProperties();
-      result.properties_.makeImmutable();
-      if (settingsBuilder_ == null) {
-        result.settings_ = settings_;
-      } else {
-        result.settings_ = settingsBuilder_.build();
-      }
-      onBuilt();
-      return result;
     }
 
-    @java.lang.Override
-    public Builder clone() {
-      return super.clone();
+    private void buildPartial0(name.abuchen.portfolio.model.proto.v1.PClient result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.version_ = version_;
+      }
+      if (((from_bitField0_ & 0x00000200) != 0)) {
+        result.properties_ = internalGetProperties();
+        result.properties_.makeImmutable();
+      }
+      if (((from_bitField0_ & 0x00000400) != 0)) {
+        result.settings_ = settingsBuilder_ == null
+            ? settings_
+            : settingsBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000800) != 0)) {
+        result.baseCurrency_ = baseCurrency_;
+      }
     }
-    @java.lang.Override
-    public Builder setField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.setField(field, value);
-    }
-    @java.lang.Override
-    public Builder clearField(
-        com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return super.clearField(field);
-    }
-    @java.lang.Override
-    public Builder clearOneof(
-        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return super.clearOneof(oneof);
-    }
-    @java.lang.Override
-    public Builder setRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
-      return super.setRepeatedField(field, index, value);
-    }
-    @java.lang.Override
-    public Builder addRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.addRepeatedField(field, value);
-    }
+
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof name.abuchen.portfolio.model.proto.v1.PClient) {
@@ -1250,7 +1114,7 @@ private static final long serialVersionUID = 0L;
         if (!other.securities_.isEmpty()) {
           if (securities_.isEmpty()) {
             securities_ = other.securities_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureSecuritiesIsMutable();
             securities_.addAll(other.securities_);
@@ -1263,7 +1127,7 @@ private static final long serialVersionUID = 0L;
             securitiesBuilder_.dispose();
             securitiesBuilder_ = null;
             securities_ = other.securities_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
             securitiesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getSecuritiesFieldBuilder() : null;
@@ -1276,7 +1140,7 @@ private static final long serialVersionUID = 0L;
         if (!other.accounts_.isEmpty()) {
           if (accounts_.isEmpty()) {
             accounts_ = other.accounts_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureAccountsIsMutable();
             accounts_.addAll(other.accounts_);
@@ -1289,7 +1153,7 @@ private static final long serialVersionUID = 0L;
             accountsBuilder_.dispose();
             accountsBuilder_ = null;
             accounts_ = other.accounts_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
             accountsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getAccountsFieldBuilder() : null;
@@ -1302,7 +1166,7 @@ private static final long serialVersionUID = 0L;
         if (!other.portfolios_.isEmpty()) {
           if (portfolios_.isEmpty()) {
             portfolios_ = other.portfolios_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           } else {
             ensurePortfoliosIsMutable();
             portfolios_.addAll(other.portfolios_);
@@ -1315,7 +1179,7 @@ private static final long serialVersionUID = 0L;
             portfoliosBuilder_.dispose();
             portfoliosBuilder_ = null;
             portfolios_ = other.portfolios_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
             portfoliosBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPortfoliosFieldBuilder() : null;
@@ -1328,7 +1192,7 @@ private static final long serialVersionUID = 0L;
         if (!other.transactions_.isEmpty()) {
           if (transactions_.isEmpty()) {
             transactions_ = other.transactions_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           } else {
             ensureTransactionsIsMutable();
             transactions_.addAll(other.transactions_);
@@ -1341,7 +1205,7 @@ private static final long serialVersionUID = 0L;
             transactionsBuilder_.dispose();
             transactionsBuilder_ = null;
             transactions_ = other.transactions_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
             transactionsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getTransactionsFieldBuilder() : null;
@@ -1354,7 +1218,7 @@ private static final long serialVersionUID = 0L;
         if (!other.plans_.isEmpty()) {
           if (plans_.isEmpty()) {
             plans_ = other.plans_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           } else {
             ensurePlansIsMutable();
             plans_.addAll(other.plans_);
@@ -1367,7 +1231,7 @@ private static final long serialVersionUID = 0L;
             plansBuilder_.dispose();
             plansBuilder_ = null;
             plans_ = other.plans_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
             plansBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPlansFieldBuilder() : null;
@@ -1380,7 +1244,7 @@ private static final long serialVersionUID = 0L;
         if (!other.watchlists_.isEmpty()) {
           if (watchlists_.isEmpty()) {
             watchlists_ = other.watchlists_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
           } else {
             ensureWatchlistsIsMutable();
             watchlists_.addAll(other.watchlists_);
@@ -1393,7 +1257,7 @@ private static final long serialVersionUID = 0L;
             watchlistsBuilder_.dispose();
             watchlistsBuilder_ = null;
             watchlists_ = other.watchlists_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
             watchlistsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getWatchlistsFieldBuilder() : null;
@@ -1406,7 +1270,7 @@ private static final long serialVersionUID = 0L;
         if (!other.taxonomies_.isEmpty()) {
           if (taxonomies_.isEmpty()) {
             taxonomies_ = other.taxonomies_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000080);
           } else {
             ensureTaxonomiesIsMutable();
             taxonomies_.addAll(other.taxonomies_);
@@ -1419,7 +1283,7 @@ private static final long serialVersionUID = 0L;
             taxonomiesBuilder_.dispose();
             taxonomiesBuilder_ = null;
             taxonomies_ = other.taxonomies_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000080);
             taxonomiesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getTaxonomiesFieldBuilder() : null;
@@ -1432,7 +1296,7 @@ private static final long serialVersionUID = 0L;
         if (!other.dashboards_.isEmpty()) {
           if (dashboards_.isEmpty()) {
             dashboards_ = other.dashboards_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000100);
           } else {
             ensureDashboardsIsMutable();
             dashboards_.addAll(other.dashboards_);
@@ -1445,7 +1309,7 @@ private static final long serialVersionUID = 0L;
             dashboardsBuilder_.dispose();
             dashboardsBuilder_ = null;
             dashboards_ = other.dashboards_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000100);
             dashboardsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getDashboardsFieldBuilder() : null;
@@ -1456,10 +1320,16 @@ private static final long serialVersionUID = 0L;
       }
       internalGetMutableProperties().mergeFrom(
           other.internalGetProperties());
+      bitField0_ |= 0x00000200;
       if (other.hasSettings()) {
         mergeSettings(other.getSettings());
       }
-      this.mergeUnknownFields(other.unknownFields);
+      if (!other.getBaseCurrency().isEmpty()) {
+        baseCurrency_ = other.baseCurrency_;
+        bitField0_ |= 0x00000800;
+        onChanged();
+      }
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -1474,17 +1344,160 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      name.abuchen.portfolio.model.proto.v1.PClient parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              version_ = input.readInt32();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 8
+            case 18: {
+              name.abuchen.portfolio.model.proto.v1.PSecurity m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PSecurity.parser(),
+                      extensionRegistry);
+              if (securitiesBuilder_ == null) {
+                ensureSecuritiesIsMutable();
+                securities_.add(m);
+              } else {
+                securitiesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 18
+            case 26: {
+              name.abuchen.portfolio.model.proto.v1.PAccount m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PAccount.parser(),
+                      extensionRegistry);
+              if (accountsBuilder_ == null) {
+                ensureAccountsIsMutable();
+                accounts_.add(m);
+              } else {
+                accountsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 26
+            case 34: {
+              name.abuchen.portfolio.model.proto.v1.PPortfolio m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PPortfolio.parser(),
+                      extensionRegistry);
+              if (portfoliosBuilder_ == null) {
+                ensurePortfoliosIsMutable();
+                portfolios_.add(m);
+              } else {
+                portfoliosBuilder_.addMessage(m);
+              }
+              break;
+            } // case 34
+            case 42: {
+              name.abuchen.portfolio.model.proto.v1.PTransaction m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PTransaction.parser(),
+                      extensionRegistry);
+              if (transactionsBuilder_ == null) {
+                ensureTransactionsIsMutable();
+                transactions_.add(m);
+              } else {
+                transactionsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 42
+            case 50: {
+              name.abuchen.portfolio.model.proto.v1.PInvestmentPlan m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.parser(),
+                      extensionRegistry);
+              if (plansBuilder_ == null) {
+                ensurePlansIsMutable();
+                plans_.add(m);
+              } else {
+                plansBuilder_.addMessage(m);
+              }
+              break;
+            } // case 50
+            case 58: {
+              name.abuchen.portfolio.model.proto.v1.PWatchlist m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PWatchlist.parser(),
+                      extensionRegistry);
+              if (watchlistsBuilder_ == null) {
+                ensureWatchlistsIsMutable();
+                watchlists_.add(m);
+              } else {
+                watchlistsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 58
+            case 66: {
+              name.abuchen.portfolio.model.proto.v1.PTaxonomy m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PTaxonomy.parser(),
+                      extensionRegistry);
+              if (taxonomiesBuilder_ == null) {
+                ensureTaxonomiesIsMutable();
+                taxonomies_.add(m);
+              } else {
+                taxonomiesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 66
+            case 74: {
+              name.abuchen.portfolio.model.proto.v1.PDashboard m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PDashboard.parser(),
+                      extensionRegistry);
+              if (dashboardsBuilder_ == null) {
+                ensureDashboardsIsMutable();
+                dashboards_.add(m);
+              } else {
+                dashboardsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 74
+            case 82: {
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              properties__ = input.readMessage(
+                  PropertiesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              internalGetMutableProperties().getMutableMap().put(
+                  properties__.getKey(), properties__.getValue());
+              bitField0_ |= 0x00000200;
+              break;
+            } // case 82
+            case 90: {
+              input.readMessage(
+                  getSettingsFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000400;
+              break;
+            } // case 90
+            case 98: {
+              baseCurrency_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000800;
+              break;
+            } // case 98
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (name.abuchen.portfolio.model.proto.v1.PClient) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -1504,8 +1517,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setVersion(int value) {
-      
+
       version_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -1514,7 +1528,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearVersion() {
-      
+      bitField0_ = (bitField0_ & ~0x00000001);
       version_ = 0;
       onChanged();
       return this;
@@ -1523,9 +1537,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PSecurity> securities_ =
       java.util.Collections.emptyList();
     private void ensureSecuritiesIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
+      if (!((bitField0_ & 0x00000002) != 0)) {
         securities_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PSecurity>(securities_);
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
        }
     }
 
@@ -1675,7 +1689,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearSecurities() {
       if (securitiesBuilder_ == null) {
         securities_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         securitiesBuilder_.clear();
@@ -1752,7 +1766,7 @@ private static final long serialVersionUID = 0L;
         securitiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PSecurity, name.abuchen.portfolio.model.proto.v1.PSecurity.Builder, name.abuchen.portfolio.model.proto.v1.PSecurityOrBuilder>(
                 securities_,
-                ((bitField0_ & 0x00000001) != 0),
+                ((bitField0_ & 0x00000002) != 0),
                 getParentForChildren(),
                 isClean());
         securities_ = null;
@@ -1763,9 +1777,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PAccount> accounts_ =
       java.util.Collections.emptyList();
     private void ensureAccountsIsMutable() {
-      if (!((bitField0_ & 0x00000002) != 0)) {
+      if (!((bitField0_ & 0x00000004) != 0)) {
         accounts_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PAccount>(accounts_);
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
        }
     }
 
@@ -1915,7 +1929,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearAccounts() {
       if (accountsBuilder_ == null) {
         accounts_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
       } else {
         accountsBuilder_.clear();
@@ -1992,7 +2006,7 @@ private static final long serialVersionUID = 0L;
         accountsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PAccount, name.abuchen.portfolio.model.proto.v1.PAccount.Builder, name.abuchen.portfolio.model.proto.v1.PAccountOrBuilder>(
                 accounts_,
-                ((bitField0_ & 0x00000002) != 0),
+                ((bitField0_ & 0x00000004) != 0),
                 getParentForChildren(),
                 isClean());
         accounts_ = null;
@@ -2003,9 +2017,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PPortfolio> portfolios_ =
       java.util.Collections.emptyList();
     private void ensurePortfoliosIsMutable() {
-      if (!((bitField0_ & 0x00000004) != 0)) {
+      if (!((bitField0_ & 0x00000008) != 0)) {
         portfolios_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PPortfolio>(portfolios_);
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
        }
     }
 
@@ -2155,7 +2169,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearPortfolios() {
       if (portfoliosBuilder_ == null) {
         portfolios_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
       } else {
         portfoliosBuilder_.clear();
@@ -2232,7 +2246,7 @@ private static final long serialVersionUID = 0L;
         portfoliosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PPortfolio, name.abuchen.portfolio.model.proto.v1.PPortfolio.Builder, name.abuchen.portfolio.model.proto.v1.PPortfolioOrBuilder>(
                 portfolios_,
-                ((bitField0_ & 0x00000004) != 0),
+                ((bitField0_ & 0x00000008) != 0),
                 getParentForChildren(),
                 isClean());
         portfolios_ = null;
@@ -2243,9 +2257,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PTransaction> transactions_ =
       java.util.Collections.emptyList();
     private void ensureTransactionsIsMutable() {
-      if (!((bitField0_ & 0x00000008) != 0)) {
+      if (!((bitField0_ & 0x00000010) != 0)) {
         transactions_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PTransaction>(transactions_);
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
        }
     }
 
@@ -2395,7 +2409,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearTransactions() {
       if (transactionsBuilder_ == null) {
         transactions_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
       } else {
         transactionsBuilder_.clear();
@@ -2472,7 +2486,7 @@ private static final long serialVersionUID = 0L;
         transactionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PTransaction, name.abuchen.portfolio.model.proto.v1.PTransaction.Builder, name.abuchen.portfolio.model.proto.v1.PTransactionOrBuilder>(
                 transactions_,
-                ((bitField0_ & 0x00000008) != 0),
+                ((bitField0_ & 0x00000010) != 0),
                 getParentForChildren(),
                 isClean());
         transactions_ = null;
@@ -2483,9 +2497,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PInvestmentPlan> plans_ =
       java.util.Collections.emptyList();
     private void ensurePlansIsMutable() {
-      if (!((bitField0_ & 0x00000010) != 0)) {
+      if (!((bitField0_ & 0x00000020) != 0)) {
         plans_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PInvestmentPlan>(plans_);
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
        }
     }
 
@@ -2635,7 +2649,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearPlans() {
       if (plansBuilder_ == null) {
         plans_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
       } else {
         plansBuilder_.clear();
@@ -2712,7 +2726,7 @@ private static final long serialVersionUID = 0L;
         plansBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PInvestmentPlan, name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Builder, name.abuchen.portfolio.model.proto.v1.PInvestmentPlanOrBuilder>(
                 plans_,
-                ((bitField0_ & 0x00000010) != 0),
+                ((bitField0_ & 0x00000020) != 0),
                 getParentForChildren(),
                 isClean());
         plans_ = null;
@@ -2723,9 +2737,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PWatchlist> watchlists_ =
       java.util.Collections.emptyList();
     private void ensureWatchlistsIsMutable() {
-      if (!((bitField0_ & 0x00000020) != 0)) {
+      if (!((bitField0_ & 0x00000040) != 0)) {
         watchlists_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PWatchlist>(watchlists_);
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
        }
     }
 
@@ -2875,7 +2889,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearWatchlists() {
       if (watchlistsBuilder_ == null) {
         watchlists_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
       } else {
         watchlistsBuilder_.clear();
@@ -2952,7 +2966,7 @@ private static final long serialVersionUID = 0L;
         watchlistsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PWatchlist, name.abuchen.portfolio.model.proto.v1.PWatchlist.Builder, name.abuchen.portfolio.model.proto.v1.PWatchlistOrBuilder>(
                 watchlists_,
-                ((bitField0_ & 0x00000020) != 0),
+                ((bitField0_ & 0x00000040) != 0),
                 getParentForChildren(),
                 isClean());
         watchlists_ = null;
@@ -2963,9 +2977,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PTaxonomy> taxonomies_ =
       java.util.Collections.emptyList();
     private void ensureTaxonomiesIsMutable() {
-      if (!((bitField0_ & 0x00000040) != 0)) {
+      if (!((bitField0_ & 0x00000080) != 0)) {
         taxonomies_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PTaxonomy>(taxonomies_);
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
        }
     }
 
@@ -3115,7 +3129,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearTaxonomies() {
       if (taxonomiesBuilder_ == null) {
         taxonomies_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
       } else {
         taxonomiesBuilder_.clear();
@@ -3192,7 +3206,7 @@ private static final long serialVersionUID = 0L;
         taxonomiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PTaxonomy, name.abuchen.portfolio.model.proto.v1.PTaxonomy.Builder, name.abuchen.portfolio.model.proto.v1.PTaxonomyOrBuilder>(
                 taxonomies_,
-                ((bitField0_ & 0x00000040) != 0),
+                ((bitField0_ & 0x00000080) != 0),
                 getParentForChildren(),
                 isClean());
         taxonomies_ = null;
@@ -3203,9 +3217,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PDashboard> dashboards_ =
       java.util.Collections.emptyList();
     private void ensureDashboardsIsMutable() {
-      if (!((bitField0_ & 0x00000080) != 0)) {
+      if (!((bitField0_ & 0x00000100) != 0)) {
         dashboards_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PDashboard>(dashboards_);
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
        }
     }
 
@@ -3355,7 +3369,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearDashboards() {
       if (dashboardsBuilder_ == null) {
         dashboards_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
       } else {
         dashboardsBuilder_.clear();
@@ -3432,7 +3446,7 @@ private static final long serialVersionUID = 0L;
         dashboardsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PDashboard, name.abuchen.portfolio.model.proto.v1.PDashboard.Builder, name.abuchen.portfolio.model.proto.v1.PDashboardOrBuilder>(
                 dashboards_,
-                ((bitField0_ & 0x00000080) != 0),
+                ((bitField0_ & 0x00000100) != 0),
                 getParentForChildren(),
                 isClean());
         dashboards_ = null;
@@ -3443,7 +3457,7 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> properties_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetProperties() {
+        internalGetProperties() {
       if (properties_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
             PropertiesDefaultEntryHolder.defaultEntry);
@@ -3451,8 +3465,7 @@ private static final long serialVersionUID = 0L;
       return properties_;
     }
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetMutableProperties() {
-      onChanged();;
+        internalGetMutableProperties() {
       if (properties_ == null) {
         properties_ = com.google.protobuf.MapField.newMapField(
             PropertiesDefaultEntryHolder.defaultEntry);
@@ -3460,20 +3473,20 @@ private static final long serialVersionUID = 0L;
       if (!properties_.isMutable()) {
         properties_ = properties_.copy();
       }
+      bitField0_ |= 0x00000200;
+      onChanged();
       return properties_;
     }
-
     public int getPropertiesCount() {
       return internalGetProperties().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
-
     @java.lang.Override
     public boolean containsProperties(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetProperties().getMap().containsKey(key);
     }
     /**
@@ -3488,7 +3501,6 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getPropertiesMap() {
       return internalGetProperties().getMap();
     }
@@ -3496,11 +3508,12 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getPropertiesOrDefault(
+    public /* nullable */
+java.lang.String getPropertiesOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetProperties().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -3509,10 +3522,9 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
     @java.lang.Override
-
     public java.lang.String getPropertiesOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetProperties().getMap();
       if (!map.containsKey(key)) {
@@ -3520,8 +3532,8 @@ private static final long serialVersionUID = 0L;
       }
       return map.get(key);
     }
-
     public Builder clearProperties() {
+      bitField0_ = (bitField0_ & ~0x00000200);
       internalGetMutableProperties().getMutableMap()
           .clear();
       return this;
@@ -3529,10 +3541,9 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
-
     public Builder removeProperties(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       internalGetMutableProperties().getMutableMap()
           .remove(key);
       return this;
@@ -3542,7 +3553,8 @@ private static final long serialVersionUID = 0L;
      */
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String>
-    getMutableProperties() {
+        getMutableProperties() {
+      bitField0_ |= 0x00000200;
       return internalGetMutableProperties().getMutableMap();
     }
     /**
@@ -3551,20 +3563,21 @@ private static final long serialVersionUID = 0L;
     public Builder putProperties(
         java.lang.String key,
         java.lang.String value) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      if (value == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
+      if (value == null) { throw new NullPointerException("map value"); }
       internalGetMutableProperties().getMutableMap()
           .put(key, value);
+      bitField0_ |= 0x00000200;
       return this;
     }
     /**
      * <code>map&lt;string, string&gt; properties = 10;</code>
      */
-
     public Builder putAllProperties(
         java.util.Map<java.lang.String, java.lang.String> values) {
       internalGetMutableProperties().getMutableMap()
           .putAll(values);
+      bitField0_ |= 0x00000200;
       return this;
     }
 
@@ -3576,7 +3589,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the settings field is set.
      */
     public boolean hasSettings() {
-      return settingsBuilder_ != null || settings_ != null;
+      return ((bitField0_ & 0x00000400) != 0);
     }
     /**
      * <code>.name.abuchen.portfolio.PSettings settings = 11;</code>
@@ -3598,11 +3611,11 @@ private static final long serialVersionUID = 0L;
           throw new NullPointerException();
         }
         settings_ = value;
-        onChanged();
       } else {
         settingsBuilder_.setMessage(value);
       }
-
+      bitField0_ |= 0x00000400;
+      onChanged();
       return this;
     }
     /**
@@ -3612,11 +3625,11 @@ private static final long serialVersionUID = 0L;
         name.abuchen.portfolio.model.proto.v1.PSettings.Builder builderForValue) {
       if (settingsBuilder_ == null) {
         settings_ = builderForValue.build();
-        onChanged();
       } else {
         settingsBuilder_.setMessage(builderForValue.build());
       }
-
+      bitField0_ |= 0x00000400;
+      onChanged();
       return this;
     }
     /**
@@ -3624,38 +3637,38 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeSettings(name.abuchen.portfolio.model.proto.v1.PSettings value) {
       if (settingsBuilder_ == null) {
-        if (settings_ != null) {
-          settings_ =
-            name.abuchen.portfolio.model.proto.v1.PSettings.newBuilder(settings_).mergeFrom(value).buildPartial();
+        if (((bitField0_ & 0x00000400) != 0) &&
+          settings_ != null &&
+          settings_ != name.abuchen.portfolio.model.proto.v1.PSettings.getDefaultInstance()) {
+          getSettingsBuilder().mergeFrom(value);
         } else {
           settings_ = value;
         }
-        onChanged();
       } else {
         settingsBuilder_.mergeFrom(value);
       }
-
+      bitField0_ |= 0x00000400;
+      onChanged();
       return this;
     }
     /**
      * <code>.name.abuchen.portfolio.PSettings settings = 11;</code>
      */
     public Builder clearSettings() {
-      if (settingsBuilder_ == null) {
-        settings_ = null;
-        onChanged();
-      } else {
-        settings_ = null;
+      bitField0_ = (bitField0_ & ~0x00000400);
+      settings_ = null;
+      if (settingsBuilder_ != null) {
+        settingsBuilder_.dispose();
         settingsBuilder_ = null;
       }
-
+      onChanged();
       return this;
     }
     /**
      * <code>.name.abuchen.portfolio.PSettings settings = 11;</code>
      */
     public name.abuchen.portfolio.model.proto.v1.PSettings.Builder getSettingsBuilder() {
-      
+      bitField0_ |= 0x00000400;
       onChanged();
       return getSettingsFieldBuilder().getBuilder();
     }
@@ -3685,6 +3698,78 @@ private static final long serialVersionUID = 0L;
         settings_ = null;
       }
       return settingsBuilder_;
+    }
+
+    private java.lang.Object baseCurrency_ = "";
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return The baseCurrency.
+     */
+    public java.lang.String getBaseCurrency() {
+      java.lang.Object ref = baseCurrency_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        baseCurrency_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return The bytes for baseCurrency.
+     */
+    public com.google.protobuf.ByteString
+        getBaseCurrencyBytes() {
+      java.lang.Object ref = baseCurrency_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        baseCurrency_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @param value The baseCurrency to set.
+     * @return This builder for chaining.
+     */
+    public Builder setBaseCurrency(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      baseCurrency_ = value;
+      bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearBaseCurrency() {
+      baseCurrency_ = getDefaultInstance().getBaseCurrency();
+      bitField0_ = (bitField0_ & ~0x00000800);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string baseCurrency = 12;</code>
+     * @param value The bytes for baseCurrency to set.
+     * @return This builder for chaining.
+     */
+    public Builder setBaseCurrencyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      baseCurrency_ = value;
+      bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
@@ -3719,7 +3804,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PClient(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 

@@ -1,0 +1,91 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.2
+-----------------------------------------
+Erste Bank der oesterreichischen Am Belvedere 1 T 05 0100 Firmensitz: Wien
+Sparkassen AG 1100 Wien F 0043/5 0100-910100 Handelsgericht Wien
+www.erstebank.at  UID: ATU63358299, FN 286283 f
+Seite 1/2   BIC: GIBAATWWXXX
+WERTPAPIER WERTPAPIERDEPOT
+Kauf Marktplatz 838-789-923/02 A
+ 
+lautend auf XXX
+XXX
+Herr XXX
+XXX
+XXX
+XXXX Wien
+WERTPAPIER
+Kauf Marktplatz
+Ihr Auftrag vom 02.01.2023, 23:04 Uhr Auftragsnummer 13001070
+IE00BHZRQZ17 FT ICAV-FR.FTSE INDIA U.ETF
+REG. SHARES USD ACC. O.N.
+Limit:  EUR  30,15 Genaues Limit beratungsfreies Geschäft
+Nominale/Stück Kurs  Kurswert
+ 
+Marktplatz: XETRA FFT Ausführungszeit: 9:31:02 Schlusstag: 16.01.2023
+500,00 STK 30,15 EUR  15.075,00 EUR
+ Einmalige Kosten 39,70 EUR
+ 
+Zu Lasten 123-123 0 18.01.2023 15.114,70 EUR
+Verrechnungskonto Valuta Endbetrag gesamt
+Wertpapierrechnung, Verwahrort: FRANKFURT
+KGSt - Anschaffungskurs berechnet
+Vorbehaltl. Eingang bzw. nachträgl. Storni durch Partner.
+Kosten im Detail
+Die angegebenen Kosten und Gebühren wurden anhand des Abrechnungskurses berechnet.
+Die %-Werte beziehen sich auf den errechneten Kurswert von 15.075,00 Euro.
+ 
+Aufgrund der Rundungsregeln sind geringfügige Abweichungen zwischen absoluten Beträgen und
+Prozentwerten möglich.
+ 
+Erste Bank der oesterreichischen Am Belvedere 1 T 05 0100 Firmensitz: Wien
+Sparkassen AG 1100 Wien F 0043/5 0100-910100 Handelsgericht Wien
+www.erstebank.at  UID: ATU63358299, FN 286283 f
+Seite 2/2   BIC: GIBAATWWXXX
+WERTPAPIER WERTPAPIERDEPOT
+Kauf Marktplatz 838-789-923/02 A
+ 
+lautend auf XXXX
+XXXX WIEN
+Ihr Auftrag vom 02.01.2023, 23:04 Uhr Auftragsnummer 13001070
+(1) Dienstleistungskosten
+ 
+Einmalig, bei Kauf
+   
+Eigene Kosten
+Transaktionsgebühr EUR 15,08  
+   
+Fremde Kosten
+Transaktionsgebühr EUR 24,62  
+ 
+Summe der Dienstleistungskosten EUR 39,70 0,26 %
+ 
+Zuwendungen
+ 
+Unser Institut erhielt für diese Transaktion keine einmaligen Zuwendungen für dieses Wertpapier.
+ 
+(2) Produktkosten
+ 
+Es fielen für die Transaktion keine produktbezogenen Kosten der EmittentIn an.
+ 
+(3) Gesamtkosten
+ 
+Summe aller Kosten EUR 39,70 0,26 %
+ 
+ 
+Begriffserklärung
+ 
+(1) Dienstleistungskosten können beispielsweise bei Kauf, Verkauf oder Lagerung eines Wertpapiers anfallen.
+Der Begriff eigene Kosten umfasst alle Kosten, die bei Ihrer Bank anfallen, z. B. für die Ausführung der Order
+oder die Umrechnung von einer Fremdwährung in Euro.
+Mit fremden Kosten sind alle Kosten gemeint, die außerhalb Ihrer Bank anfallen, also z. B. Handelsgebühren an
+der Börse.
+Zuwendungen sind Zahlungen Dritter an Ihre Bank (wie z. B. Bestandsprovisionen). Die Sparkassen Gruppe
+verwendet diese für qualitätsverbessernde Maßnahmen im Wertpapierbereich.
+ 
+(2) Produktkosten sind die Kosten einer EmittentIn, die z. B. für die Entwicklung oder Vermarktung eines
+Wertpapieres bereits in den Kaufpreis eingerechnet wurden. Diese Kosten fallen beim Kauf oder Verkauf eines
+Wertpapieres nicht extra an, sind aber zur Transparenz am Kostenausweis angeführt.
+ 
+Wien, am 16.01.2023
+Wir danken für Ihren Auftrag

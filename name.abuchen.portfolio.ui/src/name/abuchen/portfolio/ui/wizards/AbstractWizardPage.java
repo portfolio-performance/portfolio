@@ -24,9 +24,9 @@ public abstract class AbstractWizardPage extends WizardPage
 
     public static final void attachPageListenerTo(final IWizardContainer c)
     {
-        if (c instanceof IPageChangeProvider)
+        if (c instanceof IPageChangeProvider changeProvider)
         {
-            ((IPageChangeProvider) c).addPageChangedListener(new IPageChangedListener()
+            changeProvider.addPageChangedListener(new IPageChangedListener()
             {
                 private AbstractWizardPage currentPage;
 

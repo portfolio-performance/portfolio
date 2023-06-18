@@ -144,4 +144,40 @@ public class StringToCurrencyConverterTest
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, false);
         converter.convert("1.234,56");
     }
+
+    @Test
+    public void testValidArithmetic()
+    {
+        Locale.setDefault(Locale.GERMANY);
+        StringToCurrencyConverter converter;
+        converter = new StringToCurrencyConverter(Values.Amount, false);
+        assertThat(converter.convert("10+10"), is(20_00L));
+        assertThat(converter.convert("10,01-10"), is(0_01L));
+        assertThat(converter.convert("-1.234,5+2.000,50"), is(766_00L));
+        assertThat(converter.convert("5-4+3-2+1"), is(3_00L));
+        converter = new StringToCurrencyConverter(Values.Amount, true);
+        assertThat(converter.convert("10+10"), is(20_00L));
+        assertThat(converter.convert("10,01-10"), is(0_01L));
+        assertThat(converter.convert("-1.234,5+2.000,50"), is(766_00L));
+        assertThat(converter.convert("5-4+3-2+1"), is(3_00L));
+        assertThat(converter.convert("12,34-23,45"), is(-11_11L));
+        assertThat(converter.convert("-1234"), is(-1234_00L));
+        assertThat(converter.convert("0,00-1.234,00"), is(-1234_00L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidArithmetic()
+    {
+        Locale.setDefault(Locale.GERMANY);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        converter.convert("1234,56-+0,44");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDisallowedNegativeValue()
+    {
+        Locale.setDefault(Locale.GERMANY);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, false);
+        converter.convert("12,34-23,45");
+    }
 }

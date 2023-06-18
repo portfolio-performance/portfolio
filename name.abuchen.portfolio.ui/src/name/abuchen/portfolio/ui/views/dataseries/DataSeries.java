@@ -124,7 +124,7 @@ public final class DataSeries implements Adaptable
 
     public String getLabel()
     {
-        return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
+        return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
 
     public void setLabel(String label)
@@ -138,16 +138,16 @@ public final class DataSeries implements Adaptable
 
         buf.append(label);
 
-        if (instance instanceof Classification)
+        if (instance instanceof Classification classification)
         {
-            Classification parent = ((Classification) instance).getParent();
+            Classification parent = classification.getParent();
 
             if (parent.getParent() != null)
                 buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         if (isBenchmark())
-            buf.append(Messages.ChartSeriesBenchmarkSuffix);
+            buf.append(" ").append(Messages.ChartSeriesBenchmarkSuffix); //$NON-NLS-1$
 
         return buf.toString();
     }

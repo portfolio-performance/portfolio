@@ -54,6 +54,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09247X1019"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("B L A C K R O C K  I NC. Reg. Shares Class A DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -92,68 +94,258 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(results.size(), is(14));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check cancellation (Storno) transaction
+        // check security
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security1.getIsin(), is("US00206R1023"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("AT + T INC.          DL 1"));
+        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security2.getIsin(), is("US7427181091"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("PROCTER GAMBLE"));
+        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security3.getIsin(), is("US5949181045"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
+        assertThat(security3.getName(), is("MICROSOFT    DL-,00000625"));
+        assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security4.getIsin(), is("US1912161007"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
+        assertThat(security4.getName(), is("COCA-COLA CO.      DL-,25"));
+        assertThat(security4.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security5.getIsin(), is("US0378331005"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
+        assertThat(security5.getName(), is("APPLE INC."));
+        assertThat(security5.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security6.getIsin(), is("US92826C8394"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
+        assertThat(security6.getName(), is("VISA INC. CL. A DL -,0001"));
+        assertThat(security6.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security7.getIsin(), is("US4781601046"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
+        assertThat(security7.getName(), is("JOHNSON + JOHNSON    DL 1"));
+        assertThat(security7.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check 1st cancellation (Storno) transaction
         BuySellEntryItem cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
-        
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
-        
-        // check cancellation (Storno) transaction
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.91)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.45))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.45))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(81.86))));
+
+        // check 2nd cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
-        // check cancellation (Storno) transaction
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.57)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.16))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.16))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(82.08))));
+
+        // check 3rd cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
-        // check cancellation (Storno) transaction
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.28)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.04))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.04))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(82.04))));
+
+        // check 4th cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
-        // check cancellation (Storno) transaction
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.43)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.02))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.02))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(81.80))));
+
+        // check 5th cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
-        // check cancellation (Storno) transaction
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.55)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.82))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.82))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(81.73))));
+
+        // check 6th cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
 
-        // check cancellation (Storno) transaction
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.35)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.52))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.52))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(81.27))));
+
+        // check 7th cancellation (Storno) transaction
         cancellation = (BuySellEntryItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoKontoauszug01.txt"));
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.46)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("StornoKontoauszug01.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.43))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70.43))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        grossValueUnit = ((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction()
+                        .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(81.21))));
     }
 
     @Test
@@ -173,12 +365,16 @@ public class DADATBankenhausPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0378449770"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("COMST.-NASDAQ-100 U.ETF I"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0392494562"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -242,6 +438,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -284,6 +482,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US2561631068"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DOCUSIGN INC    DL-,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -377,6 +577,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US2561631068"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DOCUSIGN INC    DL-,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -470,6 +672,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AT0000969985"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AT+S AUST. TECH.SYS.O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -511,12 +715,16 @@ public class DADATBankenhausPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("US00206R1023"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("AT + T INC.          DL 1"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("US92343V1044"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("VERIZON COMM. INC. DL-,10"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -654,11 +862,13 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0378449770"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMST.-NASDAQ-100 U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check tax transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
@@ -744,6 +954,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0378449770"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMST.-NASDAQ-100 U.ETF I"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -928,18 +1140,24 @@ public class DADATBankenhausPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A0S9GB0"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("0% DT.BOERSE COM. XETRA-GOL"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B4L5YC18"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("ISHSIII-MSCI EM USD(ACC)"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ISHSIII-CORE MSCI WLD DLA"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1024,18 +1242,24 @@ public class DADATBankenhausPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("IE00B4L5YC18"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("ISHSIII-MSCI EM USD(ACC)"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("ISHSIII-CORE MSCI WLD DLA"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00B5BMR087"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("ISHSVII-CORE S+P500 DLACC"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1470,12 +1694,16 @@ public class DADATBankenhausPDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("US92556H2067"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("VIACOMCBS INC. BDL-,001"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("US1667641005"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("CHEVRON CORP.      DL-,75"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1590,6 +1818,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5YC18"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIII-MSCI EM USD(ACC)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1632,6 +1862,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYX2JD69"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIV-MSCI WLD.SRI U.EOA"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1693,6 +1925,8 @@ public class DADATBankenhausPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09247X1019"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("B L A C K R O C K  I NC. Reg. Shares Class A DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

@@ -58,11 +58,17 @@ CTabItem:selected {
 	background-color: #ECECEC;
 }
 
+.hoverbutton Shell,
+.hoverbutton ImageHyperlink {
+	background-color: white;
+}
+
 .chart {
 	background-color: white;
 	axis-color: black;
 	grid-color: lightgrey;
 	highlight-color: black;
+	measurement-color: #f18f01;
 }
 
 .dashboard Composite,

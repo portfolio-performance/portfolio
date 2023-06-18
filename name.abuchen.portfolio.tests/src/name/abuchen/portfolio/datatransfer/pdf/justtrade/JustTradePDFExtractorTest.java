@@ -1,5 +1,25 @@
 package name.abuchen.portfolio.datatransfer.pdf.justtrade;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -50,6 +70,7 @@ public class JustTradePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1FZS350"));
         assertThat(security.getWkn(), is("A0LEW8"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-DEV.MKTS PROP.YLD U.ETF REGISTERED SHS USD (DIST) O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -92,6 +113,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK5BQT80"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard FTSE All-World U.ETF Re"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -134,6 +157,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006069008"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FROSTA AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -160,6 +185,35 @@ public class JustTradePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf04()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CL9E825"), hasWkn(null), hasTicker(null), //
+                        hasName("Leveraged Certificate auf DAX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-01T20:37:32"), hasShares(300), //
+                        hasSource("Kauf04.txt"), hasNote(null), //
+                        hasAmount("EUR", 1902.40), hasGrossValue("EUR", 1901.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 12.51 - 11.51))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
@@ -176,6 +230,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CL9E825"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Leveraged Certificate auf DAX"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -218,6 +274,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000VP63TQ3"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Discount Zertifikat auf Münchener Rückversicherungs AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -244,6 +302,35 @@ public class JustTradePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf03()
+    {
+        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CL9E825"), hasWkn(null), hasTicker(null), //
+                        hasName("Leveraged Certificate auf DAX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-06-01T21:20:42"), hasShares(300), //
+                        hasSource("Verkauf03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1964.00), hasGrossValue("EUR", 1965.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 12.83 - 11.83))));
+    }
+
+    @Test
     public void testSammelabrechnung01()
     {
         JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
@@ -260,6 +347,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000SR8YZ53"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Leveraged Certificate auf DAX / XDAX COMBI INDEX"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -449,6 +538,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4878361082"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Kellogg Co."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -490,6 +581,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92936U1097"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("W.P. Carey Inc."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -531,6 +624,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB0007188757"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Rio Tinto PLC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -572,6 +667,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US6516391066"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Newmont Corp."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -613,6 +710,8 @@ public class JustTradePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US00206R1023"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AT & T Inc."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -651,18 +750,27 @@ public class JustTradePDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security1 = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("iShares Core MSCI Emerging Markets"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security2 = results.stream().filter(i -> i instanceof SecurityItem).skip(1).findFirst()
+        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Lyxor Core Stoxx Europe 600 acc"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security3 = results.stream().filter(i -> i instanceof SecurityItem).skip(2).findFirst()
+        Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("Dimensional European Value Fund"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -888,26 +996,34 @@ public class JustTradePDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
         assertThat(security1.getIsin(), is("IE00BH04GL39"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getIsin(), is("LU1681041627"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getIsin(), is("IE00B8KGV557"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
+        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getIsin(), is("IE00BL25JN58"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
+        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st buy sell transaction
@@ -1092,32 +1208,42 @@ public class JustTradePDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("Xtr II iBoxx Euroz Gov Bd 1-3 ETF"));
         assertThat(security1.getIsin(), is("LU0925589839"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("Xtr II iBoxx Euroz Gov Bd 1-3 ETF"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getIsin(), is("LU1681041627"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getIsin(), is("IE00B8KGV557"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
+        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getIsin(), is("IE00BL25JN58"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
+        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security5.getName(), is("Xtr II iBoxx Euroz Gov Bd 25+ ETF"));
         assertThat(security5.getIsin(), is("LU0290357846"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
+        assertThat(security5.getName(), is("Xtr II iBoxx Euroz Gov Bd 25+ ETF"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st buy sell transaction
@@ -2495,20 +2621,26 @@ public class JustTradePDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("Xtr. (IE)-MSCI World ESG 1C"));
         assertThat(security1.getIsin(), is("IE00BZ02LR44"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("Xtr. (IE)-MSCI World ESG 1C"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("iShares MSCI Europe SRI UCITS acc"));
         assertThat(security2.getIsin(), is("IE00B52VJ196"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("iShares MSCI Europe SRI UCITS acc"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getName(), is("iShares Sustainable MSCI EM SRI acc"));
         assertThat(security3.getIsin(), is("IE00BYVJRP78"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
+        assertThat(security3.getName(), is("iShares Sustainable MSCI EM SRI acc"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st buy sell transaction
@@ -2920,26 +3052,34 @@ public class JustTradePDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
         assertThat(security1.getIsin(), is("IE00BH04GL39"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
+        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getIsin(), is("LU1681041627"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
+        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getIsin(), is("IE00B8KGV557"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
+        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getIsin(), is("IE00BL25JN58"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
+        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check 1st cancellation (Storno) transaction
@@ -2948,8 +3088,23 @@ public class JustTradePDFExtractorTest
                         .filter(BuySellEntryItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("Depotauszug05.txt"));
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-22T13:31")));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.9988)));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Depotauszug05.txt"));
+        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
+
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(130.57))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(130.57))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()

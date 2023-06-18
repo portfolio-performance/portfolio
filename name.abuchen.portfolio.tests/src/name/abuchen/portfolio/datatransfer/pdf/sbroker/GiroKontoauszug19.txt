@@ -1,0 +1,97 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 16 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 22.09.2008 in EUR -118,65
+24.09 24.09.08 Zahlungseingang 72,00
+KARSTEN Mustermann
+SPEICHER
+25.09 25.09.08 Zahlungseingang 259,85
+SEBASTIAN FAISST
+SCHULDEN
+25.09 25.09.08 Lastschrift -21,98
+1&1 INTERNET AG
+ ZAHLUNGSBELEG 002249366421 RGNR.000223734587
+        21,98  EUR K10989620
+29.09 29.09.08 Zahlungseingang 418,16
+BUDERO GMBH
+KDNR D177596,05.09.08  2008 -620727   418,16
+29.09 29.09.08 Überweisung -227,21
+REICHELT ELEKTRONIK
+PV-0723639898 DATUM 26.09.2008, 17.26 UHR
+1.TAN 661588
+30.09 30.09.08 Zahlungseingang 12,00
+ALTERNATE GMBH
+TEILSTORNO KD  23207471
+30.09 30.09.08 Lohn, Gehalt, Rente 1.111,06
+FTE AUTOMOTIVE GMBH ANDREAS-HUMANN-STR. 2
+LOHN/GEHALT 00099999/200809
+01.10 01.10.08 Abrechnung 30.09.2008 -0,15
+Abrechnung 30.09.2008 siehe Anlage
+02.10 02.10.08 Zahlungseingang 39,00
+ALTERNATE GMBH
+GS.NR.  493134492 KD.NR.  2 3207471
+02.10 02.10.08 Lastschrift -13,28
+PAYPAL
+QQI4CU223ECPTAZ4 PAYPAL ZAH LUNG PER LASTSCHRIFT
+081001P3TX1964SG
+06.10 06.10.08 Überweisung -356,25
+ALTERNATE GMBH
+ABAEXLQNPQXLYZ DATUM 04.10.2008, 14.58 UHR
+1.TAN 815749
+06.10 06.10.08 Wertpapierabrechnung -270,00
+DEKABANK FFM, WP-ABRECHNUNG
+ 119701696 XF0009994050 00 DEKA-BONUSRENTE
+DEKA-BR 100 AUSGABEAUFSCHLAG 3,500 %
+KAUF ST        7,494  ZU          36,030000
+ABRECHNUNGSTAG 01.10.2008 BUCHUNGSTAG    01.10.2008
+Endsaldo am 06.10.2008 in EUR 1.207,55
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 16 2 von 2
+Anlage Rechnungsabschluss:
+Abrechnung 30.09.2008
+Information zur Abrechnung
+Kontostand am 30.09.2008                                        1.808,23 H
+--------------
+Abrechnungszeitraum vom 01.07.2008 bis 30.09.2008
+Zinsen für Konto-/Kreditüberziehungen                                0,15S
+--------------
+Abrechnung 30.09.2008                                                0,15S
+Kontostand/Rechnungsabschluss                                   1.808,08 H
+am 30.09.2008
+Rechnungsnummer: 2008-10-01-03.53.50.131315
+GENEHMIGUNGSFIKTION:
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an die
+Revisionsabteilung des kontoführenden Kreditinstituts.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der
+einzelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten
+oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Die Genehmigung umfasst auch
+die im Rechnungsabschluss enthaltenen Belastungsbuchungen aufgrund von
+Einzugsermächtigungslastschriften. Einwendungen gegen Rechnungsabschlüsse
+müssen dem Kreditinstitut schriftlich oder, wenn im Rahmen der
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde
+(z.B. Homebanking), auf diesem Weg zugehen. Zur Fristwahrung genügt die
+rechtzeitige Absendung (Nr. 7 Abs. 3 und Abs. 4 unserer Allgemeinen
+Geschäftsbedingungen). Gutschriften aus eingereichten Schecks und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn das Kreditinstitut seinen
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat
+(z.B. durch Bezahltmeldung).
+ZINSEN SIND EINKOMMENSSTEUERPFLICHTIG
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und Sonderbedingungen können Sie bei uns einsehen; sie werden
+auf Wunsch ausgehändigt.

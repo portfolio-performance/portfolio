@@ -1,0 +1,84 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=000/0000/000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+Ausschüttung für
+ADRESSZEILE2=Dr. Fritz Fox
+01.05.2015 - 30.04.2016
+ADRESSZEILE3=Frau Fritzi Foxy
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=Fuchsstraße 1
+ADRESSZEILE5=88888 Fuchshausen
+Dr. Fritz Fox
+000/0000/000 60667425
+ADRESSZEILE6=
+Frau Fritzi Foxy
+BELEGNUMMER=144
+Fuchsstraße 1
+SEITENNUMMER=1
+88888 Fuchshausen
+STEUERERSTATTUNG=N
+Depotinhaber
+Fritzi Foxy oder Dr. Fritz Fox
+Storno - Erträgnisgutschrift
+Wiesbaden, 01.09.2016
+Gattungsbezeichnung ISIN
+iSh.ST.Euro.Small 200 U.ETF DE Inhaber-Anteile DE000A0D8QZ7
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 84,092 15.06.2016 15.06.2016 EUR 0,240664
+Wert Konto-Nr. Betrag zu Ihren Lasten
+15.06.2016 00/0000/000 EUR 20,24
+Storno unserer Erträgnisgutschrift Nr. 81565205 vom 15.06.2016.
+Ertrag für 2015/16 EUR 20,24
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 2,20
+inl. Dividendenanteil (Ausschüttung) EUR 0,93
+ausl. Dividendenanteil (Ausschüttung) EUR 16,58
+anrechenbare Quellensteuer EUR 0,04
+davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,04
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 501,00) EUR 231,26 250,97
+Quellensteuertopf EUR 17,10 17,06
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 0,00
+Steuerlicher Stichtag 15.06.2016
+Jahressteuerbescheinigung folgt
+Es folgt Seite 2
+3.20/ABREEREIERTR/GDBSTERT/000144/020916/001330
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr.
+DEPOTNUMMER=000/0000/000
+000/0000/000 60667425 2
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Dr. Fritz Fox
+ADRESSZEILE3=Frau Fritzi Foxy
+Stornierung und Neuabrechnung, da sich aufgrund einer Änderung der Bemessungsgrundlage seitens der
+ADRESSZEILE4=Fuchsstraße 1
+Wertpapiermitteilungen die Auswirkung des Ertrages auf die Abgeltungsteuer geändert hat.
+ADRESSZEILE5=88888 Fuchshausen
+ADRESSZEILE6=
+Verwahrart: Girosammelverwahrung
+BELEGNUMMER=144
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBSTERT/000144/020916/001330

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.61.5-SNAPSHOT</version>
+		<version>0.64.1-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -70,12 +70,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<source>17</source>
 					<target>17</target>
@@ -84,7 +83,6 @@
 	            <plugin>
 	                <groupId>com.github.os72</groupId>
 	                <artifactId>protoc-jar-maven-plugin</artifactId>
-	                <version>3.11.4</version>
 	                <executions>
 	                    <execution>
 	                        <phase>generate-sources</phase>
@@ -92,7 +90,7 @@
 	                            <goal>run</goal>
 	                        </goals>
 							<configuration>
-									<protocVersion>3.17.3</protocVersion>
+									<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
 	                                <addProtoSources>all</addProtoSources>
 	                                <includeMavenTypes>direct</includeMavenTypes>
 	                                <outputDirectory>protos</outputDirectory>

@@ -86,7 +86,7 @@ public class SearchSecurityWizardPage extends WizardPage
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSymbol);
-        column.setWidth(60);
+        column.setWidth(80);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnISIN);
@@ -98,15 +98,19 @@ public class SearchSecurityWizardPage extends WizardPage
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityType);
-        column.setWidth(60);
+        column.setWidth(80);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityExchange);
         column.setWidth(80);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
-        column.setText(Messages.ColumnSource);
+        column.setText(Messages.ColumnCurrency);
         column.setWidth(80);
+
+        column = new TableColumn(resultTable.getTable(), SWT.NONE);
+        column.setText(Messages.ColumnSource);
+        column.setWidth(120);
 
         resultTable.getTable().setHeaderVisible(true);
         resultTable.getTable().setLinesVisible(true);
@@ -230,6 +234,8 @@ public class SearchSecurityWizardPage extends WizardPage
                 case 5:
                     return item.getExchange();
                 case 6:
+                    return item.getCurrencyCode() != null ? item.getCurrencyCode() : null;
+                case 7:
                     return item.getSource();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));

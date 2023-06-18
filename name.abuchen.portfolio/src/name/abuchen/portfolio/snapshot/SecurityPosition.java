@@ -76,7 +76,7 @@ public class SecurityPosition
 
     public Security getSecurity()
     {
-        return investment instanceof Security ? (Security) investment : null;
+        return investment instanceof Security security ? security : null;
     }
 
     public InvestmentVehicle getInvestmentVehicle()
@@ -100,7 +100,7 @@ public class SecurityPosition
                         .movePointLeft(Values.Share.precision())
                         .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
                         .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
-                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                        .setScale(0, RoundingMode.HALF_UP).longValue();
         return Money.of(investment.getCurrencyCode(), marketValue);
     }
 

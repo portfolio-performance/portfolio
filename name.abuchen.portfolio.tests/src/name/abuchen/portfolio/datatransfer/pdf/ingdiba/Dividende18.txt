@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Mustermann
+Frau Direkt-Depot Nr.: 08/15
+Mustermann Datum: 02.05.2023
+
+Ertragsgutschrift
+ISIN (WKN) US46131B7047 (A3DMJV)
+Wertpapierbezeichnung Invesco Mortgage Capital
+Registered Shares DL -,01
+Nominale 10,00 Stück
+Zins-/Dividendensatz 0,40 USD
+Ex-Tag 06.04.2023
+Zahltag 27.04.2023
+Brutto USD 4,00
+QuSt 15,00 % (EUR 0,54) USD 0,60
+Zwischensumme USD 3,40
+Umg. z. Dev.-Kurs (1,10285) EUR 3,08
+Gesamtbetrag zu Ihren Gunsten EUR 3,08
+Abrechnungs-IBAN DE52 5001 1111 1111 1111 11
+Valuta 27.04.2023
+Quellensteuer laut Doppelbesteuerungsabkommen (DBA).
+Jahressteuerbescheinigung folgt.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: Mustermann
+Direkt-Depot Nr.: 08/15
+Datum: 02.05.2023
+Seite: 2 von 2
+ISIN (WKN) US46131B7047 (A3DMJV)
+Ausschüttung gem §2 Abs. 11 InvStG 3,63 EUR
+Ertragsausschüttung nach Teilfreistellung 3,63 EUR
+Anrechenbare ausländische Quellensteuer 0,54 EUR
+KapSt-pflichtiger Kapitalertrag 3,63 EUR
+Mit Sparer-Pauschbetrag verrechnet -3,63 EUR
+Sparer-Pauschbetrag vor Ertrag 790,78 EUR
+Sparer-Pauschbetrag nach Ertrag 787,15 EUR
+Verrechnungstopf ausländ. Quellenst. vor Ertrag 26,79 EUR
+Verrechnungstopf ausländ. Quellenst. nach Ertrag 27,33 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

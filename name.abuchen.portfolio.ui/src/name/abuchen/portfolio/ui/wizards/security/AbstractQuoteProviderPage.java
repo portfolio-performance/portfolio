@@ -60,8 +60,10 @@ import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
+import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -182,7 +184,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textJsonFactor;
     private Label labelJsonPathVolume;
     private Text textJsonPathVolume;
-    
+
     private Label labelCoinGeckoCoinId;
     private Text textCoinGeckoCoinId;
 
@@ -248,9 +250,18 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     @Override
     public void beforePage()
     {
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+
         if (!Objects.equals(tickerSymbol, model.getTickerSymbol()))
         {
             this.tickerSymbol = model.getTickerSymbol();
+
+            if (this.tickerSymbol.isEmpty() && feed != null && (feed.getId().startsWith(YAHOO) //
+                            || feed.getId().equals(LeewayQuoteFeed.ID) //
+                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
+            {
+                setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));
+            }
 
             // clear caches
             cacheExchanges = new HashMap<>();
@@ -259,7 +270,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             new LoadExchangesJob().schedule();
         }
 
-        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         if (feed != null && feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
         {
             if (getFeedURL() == null || getFeedURL().length() == 0)
@@ -330,7 +340,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String volumePath = model.getFeedProperty(getJSONVolumePathPropertyName());
             textJsonPathVolume.setText(volumePath != null ? volumePath : ""); //$NON-NLS-1$
         }
-        
+
         if (textCoinGeckoCoinId != null && !textCoinGeckoCoinId.getText()
                         .equals(model.getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID)))
         {
@@ -347,9 +357,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         currencyCode = getModel().getCurrencyCode();
 
-        if (comboExchange != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
+        if (comboExchange != null && feed.getId() != null && (feed.getId().startsWith(YAHOO) //
+                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
+                        || feed.getId().equals(LeewayQuoteFeed.ID) //
+                        || feed.getId().equals(TwelveDataQuoteFeed.ID) //
+                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
@@ -413,7 +425,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     /**
      * Builds a temporary {@link Security} from the currently selected values.
-     * 
+     *
      * @return {@link Security}
      */
     protected Security buildTemporarySecurity()
@@ -484,24 +496,35 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void createDetailDataWidgets(QuoteFeed feed)
     {
-        boolean dropDown = feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)
-                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID));
+        boolean dropDown = feed != null && feed.getId() != null && //
+                        (feed.getId().startsWith(YAHOO) //
+                                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
+                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
+                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID) //
+                                        || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                        || feed.getId().equals(TwelveDataQuoteFeed.ID));
 
-        boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
-                        || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
+        boolean feedURL = feed != null && feed.getId() != null && //
+                        (feed.getId().equals(HTMLTableQuoteFeed.ID) //
+                                        || feed.getId().equals(CSQuoteFeed.ID) //
+                                        || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
-        boolean needsTicker = feed != null && feed.getId() != null && Set
-                        .of(AlphavantageQuoteFeed.ID, FinnhubQuoteFeed.ID, BinanceQuoteFeed.ID, BitfinexQuoteFeed.ID,
-                                        CoinGeckoQuoteFeed.ID, KrakenQuoteFeed.ID, EODHistoricalDataQuoteFeed.ID)
-                        .contains(feed.getId());
+        boolean needsTicker = feed != null && feed.getId() != null //
+                        && Set.of(AlphavantageQuoteFeed.ID, //
+                                        FinnhubQuoteFeed.ID, //
+                                        BinanceQuoteFeed.ID, //
+                                        BitfinexQuoteFeed.ID, //
+                                        CoinGeckoQuoteFeed.ID, //
+                                        KrakenQuoteFeed.ID, //
+                                        EODHistoricalDataQuoteFeed.ID) //
+                                        .contains(feed.getId());
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
 
         boolean needsJsonPath = feed != null && feed.getId() != null && feed.getId().equals(GenericJSONQuoteFeed.ID);
-        
-        boolean needsCoinGeckoCoinId = feed != null && feed.getId() != null && feed.getId().equals(CoinGeckoQuoteFeed.ID);
+
+        boolean needsCoinGeckoCoinId = feed != null && feed.getId() != null
+                        && feed.getId().equals(CoinGeckoQuoteFeed.ID);
 
         if (textFeedURL != null)
         {
@@ -541,7 +564,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textJsonFactor = disposeIf(textJsonFactor);
         labelJsonPathVolume = disposeIf(labelJsonPathVolume);
         textJsonPathVolume = disposeIf(textJsonPathVolume);
-        
+
         labelCoinGeckoCoinId = disposeIf(labelCoinGeckoCoinId);
         textCoinGeckoCoinId = disposeIf(textCoinGeckoCoinId);
 
@@ -705,7 +728,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco.setMarginWidth(2);
             deco.show();
         }
-        
+
         if (needsCoinGeckoCoinId)
         {
             labelCoinGeckoCoinId = new Label(grpQuoteFeed, SWT.NONE);
@@ -747,15 +770,18 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (feed != null)
             comboProvider.setSelection(new StructuredSelection(feed));
-        
+
         // check if the feed was available for selection in drop down box
         if (feed == null || comboProvider.getSelection().isEmpty())
             comboProvider.setSelection(new StructuredSelection(getAvailableFeeds().get(0)));
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && //
+                        (feed.getId().startsWith(YAHOO) //
+                                        || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                        || feed.getId().equals(TwelveDataQuoteFeed.ID) //
+                                        || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
@@ -814,7 +840,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
             if (highPath != null)
                 textJsonPathHigh.setText(highPath);
-            
+
             String factor = model.getFeedProperty(getJSONFactorPropertyName());
             if (factor != null)
                 textJsonFactor.setText(factor);
@@ -823,7 +849,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (volumePath != null)
                 textJsonPathVolume.setText(volumePath);
         }
-        
+
         if (textCoinGeckoCoinId != null)
         {
             String coinId = model.getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID);
@@ -885,7 +911,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (!exchangeSelected)
                 comboExchange.setSelection(null);
 
-            setStatus(exchangeSelected ? null : MessageFormat.format(Messages.MsgErrorExchangeMissing, getTitle()));
+            if (this.tickerSymbol == null || this.tickerSymbol.isEmpty() && //
+                            (feed.getId().startsWith(YAHOO) //
+                                            || feed.getId().equals(LeewayQuoteFeed.ID) //
+                                            || feed.getId().equals(TwelveDataQuoteFeed.ID)))
+            {
+                setStatus(MessageFormat.format(Messages.MsgCheckMissingTickerSymbol, getTitle()));
+            }
+            else
+            {
+                setStatus(exchangeSelected ? null : MessageFormat.format(Messages.MsgErrorExchangeMissing, getTitle()));
+            }
         }
 
         if (textFeedURL != null)
@@ -930,7 +966,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String highPath = model.getFeedProperty(getJSONHighPathPropertyName());
             if (highPath != null)
                 textJsonPathHigh.setText(highPath);
-            
+
             String factor = model.getFeedProperty(getJSONFactorPropertyName());
             if (factor != null)
                 textJsonFactor.setText(factor);
@@ -939,7 +975,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (volumePath != null)
                 textJsonPathVolume.setText(volumePath);
         }
-        
+
         if (textCoinGeckoCoinId != null)
         {
             String coinId = model.getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID);
@@ -947,7 +983,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 textCoinGeckoCoinId.setText(coinId);
         }
 
-        if (comboExchange == null && textFeedURL == null && textQuandlCode == null && textJsonPathDate == null && textCoinGeckoCoinId == null)
+        if (comboExchange == null && textFeedURL == null && textQuandlCode == null && textJsonPathDate == null
+                        && textCoinGeckoCoinId == null)
         {
             // get sample quotes?
             if (feed != null)
@@ -1122,11 +1159,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         showSampleQuotes(feed, null);
         setStatus(null);
     }
-    
+
     private void onCoinGeckoCoinIdChanged()
     {
         String coinId = textCoinGeckoCoinId.getText();
-        
+
         model.setFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, coinId.isEmpty() ? null : coinId);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();

@@ -87,6 +87,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.defaultValueFormat = defaultValueFormat;
     }
 
+    public Format getDefaultValueFormat()
+    {
+        return this.defaultValueFormat;
+    }
+
     public void overrideValueFormat(String series, Format valueFormat)
     {
         this.overrideValueFormat.put(series, valueFormat);
@@ -116,7 +121,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     }
 
     @Override
-    protected Object getFocusObjectAt(Event event)
+    protected final Object getFocusObjectAt(Event event)
     {
         return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
     }
@@ -208,7 +213,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         {
             ISeries series = value.getKey();
 
-            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor()
+            Color color = series instanceof ILineSeries lineSeries ? lineSeries.getLineColor()
                             : ((IBarSeries) series).getBarColor();
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
@@ -268,10 +273,10 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     {
         if (xAxisFormat != null)
             return xAxisFormat.apply(obj);
-        else if (categoryEnabled && obj instanceof Integer)
-            return getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) obj];
-        else if (obj instanceof Date)
-            return Values.Date.format(((Date) obj).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        else if (categoryEnabled && obj instanceof Integer integer)
+            return getChart().getAxisSet().getXAxis(0).getCategorySeries()[integer];
+        else if (obj instanceof Date date)
+            return Values.Date.format(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         else
             return String.valueOf(obj);
     }

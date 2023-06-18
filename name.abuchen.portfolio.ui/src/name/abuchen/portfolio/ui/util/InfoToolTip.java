@@ -40,7 +40,7 @@ public final class InfoToolTip extends ToolTip
     public static InfoToolTip attach(Control control, int style, Supplier<String> message)
     {
         InfoToolTip tooltip = new InfoToolTip(control, style, message);
-        tooltip.setPopupDelay(0);
+        tooltip.setPopupDelay(200);
         tooltip.activate();
 
         return tooltip;

@@ -186,9 +186,9 @@ public abstract class Transaction implements Annotated, Adaptable
             if (compareTo != 0)
                 return compareTo;
 
-            if (t1 instanceof AccountTransaction && t2 instanceof AccountTransaction)
+            if (t1 instanceof AccountTransaction at1 && t2 instanceof AccountTransaction at2)
             {
-                compareTo = ((AccountTransaction) t1).getType().compareTo(((AccountTransaction) t2).getType());
+                compareTo = at1.getType().compareTo(at2.getType());
                 if (compareTo != 0)
                     return compareTo;
             }
@@ -417,6 +417,16 @@ public abstract class Transaction implements Annotated, Adaptable
             units = new ArrayList<>();
         units.remove(unit);
         this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Remove all units by unit type
+     */
+    public void removeUnits(Unit.Type type)
+    {
+        units = units == null ? new ArrayList<>() : units;
+        units.removeIf(unit -> unit.getType() == type);
+        updatedAt = Instant.now();
     }
 
     /**

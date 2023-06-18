@@ -107,6 +107,10 @@ import name.abuchen.portfolio.money.Money;
         Client client = new Client();
         client.setVersion(newClient.getVersion());
 
+        String baseCurrency = newClient.getBaseCurrency();
+        if (!baseCurrency.isEmpty())
+            client.setBaseCurrency(baseCurrency);
+
         // load settings first because the recreation of attributes attached to
         // securities, accounts, portfolios, and investment plans needs the meta
         // data
@@ -760,6 +764,7 @@ import name.abuchen.portfolio.money.Money;
         PClient.Builder newClient = PClient.newBuilder();
 
         newClient.setVersion(client.getVersion());
+        newClient.setBaseCurrency(client.getBaseCurrency());
 
         saveSecurities(client, newClient);
         saveAccounts(client, newClient);

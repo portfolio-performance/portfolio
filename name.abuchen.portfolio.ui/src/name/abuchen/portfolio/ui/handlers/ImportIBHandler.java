@@ -47,6 +47,18 @@ public class ImportIBHandler
 
     private void runImport(MPart part, Shell shell, Client client)
     {
+        if (client.getAccounts().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
+            return;
+        }
+
+        if (client.getPortfolios().isEmpty())
+        {
+            MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorPortfolioNotExist);
+            return;
+        }
+
         try
         {
             Extractor extractor = new IBFlexStatementExtractor(client);
@@ -55,7 +67,7 @@ public class ImportIBHandler
             fileDialog.setText(extractor.getLabel());
             fileDialog.setFilterNames(
                             new String[] { MessageFormat.format("{0} ({1})", extractor.getLabel(), "*.xml") }); //$NON-NLS-1$ //$NON-NLS-2$
-            fileDialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
+            fileDialog.setFilterExtensions(new String[] { "*.xml;*.XML" }); //$NON-NLS-1$
             fileDialog.open();
 
             String[] filenames = fileDialog.getFileNames();

@@ -52,6 +52,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("ES0177542018"));
         assertThat(security.getWkn(), is("A1H6AJ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("INTERNAT. CONS. AIRL. GROUP SA ACCIONES NOM. EO -,10"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +96,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000XNG8888"));
         assertThat(security.getWkn(), is("XNG888"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XING SE NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -138,6 +140,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007100000"));
         assertThat(security.getWkn(), is("710000"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DAIMLER AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -181,6 +184,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US65339F1012"));
         assertThat(security.getWkn(), is("A1CZ4H"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NEXTERA ENERGY INC. REGISTERED SHARES DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -224,6 +228,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US90353T1007"));
         assertThat(security.getWkn(), is("A2PHHG"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Aktienname TECHNOLOGIES INC. REGISTERED SHARES DL-,00001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -267,6 +272,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ALLIANZ SE VINK.NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -310,6 +316,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYYXBF44"));
         assertThat(security.getWkn(), is("A2AHZU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("I.M.III-I.FTSE EM H.D.L.V.UETF REG. SHARES ACC O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -353,6 +360,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK1PV551"));
         assertThat(security.getWkn(), is("A1XEY2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTR.(IE) - MSCI WORLD REGISTERED SHARES 1D O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -396,6 +404,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000NWRK013"));
         assertThat(security.getWkn(), is("NWRK01"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NEW WORK SE NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -459,6 +468,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BAY0017"));
         assertThat(security.getWkn(), is("BAY001"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BAYER AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -502,6 +512,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US64110L1061"));
         assertThat(security.getWkn(), is("552484"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("NETFLIX INC. REGISTERED SHARES DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -545,6 +556,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US29786A1060"));
         assertThat(security.getWkn(), is("A14P98"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ETSY INC. REGISTERED SHARES DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -608,6 +620,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("PLOPTTC00011"));
         assertThat(security.getWkn(), is("534356"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CD PROJEKT S.A. INHABER-AKTIEN C ZY 1"));
         assertThat(security.getCurrencyCode(), is("PLN"));
 
@@ -700,6 +713,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA0679011084"));
         assertThat(security.getWkn(), is("870450"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BARRICK GOLD CORP.  SHARES REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -792,6 +806,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007236101"));
         assertThat(security.getWkn(), is("723610"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SIEMENS AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -834,6 +849,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYYXBF44"));
         assertThat(security.getWkn(), is("A2AHZU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("I.M.III-I.FTSE EM H.D.L.V.UETF REG. SHARES DIS O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -926,6 +942,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0Z2ZZ5"));
         assertThat(security.getWkn(), is("A0Z2ZZ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FREENET AG NAMENS-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -968,6 +985,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK1PV551"));
         assertThat(security.getWkn(), is("A1XEY2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTR.(IE) - MSCI WORLD REGISTERED SHARES 1D O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1060,6 +1078,7 @@ public class DZBankGruppePDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("JP3420600003"));
         assertThat(security.getWkn(), is("850022"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SEKISUI HOUSE LTD. REGISTERED SHARES O.N."));
         assertThat(security.getCurrencyCode(), is("JPY"));
 
@@ -1151,6 +1170,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0RPAN3"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PrivatFonds: Kontrolliert pro"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1193,42 +1214,56 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("FR0011269588"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Carmignac Patrimoine FCP D EUR"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0599946976"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Deutsche Concept SICAV - Kaldemorge"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("DE000A0KFTH1"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("First Private Wealth B"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("LU0720541993"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("LOYS FCP-Global L/S P"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("DE000A0RPAN3"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("PrivatFonds: Kontrolliert pro"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("LU0323578657"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("Flossbach von Storch SICAV - Multip"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("LU0395794307"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("JPMorgan Funds - Global Income Fund"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1718,6 +1753,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009805515"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UniImmo: Europa"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1780,6 +1817,8 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0720541993"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("LOYS FCP-Global L/S P"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1889,6 +1928,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0RPAN3"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PrivatFonds: Kontrolliert pro"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1987,12 +2028,16 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A0KFTH1"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("First Private Wealth B"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0395794307"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("JPMorgan Funds - Global Income Fund"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2076,6 +2121,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1W2CK8"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("GLS Bank Aktienfonds"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2118,6 +2165,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0260869739"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Franklin U.S. Opportunities Fund A"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2160,12 +2209,16 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE0008491051"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UniGlobal"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE0008491044"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("UniRak"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2229,18 +2282,24 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("LU0089558679"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UniDynamicFonds: Global A"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("LU0186860408"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("UniDividendenAss"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("LU0115904467"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("UniEM Global"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2342,6 +2401,8 @@ public class DZBankGruppePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008491051"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UniGlobal"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2423,54 +2484,72 @@ public class DZBankGruppePDFExtractorTest
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A2H9A01"));
+        assertNull(security1.getWkn());
+        assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("UniMultiAsset: Exklusiv"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000A2H9A19"));
+        assertNull(security2.getWkn());
+        assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("UniMultiAsset: Chance I"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security3.getIsin(), is("IE00BMDQ4622"));
+        assertNull(security3.getWkn());
+        assertNull(security3.getTickerSymbol());
         assertThat(security3.getName(), is("LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg."));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security4.getIsin(), is("IE00B4WXJJ64"));
+        assertNull(security4.getWkn());
+        assertNull(security4.getTickerSymbol());
         assertThat(security4.getName(), is("iShares III- Core EO Govt Bond UCIT"));
         assertThat(security4.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security5.getIsin(), is("LU0113258742"));
+        assertNull(security5.getWkn());
+        assertNull(security5.getTickerSymbol());
         assertThat(security5.getName(), is("SISF EURO Corporate Bond C Acc EUR"));
         assertThat(security5.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security6 = results.stream().filter(SecurityItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security6.getIsin(), is("LU0368266499"));
+        assertNull(security6.getWkn());
+        assertNull(security6.getTickerSymbol());
         assertThat(security6.getName(), is("BGF Euro Corporate Bond Fund D2 EUR"));
         assertThat(security6.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security7 = results.stream().filter(SecurityItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security7.getIsin(), is("LU0480132876"));
+        assertNull(security7.getWkn());
+        assertNull(security7.getTickerSymbol());
         assertThat(security7.getName(), is("UBS(L)F.S-MSCI EM.MKTS UC ETF A USD"));
         assertThat(security7.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security8 = results.stream().filter(SecurityItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security8.getIsin(), is("LU0659579733"));
+        assertNull(security8.getWkn());
+        assertNull(security8.getTickerSymbol());
         assertThat(security8.getName(), is("Xtrackers MSCI World Swap"));
         assertThat(security8.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         Security security9 = results.stream().filter(SecurityItem.class::isInstance).skip(8).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security9.getIsin(), is("LU1663883681"));
+        assertNull(security9.getWkn());
+        assertNull(security9.getTickerSymbol());
         assertThat(security9.getName(), is("DWS Inv.-Euro-Gov Bonds"));
         assertThat(security9.getCurrencyCode(), is(CurrencyUnit.EUR));
 

@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -26,12 +29,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
      * Information:
      * Score Priority is a US-based financial services company.
      * The currency is US$.
-     * 
+     *
      * All security currencies are USD.
-     * 
+     *
      * CUSIP Number:
      * The CUSIP number is the WKN number.
-     * 
+     *
      * Dividend transactions:
      * The amount of dividends is reported in gross.
      */
@@ -40,7 +43,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Score Priority"); //$NON-NLS-1$
+        addBankIdentifier("Score Priority");
 
         addAccountStatementTransaction();
     }
@@ -48,19 +51,19 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Score Priority Corp. / Just2Trade US"; //$NON-NLS-1$
+        return "Score Priority Corp. / Just2Trade US";
     }
 
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
             Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
-            // read the current context here
+
             for (String line : lines)
             {
-                Matcher m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
+                Matcher mYear = pYear.matcher(line);
+                if (mYear.matches())
+                    context.put("year", mYear.group("year"));
             }
         });
         this.addDocumentTyp(type);
@@ -89,7 +92,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("(?<nameContinued>.*)")
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
-                            if (v.get("type").equals("Sell"))
+                            if ("Sell".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
 
                             Map<String, String> context = type.getCurrentContext();
@@ -110,13 +113,13 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         // Date | Effective Description | CUSIP | Type of Activity | Quantity Market Price | Net Settlement Amount
         // -------------------------------------
         // Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
-        //  
+        //
         // Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
         // Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
-        //  
+        //
         // Sep 15 Realty Income C             22 756109104 Dividend 5.18
         //  Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
-        // 
+        //
         // Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
         // Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
         // @formatter:on
@@ -236,21 +239,25 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
+                            // if CUSIP lenght != 9
+                            if (trim(v.get("wkn")).length() < 9)
+                                v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgErrorInvalidWKN, trim(v.get("name"))));
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
-
-                            // if CUSIP lenght != 9
-                            if (v.get("wkn").length() < 9)
-                                t.setAmount(0L);
                         })
 
-                        .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
-                            if (t.getCurrencyCode() != null || t.getAmount() == 0)
-                                item.setFailureMessage("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
-                            return item;
+                        .wrap((t, ctx) -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                            {
+                                TransactionItem item = new TransactionItem(t);
+                                item.setFailureMessage(ctx.getString(FAILURE));
+                                return item;
+                            }
+                            return null;
                         }));
 
         // @formatter:off

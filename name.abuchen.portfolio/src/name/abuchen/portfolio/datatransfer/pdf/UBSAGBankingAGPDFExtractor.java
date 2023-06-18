@@ -24,9 +24,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("UBS"); //$NON-NLS-1$
-        addBankIdentifier("UBS Switzerland AG"); //$NON-NLS-1$
-        addBankIdentifier("www.ubs.com"); //$NON-NLS-1$
+        addBankIdentifier("UBS");
+        addBankIdentifier("UBS Switzerland AG");
+        addBankIdentifier("www.ubs.com");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -36,7 +36,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "UBS AG"; //$NON-NLS-1$
+        return "UBS AG";
     }
 
     private void addBuySellTransaction()
@@ -68,7 +68,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^.* B.rse (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -76,7 +76,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Ihr (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -86,9 +86,9 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                 + "|FUSION"
                                 + "|FRAKTIONS\\-ABRECHNUNG))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN")
-                                    || v.get("type").equals("FUSION")
-                                    || v.get("type").equals("FRAKTIONS-ABRECHNUNG"))
+                    if ("RÜCKZAHLUNG RESERVEN AUS KAPITALEINLAGEN".equals(v.get("type"))
+                                    || "FUSION".equals(v.get("type"))
+                                    || "FRAKTIONS-ABRECHNUNG".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -489,7 +489,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         checkAndSetFee(fee, t, type.getCurrentContext());
                     }
 
-                    type.getCurrentContext().put("noProvision", "X");
+                    type.getCurrentContext().putBoolean("noProvision", true);
                 })
 
                 // Courtage USD -22.01
@@ -497,7 +497,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Courtage (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noProvision")))
+                    if (!type.getCurrentContext().getBoolean("noProvision"))
                         processFeeEntries(t, v, type);
                 })
 
@@ -516,7 +516,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
@@ -524,14 +523,12 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        value = value.trim().replaceAll("\\s", "");
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

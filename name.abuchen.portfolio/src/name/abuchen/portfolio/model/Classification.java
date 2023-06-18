@@ -555,12 +555,12 @@ public class Classification implements Named
             Object value = entry.getValue();
             if (value == null)
                 newEntry.setValue(PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build());
-            else if (value instanceof String)
-                newEntry.setValue(PAnyValue.newBuilder().setString((String) value));
-            else if (value instanceof Boolean)
-                newEntry.setValue(PAnyValue.newBuilder().setBool((Boolean) value));
-            else if (value instanceof Integer)
-                newEntry.setValue(PAnyValue.newBuilder().setInt32((Integer) value));
+            else if (value instanceof String s)
+                newEntry.setValue(PAnyValue.newBuilder().setString(s));
+            else if (value instanceof Boolean b)
+                newEntry.setValue(PAnyValue.newBuilder().setBool(b));
+            else if (value instanceof Integer i)
+                newEntry.setValue(PAnyValue.newBuilder().setInt32(i));
             else
                 throw new UnsupportedOperationException(value.getClass().getName());
 

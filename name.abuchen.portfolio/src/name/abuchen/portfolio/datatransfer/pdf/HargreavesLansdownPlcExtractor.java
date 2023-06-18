@@ -30,7 +30,7 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Hargreaves Lansdown Asset Management Limited"); //$NON-NLS-1$
+        addBankIdentifier("Hargreaves Lansdown Asset Management Limited");
 
         addBuySellTransaction();
     }
@@ -38,7 +38,7 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Hargreaves Lansdown Asset Management Limited"; //$NON-NLS-1$
+        return "Hargreaves Lansdown Asset Management Limited";
     }
 
     private void addBuySellTransaction()
@@ -65,7 +65,7 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
                                 + "S([\\s]+)?O([\\s]+)?L([\\s]+)?D))"
                                 + "([\\s]+)?\\*\\* ([\\s]+)?the security detailed below\\.$")
                 .assign((t, v) -> {
-                    if (stripBlanks(v.get("type")).equals("SOLD"))
+                    if ("SOLD".equals(stripBlanks(v.get("type"))))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

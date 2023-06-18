@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.hargreaveslansdownplc;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class HargreavesLansdownPlcTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4X9L533"));
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("HMWO"));
         assertThat(security.getName(), is("HSBC ETFs Plc MSCI World ETF GBP"));
         assertThat(security.getCurrencyCode(), is("GBP"));
@@ -88,6 +90,8 @@ public class HargreavesLansdownPlcTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BG0QPJ30"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Legal & General UK Index Class C - Accumulation (GBP)"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -130,6 +134,7 @@ public class HargreavesLansdownPlcTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BKX5CN86"));
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("JE."));
         assertThat(security.getName(), is("Just Eat plc Ordinary Shares 1p"));
         assertThat(security.getCurrencyCode(), is("GBP"));
@@ -173,6 +178,7 @@ public class HargreavesLansdownPlcTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKX55S42"));
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("VERX"));
         assertThat(security.getName(), is("Vanguard Funds plc FTSE Developed Europe ex-UK UCITS ETF"));
         assertThat(security.getCurrencyCode(), is("GBP"));

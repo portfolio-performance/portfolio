@@ -57,7 +57,7 @@ public class TradeCollector
             if (pair.getTransaction() instanceof PortfolioTransaction)
                 return ((PortfolioTransaction) pair.getTransaction()).getType().isPurchase();
             else if (pair.getTransaction() instanceof AccountTransaction)
-                return ((AccountTransaction) pair.getTransaction()).getType().isCredit();
+                return ((AccountTransaction) pair.getTransaction()).getType().isDebit();
 
             return false;
         }
@@ -254,8 +254,8 @@ public class TradeCollector
     private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate,
                     Portfolio newOwner, double weight)
     {
-        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry)
-            return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), newOwner, weight);
+        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
+            return splitBuySell(entry, newOwner, weight);
         else if (candidate.getTransaction() instanceof PortfolioTransaction)
             return splitPortfolioTransaction((Portfolio) candidate.getOwner(), candidate.getTransaction(), weight);
         else

@@ -49,6 +49,7 @@ public class UnicreditPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000120578"));
         assertThat(security.getWkn(), is("920657"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SANOFI S.A. ACTIONS PORT. EO 2"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -92,6 +93,7 @@ public class UnicreditPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0565135745"));
         assertThat(security.getWkn(), is("A1JQVV"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FIRST EAGLE AMUNDI-INTERNATIO. ACTIONS NOM. AE-C O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -135,6 +137,7 @@ public class UnicreditPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0605051046"));
         assertThat(security.getWkn(), is("858388"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BANK OF AMERICA CORP. REGISTERED SHARES DL 0,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -178,6 +181,7 @@ public class UnicreditPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005200000"));
         assertThat(security.getWkn(), is("520000"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BEIERSDORF AG INHABER-AKTIEN O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -221,6 +225,7 @@ public class UnicreditPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1T73W9"));
         assertThat(security.getWkn(), is("A1T73W"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ACATIS GANÉ VALUE EVENT FONDS INHABER-ANTEILE C"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

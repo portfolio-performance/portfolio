@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.pictetciegruppesa;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BHZKQ946"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -89,6 +92,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4ND3602"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("GOLD(ISHARES PH.MET.)-ETC-11/PERP S"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -131,6 +136,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0419741177"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LYXOR-BL.EQ.WEI.COM EX-AG I ETF"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -173,6 +180,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS2425022303"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("6.516% MS (SX5E/SPX) 22/23"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -215,6 +224,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU2093580772"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AGIF-CHINA A-SHARES PT GBP-ACC."));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -257,6 +268,8 @@ public class PictetCieGruppeSAPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0629459743"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS(LUX)-MSCI WOR.SOC.RES.A USD-INC"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

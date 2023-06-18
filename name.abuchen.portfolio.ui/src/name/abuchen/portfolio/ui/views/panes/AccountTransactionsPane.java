@@ -131,6 +131,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         ColumnEditingSupport.prepare(transactions);
         CopyPasteSupport.enableFor(transactions);
 
+        // needed for virtual tables as otherwise the in-place editing does not
+        // update elements properly
+        transactions.setUseHashlookup(true);
+
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         view.getPreferenceStore(), transactions, layout);
 

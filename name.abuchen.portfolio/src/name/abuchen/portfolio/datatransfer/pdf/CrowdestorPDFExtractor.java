@@ -16,7 +16,7 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("FLEX STATEMENT"); // $NON-NLS-1$
+        addBankIdentifier("FLEX STATEMENT");
 
         addAccountStatementTransaction();
     }
@@ -24,7 +24,7 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Crowdestor OÜ"; //$NON-NLS-1$
+        return "Crowdestor OÜ";
     }
 
     private void addAccountStatementTransaction()

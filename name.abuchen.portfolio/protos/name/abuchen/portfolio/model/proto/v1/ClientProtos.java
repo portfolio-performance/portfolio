@@ -312,7 +312,7 @@ public final class ClientProtos {
       "\n\016attributeTypes\030\002 \003(\0132&.name.abuchen.po" +
       "rtfolio.PAttributeType\022D\n\021configurationS" +
       "ets\030\003 \003(\0132).name.abuchen.portfolio.PConf" +
-      "igurationSet\"\205\005\n\007PClient\022\017\n\007version\030\001 \001(" +
+      "igurationSet\"\233\005\n\007PClient\022\017\n\007version\030\001 \001(" +
       "\005\0225\n\nsecurities\030\002 \003(\0132!.name.abuchen.por" +
       "tfolio.PSecurity\0222\n\010accounts\030\003 \003(\0132 .nam" +
       "e.abuchen.portfolio.PAccount\0226\n\nportfoli" +
@@ -327,18 +327,18 @@ public final class ClientProtos {
       "shboard\022C\n\nproperties\030\n \003(\0132/.name.abuch" +
       "en.portfolio.PClient.PropertiesEntry\0223\n\010" +
       "settings\030\013 \001(\0132!.name.abuchen.portfolio." +
-      "PSettings\0321\n\017PropertiesEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022\r\n\005value\030\002 \001(\t:\0028\001\"S\n\rPExchangeRate\022\014\n" +
-      "\004date\030\001 \001(\003\0224\n\005value\030\002 \001(\0132%.name.abuche" +
-      "n.portfolio.PDecimalValue\"\203\001\n\027PExchangeR" +
-      "ateTimeSeries\022\024\n\014baseCurrency\030\001 \001(\t\022\024\n\014t" +
-      "ermCurrency\030\002 \001(\t\022<\n\rexchangeRates\030\003 \003(\013" +
-      "2%.name.abuchen.portfolio.PExchangeRate\"" +
-      "a\n\010PECBData\022\024\n\014lastModified\030\001 \001(\003\022?\n\006ser" +
-      "ies\030\002 \003(\0132/.name.abuchen.portfolio.PExch" +
-      "angeRateTimeSeriesB7\n%name.abuchen.portf" +
-      "olio.model.proto.v1B\014ClientProtosP\001b\006pro" +
-      "to3"
+      "PSettings\022\024\n\014baseCurrency\030\014 \001(\t\0321\n\017Prope" +
+      "rtiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\002" +
+      "8\001\"S\n\rPExchangeRate\022\014\n\004date\030\001 \001(\003\0224\n\005val" +
+      "ue\030\002 \001(\0132%.name.abuchen.portfolio.PDecim" +
+      "alValue\"\203\001\n\027PExchangeRateTimeSeries\022\024\n\014b" +
+      "aseCurrency\030\001 \001(\t\022\024\n\014termCurrency\030\002 \001(\t\022" +
+      "<\n\rexchangeRates\030\003 \003(\0132%.name.abuchen.po" +
+      "rtfolio.PExchangeRate\"a\n\010PECBData\022\024\n\014las" +
+      "tModified\030\001 \001(\003\022?\n\006series\030\002 \003(\0132/.name.a" +
+      "buchen.portfolio.PExchangeRateTimeSeries" +
+      "B7\n%name.abuchen.portfolio.model.proto.v" +
+      "1B\014ClientProtosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -507,7 +507,7 @@ public final class ClientProtos {
     internal_static_name_abuchen_portfolio_PClient_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PClient_descriptor,
-        new java.lang.String[] { "Version", "Securities", "Accounts", "Portfolios", "Transactions", "Plans", "Watchlists", "Taxonomies", "Dashboards", "Properties", "Settings", });
+        new java.lang.String[] { "Version", "Securities", "Accounts", "Portfolios", "Transactions", "Plans", "Watchlists", "Taxonomies", "Dashboards", "Properties", "Settings", "BaseCurrency", });
     internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_descriptor =
       internal_static_name_abuchen_portfolio_PClient_descriptor.getNestedTypes().get(0);
     internal_static_name_abuchen_portfolio_PClient_PropertiesEntry_fieldAccessorTable = new

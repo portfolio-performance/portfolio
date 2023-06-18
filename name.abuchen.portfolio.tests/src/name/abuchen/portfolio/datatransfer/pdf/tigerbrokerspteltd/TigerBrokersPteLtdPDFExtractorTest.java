@@ -49,18 +49,24 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("QQQ"));
         assertThat(security1.getName(), is("Invesco QQQ Trust"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("VOO"));
         assertThat(security2.getName(), is("Vanguard S&P 500 ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("VT"));
         assertThat(security3.getName(), is("Vanguard Total World Stock ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
@@ -251,18 +257,24 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("VT"));
         assertThat(security1.getName(), is("VANGUARD INTL EQUITY INDEX FUND INC TOTAL WORLD STK INDEX FUND ETF SHS"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("VOO"));
         assertThat(security2.getName(), is("Vanguard S&P 500 ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("QQQ"));
         assertThat(security3.getName(), is("Invesco QQQ Trust"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));
@@ -344,6 +356,8 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
         assertThat(security.getTickerSymbol(), is("QQQ"));
         assertThat(security.getName(), is("Invesco QQQ Trust"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
@@ -386,18 +400,24 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security1.getIsin());
+        assertNull(security1.getWkn());
         assertThat(security1.getTickerSymbol(), is("QQQ"));
         assertThat(security1.getName(), is("Invesco QQQ Trust"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security2.getIsin());
+        assertNull(security2.getWkn());
         assertThat(security2.getTickerSymbol(), is("VOO"));
         assertThat(security2.getName(), is("Vanguard S&P 500 ETF"));
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.USD));
 
         Security security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security3.getIsin());
+        assertNull(security3.getWkn());
         assertThat(security3.getTickerSymbol(), is("VT"));
         assertThat(security3.getName(), is("Vanguard Total World Stock ETF"));
         assertThat(security3.getCurrencyCode(), is(CurrencyUnit.USD));

@@ -51,10 +51,10 @@ public class ClientClassificationFilter implements ClientFilter
                     BigDecimal weight = vehicle2weight.computeIfAbsent(vehicle, v -> BigDecimal.ZERO);
                     vehicle2weight.put(vehicle, weight.add(BigDecimal.valueOf(assignment.getWeight())));
 
-                    if (vehicle instanceof Account)
-                        categorizedAccounts.add((Account) vehicle);
-                    else if (vehicle instanceof Security && ((Security) vehicle).getCurrencyCode() != null)
-                        categorizedSecurities.add((Security) vehicle);
+                    if (vehicle instanceof Account account)
+                        categorizedAccounts.add(account);
+                    else if (vehicle instanceof Security security && security.getCurrencyCode() != null)
+                        categorizedSecurities.add(security);
                 }
             });
         }
@@ -372,9 +372,14 @@ public class ClientClassificationFilter implements ClientFilter
                 case REMOVAL:
                 case INTEREST:
                 case INTEREST_CHARGE:
+                    long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), accountWeight); // for INTEREST
                     state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                    t.getCurrencyCode(), amount, null, t.getType()));
+                                    t.getCurrencyCode(), amount + taxes, null, t.getType()));
+                    if (taxes != 0)
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), taxes, null, AccountTransaction.Type.REMOVAL));
                     break;
+
                 default:
                     throw new UnsupportedOperationException();
             }

@@ -25,10 +25,10 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public String getLabel()
     {
-        if (transaction instanceof PortfolioTransaction)
-            return ((PortfolioTransaction) transaction).getType().toString();
-        else if (transaction instanceof AccountTransaction)
-            return ((AccountTransaction) transaction).getType().toString();
+        if (transaction instanceof PortfolioTransaction pt)
+            return pt.getType().toString();
+        else if (transaction instanceof AccountTransaction at)
+            return at.getType().toString();
         else
             return transaction.toString();
     }

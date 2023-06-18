@@ -228,14 +228,14 @@ public interface PClientOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
-
-  java.lang.String getPropertiesOrDefault(
+  /* nullable */
+java.lang.String getPropertiesOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; properties = 10;</code>
    */
-
   java.lang.String getPropertiesOrThrow(
       java.lang.String key);
 
@@ -253,4 +253,16 @@ public interface PClientOrBuilder extends
    * <code>.name.abuchen.portfolio.PSettings settings = 11;</code>
    */
   name.abuchen.portfolio.model.proto.v1.PSettingsOrBuilder getSettingsOrBuilder();
+
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The baseCurrency.
+   */
+  java.lang.String getBaseCurrency();
+  /**
+   * <code>string baseCurrency = 12;</code>
+   * @return The bytes for baseCurrency.
+   */
+  com.google.protobuf.ByteString
+      getBaseCurrencyBytes();
 }

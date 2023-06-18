@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -315,10 +314,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // available for Yahoo search provider.
 
         List<SecurityProperty> markets = subject.getProperties()
-                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).collect(Collectors.toList());
+                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).toList();
 
         markets.stream().map(p -> {
-            Exchange exchange = new Exchange(p.getValue(), ExchangeLabels.getString("portfolio-report." + p.getName())); //$NON-NLS-1$
+            Exchange exchange = new Exchange(p.getValue(), MarketIdentifierCodes.getLabel(p.getName()));
             if ("XFRA".equals(p.getName())) //$NON-NLS-1$
                 exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
             return exchange;

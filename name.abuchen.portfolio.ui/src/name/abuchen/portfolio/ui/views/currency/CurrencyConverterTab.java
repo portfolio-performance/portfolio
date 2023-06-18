@@ -37,6 +37,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.BindingHelper.Model;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -239,7 +240,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
         Composite tree = createTree(container);
 
-        startingWith(editArea).thenBelow(tree).width(420).height(200);
+        startingWith(editArea).thenBelow(tree).width(SWTHelper.amountWidth(tree) * 7).height(SWTHelper.lineHeight(tree) * 10);
 
         return container;
     }
@@ -250,6 +251,8 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         TreeColumnLayout layout = new TreeColumnLayout();
         area.setLayout(layout);
 
+        int amountWidth = SWTHelper.amountWidth(area);
+
         TreeViewer nodeViewer = new TreeViewer(area, SWT.BORDER);
 
         CopyPasteSupport.enableFor(nodeViewer);
@@ -257,7 +260,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName(), preferences, nodeViewer,
                         layout);
 
-        Column column = new Column("label", Messages.ColumnExchangeRate, SWT.NONE, 300); //$NON-NLS-1$
+        Column column = new Column("label", Messages.ColumnExchangeRate, SWT.NONE, amountWidth * 5); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -270,7 +273,7 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         });
         support.addColumn(column);
 
-        column = new Column("value", Messages.ColumnValue, SWT.RIGHT, 100); //$NON-NLS-1$
+        column = new Column("value", Messages.ColumnValue, SWT.RIGHT, amountWidth); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -291,7 +294,10 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         nodeViewer.setContentProvider(new ExchangeRateTimeSeriesContentProvider());
         nodeViewer.setInput(model);
 
-        model.addPropertyChangeListener(p -> nodeViewer.refresh(true));
+        model.addPropertyChangeListener(p -> {
+                nodeViewer.refresh(true);
+                nodeViewer.expandAll();
+            });
 
         return area;
     }

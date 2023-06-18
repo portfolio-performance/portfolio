@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -75,12 +77,48 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         }
     }
 
+    public enum SortDirection
+    {
+        ASCENDING(Messages.FollowUpWidget_Option_SortingByDateAscending, (r, l) -> r.date.compareTo(l.date)), //
+        DESCENDING(Messages.FollowUpWidget_Option_SortingByDateDescending, (r, l) -> l.date.compareTo(r.date));
+
+        private Comparator<FollowUpItem> comparator;
+        private String label;
+
+        private SortDirection(String label, Comparator<FollowUpItem> comparator)
+        {
+            this.label = label;
+            this.comparator = comparator;
+        }
+
+        Comparator<FollowUpItem> getComparator()
+        {
+            return comparator;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class SortingConfig extends EnumBasedConfig<SortDirection>
+    {
+        public SortingConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.FollowUpWidget_Option_Sorting, SortDirection.class,
+                            Dashboard.Config.SORT_DIRECTION, Policy.EXACTLY_ONE);
+        }
+    }
+
     public FollowUpWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
         addConfig(new AttributesConfig(this, t -> t.getTarget() == Security.class && t.getType() == LocalDate.class));
         addConfig(new DateDateConfig(this));
+        addConfig(new SortingConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
 
@@ -107,6 +145,8 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
                     }
                 }
             }
+
+            Collections.sort(items, get(SortingConfig.class).getValue().getComparator());
 
             return items;
         };

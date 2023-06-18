@@ -22,16 +22,17 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
+    private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^(abzgl\\. Kapitalertragssteuer|KAPST) anteilig 50,00.*$"); //$NON-NLS-1$
+        Pattern pJointAccount = Pattern.compile("^(abzgl\\. Kapitalertragssteuer|KAPST) anteilig 50,00.*$");
+
         for (String line : lines)
         {
-            Matcher m = pJointAccount.matcher(line);
-            if (m.matches())
+            if (pJointAccount.matcher(line).matches())
             {
                 context.putBoolean(IS_JOINT_ACCOUNT, true);
                 break;
@@ -43,9 +44,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Consorsbank"); //$NON-NLS-1$
-        addBankIdentifier("POSTFACH 17 43"); //$NON-NLS-1$
-        addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
+        addBankIdentifier("Consorsbank");
+        addBankIdentifier("POSTFACH 17 43");
+        addBankIdentifier("Cortal Consors");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -58,10 +59,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Consorsbank"; //$NON-NLS-1$
+        return "Consorsbank";
     }
 
-    @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(?i)(Kauf"
@@ -93,77 +93,84 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 + "|VERK\\. TEIL\\-\\/BEZUGSR\\."
                                 + "|VERKAUF KAPITALMA.*) ([\\s]+)?AM .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("VERKAUF") 
-                        || v.get("type").equals("Verkauf")
-                        || v.get("type").equals("VERK. TEIL-/BEZUGSR.")
-                        || v.get("type").equals("VERKAUF KAPITALMAßN.")
-                        || v.get("type").equals("VERKAUF KAPITALMASSN."))
+                    if ("VERKAUF".equals(v.get("type"))
+                        || "Verkauf".equals(v.get("type"))
+                        || "VERK. TEIL-/BEZUGSR.".equals(v.get("type"))
+                        || "VERKAUF KAPITALMAßN.".equals(v.get("type"))
+                        || "VERKAUF KAPITALMASSN.".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
                 })
 
-                // @formatter:off
-                // COMS.-MSCI WORL.T.U.ETF I ETF110 LU0392494562
-                // Kurs 37,650000 EUR P.ST. NETTO  
-                // Preis pro Anteil 25,640000 EUR
-                // @formatter:on
-                .section("name", "wkn", "isin", "currency").optional()
-                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
-                .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // @formatter:off
-                // ST 15,75243 WKN: 625952
-                // GARTMORE - CONT. EUROP. FUND
-                // ACTIONS NOM. A O.N.
-                // KURS 4,877300 P.ST. NETTO
-                // KURSWERT EUR 76,83
-                // @formatter:on
-                .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
-                .match("^(?<name>.*)$")
-                .match("^(?<nameContinued>.*)$")
-                .match("^KURS [\\.,\\d]+ .*$")
-                .match("^KURSWERT (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // @formatter:off
-                // ST 334,00000 WKN: A0MZBE
-                // AHOLD, KON. EO-,30
-                // Kurs 9,890000 EUR P.ST. FRANCO COURTAGE
-                // Kurswert EUR 3.303,26
-                // @formatter:on
-                .section("wkn", "name", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
-                .match("^(?<name>.*)$")
-                .match("^Kurs [\\.,\\d]+ .*$")
-                .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // @formatter:off
-                //       ST                        50,00000               WKN: 851144
-                //                 GENERAL ELECTRIC CO.
-                //                 SHARES DL -,06
-                //       KURSWERT                                      EUR               1.917,50
-                // @formatter:on
-                .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^[\\s]+ ST [\\s]+[\\.,\\d]+ [\\s]+WKN: (?<wkn>[A-Z0-9]{6}).*$")
-                .match("^[\\s]+ (?<name>.*)$")
-                .match("^[\\s]+ (?<nameContinued>.*)$")
-                .match("^[\\s]+ KURSWERT [\\s]+(?<currency>[\\w]{3}) [\\s]+[\\.,\\d]+$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // @formatter:off
-                // ST 11,87891 WKN: 625952
-                // GARTMORE-CONT. EUROP. A
-                // Preis pro Anteil 6,467700 EUR
-                // @formatter:on
-                .section("wkn", "name", "currency").optional()
-                .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
-                .match("^(?<name>.*)$")
-                .match("^Preis pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                .oneOf(
+                                // @formatter:off
+                                // COMS.-MSCI WORL.T.U.ETF I ETF110 LU0392494562
+                                // Kurs 37,650000 EUR P.ST. NETTO
+                                // Preis pro Anteil 25,640000 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "wkn", "isin", "currency")
+                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // ST 15,75243 WKN: 625952
+                                // GARTMORE - CONT. EUROP. FUND
+                                // ACTIONS NOM. A O.N.
+                                // KURS 4,877300 P.ST. NETTO
+                                // KURSWERT EUR 76,83
+                                // @formatter:on
+                                section -> section
+                                        .attributes("wkn", "name", "nameContinued", "currency")
+                                        .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
+                                        .match("^(?<name>.*)$")
+                                        .match("^(?<nameContinued>.*)$")
+                                        .match("^KURS [\\.,\\d]+ .*$")
+                                        .match("^KURSWERT (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // ST 334,00000 WKN: A0MZBE
+                                // AHOLD, KON. EO-,30
+                                // Kurs 9,890000 EUR P.ST. FRANCO COURTAGE
+                                // Kurswert EUR 3.303,26
+                                // @formatter:on
+                                section -> section
+                                        .attributes("wkn", "name", "currency")
+                                        .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
+                                        .match("^(?<name>.*)$")
+                                        .match("^Kurs [\\.,\\d]+ .*$")
+                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                //       ST                        50,00000               WKN: 851144
+                                //                 GENERAL ELECTRIC CO.
+                                //                 SHARES DL -,06
+                                //       KURSWERT                                      EUR               1.917,50
+                                // @formatter:on
+                                section -> section
+                                        .attributes("wkn", "name", "nameContinued", "currency")
+                                        .match("^[\\s]+ ST [\\s]+[\\.,\\d]+ [\\s]+WKN: (?<wkn>[A-Z0-9]{6}).*$")
+                                        .match("^[\\s]+ (?<name>.*)$")
+                                        .match("^[\\s]+ (?<nameContinued>.*)$")
+                                        .match("^[\\s]+ KURSWERT [\\s]+(?<currency>[\\w]{3}) [\\s]+[\\.,\\d]+$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // ST 11,87891 WKN: 625952
+                                // GARTMORE-CONT. EUROP. A
+                                // Preis pro Anteil 6,467700 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("wkn", "name", "currency")
+                                        .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$")
+                                        .match("^(?<name>.*)$")
+                                        .match("^Preis pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
                 // @formatter:off
                 // ST 132,80212
@@ -286,6 +293,26 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // Nettoinventarwert 52,84 USD
+                                // Kurswert in EUR 49,50 EUR
+                                // Devisenkurs 1,067400 EUR / USD
+                                // @formatter:on
+                                section -> section
+                                        .attributes("fxGross", "fxCurrency", "gross", "currency", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Nettoinventarwert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // @formatter:off
                                 // Kurswert 1.020.000,00 JPY
                                 // Börsenplatzgebühr 7.760,00 JPY
                                 // Devisenkurs 141,090000 EUR / JPY
@@ -326,7 +353,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addDividendeTransaction()
     {
         DocumentType type = new DocumentType("(?i)(Dividendengutschrift|Ertragsgutschrift)");
@@ -348,28 +374,32 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> v.getTransactionContext().put(FAILURE,
                                 Messages.MsgErrorOrderCancellationUnsupported))
 
-                // @formatter:off
-                // ST                    1.370,00000          WKN:  ETF110                 
-                //            COMS.-MSCI WORL.T.U.ETF I                                    
-                //            Namens-Aktien o.N.                                           
-                // ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015
-                // @formatter:on
-                .section("wkn", "name", "nameContinued", "currency").optional()
-                .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>[A-Z0-9]{6}).*$")
-                .match("^(?<name>.*)$")
-                .match("^(?<nameContinued>.*)$")
-                .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                // @formatter:off
-                // OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
-                // 25 Stück
-                // Dividende pro Stück 0,60 USD Schlusstag 17.12.2017
-                // @formatter:on
-                .section("name", "wkn", "isin", "currency").optional()
-                .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .match("^(Steuerfreie )?(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}) Schlusstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                .oneOf(
+                                // @formatter:off
+                                // ST                    1.370,00000          WKN:  ETF110
+                                //            COMS.-MSCI WORL.T.U.ETF I
+                                //            Namens-Aktien o.N.
+                                // ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015
+                                // @formatter:on
+                                section -> section
+                                        .attributes("wkn", "name", "nameContinued", "currency")
+                                        .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>[A-Z0-9]{6}).*$")
+                                        .match("^(?<name>.*)$")
+                                        .match("^(?<nameContinued>.*)$")
+                                        .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
+                                // 25 Stück
+                                // Dividende pro Stück 0,60 USD Schlusstag 17.12.2017
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "wkn", "isin", "currency")
+                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                        .match("^(Steuerfreie )?(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}) Schlusstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
                 .oneOf(
                                 // @formatter:off
@@ -445,7 +475,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 .optionalOneOf(
                                 // @formatter:off
-                                // BRUTTO                                        USD                180,00 
+                                // BRUTTO                                        USD                180,00
                                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55
                                 // @formatter:on
                                 section -> section
@@ -530,7 +560,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addEncashmentTransaction()
     {
         DocumentType type = new DocumentType("Einl.sung");
@@ -593,7 +622,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    @SuppressWarnings("nls")
     private void addAdvanceTaxTransaction()
     {
         DocumentType type = new DocumentType("Vorabpauschale");
@@ -655,7 +683,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
 
@@ -698,19 +725,18 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
 
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.TAXES);
                 })
 
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
-                    if (t.getAmount() == 0)
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
                         item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                     return item;
                 }));
     }
 
-    @SuppressWarnings("nls")
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
@@ -755,13 +781,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("GUTSCHRIFT"))
+                    if ("GUTSCHRIFT".equals(v.get("note")))
                         v.put("note", "Gutschrift");
 
-                    if (v.get("note").equals("D-GUTSCHRIFT"))
+                    if ("D-GUTSCHRIFT".equals(v.get("note")))
                         v.put("note", "D-Gutschrift");
 
-                    if (v.get("note").equals("EURO-UEBERW."))
+                    if ("EURO-UEBERW.".equals(v.get("note")))
                         v.put("note", "Euro-Überweisung");
 
                     t.setNote(v.get("note"));
@@ -797,10 +823,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("UEBERWEISUNG"))
+                    if ("UEBERWEISUNG".equals(v.get("note")))
                         v.put("note", "Überweisung");
 
-                    if (v.get("note").equals("EURO-UEBERW."))
+                    if ("EURO-UEBERW.".equals(v.get("note")))
                         v.put("note", "Euro-Überweisung");
 
                     t.setNote(v.get("note"));
@@ -835,7 +861,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
 
                     // Formatting some notes
-                    if (v.get("note").equals("ABSCHLUSS"))
+                    if ("ABSCHLUSS".equals(v.get("note")))
                         v.put("note", "Abschluss");
 
                     t.setNote(v.get("note"));
@@ -848,7 +874,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -931,7 +956,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^KAPST [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1032,7 +1057,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^SOLZ [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
+                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
                 })
 
@@ -1173,7 +1198,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 });
     }
 
-    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -1328,6 +1352,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^(?i)Handelsplatzkosten (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Consorsbank Ausgabegebühr 1,00% 0,50 EUR
+                // @formatter:on
+                .section("fee", "currency").optional()
+                .match("^(?i)Consorsbank Ausgabegeb.hr [\\.,\\d]+% (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

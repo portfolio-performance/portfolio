@@ -51,6 +51,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NO0003054108"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M a r i n e  H a r v est ASA Navne-Aksjer NK 7,50"));
         assertThat(security.getCurrencyCode(), is("NOK"));
 
@@ -138,6 +140,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("R o y a l  D u t c h Shell Reg. Shares Class A EO -,07"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -225,6 +229,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI World U.ETF Registered Shs USD (Acc) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -267,6 +273,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("i S h s  C o r e  M SCI EM IMI U.ETF Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -309,6 +317,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AU000000SHV6"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S E L E C T  H A R V EST LTD. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is("AUD"));
 
@@ -396,6 +406,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("W i r e c a r d  A G Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -438,6 +450,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NO0003054108"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M a r i n e  H a r v est ASA Navne-Aksjer NK 7,50"));
         assertThat(security.getCurrencyCode(), is("NOK"));
 
@@ -528,6 +542,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US56035L1044"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M a i n  S t r e e t Capital Corp. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -618,6 +634,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0012325773"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("R o y a l  D u t c h Shell PLC Anrechte A (Wahldividende)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -659,6 +677,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US3682872078"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("G a z p r o m  P J S C Nam.Akt.(Sp.ADRs)/2 RL 5"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -749,6 +769,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B6YX5D40"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("S P D R  S & P  U S Divid.Aristocr.ETF Registered Shares (Dist) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -839,6 +861,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0060534915"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("N o v o - N o r d i s k AS Navne-Aktier B DK -,20"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -880,6 +904,8 @@ public class HelloBankPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US56035L1044"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M a i n  S t r e e t Capital Corp. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

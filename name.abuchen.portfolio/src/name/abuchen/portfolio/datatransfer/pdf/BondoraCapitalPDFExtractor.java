@@ -18,8 +18,8 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Zusammenfassung"); //$NON-NLS-1$
-        addBankIdentifier("Summary"); //$NON-NLS-1$
+        addBankIdentifier("Zusammenfassung");
+        addBankIdentifier("Summary");
 
         addAccountStatementTransaction();
     }
@@ -27,7 +27,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Bondora Capital"; //$NON-NLS-1$
+        return "Bondora Capital";
     }
 
     private void addAccountStatementTransaction()
@@ -57,9 +57,9 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                 + "|Withdrawal)"
                                 + ") .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Überweisen") || v.get("type").equals("Transfer"))
+                    if ("Überweisen".equals(v.get("type")) || "Transfer".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.DEPOSIT);
-                    else if (v.get("type").equals("Abheben") || v.get("type").equals("Withdrawal"))
+                    else if ("Abheben".equals(v.get("type")) || "Withdrawal".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.REMOVAL);
                 })
 
@@ -86,17 +86,17 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date")));
 
-                                    String language = "de"; //$NON-NLS-1$
-                                    String country = "DE"; //$NON-NLS-1$
+                                    String language = "de";
+                                    String country = "DE";
 
-                                    int apostrophe = v.get("amount").indexOf("\'"); //$NON-NLS-1$
+                                    int apostrophe = v.get("amount").indexOf("\'");
                                     if (apostrophe >= 0)
                                     {
-                                        language = "de"; //$NON-NLS-1$
-                                        country = "CH"; //$NON-NLS-1$
+                                        language = "de";
+                                        country = "CH";
                                     }
 
-                                    t.setAmount(asAmount(v.get("amount").trim().replaceAll("\\s", ""), language, country));
+                                    t.setAmount(asAmount(v.get("amount"), language, country));
                                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                     t.setNote(trim(v.get("note")));
                                 })
@@ -121,7 +121,21 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,\\d]+(\\W)?(\\p{Sc})?$")
                                 .assign((t, v) -> {
                                     t.setDateTime(asDate(v.get("date"), Locale.UK));
-                                    t.setAmount(asAmount(v.get("amount"), "en", "US"));
+
+                                    String language = "de";
+                                    String country = "DE";
+
+                                    int lastDot = v.get("amount").lastIndexOf(".");
+                                    int lastComma = v.get("amount").lastIndexOf(",");
+
+                                    // returns the greater of two int values
+                                    if (Math.max(lastDot, lastComma) == lastDot)
+                                    {
+                                        language = "en";
+                                        country = "US";
+                                    }
+
+                                    t.setAmount(asAmount(v.get("amount"), language, country));
                                     t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                                     t.setNote(trim(v.get("note")));
                                 })

@@ -19,7 +19,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("V-Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("V-Bank AG");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -28,7 +28,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "V-Bank AG"; //$NON-NLS-1$
+        return "V-Bank AG";
     }
 
     private void addBuySellTransaction()
@@ -52,7 +52,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>Verkauf)$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

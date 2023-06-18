@@ -165,8 +165,8 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public Security getBackingSecurity()
         {
-            if (assignment.getInvestmentVehicle() instanceof Security)
-                return (Security) assignment.getInvestmentVehicle();
+            if (assignment.getInvestmentVehicle() instanceof Security security)
+                return security;
             else
                 return null;
         }

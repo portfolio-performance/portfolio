@@ -43,212 +43,6 @@ private static final long serialVersionUID = 0L;
     return new PSecurity();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
-  private PSecurity(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            uuid_ = s;
-            break;
-          }
-          case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000001;
-            onlineId_ = s;
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            name_ = s;
-            break;
-          }
-          case 34: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000002;
-            currencyCode_ = s;
-            break;
-          }
-          case 42: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000004;
-            targetCurrencyCode_ = s;
-            break;
-          }
-          case 50: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000008;
-            note_ = s;
-            break;
-          }
-          case 58: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000010;
-            isin_ = s;
-            break;
-          }
-          case 66: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000020;
-            tickerSymbol_ = s;
-            break;
-          }
-          case 74: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000040;
-            wkn_ = s;
-            break;
-          }
-          case 82: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000080;
-            calendar_ = s;
-            break;
-          }
-          case 90: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000100;
-            feed_ = s;
-            break;
-          }
-          case 98: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000200;
-            feedURL_ = s;
-            break;
-          }
-          case 106: {
-            if (!((mutable_bitField0_ & 0x00000400) != 0)) {
-              prices_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PHistoricalPrice>();
-              mutable_bitField0_ |= 0x00000400;
-            }
-            prices_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PHistoricalPrice.parser(), extensionRegistry));
-            break;
-          }
-          case 114: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000400;
-            latestFeed_ = s;
-            break;
-          }
-          case 122: {
-            java.lang.String s = input.readStringRequireUtf8();
-            bitField0_ |= 0x00000800;
-            latestFeedURL_ = s;
-            break;
-          }
-          case 130: {
-            name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.Builder subBuilder = null;
-            if (((bitField0_ & 0x00001000) != 0)) {
-              subBuilder = latest_.toBuilder();
-            }
-            latest_ = input.readMessage(name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(latest_);
-              latest_ = subBuilder.buildPartial();
-            }
-            bitField0_ |= 0x00001000;
-            break;
-          }
-          case 138: {
-            if (!((mutable_bitField0_ & 0x00004000) != 0)) {
-              attributes_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>();
-              mutable_bitField0_ |= 0x00004000;
-            }
-            attributes_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(), extensionRegistry));
-            break;
-          }
-          case 146: {
-            if (!((mutable_bitField0_ & 0x00008000) != 0)) {
-              events_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PSecurityEvent>();
-              mutable_bitField0_ |= 0x00008000;
-            }
-            events_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PSecurityEvent.parser(), extensionRegistry));
-            break;
-          }
-          case 154: {
-            if (!((mutable_bitField0_ & 0x00010000) != 0)) {
-              properties_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>();
-              mutable_bitField0_ |= 0x00010000;
-            }
-            properties_.add(
-                input.readMessage(name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(), extensionRegistry));
-            break;
-          }
-          case 160: {
-
-            isRetired_ = input.readBool();
-            break;
-          }
-          case 170: {
-            com.google.protobuf.Timestamp.Builder subBuilder = null;
-            if (updatedAt_ != null) {
-              subBuilder = updatedAt_.toBuilder();
-            }
-            updatedAt_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(updatedAt_);
-              updatedAt_ = subBuilder.buildPartial();
-            }
-
-            break;
-          }
-          default: {
-            if (!parseUnknownField(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      if (((mutable_bitField0_ & 0x00000400) != 0)) {
-        prices_ = java.util.Collections.unmodifiableList(prices_);
-      }
-      if (((mutable_bitField0_ & 0x00004000) != 0)) {
-        attributes_ = java.util.Collections.unmodifiableList(attributes_);
-      }
-      if (((mutable_bitField0_ & 0x00008000) != 0)) {
-        events_ = java.util.Collections.unmodifiableList(events_);
-      }
-      if (((mutable_bitField0_ & 0x00010000) != 0)) {
-        properties_ = java.util.Collections.unmodifiableList(properties_);
-      }
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PSecurity_descriptor;
@@ -264,7 +58,8 @@ private static final long serialVersionUID = 0L;
 
   private int bitField0_;
   public static final int UUID_FIELD_NUMBER = 1;
-  private volatile java.lang.Object uuid_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object uuid_ = "";
   /**
    * <code>string uuid = 1;</code>
    * @return The uuid.
@@ -302,7 +97,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ONLINEID_FIELD_NUMBER = 2;
-  private volatile java.lang.Object onlineId_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object onlineId_ = "";
   /**
    * <code>optional string onlineId = 2;</code>
    * @return Whether the onlineId field is set.
@@ -348,7 +144,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int NAME_FIELD_NUMBER = 3;
-  private volatile java.lang.Object name_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
   /**
    * <code>string name = 3;</code>
    * @return The name.
@@ -386,7 +183,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CURRENCYCODE_FIELD_NUMBER = 4;
-  private volatile java.lang.Object currencyCode_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object currencyCode_ = "";
   /**
    * <code>optional string currencyCode = 4;</code>
    * @return Whether the currencyCode field is set.
@@ -432,7 +230,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TARGETCURRENCYCODE_FIELD_NUMBER = 5;
-  private volatile java.lang.Object targetCurrencyCode_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object targetCurrencyCode_ = "";
   /**
    * <code>optional string targetCurrencyCode = 5;</code>
    * @return Whether the targetCurrencyCode field is set.
@@ -478,7 +277,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int NOTE_FIELD_NUMBER = 6;
-  private volatile java.lang.Object note_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object note_ = "";
   /**
    * <code>optional string note = 6;</code>
    * @return Whether the note field is set.
@@ -524,7 +324,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ISIN_FIELD_NUMBER = 7;
-  private volatile java.lang.Object isin_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object isin_ = "";
   /**
    * <code>optional string isin = 7;</code>
    * @return Whether the isin field is set.
@@ -570,7 +371,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TICKERSYMBOL_FIELD_NUMBER = 8;
-  private volatile java.lang.Object tickerSymbol_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object tickerSymbol_ = "";
   /**
    * <code>optional string tickerSymbol = 8;</code>
    * @return Whether the tickerSymbol field is set.
@@ -616,7 +418,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int WKN_FIELD_NUMBER = 9;
-  private volatile java.lang.Object wkn_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object wkn_ = "";
   /**
    * <code>optional string wkn = 9;</code>
    * @return Whether the wkn field is set.
@@ -662,7 +465,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CALENDAR_FIELD_NUMBER = 10;
-  private volatile java.lang.Object calendar_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object calendar_ = "";
   /**
    * <code>optional string calendar = 10;</code>
    * @return Whether the calendar field is set.
@@ -708,7 +512,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FEED_FIELD_NUMBER = 11;
-  private volatile java.lang.Object feed_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object feed_ = "";
   /**
    * <code>optional string feed = 11;</code>
    * @return Whether the feed field is set.
@@ -754,7 +559,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FEEDURL_FIELD_NUMBER = 12;
-  private volatile java.lang.Object feedURL_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object feedURL_ = "";
   /**
    * <code>optional string feedURL = 12;</code>
    * @return Whether the feedURL field is set.
@@ -800,6 +606,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PRICES_FIELD_NUMBER = 13;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PHistoricalPrice> prices_;
   /**
    * <code>repeated .name.abuchen.portfolio.PHistoricalPrice prices = 13;</code>
@@ -840,7 +647,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LATESTFEED_FIELD_NUMBER = 14;
-  private volatile java.lang.Object latestFeed_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object latestFeed_ = "";
   /**
    * <code>optional string latestFeed = 14;</code>
    * @return Whether the latestFeed field is set.
@@ -886,7 +694,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LATESTFEEDURL_FIELD_NUMBER = 15;
-  private volatile java.lang.Object latestFeedURL_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object latestFeedURL_ = "";
   /**
    * <code>optional string latestFeedURL = 15;</code>
    * @return Whether the latestFeedURL field is set.
@@ -958,6 +767,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ATTRIBUTES_FIELD_NUMBER = 17;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> attributes_;
   /**
    * <code>repeated .name.abuchen.portfolio.PKeyValue attributes = 17;</code>
@@ -998,6 +808,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int EVENTS_FIELD_NUMBER = 18;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PSecurityEvent> events_;
   /**
    * <code>repeated .name.abuchen.portfolio.PSecurityEvent events = 18;</code>
@@ -1038,6 +849,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PROPERTIES_FIELD_NUMBER = 19;
+  @SuppressWarnings("serial")
   private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> properties_;
   /**
    * <code>repeated .name.abuchen.portfolio.PKeyValue properties = 19;</code>
@@ -1078,7 +890,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ISRETIRED_FIELD_NUMBER = 20;
-  private boolean isRetired_;
+  private boolean isRetired_ = false;
   /**
    * <code>bool isRetired = 20;</code>
    * @return The isRetired.
@@ -1111,7 +923,7 @@ private static final long serialVersionUID = 0L;
    */
   @java.lang.Override
   public com.google.protobuf.TimestampOrBuilder getUpdatedAtOrBuilder() {
-    return getUpdatedAt();
+    return updatedAt_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : updatedAt_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -1128,13 +940,13 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getUuidBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(uuid_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, uuid_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, onlineId_);
     }
-    if (!getNameBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
     }
     if (((bitField0_ & 0x00000002) != 0)) {
@@ -1191,7 +1003,7 @@ private static final long serialVersionUID = 0L;
     if (updatedAt_ != null) {
       output.writeMessage(21, getUpdatedAt());
     }
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -1200,13 +1012,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getUuidBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(uuid_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, uuid_);
     }
     if (((bitField0_ & 0x00000001) != 0)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, onlineId_);
     }
-    if (!getNameBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
     }
     if (((bitField0_ & 0x00000002) != 0)) {
@@ -1270,7 +1082,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(21, getUpdatedAt());
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -1369,7 +1181,7 @@ private static final long serialVersionUID = 0L;
       if (!getUpdatedAt()
           .equals(other.getUpdatedAt())) return false;
     }
-    if (!unknownFields.equals(other.unknownFields)) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
 
@@ -1459,7 +1271,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + UPDATEDAT_FIELD_NUMBER;
       hash = (53 * hash) + getUpdatedAt().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -1592,75 +1404,64 @@ private static final long serialVersionUID = 0L;
         getAttributesFieldBuilder();
         getEventsFieldBuilder();
         getPropertiesFieldBuilder();
+        getUpdatedAtFieldBuilder();
       }
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       uuid_ = "";
-
       onlineId_ = "";
-      bitField0_ = (bitField0_ & ~0x00000001);
       name_ = "";
-
       currencyCode_ = "";
-      bitField0_ = (bitField0_ & ~0x00000002);
       targetCurrencyCode_ = "";
-      bitField0_ = (bitField0_ & ~0x00000004);
       note_ = "";
-      bitField0_ = (bitField0_ & ~0x00000008);
       isin_ = "";
-      bitField0_ = (bitField0_ & ~0x00000010);
       tickerSymbol_ = "";
-      bitField0_ = (bitField0_ & ~0x00000020);
       wkn_ = "";
-      bitField0_ = (bitField0_ & ~0x00000040);
       calendar_ = "";
-      bitField0_ = (bitField0_ & ~0x00000080);
       feed_ = "";
-      bitField0_ = (bitField0_ & ~0x00000100);
       feedURL_ = "";
-      bitField0_ = (bitField0_ & ~0x00000200);
       if (pricesBuilder_ == null) {
         prices_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
       } else {
+        prices_ = null;
         pricesBuilder_.clear();
       }
-      latestFeed_ = "";
-      bitField0_ = (bitField0_ & ~0x00000800);
-      latestFeedURL_ = "";
       bitField0_ = (bitField0_ & ~0x00001000);
-      if (latestBuilder_ == null) {
-        latest_ = null;
-      } else {
-        latestBuilder_.clear();
+      latestFeed_ = "";
+      latestFeedURL_ = "";
+      latest_ = null;
+      if (latestBuilder_ != null) {
+        latestBuilder_.dispose();
+        latestBuilder_ = null;
       }
-      bitField0_ = (bitField0_ & ~0x00002000);
       if (attributesBuilder_ == null) {
         attributes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00004000);
       } else {
+        attributes_ = null;
         attributesBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00010000);
       if (eventsBuilder_ == null) {
         events_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00008000);
       } else {
+        events_ = null;
         eventsBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00020000);
       if (propertiesBuilder_ == null) {
         properties_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00010000);
       } else {
+        properties_ = null;
         propertiesBuilder_.clear();
       }
+      bitField0_ = (bitField0_ & ~0x00040000);
       isRetired_ = false;
-
-      if (updatedAtBuilder_ == null) {
-        updatedAt_ = null;
-      } else {
-        updatedAt_ = null;
+      updatedAt_ = null;
+      if (updatedAtBuilder_ != null) {
+        updatedAtBuilder_.dispose();
         updatedAtBuilder_ = null;
       }
       return this;
@@ -1689,145 +1490,125 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public name.abuchen.portfolio.model.proto.v1.PSecurity buildPartial() {
       name.abuchen.portfolio.model.proto.v1.PSecurity result = new name.abuchen.portfolio.model.proto.v1.PSecurity(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
-      result.uuid_ = uuid_;
-      if (((from_bitField0_ & 0x00000001) != 0)) {
-        to_bitField0_ |= 0x00000001;
-      }
-      result.onlineId_ = onlineId_;
-      result.name_ = name_;
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        to_bitField0_ |= 0x00000002;
-      }
-      result.currencyCode_ = currencyCode_;
-      if (((from_bitField0_ & 0x00000004) != 0)) {
-        to_bitField0_ |= 0x00000004;
-      }
-      result.targetCurrencyCode_ = targetCurrencyCode_;
-      if (((from_bitField0_ & 0x00000008) != 0)) {
-        to_bitField0_ |= 0x00000008;
-      }
-      result.note_ = note_;
-      if (((from_bitField0_ & 0x00000010) != 0)) {
-        to_bitField0_ |= 0x00000010;
-      }
-      result.isin_ = isin_;
-      if (((from_bitField0_ & 0x00000020) != 0)) {
-        to_bitField0_ |= 0x00000020;
-      }
-      result.tickerSymbol_ = tickerSymbol_;
-      if (((from_bitField0_ & 0x00000040) != 0)) {
-        to_bitField0_ |= 0x00000040;
-      }
-      result.wkn_ = wkn_;
-      if (((from_bitField0_ & 0x00000080) != 0)) {
-        to_bitField0_ |= 0x00000080;
-      }
-      result.calendar_ = calendar_;
-      if (((from_bitField0_ & 0x00000100) != 0)) {
-        to_bitField0_ |= 0x00000100;
-      }
-      result.feed_ = feed_;
-      if (((from_bitField0_ & 0x00000200) != 0)) {
-        to_bitField0_ |= 0x00000200;
-      }
-      result.feedURL_ = feedURL_;
+      buildPartialRepeatedFields(result);
+      if (bitField0_ != 0) { buildPartial0(result); }
+      onBuilt();
+      return result;
+    }
+
+    private void buildPartialRepeatedFields(name.abuchen.portfolio.model.proto.v1.PSecurity result) {
       if (pricesBuilder_ == null) {
-        if (((bitField0_ & 0x00000400) != 0)) {
+        if (((bitField0_ & 0x00001000) != 0)) {
           prices_ = java.util.Collections.unmodifiableList(prices_);
-          bitField0_ = (bitField0_ & ~0x00000400);
+          bitField0_ = (bitField0_ & ~0x00001000);
         }
         result.prices_ = prices_;
       } else {
         result.prices_ = pricesBuilder_.build();
       }
-      if (((from_bitField0_ & 0x00000800) != 0)) {
-        to_bitField0_ |= 0x00000400;
-      }
-      result.latestFeed_ = latestFeed_;
-      if (((from_bitField0_ & 0x00001000) != 0)) {
-        to_bitField0_ |= 0x00000800;
-      }
-      result.latestFeedURL_ = latestFeedURL_;
-      if (((from_bitField0_ & 0x00002000) != 0)) {
-        if (latestBuilder_ == null) {
-          result.latest_ = latest_;
-        } else {
-          result.latest_ = latestBuilder_.build();
-        }
-        to_bitField0_ |= 0x00001000;
-      }
       if (attributesBuilder_ == null) {
-        if (((bitField0_ & 0x00004000) != 0)) {
+        if (((bitField0_ & 0x00010000) != 0)) {
           attributes_ = java.util.Collections.unmodifiableList(attributes_);
-          bitField0_ = (bitField0_ & ~0x00004000);
+          bitField0_ = (bitField0_ & ~0x00010000);
         }
         result.attributes_ = attributes_;
       } else {
         result.attributes_ = attributesBuilder_.build();
       }
       if (eventsBuilder_ == null) {
-        if (((bitField0_ & 0x00008000) != 0)) {
+        if (((bitField0_ & 0x00020000) != 0)) {
           events_ = java.util.Collections.unmodifiableList(events_);
-          bitField0_ = (bitField0_ & ~0x00008000);
+          bitField0_ = (bitField0_ & ~0x00020000);
         }
         result.events_ = events_;
       } else {
         result.events_ = eventsBuilder_.build();
       }
       if (propertiesBuilder_ == null) {
-        if (((bitField0_ & 0x00010000) != 0)) {
+        if (((bitField0_ & 0x00040000) != 0)) {
           properties_ = java.util.Collections.unmodifiableList(properties_);
-          bitField0_ = (bitField0_ & ~0x00010000);
+          bitField0_ = (bitField0_ & ~0x00040000);
         }
         result.properties_ = properties_;
       } else {
         result.properties_ = propertiesBuilder_.build();
       }
-      result.isRetired_ = isRetired_;
-      if (updatedAtBuilder_ == null) {
-        result.updatedAt_ = updatedAt_;
-      } else {
-        result.updatedAt_ = updatedAtBuilder_.build();
-      }
-      result.bitField0_ = to_bitField0_;
-      onBuilt();
-      return result;
     }
 
-    @java.lang.Override
-    public Builder clone() {
-      return super.clone();
+    private void buildPartial0(name.abuchen.portfolio.model.proto.v1.PSecurity result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.uuid_ = uuid_;
+      }
+      int to_bitField0_ = 0;
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.onlineId_ = onlineId_;
+        to_bitField0_ |= 0x00000001;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.name_ = name_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.currencyCode_ = currencyCode_;
+        to_bitField0_ |= 0x00000002;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.targetCurrencyCode_ = targetCurrencyCode_;
+        to_bitField0_ |= 0x00000004;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.note_ = note_;
+        to_bitField0_ |= 0x00000008;
+      }
+      if (((from_bitField0_ & 0x00000040) != 0)) {
+        result.isin_ = isin_;
+        to_bitField0_ |= 0x00000010;
+      }
+      if (((from_bitField0_ & 0x00000080) != 0)) {
+        result.tickerSymbol_ = tickerSymbol_;
+        to_bitField0_ |= 0x00000020;
+      }
+      if (((from_bitField0_ & 0x00000100) != 0)) {
+        result.wkn_ = wkn_;
+        to_bitField0_ |= 0x00000040;
+      }
+      if (((from_bitField0_ & 0x00000200) != 0)) {
+        result.calendar_ = calendar_;
+        to_bitField0_ |= 0x00000080;
+      }
+      if (((from_bitField0_ & 0x00000400) != 0)) {
+        result.feed_ = feed_;
+        to_bitField0_ |= 0x00000100;
+      }
+      if (((from_bitField0_ & 0x00000800) != 0)) {
+        result.feedURL_ = feedURL_;
+        to_bitField0_ |= 0x00000200;
+      }
+      if (((from_bitField0_ & 0x00002000) != 0)) {
+        result.latestFeed_ = latestFeed_;
+        to_bitField0_ |= 0x00000400;
+      }
+      if (((from_bitField0_ & 0x00004000) != 0)) {
+        result.latestFeedURL_ = latestFeedURL_;
+        to_bitField0_ |= 0x00000800;
+      }
+      if (((from_bitField0_ & 0x00008000) != 0)) {
+        result.latest_ = latestBuilder_ == null
+            ? latest_
+            : latestBuilder_.build();
+        to_bitField0_ |= 0x00001000;
+      }
+      if (((from_bitField0_ & 0x00080000) != 0)) {
+        result.isRetired_ = isRetired_;
+      }
+      if (((from_bitField0_ & 0x00100000) != 0)) {
+        result.updatedAt_ = updatedAtBuilder_ == null
+            ? updatedAt_
+            : updatedAtBuilder_.build();
+      }
+      result.bitField0_ |= to_bitField0_;
     }
-    @java.lang.Override
-    public Builder setField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.setField(field, value);
-    }
-    @java.lang.Override
-    public Builder clearField(
-        com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return super.clearField(field);
-    }
-    @java.lang.Override
-    public Builder clearOneof(
-        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return super.clearOneof(oneof);
-    }
-    @java.lang.Override
-    public Builder setRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
-      return super.setRepeatedField(field, index, value);
-    }
-    @java.lang.Override
-    public Builder addRepeatedField(
-        com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
-      return super.addRepeatedField(field, value);
-    }
+
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof name.abuchen.portfolio.model.proto.v1.PSecurity) {
@@ -1842,67 +1623,69 @@ private static final long serialVersionUID = 0L;
       if (other == name.abuchen.portfolio.model.proto.v1.PSecurity.getDefaultInstance()) return this;
       if (!other.getUuid().isEmpty()) {
         uuid_ = other.uuid_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.hasOnlineId()) {
-        bitField0_ |= 0x00000001;
         onlineId_ = other.onlineId_;
+        bitField0_ |= 0x00000002;
         onChanged();
       }
       if (!other.getName().isEmpty()) {
         name_ = other.name_;
+        bitField0_ |= 0x00000004;
         onChanged();
       }
       if (other.hasCurrencyCode()) {
-        bitField0_ |= 0x00000002;
         currencyCode_ = other.currencyCode_;
+        bitField0_ |= 0x00000008;
         onChanged();
       }
       if (other.hasTargetCurrencyCode()) {
-        bitField0_ |= 0x00000004;
         targetCurrencyCode_ = other.targetCurrencyCode_;
+        bitField0_ |= 0x00000010;
         onChanged();
       }
       if (other.hasNote()) {
-        bitField0_ |= 0x00000008;
         note_ = other.note_;
+        bitField0_ |= 0x00000020;
         onChanged();
       }
       if (other.hasIsin()) {
-        bitField0_ |= 0x00000010;
         isin_ = other.isin_;
+        bitField0_ |= 0x00000040;
         onChanged();
       }
       if (other.hasTickerSymbol()) {
-        bitField0_ |= 0x00000020;
         tickerSymbol_ = other.tickerSymbol_;
+        bitField0_ |= 0x00000080;
         onChanged();
       }
       if (other.hasWkn()) {
-        bitField0_ |= 0x00000040;
         wkn_ = other.wkn_;
+        bitField0_ |= 0x00000100;
         onChanged();
       }
       if (other.hasCalendar()) {
-        bitField0_ |= 0x00000080;
         calendar_ = other.calendar_;
+        bitField0_ |= 0x00000200;
         onChanged();
       }
       if (other.hasFeed()) {
-        bitField0_ |= 0x00000100;
         feed_ = other.feed_;
+        bitField0_ |= 0x00000400;
         onChanged();
       }
       if (other.hasFeedURL()) {
-        bitField0_ |= 0x00000200;
         feedURL_ = other.feedURL_;
+        bitField0_ |= 0x00000800;
         onChanged();
       }
       if (pricesBuilder_ == null) {
         if (!other.prices_.isEmpty()) {
           if (prices_.isEmpty()) {
             prices_ = other.prices_;
-            bitField0_ = (bitField0_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00001000);
           } else {
             ensurePricesIsMutable();
             prices_.addAll(other.prices_);
@@ -1915,7 +1698,7 @@ private static final long serialVersionUID = 0L;
             pricesBuilder_.dispose();
             pricesBuilder_ = null;
             prices_ = other.prices_;
-            bitField0_ = (bitField0_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00001000);
             pricesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPricesFieldBuilder() : null;
@@ -1925,13 +1708,13 @@ private static final long serialVersionUID = 0L;
         }
       }
       if (other.hasLatestFeed()) {
-        bitField0_ |= 0x00000800;
         latestFeed_ = other.latestFeed_;
+        bitField0_ |= 0x00002000;
         onChanged();
       }
       if (other.hasLatestFeedURL()) {
-        bitField0_ |= 0x00001000;
         latestFeedURL_ = other.latestFeedURL_;
+        bitField0_ |= 0x00004000;
         onChanged();
       }
       if (other.hasLatest()) {
@@ -1941,7 +1724,7 @@ private static final long serialVersionUID = 0L;
         if (!other.attributes_.isEmpty()) {
           if (attributes_.isEmpty()) {
             attributes_ = other.attributes_;
-            bitField0_ = (bitField0_ & ~0x00004000);
+            bitField0_ = (bitField0_ & ~0x00010000);
           } else {
             ensureAttributesIsMutable();
             attributes_.addAll(other.attributes_);
@@ -1954,7 +1737,7 @@ private static final long serialVersionUID = 0L;
             attributesBuilder_.dispose();
             attributesBuilder_ = null;
             attributes_ = other.attributes_;
-            bitField0_ = (bitField0_ & ~0x00004000);
+            bitField0_ = (bitField0_ & ~0x00010000);
             attributesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getAttributesFieldBuilder() : null;
@@ -1967,7 +1750,7 @@ private static final long serialVersionUID = 0L;
         if (!other.events_.isEmpty()) {
           if (events_.isEmpty()) {
             events_ = other.events_;
-            bitField0_ = (bitField0_ & ~0x00008000);
+            bitField0_ = (bitField0_ & ~0x00020000);
           } else {
             ensureEventsIsMutable();
             events_.addAll(other.events_);
@@ -1980,7 +1763,7 @@ private static final long serialVersionUID = 0L;
             eventsBuilder_.dispose();
             eventsBuilder_ = null;
             events_ = other.events_;
-            bitField0_ = (bitField0_ & ~0x00008000);
+            bitField0_ = (bitField0_ & ~0x00020000);
             eventsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getEventsFieldBuilder() : null;
@@ -1993,7 +1776,7 @@ private static final long serialVersionUID = 0L;
         if (!other.properties_.isEmpty()) {
           if (properties_.isEmpty()) {
             properties_ = other.properties_;
-            bitField0_ = (bitField0_ & ~0x00010000);
+            bitField0_ = (bitField0_ & ~0x00040000);
           } else {
             ensurePropertiesIsMutable();
             properties_.addAll(other.properties_);
@@ -2006,7 +1789,7 @@ private static final long serialVersionUID = 0L;
             propertiesBuilder_.dispose();
             propertiesBuilder_ = null;
             properties_ = other.properties_;
-            bitField0_ = (bitField0_ & ~0x00010000);
+            bitField0_ = (bitField0_ & ~0x00040000);
             propertiesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getPropertiesFieldBuilder() : null;
@@ -2021,7 +1804,7 @@ private static final long serialVersionUID = 0L;
       if (other.hasUpdatedAt()) {
         mergeUpdatedAt(other.getUpdatedAt());
       }
-      this.mergeUnknownFields(other.unknownFields);
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -2036,17 +1819,171 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      name.abuchen.portfolio.model.proto.v1.PSecurity parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              uuid_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 10
+            case 18: {
+              onlineId_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
+            case 26: {
+              name_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 26
+            case 34: {
+              currencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
+            case 42: {
+              targetCurrencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000010;
+              break;
+            } // case 42
+            case 50: {
+              note_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 50
+            case 58: {
+              isin_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000040;
+              break;
+            } // case 58
+            case 66: {
+              tickerSymbol_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000080;
+              break;
+            } // case 66
+            case 74: {
+              wkn_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000100;
+              break;
+            } // case 74
+            case 82: {
+              calendar_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000200;
+              break;
+            } // case 82
+            case 90: {
+              feed_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000400;
+              break;
+            } // case 90
+            case 98: {
+              feedURL_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000800;
+              break;
+            } // case 98
+            case 106: {
+              name.abuchen.portfolio.model.proto.v1.PHistoricalPrice m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PHistoricalPrice.parser(),
+                      extensionRegistry);
+              if (pricesBuilder_ == null) {
+                ensurePricesIsMutable();
+                prices_.add(m);
+              } else {
+                pricesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 106
+            case 114: {
+              latestFeed_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00002000;
+              break;
+            } // case 114
+            case 122: {
+              latestFeedURL_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00004000;
+              break;
+            } // case 122
+            case 130: {
+              input.readMessage(
+                  getLatestFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00008000;
+              break;
+            } // case 130
+            case 138: {
+              name.abuchen.portfolio.model.proto.v1.PKeyValue m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(),
+                      extensionRegistry);
+              if (attributesBuilder_ == null) {
+                ensureAttributesIsMutable();
+                attributes_.add(m);
+              } else {
+                attributesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 138
+            case 146: {
+              name.abuchen.portfolio.model.proto.v1.PSecurityEvent m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PSecurityEvent.parser(),
+                      extensionRegistry);
+              if (eventsBuilder_ == null) {
+                ensureEventsIsMutable();
+                events_.add(m);
+              } else {
+                eventsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 146
+            case 154: {
+              name.abuchen.portfolio.model.proto.v1.PKeyValue m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PKeyValue.parser(),
+                      extensionRegistry);
+              if (propertiesBuilder_ == null) {
+                ensurePropertiesIsMutable();
+                properties_.add(m);
+              } else {
+                propertiesBuilder_.addMessage(m);
+              }
+              break;
+            } // case 154
+            case 160: {
+              isRetired_ = input.readBool();
+              bitField0_ |= 0x00080000;
+              break;
+            } // case 160
+            case 170: {
+              input.readMessage(
+                  getUpdatedAtFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00100000;
+              break;
+            } // case 170
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (name.abuchen.portfolio.model.proto.v1.PSecurity) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -2092,11 +2029,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setUuid(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       uuid_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -2105,8 +2040,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearUuid() {
-      
       uuid_ = getDefaultInstance().getUuid();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -2117,12 +2052,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setUuidBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       uuid_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -2133,7 +2066,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the onlineId field is set.
      */
     public boolean hasOnlineId() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>optional string onlineId = 2;</code>
@@ -2175,11 +2108,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setOnlineId(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      if (value == null) { throw new NullPointerException(); }
       onlineId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -2188,8 +2119,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearOnlineId() {
-      bitField0_ = (bitField0_ & ~0x00000001);
       onlineId_ = getDefaultInstance().getOnlineId();
+      bitField0_ = (bitField0_ & ~0x00000002);
       onChanged();
       return this;
     }
@@ -2200,12 +2131,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setOnlineIdBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000001;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       onlineId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -2251,11 +2180,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setName(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       name_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -2264,8 +2191,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearName() {
-      
       name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
@@ -2276,12 +2203,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNameBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       name_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -2292,7 +2217,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the currencyCode field is set.
      */
     public boolean hasCurrencyCode() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
      * <code>optional string currencyCode = 4;</code>
@@ -2334,11 +2259,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCurrencyCode(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
       currencyCode_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -2347,8 +2270,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearCurrencyCode() {
-      bitField0_ = (bitField0_ & ~0x00000002);
       currencyCode_ = getDefaultInstance().getCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00000008);
       onChanged();
       return this;
     }
@@ -2359,12 +2282,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCurrencyCodeBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000002;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       currencyCode_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -2375,7 +2296,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the targetCurrencyCode field is set.
      */
     public boolean hasTargetCurrencyCode() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000010) != 0);
     }
     /**
      * <code>optional string targetCurrencyCode = 5;</code>
@@ -2417,11 +2338,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setTargetCurrencyCode(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+      if (value == null) { throw new NullPointerException(); }
       targetCurrencyCode_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -2430,8 +2349,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearTargetCurrencyCode() {
-      bitField0_ = (bitField0_ & ~0x00000004);
       targetCurrencyCode_ = getDefaultInstance().getTargetCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00000010);
       onChanged();
       return this;
     }
@@ -2442,12 +2361,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setTargetCurrencyCodeBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000004;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       targetCurrencyCode_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -2458,7 +2375,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the note field is set.
      */
     public boolean hasNote() {
-      return ((bitField0_ & 0x00000008) != 0);
+      return ((bitField0_ & 0x00000020) != 0);
     }
     /**
      * <code>optional string note = 6;</code>
@@ -2500,11 +2417,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNote(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+      if (value == null) { throw new NullPointerException(); }
       note_ = value;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -2513,8 +2428,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearNote() {
-      bitField0_ = (bitField0_ & ~0x00000008);
       note_ = getDefaultInstance().getNote();
+      bitField0_ = (bitField0_ & ~0x00000020);
       onChanged();
       return this;
     }
@@ -2525,12 +2440,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setNoteBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000008;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       note_ = value;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -2541,7 +2454,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the isin field is set.
      */
     public boolean hasIsin() {
-      return ((bitField0_ & 0x00000010) != 0);
+      return ((bitField0_ & 0x00000040) != 0);
     }
     /**
      * <code>optional string isin = 7;</code>
@@ -2583,11 +2496,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setIsin(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
+      if (value == null) { throw new NullPointerException(); }
       isin_ = value;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
@@ -2596,8 +2507,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearIsin() {
-      bitField0_ = (bitField0_ & ~0x00000010);
       isin_ = getDefaultInstance().getIsin();
+      bitField0_ = (bitField0_ & ~0x00000040);
       onChanged();
       return this;
     }
@@ -2608,12 +2519,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setIsinBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000010;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       isin_ = value;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
@@ -2624,7 +2533,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the tickerSymbol field is set.
      */
     public boolean hasTickerSymbol() {
-      return ((bitField0_ & 0x00000020) != 0);
+      return ((bitField0_ & 0x00000080) != 0);
     }
     /**
      * <code>optional string tickerSymbol = 8;</code>
@@ -2666,11 +2575,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setTickerSymbol(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+      if (value == null) { throw new NullPointerException(); }
       tickerSymbol_ = value;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -2679,8 +2586,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearTickerSymbol() {
-      bitField0_ = (bitField0_ & ~0x00000020);
       tickerSymbol_ = getDefaultInstance().getTickerSymbol();
+      bitField0_ = (bitField0_ & ~0x00000080);
       onChanged();
       return this;
     }
@@ -2691,12 +2598,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setTickerSymbolBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000020;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       tickerSymbol_ = value;
+      bitField0_ |= 0x00000080;
       onChanged();
       return this;
     }
@@ -2707,7 +2612,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the wkn field is set.
      */
     public boolean hasWkn() {
-      return ((bitField0_ & 0x00000040) != 0);
+      return ((bitField0_ & 0x00000100) != 0);
     }
     /**
      * <code>optional string wkn = 9;</code>
@@ -2749,11 +2654,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setWkn(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+      if (value == null) { throw new NullPointerException(); }
       wkn_ = value;
+      bitField0_ |= 0x00000100;
       onChanged();
       return this;
     }
@@ -2762,8 +2665,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearWkn() {
-      bitField0_ = (bitField0_ & ~0x00000040);
       wkn_ = getDefaultInstance().getWkn();
+      bitField0_ = (bitField0_ & ~0x00000100);
       onChanged();
       return this;
     }
@@ -2774,12 +2677,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setWknBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000040;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       wkn_ = value;
+      bitField0_ |= 0x00000100;
       onChanged();
       return this;
     }
@@ -2790,7 +2691,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the calendar field is set.
      */
     public boolean hasCalendar() {
-      return ((bitField0_ & 0x00000080) != 0);
+      return ((bitField0_ & 0x00000200) != 0);
     }
     /**
      * <code>optional string calendar = 10;</code>
@@ -2832,11 +2733,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCalendar(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+      if (value == null) { throw new NullPointerException(); }
       calendar_ = value;
+      bitField0_ |= 0x00000200;
       onChanged();
       return this;
     }
@@ -2845,8 +2744,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearCalendar() {
-      bitField0_ = (bitField0_ & ~0x00000080);
       calendar_ = getDefaultInstance().getCalendar();
+      bitField0_ = (bitField0_ & ~0x00000200);
       onChanged();
       return this;
     }
@@ -2857,12 +2756,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCalendarBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000080;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       calendar_ = value;
+      bitField0_ |= 0x00000200;
       onChanged();
       return this;
     }
@@ -2873,7 +2770,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the feed field is set.
      */
     public boolean hasFeed() {
-      return ((bitField0_ & 0x00000100) != 0);
+      return ((bitField0_ & 0x00000400) != 0);
     }
     /**
      * <code>optional string feed = 11;</code>
@@ -2915,11 +2812,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFeed(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
+      if (value == null) { throw new NullPointerException(); }
       feed_ = value;
+      bitField0_ |= 0x00000400;
       onChanged();
       return this;
     }
@@ -2928,8 +2823,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearFeed() {
-      bitField0_ = (bitField0_ & ~0x00000100);
       feed_ = getDefaultInstance().getFeed();
+      bitField0_ = (bitField0_ & ~0x00000400);
       onChanged();
       return this;
     }
@@ -2940,12 +2835,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFeedBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000100;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       feed_ = value;
+      bitField0_ |= 0x00000400;
       onChanged();
       return this;
     }
@@ -2956,7 +2849,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the feedURL field is set.
      */
     public boolean hasFeedURL() {
-      return ((bitField0_ & 0x00000200) != 0);
+      return ((bitField0_ & 0x00000800) != 0);
     }
     /**
      * <code>optional string feedURL = 12;</code>
@@ -2998,11 +2891,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFeedURL(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000200;
+      if (value == null) { throw new NullPointerException(); }
       feedURL_ = value;
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -3011,8 +2902,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearFeedURL() {
-      bitField0_ = (bitField0_ & ~0x00000200);
       feedURL_ = getDefaultInstance().getFeedURL();
+      bitField0_ = (bitField0_ & ~0x00000800);
       onChanged();
       return this;
     }
@@ -3023,12 +2914,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setFeedURLBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000200;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       feedURL_ = value;
+      bitField0_ |= 0x00000800;
       onChanged();
       return this;
     }
@@ -3036,9 +2925,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PHistoricalPrice> prices_ =
       java.util.Collections.emptyList();
     private void ensurePricesIsMutable() {
-      if (!((bitField0_ & 0x00000400) != 0)) {
+      if (!((bitField0_ & 0x00001000) != 0)) {
         prices_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PHistoricalPrice>(prices_);
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00001000;
        }
     }
 
@@ -3188,7 +3077,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearPrices() {
       if (pricesBuilder_ == null) {
         prices_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00001000);
         onChanged();
       } else {
         pricesBuilder_.clear();
@@ -3265,7 +3154,7 @@ private static final long serialVersionUID = 0L;
         pricesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PHistoricalPrice, name.abuchen.portfolio.model.proto.v1.PHistoricalPrice.Builder, name.abuchen.portfolio.model.proto.v1.PHistoricalPriceOrBuilder>(
                 prices_,
-                ((bitField0_ & 0x00000400) != 0),
+                ((bitField0_ & 0x00001000) != 0),
                 getParentForChildren(),
                 isClean());
         prices_ = null;
@@ -3279,7 +3168,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the latestFeed field is set.
      */
     public boolean hasLatestFeed() {
-      return ((bitField0_ & 0x00000800) != 0);
+      return ((bitField0_ & 0x00002000) != 0);
     }
     /**
      * <code>optional string latestFeed = 14;</code>
@@ -3321,11 +3210,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLatestFeed(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000800;
+      if (value == null) { throw new NullPointerException(); }
       latestFeed_ = value;
+      bitField0_ |= 0x00002000;
       onChanged();
       return this;
     }
@@ -3334,8 +3221,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearLatestFeed() {
-      bitField0_ = (bitField0_ & ~0x00000800);
       latestFeed_ = getDefaultInstance().getLatestFeed();
+      bitField0_ = (bitField0_ & ~0x00002000);
       onChanged();
       return this;
     }
@@ -3346,12 +3233,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLatestFeedBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00000800;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       latestFeed_ = value;
+      bitField0_ |= 0x00002000;
       onChanged();
       return this;
     }
@@ -3362,7 +3247,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the latestFeedURL field is set.
      */
     public boolean hasLatestFeedURL() {
-      return ((bitField0_ & 0x00001000) != 0);
+      return ((bitField0_ & 0x00004000) != 0);
     }
     /**
      * <code>optional string latestFeedURL = 15;</code>
@@ -3404,11 +3289,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLatestFeedURL(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00001000;
+      if (value == null) { throw new NullPointerException(); }
       latestFeedURL_ = value;
+      bitField0_ |= 0x00004000;
       onChanged();
       return this;
     }
@@ -3417,8 +3300,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearLatestFeedURL() {
-      bitField0_ = (bitField0_ & ~0x00001000);
       latestFeedURL_ = getDefaultInstance().getLatestFeedURL();
+      bitField0_ = (bitField0_ & ~0x00004000);
       onChanged();
       return this;
     }
@@ -3429,12 +3312,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLatestFeedURLBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      bitField0_ |= 0x00001000;
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       latestFeedURL_ = value;
+      bitField0_ |= 0x00004000;
       onChanged();
       return this;
     }
@@ -3447,7 +3328,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the latest field is set.
      */
     public boolean hasLatest() {
-      return ((bitField0_ & 0x00002000) != 0);
+      return ((bitField0_ & 0x00008000) != 0);
     }
     /**
      * <code>optional .name.abuchen.portfolio.PFullHistoricalPrice latest = 16;</code>
@@ -3469,11 +3350,11 @@ private static final long serialVersionUID = 0L;
           throw new NullPointerException();
         }
         latest_ = value;
-        onChanged();
       } else {
         latestBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00008000;
+      onChanged();
       return this;
     }
     /**
@@ -3483,11 +3364,11 @@ private static final long serialVersionUID = 0L;
         name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.Builder builderForValue) {
       if (latestBuilder_ == null) {
         latest_ = builderForValue.build();
-        onChanged();
       } else {
         latestBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00008000;
+      onChanged();
       return this;
     }
     /**
@@ -3495,39 +3376,38 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeLatest(name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice value) {
       if (latestBuilder_ == null) {
-        if (((bitField0_ & 0x00002000) != 0) &&
-            latest_ != null &&
-            latest_ != name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.getDefaultInstance()) {
-          latest_ =
-            name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.newBuilder(latest_).mergeFrom(value).buildPartial();
+        if (((bitField0_ & 0x00008000) != 0) &&
+          latest_ != null &&
+          latest_ != name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.getDefaultInstance()) {
+          getLatestBuilder().mergeFrom(value);
         } else {
           latest_ = value;
         }
-        onChanged();
       } else {
         latestBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00008000;
+      onChanged();
       return this;
     }
     /**
      * <code>optional .name.abuchen.portfolio.PFullHistoricalPrice latest = 16;</code>
      */
     public Builder clearLatest() {
-      if (latestBuilder_ == null) {
-        latest_ = null;
-        onChanged();
-      } else {
-        latestBuilder_.clear();
+      bitField0_ = (bitField0_ & ~0x00008000);
+      latest_ = null;
+      if (latestBuilder_ != null) {
+        latestBuilder_.dispose();
+        latestBuilder_ = null;
       }
-      bitField0_ = (bitField0_ & ~0x00002000);
+      onChanged();
       return this;
     }
     /**
      * <code>optional .name.abuchen.portfolio.PFullHistoricalPrice latest = 16;</code>
      */
     public name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice.Builder getLatestBuilder() {
-      bitField0_ |= 0x00002000;
+      bitField0_ |= 0x00008000;
       onChanged();
       return getLatestFieldBuilder().getBuilder();
     }
@@ -3562,9 +3442,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> attributes_ =
       java.util.Collections.emptyList();
     private void ensureAttributesIsMutable() {
-      if (!((bitField0_ & 0x00004000) != 0)) {
+      if (!((bitField0_ & 0x00010000) != 0)) {
         attributes_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>(attributes_);
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
        }
     }
 
@@ -3714,7 +3594,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearAttributes() {
       if (attributesBuilder_ == null) {
         attributes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         onChanged();
       } else {
         attributesBuilder_.clear();
@@ -3791,7 +3671,7 @@ private static final long serialVersionUID = 0L;
         attributesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PKeyValue, name.abuchen.portfolio.model.proto.v1.PKeyValue.Builder, name.abuchen.portfolio.model.proto.v1.PKeyValueOrBuilder>(
                 attributes_,
-                ((bitField0_ & 0x00004000) != 0),
+                ((bitField0_ & 0x00010000) != 0),
                 getParentForChildren(),
                 isClean());
         attributes_ = null;
@@ -3802,9 +3682,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PSecurityEvent> events_ =
       java.util.Collections.emptyList();
     private void ensureEventsIsMutable() {
-      if (!((bitField0_ & 0x00008000) != 0)) {
+      if (!((bitField0_ & 0x00020000) != 0)) {
         events_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PSecurityEvent>(events_);
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
        }
     }
 
@@ -3954,7 +3834,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearEvents() {
       if (eventsBuilder_ == null) {
         events_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         onChanged();
       } else {
         eventsBuilder_.clear();
@@ -4031,7 +3911,7 @@ private static final long serialVersionUID = 0L;
         eventsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PSecurityEvent, name.abuchen.portfolio.model.proto.v1.PSecurityEvent.Builder, name.abuchen.portfolio.model.proto.v1.PSecurityEventOrBuilder>(
                 events_,
-                ((bitField0_ & 0x00008000) != 0),
+                ((bitField0_ & 0x00020000) != 0),
                 getParentForChildren(),
                 isClean());
         events_ = null;
@@ -4042,9 +3922,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<name.abuchen.portfolio.model.proto.v1.PKeyValue> properties_ =
       java.util.Collections.emptyList();
     private void ensurePropertiesIsMutable() {
-      if (!((bitField0_ & 0x00010000) != 0)) {
+      if (!((bitField0_ & 0x00040000) != 0)) {
         properties_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PKeyValue>(properties_);
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
        }
     }
 
@@ -4194,7 +4074,7 @@ private static final long serialVersionUID = 0L;
     public Builder clearProperties() {
       if (propertiesBuilder_ == null) {
         properties_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         onChanged();
       } else {
         propertiesBuilder_.clear();
@@ -4271,7 +4151,7 @@ private static final long serialVersionUID = 0L;
         propertiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             name.abuchen.portfolio.model.proto.v1.PKeyValue, name.abuchen.portfolio.model.proto.v1.PKeyValue.Builder, name.abuchen.portfolio.model.proto.v1.PKeyValueOrBuilder>(
                 properties_,
-                ((bitField0_ & 0x00010000) != 0),
+                ((bitField0_ & 0x00040000) != 0),
                 getParentForChildren(),
                 isClean());
         properties_ = null;
@@ -4294,8 +4174,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setIsRetired(boolean value) {
-      
+
       isRetired_ = value;
+      bitField0_ |= 0x00080000;
       onChanged();
       return this;
     }
@@ -4304,7 +4185,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearIsRetired() {
-      
+      bitField0_ = (bitField0_ & ~0x00080000);
       isRetired_ = false;
       onChanged();
       return this;
@@ -4318,7 +4199,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the updatedAt field is set.
      */
     public boolean hasUpdatedAt() {
-      return updatedAtBuilder_ != null || updatedAt_ != null;
+      return ((bitField0_ & 0x00100000) != 0);
     }
     /**
      * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
@@ -4340,11 +4221,11 @@ private static final long serialVersionUID = 0L;
           throw new NullPointerException();
         }
         updatedAt_ = value;
-        onChanged();
       } else {
         updatedAtBuilder_.setMessage(value);
       }
-
+      bitField0_ |= 0x00100000;
+      onChanged();
       return this;
     }
     /**
@@ -4354,11 +4235,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.Timestamp.Builder builderForValue) {
       if (updatedAtBuilder_ == null) {
         updatedAt_ = builderForValue.build();
-        onChanged();
       } else {
         updatedAtBuilder_.setMessage(builderForValue.build());
       }
-
+      bitField0_ |= 0x00100000;
+      onChanged();
       return this;
     }
     /**
@@ -4366,38 +4247,38 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeUpdatedAt(com.google.protobuf.Timestamp value) {
       if (updatedAtBuilder_ == null) {
-        if (updatedAt_ != null) {
-          updatedAt_ =
-            com.google.protobuf.Timestamp.newBuilder(updatedAt_).mergeFrom(value).buildPartial();
+        if (((bitField0_ & 0x00100000) != 0) &&
+          updatedAt_ != null &&
+          updatedAt_ != com.google.protobuf.Timestamp.getDefaultInstance()) {
+          getUpdatedAtBuilder().mergeFrom(value);
         } else {
           updatedAt_ = value;
         }
-        onChanged();
       } else {
         updatedAtBuilder_.mergeFrom(value);
       }
-
+      bitField0_ |= 0x00100000;
+      onChanged();
       return this;
     }
     /**
      * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
      */
     public Builder clearUpdatedAt() {
-      if (updatedAtBuilder_ == null) {
-        updatedAt_ = null;
-        onChanged();
-      } else {
-        updatedAt_ = null;
+      bitField0_ = (bitField0_ & ~0x00100000);
+      updatedAt_ = null;
+      if (updatedAtBuilder_ != null) {
+        updatedAtBuilder_.dispose();
         updatedAtBuilder_ = null;
       }
-
+      onChanged();
       return this;
     }
     /**
      * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
      */
     public com.google.protobuf.Timestamp.Builder getUpdatedAtBuilder() {
-      
+      bitField0_ |= 0x00100000;
       onChanged();
       return getUpdatedAtFieldBuilder().getBuilder();
     }
@@ -4461,7 +4342,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PSecurity(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 

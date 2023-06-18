@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.quirinbankag;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0690964092"));
         assertThat(security.getWkn(), is("DBX0MF"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -95,6 +97,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002643889"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -137,6 +141,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4282361033"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Hewlett-Packard Co. Registered Shares DL -,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -231,6 +237,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B0M63177"));
         assertThat(security.getWkn(), is("A0HGWC"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs MSCI EM U.ETF USD (D) Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -273,6 +280,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007873200"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Bayer.Hypo- und Vereinsbank AG DAX Indexzert(2006/unlim.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -315,6 +324,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002643889"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -357,6 +368,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0327757729"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("F.Temp.Inv.Fds-T.Growth (EUR) Namens-Anteile A (acc.)DL o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -451,6 +464,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0D8Q07"));
         assertThat(security.getWkn(), is("A0D8Q0"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.EURO STOXX UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -492,6 +506,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007236101"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Siemens AG Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -533,6 +549,8 @@ public class QuirinPrivatbankAGPDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US8740391003"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Taiwan Semiconduct.Manufact.Co Reg.Shs (Spons.ADRs) 5/TA 10"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 

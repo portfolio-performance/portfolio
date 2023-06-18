@@ -110,10 +110,10 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
 
     private Rectangle getBounds(Widget widget, int index)
     {
-        if (widget instanceof TableItem)
-            return ((TableItem) widget).getBounds(index);
-        else if (widget instanceof TreeItem)
-            return ((TreeItem) widget).getBounds(index);
+        if (widget instanceof TableItem tableItem)
+            return tableItem.getBounds(index);
+        else if (widget instanceof TreeItem treeItem)
+            return treeItem.getBounds(index);
         else
             throw new IllegalArgumentException();
     }

@@ -295,6 +295,7 @@ message PClient {
   map<string, string> properties = 10;
    
   PSettings settings = 11;
+  string baseCurrency = 12;
 }
 
 message PExchangeRate {

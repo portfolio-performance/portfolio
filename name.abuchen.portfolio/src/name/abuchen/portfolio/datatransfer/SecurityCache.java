@@ -35,8 +35,10 @@ public class SecurityCache
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
                         .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
-                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+        this.localMaps.add(client.getSecurities().stream()
+                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
+                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s,
+                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
                         .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
@@ -49,7 +51,7 @@ public class SecurityCache
     public Security lookup(String isin, String tickerSymbol, String wkn, String name,
                     Supplier<Security> creationFunction)
     {
-        List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
+        List<String> attributes = Arrays.asList(isin, prefix(tickerSymbol), wkn, name);
 
         int idOfAttributeWithDuplicateSecurities = -1;
 
@@ -97,6 +99,15 @@ public class SecurityCache
         return security;
     }
 
+    private String prefix(String tickerSymbol)
+    {
+        if (tickerSymbol == null || tickerSymbol.isEmpty())
+            return null;
+
+        int p = tickerSymbol.indexOf('.');
+        return p >= 0 ? tickerSymbol.substring(0, p) : tickerSymbol;
+    }
+
     private Security lookupSecurityByName(String isin, String tickerSymbol, String wkn, String name)
     {
         Security security = localMaps.get(3).get(name);
@@ -109,18 +120,16 @@ public class SecurityCache
             return null;
 
         if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
-        {
-            // In some countries there is no ISIN or WKN, only the ticker symbol. 
-            // However, as soon as the historical prices are pulled from the stock exchange, 
-            // the ticker symbol is expanded.
-            // PDF importers that use this are for example the SelfWeath and the CommSec
-            // Example UMAX --> UMAX.AX
-            if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol().substring(0, security.getTickerSymbol().indexOf('.'))))
-            {
-                return null;
-            }
-        return null;
-        }
+            return null;
+
+        // In some countries there is no ISIN or WKN, only the ticker symbol.
+        // However, as soon as the historical prices are pulled from the stock
+        // exchange, the ticker symbol is expanded.
+        // PDF importers that use this are for example the SelfWealth and the
+        // CommSec
+        // Example UMAX --> UMAX.AX
+        if (doNotMatchIfGiven(prefix(tickerSymbol), prefix(security.getTickerSymbol())))
+            return null;
 
         if (doNotMatchIfGiven(wkn, security.getWkn()))
             return null;

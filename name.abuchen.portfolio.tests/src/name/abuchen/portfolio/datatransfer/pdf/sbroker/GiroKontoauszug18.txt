@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 10 1 von 1
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 03.07.2008 in EUR 536,87
+08.07 08.07.08 Überweisung -103,75
+ALTERNATE GMBH
+ABATWCZFZQMSYZ DATUM 07.07.2008, 20.11 UHR
+1.TAN 366047
+08.07 08.07.08 Zahlungseingang 100,00
+FK ZEIL A.MAIN 1000060
+999/999/99999 EST-VERANL 07
+Endsaldo am 08.07.2008 in EUR 533,12
+GENEHMIGUNGSFIKTION:
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an die
+Revisionsabteilung des kontoführenden Kreditinstituts.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der
+einzelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten
+oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Die Genehmigung umfasst auch
+die im Rechnungsabschluss enthaltenen Belastungsbuchungen aufgrund von
+Einzugsermächtigungslastschriften. Einwendungen gegen Rechnungsabschlüsse
+müssen dem Kreditinstitut schriftlich oder, wenn im Rahmen der
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde
+(z.B. Homebanking), auf diesem Weg zugehen. Zur Fristwahrung genügt die
+rechtzeitige Absendung (Nr. 7 Abs. 3 und Abs. 4 unserer Allgemeinen
+Geschäftsbedingungen). Gutschriften aus eingereichten Schecks und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn das Kreditinstitut seinen
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat
+(z.B. durch Bezahltmeldung).
+ZINSEN SIND EINKOMMENSSTEUERPFLICHTIG
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und Sonderbedingungen können Sie bei uns einsehen; sie werden
+auf Wunsch ausgehändigt.

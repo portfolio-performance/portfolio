@@ -16,7 +16,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Vanguard Group Europe GmbH"); //$NON-NLS-1$^
+        addBankIdentifier("Vanguard Group Europe GmbH");
 
         addBuySellTransaction();
     }
@@ -24,7 +24,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Vanguard Group Europe GmbH"; //$NON-NLS-1$
+        return "Vanguard Group Europe GmbH";
     }
 
     private void addBuySellTransaction()
@@ -70,17 +70,29 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                 .match("^Ausf.hrungstag \\/ \\-zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
-                // Kurswert EUR 300,00
-                // EUR 300,00
-                // Abrechnungskonto DE01234567891234567890
-                .section("currency", "amount")
-                .find("Kurswert [\\w]{3} [\\.,\\d]+$")
-                .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .match("^Abrechnungskonto .*$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                .oneOf(
+                                // Kurswert EUR 300,00
+                                // EUR 300,00
+                                // Abrechnungskonto DE01234567891234567890
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .find("Kurswert [\\w]{3} [\\.,\\d]+$")
+                                        .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .match("^Abrechnungskonto .*$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
+                                ,
+                                // Abbuchungsbetrag EUR 300,00
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Abbuchungsbetrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
                 // Referenznummer 12345678
                 .section("note").optional()

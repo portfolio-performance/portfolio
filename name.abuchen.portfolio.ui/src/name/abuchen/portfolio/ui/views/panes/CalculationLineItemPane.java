@@ -145,9 +145,8 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Money.format(((CalculationLineItem.DividendPayment) item).getGrossValue(),
-                                    client.getBaseCurrency());
+                if (item instanceof CalculationLineItem.DividendPayment dividend)
+                    return Values.Money.format(dividend.getGrossValue(), client.getBaseCurrency());
                 else
                     return null;
             }
@@ -162,9 +161,8 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.AmountFraction
-                                    .formatNonZero(((CalculationLineItem.DividendPayment) item).getDividendPerShare());
+                if (item instanceof CalculationLineItem.DividendPayment dividend)
+                    return Values.AmountFraction.formatNonZero(dividend.getDividendPerShare());
                 else
                     return null;
             }
@@ -180,9 +178,8 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Percent2.formatNonZero(
-                                    ((CalculationLineItem.DividendPayment) item).getPersonalDividendYield());
+                if (item instanceof CalculationLineItem.DividendPayment dividend)
+                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYield());
                 else
                     return null;
             }
@@ -198,9 +195,8 @@ public class CalculationLineItemPane implements InformationPanePage
             public String getText(Object e)
             {
                 CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Percent2.formatNonZero(((CalculationLineItem.DividendPayment) item)
-                                    .getPersonalDividendYieldMovingAverage());
+                if (item instanceof CalculationLineItem.DividendPayment dividend)
+                    return Values.Percent2.formatNonZero(dividend.getPersonalDividendYieldMovingAverage());
                 else
                     return null;
             }
@@ -232,9 +228,8 @@ public class CalculationLineItemPane implements InformationPanePage
             {
                 Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
 
-                if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
+                if (tx.isPresent() && tx.get() instanceof PortfolioTransaction ptx)
                 {
-                    PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
                     return Values.CalculatedQuote.format(ptx.getGrossPricePerShare(), client.getBaseCurrency());
                 }
                 else

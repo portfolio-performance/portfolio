@@ -47,12 +47,36 @@ public final class Money implements Comparable<Money>
         return amount < 0L;
     }
 
-    public boolean isGreaterOrEqualThan(Money other)
+    public boolean isGreaterThan(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount > other.getAmount();
+    }
+
+    public boolean isGreaterOrEqualTo(Money other)
     {
         Objects.requireNonNull(other);
         if (!other.getCurrencyCode().equals(currencyCode))
             throw new MonetaryException();
         return amount >= other.getAmount();
+    }
+
+    public boolean isLessThan(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount < other.getAmount();
+    }
+
+    public boolean isLessOrEqualTo(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount <= other.getAmount();
     }
 
     public Money add(Money monetaryAmount)

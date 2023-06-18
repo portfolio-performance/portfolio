@@ -1,8 +1,18 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +64,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -98,6 +110,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0025751329"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LOGITECH N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -142,6 +156,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000PAH0038"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PORSCHE AUTOMOBIL HOLDING PRF"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -237,6 +253,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0188802960"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Pictet - Japan Index - I"));
         assertThat(security.getCurrencyCode(), is("JPY"));
 
@@ -332,6 +350,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BD4TYL27"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBSETF MSCI USA hdg to CHF"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -374,6 +394,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -415,6 +437,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0032912732"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS ETF CH - SLI CHF A"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -456,6 +480,8 @@ public class PostfinancePDFExtractorTest
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0019396990"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("YPSOMED HLDG"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -478,6 +504,28 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testZahlungsverkehr01()
+    {
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-05-02"), hasAmount("CHF", 1200.00), //
+                        hasSource("Zahlungsverkehr01.txt"), hasNote("Referenz: 391377700"))));
     }
 
     @Test
@@ -763,7 +811,7 @@ public class PostfinancePDFExtractorTest
     {
         PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
@@ -1511,7 +1559,7 @@ public class PostfinancePDFExtractorTest
     {
         PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
@@ -1589,7 +1637,7 @@ public class PostfinancePDFExtractorTest
     {
         PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
@@ -2147,7 +2195,7 @@ public class PostfinancePDFExtractorTest
     {
         PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 

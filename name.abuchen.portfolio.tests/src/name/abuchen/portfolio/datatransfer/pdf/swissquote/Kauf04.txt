@@ -1,0 +1,29 @@
+PDF author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567 - TRADING
+IBAN: CH431213484123183435
+Herrn Max Mustermann
+Musterstraße 1
+DE-12345 Musterstadt
+Gland, 28.10.2020
+Börsentransaktion: Kauf Unsere Referenz: 206871550 
+Gemäss Ihrem Kaufauftrag vom 28.10.2020 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+Vanguard All World ETF Dist ISIN: IE00B3RBWM25 SIX Swiss Exchange 
+NKN: 18575459
+Anzahl Preis Betrag
+25 83.49 CHF 2'087.25
+Total CHF 2'087.25
+Kommission Swissquote Bank AG CHF 9.85
+Abgabe (Eidg. Stempelsteuer) CHF 3.15
+Börsengebühren CHF 2.00
+Zu Ihren Lasten CHF 2'102.25
+Betrag belastet auf Kontonummer  123456701, Valutadatum 30.10.2020
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Vielen Dank für Ihren Auftrag.
+Formular ohne Unterschrift S.E. & O.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+MwSt n° CHE-116.310.079

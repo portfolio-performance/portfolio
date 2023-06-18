@@ -25,7 +25,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("1822direkt"); //$NON-NLS-1$
+        addBankIdentifier("1822direkt");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -34,7 +34,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "1822direkt"; //$NON-NLS-1$
+        return "1822direkt";
     }
 
     private void addBuySellTransaction()
@@ -58,7 +58,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|(Ausgabe|R.cknahme) Investmentfonds)).*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Rücknahme Investmentfonds"))
+                    if ("Verkauf".equals(v.get("type")) || "Rücknahme Investmentfonds".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

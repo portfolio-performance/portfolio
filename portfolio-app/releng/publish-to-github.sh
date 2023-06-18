@@ -9,7 +9,7 @@ fi
 gh release create --repo buchen/portfolio --draft --title ${PCK_VERSION} ${PCK_VERSION}
 
 BASE=$(pwd)/../../portfolio-product/target/products/
-BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/target/products/
+BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/products/
 
 FILES=$(cat <<EOF
 PortfolioPerformance-${PCK_VERSION}-setup.exe

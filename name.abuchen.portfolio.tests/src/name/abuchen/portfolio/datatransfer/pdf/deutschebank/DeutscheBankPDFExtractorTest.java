@@ -1,5 +1,28 @@
 package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -50,35 +73,24 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US17275R1023"));
-        assertThat(security.getWkn(), is("878841"));
-        assertThat(security.getName(), is("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US17275R1023"), //
+                        hasWkn("878841"), //
+                        hasTicker(null), //
+                        hasName("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"), //
+                        hasCurrencyCode("USD"))));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(380)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(64.88))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(87.13))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.71 + 0.47 + 13.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(98.80))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2014-12-15"), //
+                        hasShares(380), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 64.88), //
+                        hasGrossValue("EUR", 87.13), //
+                        hasForexGrossValue("USD", 98.80), //
+                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), //
+                        hasFees("EUR", 0))));
     }
 
     @Test
@@ -101,30 +113,22 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(1));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(380)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(64.88))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(87.13))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.71 + 0.47 + 13.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
-        assertThat(s, is(Status.OK_STATUS));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2014-12-15"), //
+                        hasShares(380), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 64.88), //
+                        hasGrossValue("EUR", 87.13), //
+                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), //
+                        hasFees("EUR", 0), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -145,28 +149,20 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
-
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.95))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.22))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.28 + 0.23 + 0.76))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2014-12-15"), //
+                        hasShares(123), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.95), //
+                        hasGrossValue("EUR", 20.22), //
+                        hasTaxes("EUR", 4.28 + 0.23 + 0.76), //
+                        hasFees("EUR", 0))));
     }
 
     @Test
@@ -187,6 +183,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0J2060"));
         assertThat(security.getWkn(), is("A0J206"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS-MSCI N. AMERIC.UCITS ETF BE.SH.(DT.ZT.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -278,6 +275,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1YZSC51"));
         assertThat(security.getWkn(), is("A0MZWQ"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-CORE MSCI EUROPE U.ETF REG.SH.O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -320,6 +318,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0008474156"));
         assertThat(security.getWkn(), is("847415"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS EUROPEAN OPPORTUNITIES INHABER-ANTEIL.LD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -362,6 +361,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3VVMM84"));
         assertThat(security.getWkn(), is("A1JX51"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE EMU.ETF DLD FUNDS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -407,29 +407,20 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(675.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(665.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90 + 2.00 + 0.60))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2015-04-02T09:04"), //
+                        hasShares(19), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 675.50), //
+                        hasGrossValue("EUR", 665.00), //
+                        hasTaxes("EUR", 0), //
+                        hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
 
     @Test
@@ -450,6 +441,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -493,6 +485,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0392494562"));
         assertThat(security.getWkn(), is("ETF110"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -536,6 +529,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BK1PV551"));
         assertThat(security.getWkn(), is("A1XEY2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WORLD 1D FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -579,6 +573,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BL25JL35"));
         assertThat(security.getWkn(), is("A1103D"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WRLD QUAL.1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -622,6 +617,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BTJRMP35"));
         assertThat(security.getWkn(), is("A12GVR"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI EM.MKTS 1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -665,6 +661,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -708,29 +705,20 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-01-28T09:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
-        assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(453.66))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(464.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90 + 2.00 + 0.60))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2015-01-28T09:00"), //
+                        hasShares(8), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 453.66), //
+                        hasGrossValue("EUR", 464.16), //
+                        hasTaxes("EUR", 0), //
+                        hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
 
     @Test
@@ -751,6 +739,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -794,6 +783,7 @@ public class DeutscheBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007448508"));
         assertThat(security.getWkn(), is("744850"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -836,20 +826,18 @@ public class DeutscheBankPDFExtractorTest
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(32L));
 
-        Item item = iter.next();
-
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
+        assertThat(results, hasItem(removal( //
+                        hasDate("2020-11-02"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Dauerauftrag an Mustermann, Max"), //
+                        hasAmount("EUR", 40.00))));
 
+        Item item = iter.next();
         item = iter.next();
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -1115,16 +1103,14 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
-        item = iter.next();
-
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(80.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Max Mustermann"));
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-11-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Überweisung von Max Mustermann"), //
+                        hasAmount("EUR", 80.00))));
 
+        item = iter.next();
         item = iter.next();
 
         // assert transaction
@@ -1667,9 +1653,9 @@ public class DeutscheBankPDFExtractorTest
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(30L));
+        assertThat(countAccountTransactions(results), is(30L));
 
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         Item item = iter.next();
 
         // assert transaction

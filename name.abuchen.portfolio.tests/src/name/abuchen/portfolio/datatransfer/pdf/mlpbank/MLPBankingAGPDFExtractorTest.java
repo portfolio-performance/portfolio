@@ -54,6 +54,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0106280836"));
         assertThat(security.getWkn(), is("930920"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SAUREN GLOBAL BALANCED INHABER-ANTEILE A O.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -97,6 +98,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0MUWS7"));
         assertThat(security.getWkn(), is("A0MUWS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ZINSPLUS OP INHABER-ANTEILE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -140,6 +142,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0NEKK1"));
         assertThat(security.getWkn(), is("A0NEKK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HANSAGOLD INHABER-ANTEILE USD-KLASSE A"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -235,6 +238,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0009848119"));
         assertThat(security.getWkn(), is("984811"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS TOP DIVIDENDE INHABER-ANTEILE LD"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -278,6 +282,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0087412390"));
         assertThat(security.getWkn(), is("974515"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS CON.DJE ALPHA RENT.GLOBAL INHABER-ANTEILE LC O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -341,6 +346,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0079474960"));
         assertThat(security.getWkn(), is("986838"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AB SICAV I-AMERICAN GROWTH PTF ACTIONS NOM. A O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -436,6 +442,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0244125554"));
         assertThat(security.getWkn(), is("A0JJUS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MULTICOOP.-GAM COMMODITY ACTIONS AU PORTEUR A O.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -527,6 +534,7 @@ public class MLPBankingAGPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0MUWS7"));
         assertThat(security.getWkn(), is("A0MUWS"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ZINSPLUS OP INHABER-ANTEILE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 

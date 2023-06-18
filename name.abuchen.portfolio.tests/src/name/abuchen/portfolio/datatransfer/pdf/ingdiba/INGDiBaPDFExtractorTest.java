@@ -29,6 +29,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -55,6 +56,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -98,6 +100,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -141,6 +144,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS0138973010"));
         assertThat(security.getWkn(), is("778998"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("7,125 % Aareal Bank Capital Fdg Trust EO-Trust.Pref.Sec. 01(06/Und.)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -184,6 +188,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UF5"));
         assertThat(security.getWkn(), is("A0F5UF"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -227,6 +232,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0MKQK7"));
         assertThat(security.getWkn(), is("A0MKQK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ETF-PORTFOLIO GLOBAL Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -270,6 +276,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB0002771383"));
         assertThat(security.getWkn(), is("987665"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Threadn.Inv.Fds-Euro.Sm.Cos Fd Thesaurierungsant. Klasse 1 oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -313,6 +320,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Apple Inc. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -356,6 +364,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB0030934490"));
         assertThat(security.getWkn(), is("797739"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("M&G Inv.(1)-M&G Global Leaders Reg. Shares Euro-Class A o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -399,6 +408,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TUAG000"));
         assertThat(security.getWkn(), is("TUAG00"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TUI AG Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -442,6 +452,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US76954A1034"));
         assertThat(security.getWkn(), is("A3C47B"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Rivian Automotive Inc. Reg.Shares Cl.A  DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -537,6 +548,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0109392836"));
         assertThat(security.getWkn(), is("937446"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Fr.Temp.Inv.Fds -F.Technol. Fd Namens-Anteile A (acc.) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -632,6 +644,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("XS2263517364"));
         assertThat(security.getWkn(), is("A27DLG"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("0,01 % Landwirtschaftliche Rentenbank Med.T.Nts.v.20(40)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -675,6 +688,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TUAG000"));
         assertThat(security.getWkn(), is("TUAG00"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("TUI AG Namens-Aktien o.N. Actions Port. EO 1"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -718,6 +732,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TUAG000"));
         assertThat(security.getWkn(), is("TUAG00"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Wertpapier AG Wertpapier XXXXXXXXXX"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -761,6 +776,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000ETFL235"));
         assertThat(security.getWkn(), is("ETFL23"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Wertpapier AG Wertpapier XXXXXXXXXX"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -804,6 +820,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0629459743"));
         assertThat(security.getWkn(), is("A1JA1R"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS(L)FS-MSCI World Soc. Resp. Namens-Anteile (USD) A-dis o.N"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -830,6 +847,50 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf17()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE000A3H2UX0"));
+        assertThat(security.getWkn(), is("A3H2UX"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("1,75 % Sixt SE MTN v.2020(2024/2024)"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-18T10:45:15")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getSource(), is("Kauf17.txt"));
+        assertThat(entry.getNote(), is("Stückzinsen EUR 6,23 (Zinsvaluta 21.12.2020 13 Tage)"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10226.61))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10196.23))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.38))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
@@ -847,6 +908,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006632003"));
         assertThat(security.getWkn(), is("663200"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MorphoSys AG Inhaber-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -890,6 +952,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635281"));
         assertThat(security.getWkn(), is("263528"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.EO ST.Sel.Div.30 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -933,6 +996,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Apple Inc. Registered Shares o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -976,6 +1040,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000MA03JY5"));
         assertThat(security.getWkn(), is("MA03JY"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Morgan Stanley & Co. Intl PLC FaktL O.End DAX 11476,96"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1019,6 +1084,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A3H22F2"));
         assertThat(security.getWkn(), is("A3H22F"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KION GROUP AG Inhaber-Bezugsrechte Fälligkeit 03.12.2020"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1062,6 +1128,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0014000IN0"));
         assertThat(security.getWkn(), is("A2QJCL"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Alstom S.A. Anrechte Fälligkeit 30.11.2020"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1105,6 +1172,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09075V1026"));
         assertThat(security.getWkn(), is("A2PSR2"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1148,6 +1216,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US76954A1034"));
         assertThat(security.getWkn(), is("A3C47B"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Rivian Automotive Inc. Reg.Shares Cl.A  DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1243,6 +1312,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000CF7HEF1"));
         assertThat(security.getWkn(), is("CF7HEF"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Citigroup Global Markets Dt. CA.BO.Z 23.12.14 Coba"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1286,6 +1356,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKPT2S34"));
         assertThat(security.getWkn(), is("A2P1KU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsIII-Gl.Infl.L.Gov.Bd U.ETF Reg. Shs HGD EUR Acc. oN"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1328,6 +1399,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0274208692"));
         assertThat(security.getWkn(), is("DBX1MW"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtrackers MSCI World Swap Inhaber-Anteile 1C o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1370,6 +1442,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5801351017"));
         assertThat(security.getWkn(), is("856958"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("McDonald's Corp. Registered Shares DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1462,6 +1535,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0744"));
         assertThat(security.getWkn(), is("A0H074"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.DJ Asia Pa.S.D.30 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1504,6 +1578,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0038389992"));
         assertThat(security.getWkn(), is("A0NFN3"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BB Biotech AG Namens-Aktien SF 0,20"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
@@ -1596,6 +1671,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("BE0974293251"));
         assertThat(security.getWkn(), is("A2ASUV"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Anheuser-Busch InBev S.A./N.V. Actions au Port. o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -1638,6 +1714,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5801351017"));
         assertThat(security.getWkn(), is("856958"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("McDonald’s Corp. Registered Shares DL-,01"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1730,6 +1807,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4581401001"));
         assertThat(security.getWkn(), is("855681"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Intel Corp. Registered Shares DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1822,6 +1900,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92826C8394"));
         assertThat(security.getWkn(), is("A0NC7B"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VISA Inc. Reg. Shares Class A DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -1914,6 +1993,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US4581401001"));
         assertThat(security.getWkn(), is("855681"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Intel Corp. Registered Shares DL -,001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2006,6 +2086,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA29250N6679"));
         assertThat(security.getWkn(), is("A2DPXK"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("4,40000% Enbridge Inc. 4,4%.Cum.Red.Pref.Shs.5 CD 25"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2098,6 +2179,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92826C8394"));
         assertThat(security.getWkn(), is("A0NC7B"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VISA Inc. Reg. Shares Class A DL -,0001"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
@@ -2190,6 +2272,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635307"));
         assertThat(security.getWkn(), is("263530"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2232,6 +2315,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1PGUT9"));
         assertThat(security.getWkn(), is("A1PGUT"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("7,25000% posterXXL AG Inh.-Schv.v.2012(2015/2017)"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2274,6 +2358,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0002635281"));
         assertThat(security.getWkn(), is("263528"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.EO ST.Sel.Div.30 U.ETF DE Inhaber-Anteile"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2316,6 +2401,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B53QG562"));
         assertThat(security.getWkn(), is("A0YEDX"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs VII-Core MSCI EMU UCI.ETF Reg. Shares EUR (Acc) o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2358,6 +2444,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TLX1005"));
         assertThat(security.getWkn(), is("TLX100"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Talanx AG Namens-Aktien o.N."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2400,6 +2487,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB0007980591"));
         assertThat(security.getWkn(), is("850517"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BP PLC Registered Shares DL -,25"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
@@ -2475,17 +2563,305 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
-    public void testStornoDividende01()
+    public void testDividende17()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoDividende01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US70806A1060"));
+        assertThat(security.getWkn(), is("A1JQAB"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("PennantPark Floating Rate Cap. Registered Shares o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-05-01T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
+        assertThat(transaction.getSource(), is("Dividende17.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.24))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.81))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.57))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.20))));
+    }
+
+    @Test
+    public void testDividende17WithSecurityinEUR()
+    {
+        Security security = new Security("PennantPark Floating Rate Cap. Registered Shares o.N.", CurrencyUnit.EUR);
+        security.setIsin("US70806A1060");
+        security.setWkn("A1JQAB");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-05-01T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
+        assertThat(transaction.getSource(), is("Dividende17.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.24))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.81))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.57))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende18()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US46131B7047"));
+        assertThat(security.getWkn(), is("A3DMJV"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("Invesco Mortgage Capital Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-27T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("Dividende18.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.08))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.62))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.54))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.00))));
+    }
+
+    @Test
+    public void testDividende18WithSecurityinEUR()
+    {
+        Security security = new Security("Invesco Mortgage Capital Registered Shares DL -,01", CurrencyUnit.EUR);
+        security.setIsin("US46131B7047");
+        security.setWkn("A3DMJV");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-27T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
+        assertThat(transaction.getSource(), is("Dividende18.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.08))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.62))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.54))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende19()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("US0357108390"));
+        assertThat(security.getWkn(), is("A3DUCY"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("Annaly Capital Management Inc. Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-28T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+        assertThat(transaction.getSource(), is("Dividende19.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.10))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.53))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.43))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(32.50))));
+    }
+
+    @Test
+    public void testDividende19WithSecurityinEUR()
+    {
+        Security security = new Security("Annaly Capital Management Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        security.setIsin("US0357108390");
+        security.setWkn("A3DUCY");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-28T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+        assertThat(transaction.getSource(), is("Dividende19.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.10))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.53))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.43))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividendeStorno01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00BTN1Y115"));
+        assertThat(security.getWkn(), is("A14M2J"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("Medtronic PLC Registered Shares DL -,0001"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check cancellation (Storno) transaction
         TransactionItem cancellation = (TransactionItem) results.stream() //
@@ -2493,8 +2869,26 @@ public class INGDiBaPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
+        assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
-        assertThat(cancellation.getSource(), is("StornoDividende01.txt"));
+
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(100)));
+        assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno01.txt"));
+        assertNull(((Transaction) cancellation.getSubject()).getNote());
+
+        assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.20))));
+        assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.20))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        Unit grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(26.25))));
     }
 
     @Test
@@ -2515,6 +2909,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0347556943"));
         assertThat(security.getWkn(), is("UZ1LSU"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG (London Branch) Liquid. Z31.12.19 Fund"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2558,6 +2953,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000SR9YJB8"));
         assertThat(security.getWkn(), is("SR9YJB"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Société Générale Effekten GmbH DISC.Z 25.06.21 Roche 310"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2601,6 +2997,7 @@ public class INGDiBaPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000HU89K58"));
         assertThat(security.getWkn(), is("HU89K5"));
+        assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UniCredit Bank AG HVB Call 13.12.17 Tesla 300"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -2697,5 +3094,122 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.01)));
         assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gutschrift/Dauerauftrag"));
+    }
+
+    @Test
+    public void testGiroKontoauszug02()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(9));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-13T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-17T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3000.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-10-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Überweisung"));
+        
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-06-27T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000.00)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Gutschrift"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-06-14T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.40)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("01.01.2016 bis 14.06.2016 (0,50%)"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.22)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("15.06.2016 bis 31.12.2016 (0,35%)"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.38)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Kapitalertragsteuer"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.07)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Solidaritätszuschlag"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.11)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Kirchensteuer"));
     }
 }

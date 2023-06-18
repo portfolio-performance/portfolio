@@ -97,6 +97,7 @@ public interface UIConstants
         String VIEW_PARAMETER = "name.abuchen.portfolio.ui.param.viewparameter"; //$NON-NLS-1$
         String URL = "name.abuchen.portfolio.ui.param.url"; //$NON-NLS-1$
         String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
+        String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR
@@ -165,6 +166,12 @@ public interface UIConstants
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+
+        /**
+         * Preference key used in 2023 to indicate whether the survey is active.
+         * Do not reuse!
+         */
+        @Deprecated
         String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
@@ -176,7 +183,13 @@ public interface UIConstants
 
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
+        String LEEWAY_API_KEY = "LEEWAY_API_KEY"; //$NON-NLS-1$
+
+        String TWELVEDATA_API_KEY = "TWELVEDATA_API_KEY"; //$NON-NLS-1$
+        
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
+
+        String MYDIVIDENDS24_API_KEY = "MYDIVIDENDS24_API_KEY"; //$NON-NLS-1$
 
         String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
 
@@ -209,6 +222,11 @@ public interface UIConstants
         String BACKUP_FOLDER_ABSOLUTE = "BACKUP_FOLDER_ABSOLUTE"; //$NON-NLS-1$
 
         /**
+         * Preference for directory from which to open data files
+         */
+        String DEFAULT_OPEN_PATH = "DEFAULT_OPEN_PATH"; //$NON-NLS-1$
+
+        /**
          * Preference for directory from which to import PDF files
          */
         String PDF_IMPORT_PATH = "PDF_IMPORT_PATH"; //$NON-NLS-1$
@@ -217,6 +235,12 @@ public interface UIConstants
          * Preference for directory from which to import CSV files
          */
         String CSV_IMPORT_PATH = "CSV_IMPORT_PATH"; //$NON-NLS-1$
+
+        /**
+         * Preference for directory from which to export CSV files
+         */
+        String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
+
     }
 
     interface CSS // NOSONAR

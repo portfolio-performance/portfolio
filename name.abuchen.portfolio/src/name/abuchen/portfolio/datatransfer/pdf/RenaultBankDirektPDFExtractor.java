@@ -19,16 +19,16 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
     private static final String DEPOSIT_2019 = "^(?<date>\\d+.\\d+.)  (.*-Gutschrift)(\\s*)(?<amount>[\\d\\s,.]*)(\\+$)";
     private static final String REMOVAL_2019 = "^(?<date>\\d+.\\d+.)  (Internet-Euro-Überweisung)(\\s*)(?<amount>[\\d\\s,.]*)(\\-)(.*)";
     private static final String INTEREST_2019 = "^(?<date>\\d+.\\d+.)  (.*)(Zinsen\\/Kontoführung)(\\s*)(?<amount>[\\d\\s,.]*)(\\+$)";
-    
+
     private static final String DEPOSIT_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*gutschr\\.?)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
     private static final String REMOVAL_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Umbuchung)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
     private static final String INTEREST_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Abschluss)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    
+
     private static final String DEPOSIT_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\d\\s,.]*?) (.*)";
     private static final String REMOVAL_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\d\\s,.]*?) (.*)";
     private static final String INTEREST_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\w+zinsen) (\\w+) (?<amount>[\\d\\s,.]*?) (.*)";
     private static final String TAXES_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\d\\s,.]*?) (.*)";
-    
+
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
     private static final String CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE = "transactions_full_date";
@@ -38,9 +38,9 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("305 200 37"); //$NON-NLS-1$
-        addBankIdentifier("Renault Bank direkt"); //$NON-NLS-1$
-        
+        addBankIdentifier("305 200 37");
+        addBankIdentifier("Renault Bank direkt");
+
         addTransactionWith2019Format();
         addTransactionWith2021Format();
         addTransactionWith2022Format();
@@ -49,7 +49,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Renault Bank direkt"; //$NON-NLS-1$
+        return "Renault Bank direkt";
     }
 
     private void addTransactionWith2019Format()
@@ -64,12 +64,12 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         Block removalBlock = new Block(REMOVAL_2019);
         removalBlock.set(removalTransaction(type, REMOVAL_2019));
         type.addBlock(removalBlock);
-        
+
         Block interestBlock = new Block(INTEREST_2019);
         interestBlock.set(interestTransaction(type, INTEREST_2019));
         type.addBlock(interestBlock);
     }
-    
+
     private void addTransactionWith2021Format()
     {
         DocumentType type = new DocumentType("Renault Bank direkt", contextProvider2021());
@@ -82,12 +82,12 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         Block removalBlock = new Block(REMOVAL_2021);
         removalBlock.set(removalTransaction(type, REMOVAL_2021));
         type.addBlock(removalBlock);
-        
+
         Block interestBlock = new Block(INTEREST_2021);
         interestBlock.set(interestTransaction(type, INTEREST_2021));
         type.addBlock(interestBlock);
     }
-    
+
     private void addTransactionWith2022Format()
     {
         DocumentType type = new DocumentType("Renault Bank direkt", contextProvider2022());
@@ -100,11 +100,11 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         Block removalBlock = new Block(REMOVAL_2022);
         removalBlock.set(removalTransaction(type, REMOVAL_2022));
         type.addBlock(removalBlock);
-        
+
         Block interestBlock = new Block(INTEREST_2022);
         interestBlock.set(interestTransaction(type, INTEREST_2022));
         type.addBlock(interestBlock);
-        
+
         Block taxesBlock = new Block(TAXES_2022);
         taxesBlock.set(taxesTransaction(type, TAXES_2022));
         type.addBlock(taxesBlock);
@@ -145,7 +145,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         .assign(assignmentsProvider(type))
                         .wrap(TransactionItem::new);
     }
-    
+
     private Transaction<AccountTransaction> taxesTransaction(DocumentType type, String regex)
     {
         return new Transaction<AccountTransaction>().subject(() -> {
@@ -164,14 +164,14 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Map<String, String> context = type.getCurrentContext();
 
             boolean transactionsHaveFullDate = CONTEXT_VALUE_TRUE.equals(context.get(CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE));
-            
+
             String date = matcherMap.get("date");
-            
+
             if (!transactionsHaveFullDate)
             {
                 date += context.get(CONTEXT_KEY_YEAR);
             }
-            
+
             transaction.setDateTime(asDate(date));
             transaction.setAmount(asAmount(matcherMap.get("amount")));
             transaction.setCurrencyCode(context.get(RenaultBankDirektPDFExtractor.CONTEXT_KEY_CURRENCY));
@@ -184,7 +184,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Pattern yearPattern = Pattern.compile("(.*)(KONTOAUSZUG  Nr. )(\\d+)\\/(?<year>\\d{4})");
             Pattern currencyPattern = Pattern
                             .compile("(.*)(Summe Zinsen\\/Kontoführung)(\\s*)                (?<currency>[\\w]{3})(.*)");
-            
+
             contextProviderCommon(context, lines, yearPattern, currencyPattern);
         };
     }
@@ -208,9 +208,9 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             contextProviderCommon(context, lines, null, currencyPattern);
         };
     }
-    
+
     private void contextProviderCommon(Map<String, String> context,
-                    String[] lines, 
+                    String[] lines,
                     Pattern yearPattern,
                     Pattern currencyPattern)
     {

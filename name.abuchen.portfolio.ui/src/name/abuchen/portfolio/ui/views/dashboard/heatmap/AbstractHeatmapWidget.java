@@ -173,7 +173,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         if (showStandardDeviation)
             model.addHeader("s", HeatmapOrnament.STANDARD_DEVIATION.toString()); //$NON-NLS-1$
         if (showAverage)
-            model.addHeader("\u2300", EarningsHeatmapWidget.Average.AVERAGE.toString()); //$NON-NLS-1$
+            model.addHeader("\u2300", Average.AVERAGE.toString()); //$NON-NLS-1$
     }
 
     protected Double geometricMean(List<Double> values)

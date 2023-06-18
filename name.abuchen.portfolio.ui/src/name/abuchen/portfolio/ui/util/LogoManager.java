@@ -63,9 +63,8 @@ public final class LogoManager
 
     private Image getLogoImage(Object object, ClientSettings settings)
     {
-        if (object instanceof Attributable)
+        if (object instanceof Attributable target)
         {
-            Attributable target = (Attributable) object;
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
             return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
         }
@@ -76,8 +75,8 @@ public final class LogoManager
     {
         if (object instanceof Account)
             return Images.ACCOUNT.image();
-        else if (object instanceof Security)
-            return ((Security) object).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+        else if (object instanceof Security security)
+            return security.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
         else if (object instanceof Portfolio)
             return Images.PORTFOLIO.image();
         else if (object instanceof InvestmentPlan)

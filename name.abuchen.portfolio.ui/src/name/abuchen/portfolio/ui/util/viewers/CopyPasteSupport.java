@@ -146,8 +146,8 @@ public class CopyPasteSupport
         for (int ii = 0; ii < columnCount; ii++)
         {
             CellLabelProvider p = viewer.getLabelProvider(ii);
-            if (p instanceof SharesLabelProvider)
-                labelProvider[ii] = (SharesLabelProvider) p;
+            if (p instanceof SharesLabelProvider sharesLabelProvider)
+                labelProvider[ii] = sharesLabelProvider;
         }
         return labelProvider;
     }

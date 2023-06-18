@@ -14,7 +14,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
     private static final char NBSP = '\u00A0'; // No-Break Space
     private static final char NNBS = '\u202f'; // Narrow No-Break Space
 
-    private final DecimalFormat defaultPlattern;
+    private final DecimalFormat defaultPattern;
     private final DecimalFormat withSpacePattern;
     private final DecimalFormat belgianPattern;
 
@@ -31,8 +31,8 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         this.type = type;
         this.acceptNegativeValues = acceptNegativeValues;
 
-        defaultPlattern = new DecimalFormat("#,###.##"); //$NON-NLS-1$
-        defaultPlattern.setParseBigDecimal(true);
+        defaultPattern = new DecimalFormat("#,###.##"); //$NON-NLS-1$
+        defaultPattern.setParseBigDecimal(true);
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 
@@ -88,8 +88,11 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         String value = fromObject.trim();
 
         long result = 0;
-        for (String part : value.split("\\+")) //$NON-NLS-1$
+        for (String part : value.split("\\+|(?=-)")) //$NON-NLS-1$
             result += convertToLong(part.trim());
+
+        if (result < 0 && !acceptNegativeValues)
+            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, value));
 
         return Long.valueOf(result);
     }
@@ -103,7 +106,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
             // regular decimal separator
 
             int dot = part.indexOf('.');
-            int comma = part.indexOf(defaultPlattern.getDecimalFormatSymbols().getDecimalSeparator());
+            int comma = part.indexOf(defaultPattern.getDecimalFormatSymbols().getDecimalSeparator());
 
             if (comma < 0 && dot >= 0 && part.lastIndexOf('.') == dot)
                 return parse(part, belgianPattern);
@@ -119,7 +122,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
             // fall back to default pattern
         }
 
-        return parse(part, defaultPlattern);
+        return parse(part, defaultPattern);
     }
 
     private long parse(String string, DecimalFormat decimalFormat)
@@ -128,9 +131,6 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         BigDecimal answer = (BigDecimal) decimalFormat.parse(string, parsePosition);
 
         if (parsePosition.getIndex() == 0 || parsePosition.getIndex() < string.length())
-            throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
-
-        if (answer.signum() == -1 && !acceptNegativeValues)
             throw new IllegalArgumentException(String.format(Messages.CellEditor_NotANumber, string));
 
         return answer.multiply(type.getBigDecimalFactor()).longValue();
