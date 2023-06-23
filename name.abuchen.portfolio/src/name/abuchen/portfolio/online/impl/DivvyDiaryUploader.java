@@ -30,11 +30,14 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
-import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class DivvyDiaryUploader
 {
+    public static record DDPortfolio(long id, String name)
+    {
+    }
+
     private String apiKey;
 
     public DivvyDiaryUploader(String apiKey)
@@ -42,9 +45,9 @@ public class DivvyDiaryUploader
         this.apiKey = Objects.requireNonNull(apiKey);
     }
 
-    public List<Pair<Long, String>> getPortfolios() throws IOException
+    public List<DDPortfolio> getPortfolios() throws IOException
     {
-        List<Pair<Long, String>> answer = new ArrayList<>();
+        List<DDPortfolio> answer = new ArrayList<>();
 
         String response = new WebAccess("api.divvydiary.com", "/session") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("X-API-Key", apiKey) //$NON-NLS-1$
@@ -60,7 +63,7 @@ public class DivvyDiaryUploader
             for (Object p : portfolios)
             {
                 JSONObject portfolio = (JSONObject) p;
-                answer.add(new Pair<>((Long) portfolio.get("id"), (String) portfolio.get("name"))); //$NON-NLS-1$ //$NON-NLS-2$
+                answer.add(new DDPortfolio((Long) portfolio.get("id"), (String) portfolio.get("name"))); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
