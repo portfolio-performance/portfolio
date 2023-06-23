@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.0
+-----------------------------------------
+ T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/1
+Unterschleißheim
+Max Mustermann
+14.06.2023
+Teststr. 42
+Max Mustermann
+12345 Musterstadt
+Stamm-Nr.: 12345    Portfolio: 1
+Depot-Nr.: 00123456789
+Vorgangs-Nr.: 123456
+Referenz-Nr.: 123456
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 13.06.2023 Ausführungsplatz: Hongkong
+Auftragszeit: 17:12:46:00
+Nominale ISIN: BMG4069C1486 WKN: 879151 Kurs 
+STK 52,22 Great Eagle Holdings Ltd. HKD 14,858
+Registered Shares HD -,50
+Auftraggeber: Mustermann
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert Umrechnungskurs HKD/EUR: 8,4546 EUR 91,77
+Stamp HongKong EUR 0,12
+Zu Lasten Konto 123456 Valuta: 16.06.2023 EUR 91,89
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit 
+14.06.2023 08:48:32:76
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1689 MIC des Ausführungsplatzes: SEHK
+Lagerland: Hongkong
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+30315736
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Dietmar von Blücher, StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Helmut Schreyer LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-060.114
