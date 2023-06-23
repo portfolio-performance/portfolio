@@ -145,12 +145,15 @@ public class DivvyDiaryUploader
         upload.addHeader("X-API-Key", apiKey); //$NON-NLS-1$
         upload.addHeader("Content-Type", "application/json"); //$NON-NLS-1$ //$NON-NLS-2$
 
+        // inform DivvyDiary that transactions are split adjusted
+        upload.addParameter("splitAdjusted", "true");
+
         JSONObject json = new JSONObject();
 
         json.put("securities", securities);
         if (!activities.isEmpty())
             json.put("activities", activities);
-        
+
         upload.post(JSONValue.toJSONString(json));
     }
 
