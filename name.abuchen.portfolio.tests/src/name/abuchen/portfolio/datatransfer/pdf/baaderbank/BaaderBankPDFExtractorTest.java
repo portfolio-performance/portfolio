@@ -14,6 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -1047,7 +1048,7 @@ public class BaaderBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("DE000GP0Q523"), hasWkn("GP0Q52"), hasTicker(null), //
-                        hasName("Goldman Sachs Bank Europe SE TuBear O.End Nasd100 14200"), // 
+                        hasName("Goldman Sachs Bank Europe SE TuBear O.End Nasd100 14200"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -1076,7 +1077,7 @@ public class BaaderBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("US88579Y1010"), hasWkn("851745"), hasTicker(null), //
-                        hasName("3M Co. Registered Shares DL -,01"), // 
+                        hasName("3M Co. Registered Shares DL -,01"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -1105,7 +1106,7 @@ public class BaaderBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00BFNM3P36"), hasWkn("A2N6TH"), hasTicker(null), //
-                        hasName("iShs IV-iShs MSCI EMIMI ES ETF Reg. Shares USD Acc. o.N."), // 
+                        hasName("iShs IV-iShs MSCI EMIMI ES ETF Reg. Shares USD Acc. o.N."), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -1134,7 +1135,7 @@ public class BaaderBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("AU000000BHP4"), hasWkn("850524"), hasTicker(null), //
-                        hasName("BHP Group Ltd. Registered Shares DL -,50"), // 
+                        hasName("BHP Group Ltd. Registered Shares DL -,50"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
@@ -1143,6 +1144,35 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf26.txt"), hasNote("Vorgangs-Nr.: 186694373"), //
                         hasAmount("EUR", 53.98), hasGrossValue("EUR", 53.98), //
                         hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf27()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("BMG4069C1486"), hasWkn("879151"), hasTicker(null), //
+                        hasName("Great Eagle Holdings Ltd. Registered Shares HD -,50"), //
+                        hasCurrencyCode("HKD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-14T08:48:32"), hasShares(52.22), //
+                        hasSource("Kauf27.txt"), hasNote("Vorgangs-Nr.: 123456"), //
+                        hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), hasForexGrossValue("HKD", 775.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.12))));
     }
 
     @Test
