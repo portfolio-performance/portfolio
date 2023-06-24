@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -148,6 +150,19 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                                                 t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
                                             else
                                                 t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Orderausführung Datum/Zeit: 13. 06. 2023 11:10:52
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.([\\s]+)?[\\d]{2}\\.([\\s]+)?[\\d]{4}).*$")
+                                        .assign((t, v) -> {
+                                            if (type.getCurrentContext().get("time") != null)
+                                                t.setDate(asDate(stripBlanks(v.get("date")), type.getCurrentContext().get("time")));
+                                            else
+                                                t.setDate(asDate(stripBlanks(v.get("date"))));
                                         })
                                 ,
                                 // @formatter:off
