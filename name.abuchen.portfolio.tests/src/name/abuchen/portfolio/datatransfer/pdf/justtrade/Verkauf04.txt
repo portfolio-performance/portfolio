@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.0
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Hamburger Allee 14
+Herr 60486 Frankfurt am Main
+Vor Name E-Mail: service@justtrade.com
+Straße 1 Web: www.justtrade.com
+11111 Stadt
+Name des Kunden: Vor Name
+Depotnummer: 111111111
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr Vor Name,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - OceanPal Inc. Registered Shares DL -,01
+Internationale Wertpapierkennnummer (ISIN): MHY6430L2029
+Währung: EUR
+Handels-/Ausführungsplatz: -
+Handelsreferenz: 11111111
+Orderausführung Datum/Zeit: 13. 06. 2023 11:10:52
+Valutatag Datum: 13 Jun 2023
+Transaktionsart: Verkauf
+Kurs: €3,1451
+Stück/Nominale: 0,4000
+Kurswert: €1,26
+Ausmachender Betrag: €1,26
+Hinweise zur steuerlichen Verrechnung: Vorher Aktuell
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
