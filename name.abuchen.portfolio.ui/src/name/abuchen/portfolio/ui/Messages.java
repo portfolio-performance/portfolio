@@ -545,6 +545,8 @@ public class Messages extends NLS
     public static String LabelChartDetailIndicatorBollingerBands;
     public static String LabelChartDetailIndicatorBollingerBandsLower;
     public static String LabelChartDetailIndicatorBollingerBandsUpper;
+    public static String LabelChartDetailIndicatorMacd;
+    public static String LabelChartDetailIndicatorMacdSignal;
     public static String LabelChartDetailMovingAverage;
     public static String LabelChartDetailMovingAverageSMA;
     public static String LabelChartDetailMovingAverageEMA;

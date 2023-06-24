@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -40,6 +41,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.IAxis;
+import org.swtchart.IAxis.Position;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
@@ -253,6 +255,7 @@ public class SecuritiesChart
         FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
         FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
+        MACD(Messages.LabelChartDetailIndicatorMacd), //
         SMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
         SMA_20DAYS(Messages.LabelChartDetailMovingAverage_20days), //
         SMA_30DAYS(Messages.LabelChartDetailMovingAverage_30days), //
@@ -354,6 +357,7 @@ public class SecuritiesChart
     private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
     private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
     private static final Color colorBollingerBands = Colors.getColor(201, 141, 68);
+    private static final Color colorMACD = Colors.getColor(226, 155, 200); // #E29BC8
     private static final Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
     private static final Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
     private static final Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
@@ -485,6 +489,8 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseFIFO, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
             if (focus instanceof Date focusDate)
@@ -653,6 +659,7 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
+        subMenuChartIndicator.add(addMenuAction(ChartDetails.MACD));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
         subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_30DAYS));
@@ -956,6 +963,9 @@ public class SecuritiesChart
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2);
+
+        if (chartConfig.contains(ChartDetails.MACD))
+            addMacdMarkerLines(chartInterval, colorMACD);
 
         if (chartConfig.contains(ChartDetails.SMA_5DAYS))
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
@@ -1475,6 +1485,54 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
         lineSeriesBollingerBandsUpperBand.setVisibleInLegend(false);
+    }
+
+    private void addMacdMarkerLines(ChartInterval chartInterval, Color color)
+    {
+        MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(this.security, chartInterval);
+        ChartLineSeriesAxes macdLines = macd.getMacdLine();
+        ChartLineSeriesAxes signalLines = macd.getSignalLine();
+        if (macdLines == null || macdLines.getValues() == null || macdLines.getDates() == null
+                        || signalLines.getValues() == null || signalLines.getDates() == null)
+            return;
+
+        Supplier<IAxis> yAxisFactory = () -> {
+            int yAxisId = chart.getAxisSet().createYAxis();
+            IAxis yAxis = chart.getAxisSet().getYAxis(yAxisId);
+            yAxis.getTitle().setVisible(false);
+            yAxis.getTick().setVisible(false);
+            yAxis.getGrid().setStyle(LineStyle.NONE);
+            yAxis.setPosition(Position.Primary);
+            return yAxis;
+        };
+
+        int yAxisId = chart.getOrCreateAxis(ChartDetails.MACD, yAxisFactory).getId();
+
+        ILineSeries lineSeriesMacd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        Messages.LabelChartDetailIndicatorMacd);
+        lineSeriesMacd.setXDateSeries(macdLines.getDates());
+        lineSeriesMacd.setLineStyle(LineStyle.SOLID);
+        lineSeriesMacd.setLineWidth(2);
+        lineSeriesMacd.enableArea(false);
+        lineSeriesMacd.setSymbolType(PlotSymbolType.NONE);
+        lineSeriesMacd.setYSeries(macdLines.getValues());
+        lineSeriesMacd.setAntialias(swtAntialias);
+        lineSeriesMacd.setLineColor(color);
+        lineSeriesMacd.setYAxisId(yAxisId);
+        lineSeriesMacd.setVisibleInLegend(true);
+
+        ILineSeries lineSeriesSignal = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        Messages.LabelChartDetailIndicatorMacdSignal);
+        lineSeriesSignal.setXDateSeries(signalLines.getDates());
+        lineSeriesSignal.setLineStyle(LineStyle.DOT);
+        lineSeriesSignal.setLineWidth(2);
+        lineSeriesSignal.enableArea(false);
+        lineSeriesSignal.setSymbolType(PlotSymbolType.NONE);
+        lineSeriesSignal.setYSeries(signalLines.getValues());
+        lineSeriesSignal.setAntialias(swtAntialias);
+        lineSeriesSignal.setLineColor(color);
+        lineSeriesSignal.setYAxisId(yAxisId);
+        lineSeriesSignal.setVisibleInLegend(false);
     }
 
     private void addFIFOPurchasePrice(ChartInterval chartInterval)
