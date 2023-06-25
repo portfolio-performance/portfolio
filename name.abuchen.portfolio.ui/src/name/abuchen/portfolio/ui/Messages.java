@@ -390,6 +390,7 @@ public class Messages extends NLS
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
     public static String DivvyDiaryConfirmUpload;
+    public static String DivvyDiaryIncludeTransactionHistory;
     public static String DivvyDiaryMissingAPIKey;
     public static String DivvyDiaryMsgUploading;
     public static String DivvyDiaryUploadSuccessfulMsg;
