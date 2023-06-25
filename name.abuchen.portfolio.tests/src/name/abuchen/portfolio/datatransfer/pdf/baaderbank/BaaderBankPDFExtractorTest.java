@@ -8,7 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -50,6 +50,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -1173,6 +1174,41 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf27.txt"), hasNote("Vorgangs-Nr.: 123456"), //
                         hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), hasForexGrossValue("HKD", 775.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.12))));
+    }
+
+    @Test
+    public void testWertpapierKauf27WithSecurityInEUR()
+    {
+        Security security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", CurrencyUnit.EUR);
+        security.setIsin("BMG4069C1486");
+        security.setWkn("879151");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-14T08:48:32"), hasShares(52.22), //
+                        hasSource("Kauf27.txt"), hasNote("Vorgangs-Nr.: 123456"), //
+                        hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.12), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
