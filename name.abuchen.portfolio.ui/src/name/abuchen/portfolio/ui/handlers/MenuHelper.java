@@ -33,17 +33,7 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
                         && portfolioPart.getClient() != null;
     }
 
-    /* package */static Optional<Client> getActiveClient(MPart part)
-    {
-        return getActiveClientInput(part).map(ClientInput::getClient);
-    }
-
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
-    {
-        return getActiveClientInput(part, true);
-    }
-
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    /* package */static Optional<PortfolioPart> getActivePortfolioPart(MPart part, boolean showWarning)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart)
                         || ((PortfolioPart) part.getObject()).getClient() == null)
@@ -58,7 +48,22 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
             return Optional.empty();
         }
 
-        return Optional.of(((PortfolioPart) part.getObject()).getClientInput());
+        return Optional.of((PortfolioPart) part.getObject());
+    }
+
+    /* package */static Optional<Client> getActiveClient(MPart part)
+    {
+        return getActiveClientInput(part).map(ClientInput::getClient);
+    }
+
+    /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
+    {
+        return getActiveClientInput(part, true);
+    }
+
+    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    {
+        return getActivePortfolioPart(part, showWarning).map(PortfolioPart::getClientInput);
     }
 
 }
