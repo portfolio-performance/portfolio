@@ -13,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -20,14 +21,26 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -44,6 +57,7 @@ import name.abuchen.portfolio.ui.editor.DomainElement;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -222,19 +236,30 @@ public class NewDomainElementHandler
 
     private void createNewTaxonomy(Client client)
     {
-        InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.LabelNewTaxonomy,
-                        Messages.DialogTaxonomyNamePrompt, Messages.LabelNewTaxonomy, null);
-        if (dlg.open() != Window.OK)
+        TaxonomyCreationDialog dialog = new TaxonomyCreationDialog(Display.getDefault().getActiveShell());
+        if (dialog.open() != Window.OK)
             return;
 
-        String name = dlg.getValue();
-        if (name == null)
+        String name = dialog.getName();
+        if (name == null || name.isEmpty())
             return;
 
-        Taxonomy taxonomy = new Taxonomy(name);
-        taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
-        client.addTaxonomy(taxonomy);
-        client.touch();
+        final Optional<TaxonomyTemplate> template = dialog.getTemplate();
+        if (template.isPresent())
+        {
+            Taxonomy taxonomy = template.get().build();
+            taxonomy.setName(name);
+            taxonomy.getRoot().setName(name);
+            client.addTaxonomy(taxonomy);
+            client.touch();
+        }
+        else
+        {
+            Taxonomy taxonomy = new Taxonomy(name);
+            taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
+            client.addTaxonomy(taxonomy);
+            client.touch();
+        }
     }
 
     private void createNewWatchlist(Client client)
@@ -252,5 +277,76 @@ public class NewDomainElementHandler
         watchlist.setName(name);
         client.addWatchlist(watchlist);
         client.touch();
+    }
+}
+
+class TaxonomyCreationDialog extends Dialog
+{
+    private String name = Messages.LabelNewTaxonomy;
+    private TaxonomyTemplate template;
+
+    public TaxonomyCreationDialog(Shell parentShell)
+    {
+        super(parentShell);
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Optional<TaxonomyTemplate> getTemplate()
+    {
+        return Optional.ofNullable(template);
+    }
+
+    @Override
+    protected Control createContents(Composite parent)
+    {
+        Control contents = super.createContents(parent);
+        getShell().setText(Messages.LabelNewTaxonomy);
+        return contents;
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent)
+    {
+        Composite composite = (Composite) super.createDialogArea(parent);
+
+        Composite editArea = new Composite(composite, SWT.NONE);
+        editArea.setLayout(new FormLayout());
+
+        Label label = new Label(editArea, SWT.WRAP);
+        label.setText(Messages.DialogTaxonomyNamePrompt);
+
+        Text text = new Text(editArea, SWT.BORDER);
+        text.setText(name);
+        text.addModifyListener(e -> name = text.getText());
+
+        Group group = new Group(editArea, SWT.SHADOW_IN);
+        group.setText(Messages.LabelTemplate);
+        group.setLayout(new RowLayout(SWT.VERTICAL));
+
+        Button none = new Button(group, SWT.RADIO);
+        none.setText(Messages.LabelEmptyTaxonomy);
+        none.setSelection(true);
+        none.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            template = null;
+            text.setText(Messages.LabelNewTaxonomy);
+        }));
+
+        for (final TaxonomyTemplate t : TaxonomyTemplate.list())
+        {
+            Button radio = new Button(group, SWT.RADIO);
+            radio.setText(t.getName());
+            radio.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+                template = t;
+                text.setText(t.getName());
+            }));
+        }
+
+        FormDataFactory.startingWith(label).thenBelow(text).width(250).thenBelow(group, 10).right(text);
+
+        return composite;
     }
 }
