@@ -96,7 +96,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         source.value.setInput(including(client.getActivePortfolios(), model().getSourcePortfolio()));
         IObservableValue<?> sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
                         Messages.MsgPortfolioFromMissing);
-        source.bindCurrency(Properties.sourcePortfolioLabel.name());
 
         // target portfolio
 
@@ -104,7 +103,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         target.value.setInput(including(client.getActivePortfolios(), model().getTargetPortfolio()));
         IObservableValue<?> targetObservable = target.bindValue(Properties.targetPortfolio.name(),
                         Messages.MsgPortfolioToMissing);
-        target.bindCurrency(Properties.targetPortfolioLabel.name());
 
         MultiValidator validator = new PortfoliosMustBeDifferentValidator(sourceObservable, targetObservable);
         context.addValidationStatusProvider(validator);
