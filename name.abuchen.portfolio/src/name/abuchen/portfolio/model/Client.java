@@ -23,6 +23,12 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
+    public interface Properties // NOSONAR
+    {
+        String TAXONOMIES = "taxonomies"; //$NON-NLS-1$
+        String WATCHLISTS = "watchlists"; //$NON-NLS-1$
+    }
+
     public static final int CURRENT_VERSION = 56;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
@@ -233,7 +239,28 @@ public class Client
 
     public List<Watchlist> getWatchlists()
     {
-        return watchlists;
+        return Collections.unmodifiableList(watchlists);
+    }
+
+    public void addWatchlist(Watchlist watchlist)
+    {
+        watchlists.add(watchlist);
+        propertyChangeSupport.firePropertyChange(Properties.WATCHLISTS, null, watchlist);
+    }
+
+    public void swapWatchlist(Watchlist first, Watchlist second)
+    {
+        int p1 = watchlists.indexOf(first);
+        int p2 = watchlists.indexOf(second);
+
+        if (p1 >= 0 && p2 >= 0)
+            Collections.swap(watchlists, p1, p2);
+    }
+
+    public void removeWatchlist(Watchlist watchlist)
+    {
+        if (watchlists.remove(watchlist))
+            propertyChangeSupport.firePropertyChange(Properties.WATCHLISTS, watchlist, null);
     }
 
     public void addAccount(Account account)
@@ -332,16 +359,22 @@ public class Client
     public void addTaxonomy(Taxonomy taxonomy)
     {
         taxonomies.add(taxonomy);
+        propertyChangeSupport.firePropertyChange(Properties.TAXONOMIES, null, taxonomy);
     }
 
-    public void addTaxonomy(int index, Taxonomy taxonomy)
+    public void swapTaxonomy(Taxonomy first, Taxonomy second)
     {
-        taxonomies.add(index, taxonomy);
+        int p1 = taxonomies.indexOf(first);
+        int p2 = taxonomies.indexOf(second);
+
+        if (p1 >= 0 && p2 >= 0)
+            Collections.swap(taxonomies, p1, p2);
     }
 
     public void removeTaxonomy(Taxonomy taxonomy)
     {
-        taxonomies.remove(taxonomy);
+        if (taxonomies.remove(taxonomy))
+            propertyChangeSupport.firePropertyChange(Properties.TAXONOMIES, taxonomy, null);
     }
 
     public Taxonomy getTaxonomy(String id)
@@ -629,8 +662,7 @@ public class Client
         for (Account account : accounts)
         {
             answer.append(account.getName()).append('\n');
-            account.getTransactions().stream().sorted(Transaction.BY_DATE)
-                            .forEach(t -> answer.append(t).append('\n'));
+            account.getTransactions().stream().sorted(Transaction.BY_DATE).forEach(t -> answer.append(t).append('\n'));
         }
 
         return answer.toString();

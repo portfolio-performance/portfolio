@@ -844,6 +844,7 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;
+    public static String LabelWatchlist;
     public static String LabelWithoutClassification;
     public static String LabelXDays;
     public static String LabelYear;

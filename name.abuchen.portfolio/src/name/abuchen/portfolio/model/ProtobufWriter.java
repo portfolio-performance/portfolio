@@ -709,7 +709,7 @@ import name.abuchen.portfolio.money.Money;
                 watchlist.addSecurity(security);
             }
 
-            client.getWatchlists().add(watchlist);
+            client.addWatchlist(watchlist);
         }
     }
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -80,7 +79,7 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
         if (leaf.contains(Tag.VIEW))
         {
             String subtitle = String.join(" -> ", path.subList(0, path.size() - 1).stream() //$NON-NLS-1$
-                            .map(Item::getLabel).collect(Collectors.toList()));
+                            .map(Item::getLabel).toList());
             elements.add(new NavigationElement(part, leaf, subtitle));
         }
 

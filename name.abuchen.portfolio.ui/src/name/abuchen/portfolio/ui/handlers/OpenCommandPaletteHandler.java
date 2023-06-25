@@ -31,9 +31,13 @@ public class OpenCommandPaletteHandler
         IEclipseContext childContext = context.createChild();
         childContext.set(PortfolioPart.class, (PortfolioPart) part.getObject());
 
-        ContextInjectionFactory.make(CommandPalettePopup.class, childContext).open();
+        CommandPalettePopup popup = ContextInjectionFactory.make(CommandPalettePopup.class, childContext);
 
-        childContext.dispose();
+        // dispose child context only after the dialog is close so that the
+        // command execution has access to a live context (otherwise handler
+        // configuration might not be available)
+        popup.addDisposeListener(childContext::dispose);
+        popup.open();
     }
 
 }
