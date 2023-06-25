@@ -261,7 +261,7 @@ class PortfolioSelectionDialog extends Dialog
         buildDivvyDiaryTable(container);
 
         Button btnCheckbox = new Button(container, SWT.CHECK);
-        btnCheckbox.setText("Including historic transactions in upload");
+        btnCheckbox.setText(Messages.DivvyDiaryIncludeTransactionHistory);
         btnCheckbox.setSelection(includeTransactions);
         btnCheckbox.addSelectionListener(
                         SelectionListener.widgetSelectedAdapter(e -> includeTransactions = btnCheckbox.getSelection()));
