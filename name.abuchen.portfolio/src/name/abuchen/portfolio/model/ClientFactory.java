@@ -115,11 +115,33 @@ public class ClientFactory
 
     /* package */ static class XmlSerialization
     {
+        boolean idReferences;
+
+        public XmlSerialization(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        public XmlSerialization()
+        {
+            this(false);
+        }
+
+        XStream makeXStream()
+        {
+            XStream xs = xstream();
+            if (idReferences)
+                xs.setMode(XStream.ID_REFERENCES);
+            else
+                xs.setMode(XStream.XPATH_RELATIVE_REFERENCES);
+            return xs;
+        }
+
         public Client load(Reader input) throws IOException
         {
             try
             {
-                Client client = (Client) xstream().fromXML(input);
+                Client client = (Client) makeXStream().fromXML(input);
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -139,7 +161,7 @@ public class ClientFactory
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
-            xstream().toXML(client, writer);
+            makeXStream().toXML(client, writer);
 
             writer.flush();
         }
@@ -154,20 +176,34 @@ public class ClientFactory
 
     private static class PlainWriter implements ClientPersister
     {
+        boolean idReferences;
+
+        public PlainWriter(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        public PlainWriter()
+        {
+            this(false);
+        }
+
         @Override
         public Client load(InputStream input) throws IOException
         {
-            Client client = new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            Client client = new XmlSerialization(idReferences).load(new InputStreamReader(input, StandardCharsets.UTF_8));
             client.getSaveFlags().add(SaveFlag.XML);
+            if (idReferences)
+            {
+                client.getSaveFlags().add(SaveFlag.ID_REFERENCES);
+            }
             return client;
         }
 
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-            xstream().toXML(client, writer);
-            writer.flush();
+            new XmlSerialization(idReferences).save(client, output);
         }
     }
 
@@ -661,7 +697,7 @@ public class ClientFactory
         if (flags.contains(SaveFlag.BINARY))
             body = new ProtobufWriter();
         else if (flags.contains(SaveFlag.XML))
-            body = new PlainWriter();
+            body = new PlainWriter(flags.contains(SaveFlag.ID_REFERENCES));
 
         if (flags.contains(SaveFlag.ENCRYPTED))
             return new Decryptor(body, flags, password);
