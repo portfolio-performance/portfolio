@@ -613,6 +613,7 @@ public class Messages extends NLS
     public static String LabelEarningsPerYear;
     public static String LabelEarningsTransactionList;
     public static String LabelEmptyDashboard;
+    public static String LabelEmptyTaxonomy;
     public static String LabelExpand;
     public static String LabelExpandAll;
     public static String LabelExpenses;
