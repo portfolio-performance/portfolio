@@ -26,7 +26,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Keytrade Bank"); //$NON-NLS-1$
+        addBankIdentifier("Keytrade Bank");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -35,7 +35,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Keytrade Bank"; //$NON-NLS-1$
+        return "Keytrade Bank";
     }
 
     private void addBuySellTransaction()
@@ -49,13 +49,13 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
             // are outside the block.
             for (String line : lines)
             {
-                Matcher m = pTransaction.matcher(line);
-                if (m.matches())
+                Matcher mTransaction = pTransaction.matcher(line);
+                if (mTransaction.matches())
                 {
-                    context.put("shares", m.group("shares"));
-                    context.put("name", m.group("name"));
-                    context.put("isin", m.group("isin"));
-                    context.put("currency", m.group("currency"));
+                    context.put("shares", mTransaction.group("shares"));
+                    context.put("name", mTransaction.group("name"));
+                    context.put("isin", mTransaction.group("isin"));
+                    context.put("currency", mTransaction.group("currency"));
                 }
             }
         });
@@ -77,7 +77,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(Num.ro.*)?(?<type>(Kauf|Achat|Vente|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf") || v.get("type").equals("Vente"))
+                    if ("Verkauf".equals(v.get("type")) || "Vente".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -114,7 +114,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
 
                 .oneOf(
                                 // Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET
-                                // Date et heure d'exécution : 19/10/2020 11:53:03 CET 
+                                // Date et heure d'exécution : 19/10/2020 11:53:03 CET
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^(Ausf.hrungsdatum und \\-zeit|Date et heure d.ex.cution)([\\s]+)?: (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
@@ -365,17 +365,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
@@ -384,17 +384,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
@@ -403,17 +403,17 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);

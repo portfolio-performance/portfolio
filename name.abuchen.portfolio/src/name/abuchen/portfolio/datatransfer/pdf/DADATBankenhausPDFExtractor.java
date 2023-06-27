@@ -24,8 +24,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("DADAT - Bankhaus"); //$NON-NLS-1$
-        addBankIdentifier("DADAT-Bank"); //$NON-NLS-1$
+        addBankIdentifier("DADAT - Bankhaus");
+        addBankIdentifier("DADAT-Bank");
 
         addBuySellTransaction();
         addBuySellAccountStatementTransaction();
@@ -41,7 +41,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "DADAT / Bankhaus Schelhammer & Schattera AG"; //$NON-NLS-1$
+        return "DADAT / Bankhaus Schelhammer & Schattera AG";
     }
 
     private void addBuySellTransaction()
@@ -61,7 +61,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // Titel: US09247X1019 B L A C K R O C K I NC. 
+                // Titel: US09247X1019 B L A C K R O C K I NC.
                 // Reg. Shares Class A DL -,01
                 // Kurswert: -1.800,-- EUR
                 .section("isin", "name", "name1", "currency")
@@ -106,9 +106,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -129,7 +129,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^[\\d]{1,2}\\.[\\d]{1,2} (?<type>(Kauf|Kauf aus Dauerauftrag|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -209,9 +209,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                // Titel: US09247X1019 B L A C K R O C K I NC. 
+                // Titel: US09247X1019 B L A C K R O C K I NC.
                 // Reg. Shares Class A DL -,01
-                // Dividende: 4,13 USD 
+                // Dividende: 4,13 USD
                 .section("isin", "name", "name1", "currency")
                 .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*)$")
                 .match("^(?<name1>.*)$")
@@ -275,9 +275,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -294,7 +294,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 // 31.07 Ertrag                           Depot    7800000000/20200730-45756156 30.07 8,16
                 // ISIN AT0000969985 AT+S AUST. TECH.SYS.O.N.               45,00000 STK
-                // Kurs                      0,250000  ZINSERTRAG               11,25 EUR                
+                // Kurs                      0,250000  ZINSERTRAG               11,25 EUR
                 .section("date", "year", "amount", "isin", "name", "shares", "currency").optional()
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
                 .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) ([\\s]+)?(?<shares>[\\.,\\d]+) STK$")
@@ -358,9 +358,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -450,7 +450,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction
                 // 15.10 KESt-Verlustausgleich            Depot    7806000200/20211014-41350584 18.10 159,57
-                // ISIN US92556H2067 VIACOMCBS INC. BDL-,001                
+                // ISIN US92556H2067 VIACOMCBS INC. BDL-,001
                 // KEST                    159,57 EUR
                 .section("date", "note", "year", "amount", "isin", "name", "currency")
                 .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>KESt\\-Verlustausgleich) ([\\s]+)?Depot ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")

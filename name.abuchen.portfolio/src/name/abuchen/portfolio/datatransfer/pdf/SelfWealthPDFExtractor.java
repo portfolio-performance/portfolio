@@ -20,8 +20,8 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("SelfWealth"); //$NON-NLS-1$
-        addBankIdentifier("Selfwealth"); //$NON-NLS-1$
+        addBankIdentifier("SelfWealth");
+        addBankIdentifier("Selfwealth");
 
         addBuySellTransaction();
     }
@@ -29,7 +29,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "SelfWealth Ltd"; //$NON-NLS-1$
+        return "SelfWealth Ltd";
     }
 
     private void addBuySellTransaction()
@@ -54,7 +54,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Buy|Sell)) Confirmation$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Sell"))
+                    if ("Sell".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -74,8 +74,9 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // Net Value $322.00 AUD
+                // Total Amount Payable $692.60 AUD
                 .section("amount", "currency")
-                .match("^Net Value \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(Net Value|Total Amount Payable) \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -99,6 +100,11 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                 .match("^Brokerage\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // Misc Fees & Charges $0.00 AUD
+                .section("fee", "currency").optional()
+                .match("^Misc Fees & Charges\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+ 
                 // Adviser Fee* $0.00 AUD
                 .section("fee", "currency").optional()
                 .match("^Adviser Fee\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")

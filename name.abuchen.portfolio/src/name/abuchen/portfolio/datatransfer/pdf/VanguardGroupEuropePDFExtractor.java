@@ -16,7 +16,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Vanguard Group Europe GmbH"); //$NON-NLS-1$^
+        addBankIdentifier("Vanguard Group Europe GmbH");
 
         addBuySellTransaction();
     }
@@ -24,7 +24,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Vanguard Group Europe GmbH"; //$NON-NLS-1$
+        return "Vanguard Group Europe GmbH";
     }
 
     private void addBuySellTransaction()

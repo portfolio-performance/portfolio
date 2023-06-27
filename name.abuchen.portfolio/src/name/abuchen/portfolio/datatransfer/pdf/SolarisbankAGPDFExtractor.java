@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.util.function.BiConsumer;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -12,10 +14,10 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
-    
-    private static final String DEPOSIT = "^(?<date>\\d+.\\d+.\\d{4}).*(SEPA\\-.berweisung|.berweisung).* (?<amount>[\\d,.]+) (?<currency>\\w{3})$";
-    private static final String REMOVAL = "^(?<date>\\d+.\\d+.\\d{4}).*(Kartenzahlung|Überweisung|SEPA-Lastschrift) (?<note>.*) (?<amount>\\-[\\d,.]+) (?<currency>\\w{3})$";
-    
+
+    private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\w{3})$";
+    private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Kartenzahlung|.berweisung|SEPA-Lastschrift|SEPA\\-.berweisung)(?<note>.*) (?<amount>\\-[\\.,\\d]+) (?<currency>\\w{3})$";
+
     private static final String CONTEXT_KEY_DATE = "date";
     private static final String CONTEXT_KEY_AMOUNT = "amount";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -24,8 +26,8 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
     public SolarisbankAGPDFExtractor(Client client)
     {
         super(client);
-        
-        addBankIdentifier("Solarisbank"); //$NON-NLS-1$
+
+        addBankIdentifier("Solarisbank");
 
         addAccountStatementTransaction();
     }
@@ -33,9 +35,9 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Solarisbank AG"; //$NON-NLS-1$
+        return "Solarisbank AG";
     }
-    
+
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Rechnungsabschluss");
@@ -50,14 +52,14 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
     }
 
-    
+
     private Transaction<AccountTransaction> depositTransaction(String regex)
     {
         return new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DEPOSIT);
             return entry;})
-                        .section(CONTEXT_KEY_DATE, CONTEXT_KEY_AMOUNT, CONTEXT_KEY_CURRENCY)
+                        .section(CONTEXT_KEY_DATE, CONTEXT_KEY_AMOUNT, CONTEXT_KEY_CURRENCY, CONTEXT_KEY_NOTE)
                         .match(regex)
                         .assign(assignmentsProvider())
                         .wrap(TransactionItem::new);
@@ -81,7 +83,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
             transaction.setDateTime(asDate(matcherMap.get(CONTEXT_KEY_DATE)));
             transaction.setAmount(asAmount(matcherMap.get(CONTEXT_KEY_AMOUNT)));
             transaction.setCurrencyCode(matcherMap.get(CONTEXT_KEY_CURRENCY));
-            transaction.setNote(matcherMap.get(CONTEXT_KEY_NOTE));
+            transaction.setNote(trim(matcherMap.get(CONTEXT_KEY_NOTE)));
         };
     }
 

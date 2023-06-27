@@ -58,4 +58,9 @@ public class ClientFilterConfig implements WidgetConfig
         return menu.getSelectedFilter();
     }
 
+    public ClientFilterMenu.Item getSelectedItem()
+    {
+        return menu.getSelectedItem();
+    }
+
 }

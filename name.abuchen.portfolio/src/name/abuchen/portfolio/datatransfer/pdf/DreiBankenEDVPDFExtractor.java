@@ -20,7 +20,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("91810s/Klagenfurt"); //$NON-NLS-1$
+        addBankIdentifier("91810s/Klagenfurt");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -29,7 +29,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "3BankenEDV"; //$NON-NLS-1$
+        return "3BankenEDV";
     }
 
     private void addBuySellTransaction()
@@ -52,7 +52,7 @@ public class DreiBankenEDVPDFExtractor extends AbstractPDFExtractor
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional().match("Wertpapier\\-.* (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 

@@ -207,13 +207,13 @@ EUR Fremdwährung EUR Anteile tag nungstag
 Bestand am 31.03.2022 2.868,27  186,300000 15,396
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
 Lastschrifteinzug 50,00 195,780000 +0,255 11.04.2022 11.04.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Lastschrifteinzug 50,00 186,290000 +0,268 10.05.2022 10.05.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Ausschüttung / Kauf aus Ertrag 0,00 177,600000 +0,000 20.05.2022 20.05.2022
 Verkauf aus Ertrag 33,43 177,600000 +0,000 20.05.2022 20.05.2022
 Lastschrifteinzug 50,00 184,490000 +0,271 10.06.2022 10.06.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Summe der Betragsbewegungen 150,00
 Bestand am 30.06.2022 2.789,05 172,270000 16,190
 Bewertung mit dem Rücknahmepreis vom 30.06.2022
@@ -226,9 +226,9 @@ EUR Fremdwährung EUR Anteile tag nungstag
 Bestand am 31.03.2022 5.948,69  184,610000 32,223
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
 Lastschrifteinzug 100,00 183,550000 +0,545 11.04.2022 11.04.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Lastschrifteinzug 100,00 162,430000 +0,616 10.05.2022 10.05.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Bitte prüfen Sie die vorliegenden Informationen.
 Fortsetzung auf Seite 2
 DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
@@ -249,7 +249,7 @@ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs-
 EUR Fremdwährung EUR Anteile tag nungstag
 Fortsetzung von vorheriger Seite
 Lastschrifteinzug 100,00 167,180000 +0,598 10.06.2022 10.06.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Summe der Betragsbewegungen 300,00
 Bestand am 30.06.2022 5.107,49 150,300000 33,982
 Bewertung mit dem Rücknahmepreis vom 30.06.2022
@@ -262,11 +262,11 @@ EUR Fremdwährung EUR Anteile tag nungstag
 Bestand am 31.03.2022 2.599,21  116,520000 22,307
 Bewertung mit dem Rücknahmepreis vom 31.03.2022
 Lastschrifteinzug 50,00 119,560000 +0,418 11.04.2022 11.04.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Lastschrifteinzug 50,00 112,870000 +0,443 10.05.2022 10.05.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Lastschrifteinzug 50,00 116,300000 +0,430 10.06.2022 10.06.2022
-Mandatsreferenz: 0140484429003
+Mandatsreferenz: 01111111111111
 Summe der Betragsbewegungen 150,00
 Bestand am 30.06.2022 2.358,86 99,960000 23,598
 Bewertung mit dem Rücknahmepreis vom 30.06.2022

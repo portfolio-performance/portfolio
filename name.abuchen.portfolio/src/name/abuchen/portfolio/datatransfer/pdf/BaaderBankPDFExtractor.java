@@ -29,7 +29,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Baader Bank"); //$NON-NLS-1$
+        addBankIdentifier("Baader Bank");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -44,7 +44,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH"; //$NON-NLS-1$
+        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH";
     }
 
     private void addBuySellTransaction()
@@ -59,7 +59,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -81,7 +81,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // @formatter:off
-                // Nominale ISIN: IE0032895942 WKN: 911950 Kurs 
+                // Nominale ISIN: IE0032895942 WKN: 911950 Kurs
                 // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
                 // Registered Shares o.N.
                 // Kurswert EUR 208,74
@@ -114,8 +114,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:off
                                 // Handelsdatum Handelsuhrzeit
                                 // 20.03.2017 15:31:10:00
-                                // 
-                                // Handelsdatum Handelsuhrzeit 
+                                //
+                                // Handelsdatum Handelsuhrzeit
                                 // 11.04.2023 12:31:19:07
                                 // @formatter:on
                                 section -> section
@@ -125,10 +125,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // @formatter:off
-                                // Handels- Handels- 
+                                // Handels- Handels-
                                 // STK   70 EUR 14,045 GETTEX - MM Munich 24.02.2021 14:49:46:04
                                 //
-                                // Handels- Handels- 
+                                // Handels- Handels-
                                 // STK   50 EUR 30,79 GETTEX - MM Munich 12.04.2023 09:00:06:185
                                 // @formatter:on
                                 section -> section
@@ -138,7 +138,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // @formatter:off
-                                // Details zur Ausführung: Handels- Handels- 
+                                // Details zur Ausführung: Handels- Handels-
                                 // STK   6 EUR 146,34 GETTEX - MM Munich 27.01.2022 16:25:24:39
                                 // @formatter:on
                                 section -> section
@@ -228,9 +228,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // @formatter:off
@@ -270,7 +271,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Dividendenabrechnung"
                         + "|Aussch.ttung aus"
                         + "|Wahldividende"
-                        + "|Fund Distribution)");
+                        + "|Fund Distribution"
+                        + "|Dividende)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Ex\\-(Tag|Date): .*$");
@@ -402,9 +404,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap((t, ctx) -> {
@@ -524,9 +527,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Vorgangs-Nr.: 184714818
                 // Transaction No.: 204751222
+                // dfXMYlRrT Vorgangs-Nr.: 002052907
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
+                .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 // @formatter:off
@@ -548,12 +552,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement)", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[\\w]{3})(\\-Konto| Account)");
-            // read the current context here
+
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -905,7 +909,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("n").optional()
                 .match("^Ertragsthesaurierung .*$")
                 .match("Steuerliquidit.t (?<n>.*)")
-                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
         transaction
                 // @formatter:off
@@ -914,7 +918,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -924,7 +928,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -934,7 +938,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -944,7 +948,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -955,7 +959,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 .section("withHoldingTax", "currency").optional()
                 .match("^(US-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("noTax"))
                         processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                 });
     }
@@ -969,23 +973,44 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Gebühren extern ADR EUR 2,00
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Mindermengenzuschlag Finanzen.net EUR 1,00
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Mindermengenzuschlag .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Stamp HongKong EUR 0,12
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Stamp HongKong (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override
     protected long asAmount(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
@@ -994,17 +1019,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        String language = "de"; //$NON-NLS-1$
-        String country = "DE"; //$NON-NLS-1$
+        String language = "de";
+        String country = "DE";
 
-        int lastDot = value.lastIndexOf("."); //$NON-NLS-1$
-        int lastComma = value.lastIndexOf(","); //$NON-NLS-1$
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
         {
-            language = "en"; //$NON-NLS-1$
-            country = "US"; //$NON-NLS-1$
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);

@@ -101,7 +101,10 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         }
 
         if (apiKey == null)
-            throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
+        {
+            PortfolioLog.error(Messages.MsgAlphaVantageAPIKeyMissing);
+            return Optional.empty();
+        }
 
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
@@ -178,7 +181,8 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
         if (apiKey == null)
-            throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
+            return QuoteFeedData.withError(
+                            new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing));
 
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);

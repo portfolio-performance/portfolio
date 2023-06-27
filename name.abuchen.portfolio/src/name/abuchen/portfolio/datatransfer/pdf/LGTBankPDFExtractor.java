@@ -21,7 +21,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("LGT Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("LGT Bank AG");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -30,7 +30,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "LGT Bank AG"; //$NON-NLS-1$
+        return "LGT Bank AG";
     }
 
     private void addBuySellTransaction()
@@ -194,6 +194,6 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

@@ -30,6 +30,11 @@ public interface UIConstants
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
 
+        interface Domain // NOSONAR
+        {
+            String SECURITY_CREATED = "domain/security-created"; //$NON-NLS-1$
+        }
+
         interface ExchangeRates // NOSONAR
         {
             String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$
@@ -79,6 +84,7 @@ public interface UIConstants
     {
         String OPEN_BROWSER = "name.abuchen.portfolio.ui.command.openBrowser"; //$NON-NLS-1$
         String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
+        String NEW_DOMAIN_ELEMENT = "name.abuchen.portfolio.ui.command.newDomainElement"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
     }
@@ -97,6 +103,8 @@ public interface UIConstants
         String VIEW_PARAMETER = "name.abuchen.portfolio.ui.param.viewparameter"; //$NON-NLS-1$
         String URL = "name.abuchen.portfolio.ui.param.url"; //$NON-NLS-1$
         String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
+        String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
+        String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR
@@ -165,6 +173,12 @@ public interface UIConstants
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
+
+        /**
+         * Preference key used in 2023 to indicate whether the survey is active.
+         * Do not reuse!
+         */
+        @Deprecated
         String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
@@ -176,7 +190,13 @@ public interface UIConstants
 
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
+        String LEEWAY_API_KEY = "LEEWAY_API_KEY"; //$NON-NLS-1$
+
+        String TWELVEDATA_API_KEY = "TWELVEDATA_API_KEY"; //$NON-NLS-1$
+        
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
+
+        String MYDIVIDENDS24_API_KEY = "MYDIVIDENDS24_API_KEY"; //$NON-NLS-1$
 
         String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
 

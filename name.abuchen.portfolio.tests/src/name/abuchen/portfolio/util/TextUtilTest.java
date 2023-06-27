@@ -74,6 +74,13 @@ public class TextUtilTest
     }
 
     @Test
+    public void testReplaceMultipleBlanksBetween()
+    {
+        assertThat(TextUtil.replaceMultipleBlanks("a     b       c"), is("a b c"));
+        assertThat(TextUtil.replaceMultipleBlanks("   a      b     c    "), is(" a b c "));
+    }
+
+    @Test
     public void testStripBlanksAndUnderscores()
     {
         assertThat(TextUtil.stripBlanksAndUnderscores("a _ b _ c"), is("abc"));

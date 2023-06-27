@@ -1,0 +1,107 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Max Mustermann
+Max Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Stadt BLZ: 793 517 30
+Spk Ostunterfranken
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. Februar 2009
+Ertragsausschüttungen Auszug: 1 / Seite 1 von 3
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+ERTRAGSABRECHNUNG
+Am 20.02.2009 fand die Ertragsausschüttung des AriDeka CF statt. Der Ausschüttungsbetrag pro Anteil
+beträgt EUR 0,9300000. Ihrer Ertragsausschüttung lag ein Anteilbestand von 29,811 Anteilen zugrunde.
+Bitte beachten Sie: Weitere Anteilsumsätze können den "Bestand alt" verändert haben. Diese Abrechnung
+weist Ihnen den aktuellen Anteilsbestand aus. 
+Fondsbezeichnung: AriDeka CF 
+ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 9387 9103
+Verwahrart: GiroSammel Abrechnungstag: 20.02.2009
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil B  estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Ausschüttung EUR 27,72 Preis Bestand alt: 29,811
++Verrechnete Steuern EUR 1,43 EUR 29,15 EUR 33,420000 Anteilumsatz: 0,872
+=Wiederanlagebetrag EUR 29,15 Zwischengewinn Bestand neu: 30,683
+EUR 0,010000
+ERTRAGSABRECHNUNG
+Am 20.02.2009 fand die Ertragsausschüttung des Deka-EuropaPotential TF statt. Der Ausschüttungsbetrag
+pro Anteil beträgt EUR 0,1000000. Ihrer Ertragsausschüttung lag ein Anteilbestand von 35,950 Anteilen
+zugrunde.
+Bitte beachten Sie: Weitere Anteilsumsätze können den "Bestand alt" verändert haben. Diese Abrechnung
+weist Ihnen den aktuellen Anteilsbestand aus. 
+Fondsbezeichnung: Deka-EuropaPotential TF 
+ISIN: DE0009786285 Unterkonto: 00 Auftragsnummer: 9401 7546
+Verwahrart: GiroSammel Abrechnungstag: 20.02.2009
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil  B estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Ausschüttung EUR 3,60 Preis Bestand alt: 35,950
+= Wiederanlagebetrag EUR 3,60 EUR 3,60 EUR 37,990000 Anteilumsatz: 0,095
+Bestand neu: 36,045
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 1 / Seite 2 von 3
+Ihr erteilter Sparer-Pauschbetrag für Max Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn und realisierte  E UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 560,61
+Anrechenbare ausländische Quellensteuer EUR 2,97
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der Jahres-
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. 
+Eine evtl. Meldepflicht nach § 59ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+ 
+Zu Ihrer persönlichen Anlagestrategie mit Deka Investmentfonds und den Fonds unserer Kooperationspartner
+beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls den aktuellen Rechenschaftsbericht und Verkaufsprospekt mit den Details Ihrer
+Fondsanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+ 
+Wichtig:
+Bitte prüfen Sie, ob in Ihrem DekaBank Depot eine generelle Bankverbindung hinterlegt ist. Ist dies der Fall,
+finden Sie diese rechts neben Ihrer Anschrift.
+ 
+Haben Sie keine Bankverbindung hinterlegt, bzw. ist diese nicht mehr aktuell, dann teilen Sie uns bitte Ihre
+neue Bankverbindung mit. Künftige Aufträge können dann ohne Verzögerung ausgeführt werden. Vielen
+Dank.
+ 
+  
+Deka ist "Top-Fondsgesellschaft"
+ 
+Die Höchstnote von 5 Sternen wurde der Deka bei einer
+Preisverleihung des Wirtschaftsmagazins "Capital" im Januar
+2009 verliehen. 
+ 
+Capital untersuchte dabei 100 Fondsgesellschaften nach
+Lückenlosigkeit der Produktpalette, Fondsqualität, Management
+und Service. Von diesen erhielten lediglich 8 weitere Anbieter die
+Bestnote.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Sehr geehrte Kundin, sehr geehrter Kunde,
+regelmäßiges Sparen ist ein wichtiger Bestandteil für einen systematischen Vermögensaufbau. Und die ideale
+Ergänzung zu einer Einmalanlage. Nutzen Sie die Chance, mit einem Deka-FondsSparplan Ihre persönlichen
+Anlageziele noch leichter und flexibler zu erreichen - mit einer monatlichen Sparrate schon ab 25 Euro und
+einem variablen Einzahlungsrhythmus. Für eine Neuanlage oder die Erhöhung eines Deka-FondsSparplans
+schicken Sie den folgenden Auftrag einfach ausgefüllt an uns zurück.
+Depotnummer: 0111111111
+Depotinhaber: Max Mustermann
+Generelle Bankverbindung: Konto: 0000111111 BLZ: 793 517 30 Spk Ostunterfranken
+Fondsbezeichnung: AriDeka CF
+ISIN: DE0008474511   Ausgabeaufschlag¹: 5,260 %

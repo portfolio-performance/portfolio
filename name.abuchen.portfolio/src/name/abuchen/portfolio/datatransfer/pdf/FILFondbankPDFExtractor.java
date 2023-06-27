@@ -20,7 +20,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("FIL Fondsbank GmbH"); //$NON-NLS-1$
+        addBankIdentifier("FIL Fondsbank GmbH");
 
         addBuySellTransaction();
         addSellForAccountFeeTransaction();
@@ -30,7 +30,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "FIL Fondsbank GmbH (Fidelity Group)"; //$NON-NLS-1$
+        return "FIL Fondsbank GmbH (Fidelity Group)";
     }
 
     private void addBuySellTransaction()
@@ -53,11 +53,11 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
                 .match("^(?<type>(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)) .*$")
-                .assign((t, v) -> {                  
-                    if (v.get("type").equals("Verkauf"))
+                .assign((t, v) -> {
+                    if ("Verkauf".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
-                        type.getCurrentContext().put("sale", "X");
+                        type.getCurrentContext().putBoolean("sale", true);
                     }
                 })
 
@@ -67,7 +67,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
                 .match("^[\\d]+ (?<wkn>.*) \\/ (?<isin>[\\w]{12}) .*$")
                 .assign((t, v) -> {
-                    if (v.get("note").equals("Splittkauf"))
+                    if ("Splittkauf".equals(v.get("note")))
                         v.put("note", "Splitkauf");
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -80,7 +80,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? (?<name>.*) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) ([\\-|\\+])?[\\.,\\d]+$")
                 .match("^[\\d]+ (?<isin>[\\w]{12}) \\/ (?<wkn>[\\w]{6}) .*$")
                 .assign((t, v) -> {
-                    if (v.get("note").equals("Splittkauf"))
+                    if ("Splittkauf".equals(v.get("note")))
                         v.put("note", "Splitkauf");
 
                     t.setSecurity(getOrCreateSecurity(v));
@@ -179,7 +179,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // We have a sell transaction, we set a flag.
                 .section("type").optional()
                 .match("^(?<type>Entgeltbelastung) .*$")
-                .assign((t, v) -> type.getCurrentContext().put("sale", "X"))
+                .assign((t, v) -> type.getCurrentContext().putBoolean("sale", true))
 
                 // Entgeltbelastung UBS-MSCI WLD.SOC.RESP.A.D.E. 1,01 EUR 98,1753 USD -0,011
                 // 2540818151 A1JA1R / LU0629459743 1,113832 USD 15.10.2019 17,187
@@ -258,7 +258,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
     private void addFeeForAccountBlock(DocumentType type)
     {
         Block block = new Block("^Entgeltbelastung .*$");
-        type.addBlock(block);       
+        type.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.FEES);
@@ -413,7 +413,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("sale")))
+                    if (!type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -421,7 +421,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^abgef.hrte Kapitalertragsteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if ("X".equals(type.getCurrentContext().get("sale")))
+                    if (type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -429,7 +429,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Solidarit.tszuschlag ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("sale")))
+                    if (!type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -437,7 +437,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^abgeführter Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if ("X".equals(type.getCurrentContext().get("sale")))
+                    if (type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -445,7 +445,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^Kirchensteuer ([\\s]+)(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("sale")))
+                    if (!type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 })
 
@@ -453,7 +453,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^abgef.hrte Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
-                    if ("X".equals(type.getCurrentContext().get("sale")))
+                    if (type.getCurrentContext().getBoolean("sale"))
                         processTaxEntries(t, v, type);
                 });
     }

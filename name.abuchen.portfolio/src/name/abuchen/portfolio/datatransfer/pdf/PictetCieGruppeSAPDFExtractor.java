@@ -21,7 +21,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Banque Pictet & Cie SA"); //$NON-NLS-1$
+        addBankIdentifier("Banque Pictet & Cie SA");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -30,7 +30,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Banque Pictet & Cie SA"; //$NON-NLS-1$
+        return "Banque Pictet & Cie SA";
     }
 
     private void addBuySellTransaction()
@@ -54,7 +54,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Purchase|Sale)) (\\-)?[\\.'\\d]+ .* [\\w]{3} [\\.'\\d]+$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Sale"))
+                    if ("Sale".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -62,7 +62,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^(?<type>(Purchase|Sale)) [\\w]{3} (\\-)?[\\.'\\d]+ .* [\\.'\\d]+%$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Sale"))
+                    if ("Sale".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -117,7 +117,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("currency", "amount")
                                         .match("^Net amount (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+).*$")
-                                        .assign((t, v) -> {                                                
+                                        .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
@@ -245,6 +245,6 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH"); //$NON-NLS-1$ //$NON-NLS-2$
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

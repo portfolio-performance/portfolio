@@ -21,7 +21,9 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
-import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
@@ -206,7 +208,15 @@ public enum WidgetFactory
     HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, Messages.ClientEditorLabelPerformance,
                     YearlyPerformanceHeatmapWidget::new),
 
+    EARNINGS(Messages.LabelEarningsTransactionList, Messages.LabelEarnings, EarningsListWidget::new),
+
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
+
+    EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, EarningsChartWidget::perYear),
+
+    EARNINGS_PER_QUARTER_CHART(Messages.LabelEarningsPerQuarter, Messages.LabelEarnings, EarningsChartWidget::perQuarter),
+
+    EARNINGS_PER_MONTH_CHART(Messages.LabelEarningsPerMonth, Messages.LabelEarnings, EarningsChartWidget::perMonth),
 
     TRADES_BASIC_STATISTICS(Messages.LabelTradesBasicStatistics, Messages.LabelTrades, TradesWidget::new),
 

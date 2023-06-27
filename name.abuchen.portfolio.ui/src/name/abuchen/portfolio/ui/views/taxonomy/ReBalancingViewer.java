@@ -165,7 +165,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return node.getActual().isGreaterOrEqualThan(node.getTarget()) ? Colors.theme().greenForeground()
+                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().greenForeground()
                                 : Colors.theme().redForeground();
             }
         });
@@ -233,7 +233,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return node.getActual().isGreaterOrEqualThan(node.getTarget()) ? Colors.theme().greenForeground()
+                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().greenForeground()
                                 : Colors.theme().redForeground();
             }
         });

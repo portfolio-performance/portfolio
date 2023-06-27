@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -28,12 +29,15 @@ import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
+import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
+import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
 import name.abuchen.portfolio.ui.preferences.PortfolioReportPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
+import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
@@ -57,7 +61,7 @@ public class OpenPreferenceDialogHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
-                    IThemeEngine themeEngine)
+                    @Optional @Named(UIConstants.Parameter.PAGE) String page, IThemeEngine themeEngine)
     {
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
@@ -76,6 +80,9 @@ public class OpenPreferenceDialogHandler
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("eodhistoricaldata", new EODHistoricalDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("leeway", new LeewayPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("mydividends24", new MyDividends24PreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("twelvedata", new TwelveDataPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (enableExperimentalFeatures)
             pm.addTo("api", new PreferenceNode("portfolio-report", new PortfolioReportPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -104,8 +111,9 @@ public class OpenPreferenceDialogHandler
         };
 
         // if the dialog reopens with the previously selected node, some of the
-        // nodes are not visible. Workaround: make sure not previous node exists
-        dialog.setSelectedNode(null);
+        // nodes are not visible. Either the selected node it given by the
+        // incoming parameters or it is deselected
+        dialog.setSelectedNode(page);
 
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
         dialog.create();

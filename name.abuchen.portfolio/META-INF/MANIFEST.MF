@@ -2,9 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.62.1.qualifier
+Bundle-Version: 0.64.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Export-Package: name.abuchen.portfolio.checks,
+Export-Package: name.abuchen.portfolio,
+ name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
  name.abuchen.portfolio.datatransfer.actions,
  name.abuchen.portfolio.datatransfer.csv,

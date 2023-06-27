@@ -24,22 +24,23 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland"); //$NON-NLS-1$
+        addBankIdentifier("Swissquote Bank AG");
 
         addBuySellTransaction();
         addDividendsTransaction();
-        addAccountFeesTransaction();
+        addPaymentTransaction();
+        addInterestTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Swissquote Bank AG"; //$NON-NLS-1$
+        return "Swissquote Bank AG / Yuh (powerd by Swissquote Bank AG)";
     }
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rsentransaktion: (Kauf|Verkauf)");
+        DocumentType type = new DocumentType("(B.rsentransaktion: )?(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -49,7 +50,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^B.rsentransaktion: (Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^(B.rsentransaktion: )?(Kauf|Verkauf).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -79,14 +80,14 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // @formatter:off
-                // Betrag belastet auf Kontonummer  99999901, Valutadatum 07.08.2019
-                // Betrag gutgeschrieben auf Ihrer Kontonummer  99999900, Valutadatum 07.02.2018
+                // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
+                // Gemäss Ihrem Verkaufsauftrag vom 05.02.2018 haben wir folgende Transaktionen vorgenommen:
                 // @formatter:on
                 .section("date")
-                .match("^Betrag (belastet|gutgeschrieben) (auf|auf Ihrer) Kontonummer .*, Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .match("^Gem.ss Ihrem (Kauf|Verkaufs)auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                // // @formatter:off
+                // @formatter:off
                 // Zu Ihren Lasten USD 2'900.60
                 // Zu Ihren Gunsten CHF 8'198.70
                 // @formatter:on
@@ -105,8 +106,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional()
                 .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d]+)$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.'\\d]+)$")
-                .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$")
-                .assign((t, v) -> {
+                .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$").assign((t, v) -> {
                     BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
                     if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
                     {
@@ -130,7 +130,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         }
                         catch (IllegalArgumentException e)
                         {
-                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());                            
+                            exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());
                             type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
@@ -158,12 +158,11 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz:.*$");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DIVIDENDS);
-                    return entry;
-                });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
 
         pdfTransaction
                 // @formatter:off
@@ -214,36 +213,138 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addAccountFeesTransaction()
+    private void addPaymentTransaction()
     {
-        DocumentType type = new DocumentType("Depotgeb.hren");
+        DocumentType type = new DocumentType("(Zahlungsverkehr|Depotgeb.hren Unsere Referenz:)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Depotgeb.hren Unsere Referenz.*$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DEPOSIT);
+            return entry;
+        });
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.FEES);
-                    return transaction;
+        Block firstRelevantLine = new Block("^(Zahlungsverkehr \\- (Gutschrift|Belastung)|Depotgeb.hren Unsere Referenz:) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // Is type --> "Belastung" change from DEPOSIT to REMOVAL
+                .section("type").optional()
+                .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$")
+                .assign((t, v) -> {
+                    if ("Belastung".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.REMOVAL);
+                })
+
+                // Is type --> "Depotgebühren" change from DEPOSIT to FEES
+                .section("type").optional()
+                .match("^(?<type>Depotgeb.hren) Unsere Referenz: .*$")
+                .assign((t, v) -> {
+                    if ("Depotgebühren".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.FEES);
                 })
 
                 // @formatter:off
-                // Valutadatum 30.09.2019
-                // Betrag belastet CHF 28.55
+                // Valutadatum 27.10.2022
                 // @formatter:on
-                .section("date", "amount", "currency")
+                .section("date")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                .oneOf(
+                                // @formatter:off
+                                // Total EUR 1'000.00
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Betrag belastet CHF 28.55
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
+
+                // @formatter:off
+                // Zahlungsverkehr - Gutschrift Unsere Referenz: 312345678
+                // @formatter:on
+                .section("note").optional()
+                .match("^.* (?<note>Referenz: .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // @formatter:off
+                // Depotgebühren Unsere Referenz: 32484929
+                // @formatter:on
+                .section("note").optional()
+                .match("^(?<note>Depotgeb.hren) .*$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setNote("Depotgebühren");
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(trim(v.get("note")));
                 })
 
-                .wrap(TransactionItem::new));
+                .wrap(TransactionItem::new);
+    }
+
+    private void addInterestTransaction()
+    {
+        DocumentType type = new DocumentType("Zinsabrechnung");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.INTEREST);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^IBAN : .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // @formatter:off
+                // 30.12.2022 1.36 0.00 1.36 0.00 1.36
+                // @formatter:on
+                .section("date")
+                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // IBAN : CH3308781000123456700 - Währung : CHF
+                // Total 1.36 0.00 1.36 0.00 1.36
+                // @formatter:on
+                .section("currency", "amount")
+                .match("^IBAN : .* W.hrung : (?<currency>[\\w]{3})$")
+                .match("^Total .* (?<amount>[\\.'\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                // @formatter:off
+                // Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+                // @formatter:on
+                .section("note1", "note2", "note3").optional()
+                .match("^(?<note1>Zinsabrechnung) vom (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<note3>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> {
+                    t.setNote(v.get("note1") + " " + v.get("note2") + " - " + v.get("note3"));
+                })
+
+                .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -293,6 +394,13 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Kommission CHF 1.00
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

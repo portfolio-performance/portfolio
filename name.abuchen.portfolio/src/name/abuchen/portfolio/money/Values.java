@@ -373,6 +373,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> PercentWithSign = new Values<Double>("+#.##%;-#.##%", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%+,.2f%%", percent * 100); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override

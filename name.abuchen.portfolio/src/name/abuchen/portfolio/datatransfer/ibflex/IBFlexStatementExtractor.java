@@ -81,14 +81,13 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges = new HashMap<>();
 
         this.exchanges.put("EBS", "SW");
-        this.exchanges.put("LSE", "L");
-        this.exchanges.put("SWX", "SW");
-        this.exchanges.put("TSE", "TO");
-        this.exchanges.put("VENTURE", "V");
-        this.exchanges.put("IBIS", "DE");
-        this.exchanges.put("TGATE", "DE");
-        this.exchanges.put("SWB", "SG");
-        this.exchanges.put("FWB", "F");
+        this.exchanges.put("LSE", "L"); // London Stock Exchange
+        this.exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
+        this.exchanges.put("TSE", "TO"); // TSX Venture
+        this.exchanges.put("IBIS", "DE"); // XETRA
+        this.exchanges.put("TGATE", "DE"); // TradeGate
+        this.exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
+        this.exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
     }
 
     /**
@@ -118,12 +117,27 @@ public class IBFlexStatementExtractor implements Extractor
         return result;
     }
 
+    /**
+     * @formatter:off
+     * Information on the different asset categorie
+     * --------------------------------------------
+     * STK  --> Stock
+     * FUND --> Fonds
+     * IND  --> Indices
+     * OPT  --> Options
+     * IOPT --> Certificate
+     * FOP  --> Future Options
+     * WAR  --> Warrants
+     * @formatter:on
+     */
     private class IBFlexStatementExtractorResult
     {
         private static final String ASSETKEY_STOCK = "STK";
         private static final String ASSETKEY_FUND = "FUND";
         private static final String ASSETKEY_OPTION = "OPT";
+        private static final String ASSETKEY_CERTIFICATE = "IOPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
+        private static final String ASSETKEY_WARRANTS = "WAR";
 
         private Document document;
         private List<Exception> errors = new ArrayList<>();
@@ -152,19 +166,19 @@ public class IBFlexStatementExtractor implements Extractor
             // Changed from dateTime to reportDate + Check for old Data-Formats,
             // Quapla 14.2.20
             // @formatter:on
-            String dateTime = element.hasAttribute("reportDate") ? element.getAttribute("reportDate") : element.getAttribute("dateTime");
-            if (dateTime.length() == 15)
-                transaction.setDateTime(ExtractorUtils.asDate(dateTime.substring(0, 8)));
-            else
-                transaction.setDateTime(ExtractorUtils.asDate(dateTime));
+            String dateTime = !element.getAttribute("reportDate").isEmpty() //
+                            ? element.getAttribute("reportDate") //
+                            : element.getAttribute("dateTime");
+
+            dateTime = dateTime.length() == 15 ? dateTime.substring(0, 8) : dateTime;
+            transaction.setDateTime(ExtractorUtils.asDate(dateTime));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
                             asAmount(element.getAttribute("amount")));
 
             // Set transaction type
-            String type = element.getAttribute("type");
-            switch (type)
+            switch (element.getAttribute("type"))
             {
                 case "Deposits":
                 case "Deposits & Withdrawals":
@@ -212,8 +226,8 @@ public class IBFlexStatementExtractor implements Extractor
                     throw new IllegalArgumentException();
             }
 
-            if (transaction.getType().equals(AccountTransaction.Type.DIVIDENDS)
-                            || transaction.getType().equals(AccountTransaction.Type.TAXES))
+            if (AccountTransaction.Type.DIVIDENDS.equals(transaction.getType())
+                            || AccountTransaction.Type.TAXES.equals(transaction.getType()))
             {
                 // if the account currency differs from transaction currency
                 // convert currency, if there is a matching security with the
@@ -229,19 +243,16 @@ public class IBFlexStatementExtractor implements Extractor
 
                     for (Security s : allSecurities)
                     {
-                        String isin = element.getAttribute("isin");
-                        String conid = element.getAttribute("conid");
-
                         // Find security with same isin or conid (wkn) and
                         // currency
-                        if (isin.length() > 0 && isin.equals(s.getIsin()))
+                        if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
                         {
                             if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
                                 foundIsinTransaction = true;
                             else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
                                 foundIsinBase = true;
                         }
-                        else if (conid.length() > 0 && conid.equals(s.getWkn()))
+                        else if (element.getAttribute("conid").length() > 0 && element.getAttribute("conid").equals(s.getWkn()))
                         {
                             if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
                                 foundWknTransaction = true;
@@ -260,36 +271,68 @@ public class IBFlexStatementExtractor implements Extractor
                     }
                 }
             }
-
             setAmount(element, transaction, amount);
-            transaction.setNote(element.getAttribute("description"));
+
+            // Set note
+            if (!AccountTransaction.Type.DIVIDENDS.equals(transaction.getType()))
+                transaction.setNote(element.getAttribute("description"));
+
+            // Add Trade-ID note if available
+            if (transaction.getNote() == null)
+            {
+                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
+                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
+            }
+            else
+            {
+                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
+                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+            }
+
+            // Add Transaction-ID note if available
+            if (transaction.getNote() == null)
+            {
+                if (!element.getAttribute("transactionID").isEmpty()
+                                && !"N/A".equals(element.getAttribute("transactionID")))
+                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID"));
+            }
+            else
+            {
+                if (!element.getAttribute("transactionID").isEmpty()
+                                && !"N/A".equals(element.getAttribute("transactionID")))
+                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
+                                    + transaction.getNote());
+            }
 
             // Transactions which do not have an account-id will not be
             // imported.
-            if (!element.getAttribute("accountId").equals("-"))
+            if (!"-".equals(element.getAttribute("accountId")))
                 return new TransactionItem(transaction);
             else
                 return null;
         };
 
         /**
-         * Construct a BuySellEntry based on Trade object defined in eElement
+         * Construct a BuySellEntry based on Trade object defined in element
          */
         private Function<Element, Item> buildPortfolioTransaction = element -> {
-            String assetCategory = element.getAttribute("assetCategory");
-
             if (!Arrays.asList(ASSETKEY_STOCK, //
                             ASSETKEY_FUND, //
                             ASSETKEY_OPTION, //
-                            ASSETKEY_FUTURE_OPTION) //
-                            .contains(assetCategory))
+                            ASSETKEY_CERTIFICATE, //
+                            ASSETKEY_FUTURE_OPTION, //
+                            ASSETKEY_WARRANTS).contains(element.getAttribute("assetCategory")))
+                return null;
+
+            if (element.getAttribute("levelOfDetail").contains("ASSET_SUMMARY")
+                            || element.getAttribute("levelOfDetail").contains("SYMBOL_SUMMARY")
+                            || element.getAttribute("levelOfDetail").contains("ORDER"))
                 return null;
 
             BuySellEntry transaction = new BuySellEntry();
 
             // Set transaction type
-            String buySell = element.getAttribute("buySell");
-            switch (buySell)
+            switch (element.getAttribute("buySell"))
             {
                 case "BUY":
                     transaction.setType(PortfolioTransaction.Type.BUY);
@@ -309,23 +352,21 @@ public class IBFlexStatementExtractor implements Extractor
             // If possible, set "tradeDate" with "tradeTime" as the correct
             // trading date of the transaction.
             //
-            // If "tradeTime" is not present, then check 
-            // if "tradeDate" and "dateTime" are the same date, then
-            // set "dateTime" as the trading day.
+            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date, 
+            // then set "dateTime" as the trading day.
             // @formatter:on
-            if (element.hasAttribute("tradeDate") && element.hasAttribute("tradeTime"))
+            if (element.hasAttribute("tradeDate"))
             {
-                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
-                                element.getAttribute("tradeTime")));
-            }
-            else
-            {
-                if (element.hasAttribute("tradeDate"))
+                if (element.hasAttribute("tradeTime"))
                 {
-                    // Check if "tradeDate" and "dateTime" (date, not time) are equal.
+                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
+                                    element.getAttribute("tradeTime")));
+                }
+                else if (element.hasAttribute("dateTime"))
+                {
                     if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
                     {
-                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
+                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
                                         element.getAttribute("dateTime").substring(9, 15)));
                     }
                     else
@@ -335,13 +376,9 @@ public class IBFlexStatementExtractor implements Extractor
                 }
                 else
                 {
-                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("dateTime").substring(0, 8),
-                                    element.getAttribute("dateTime").substring(9, 15)));
+                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
                 }
             }
-
-            // Set transaction currency
-            String currency = asCurrencyCode(element.getAttribute("currency"));
 
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
@@ -377,22 +414,24 @@ public class IBFlexStatementExtractor implements Extractor
             transaction.getPortfolioTransaction().addUnit(feeUnit);
 
             // Set taxes
-            Money taxes = Money.of(currency, asAmount(element.getAttribute("taxes")));
+            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                            asAmount(element.getAttribute("taxes")));
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes);
             transaction.getPortfolioTransaction().addUnit(taxUnit);
 
             transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
+            // Set note
             if (transaction.getNote() == null
                             || !transaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
             {
-                // Trade ID
-                if (!element.getAttribute("tradeID").isEmpty() && !element.getAttribute("tradeID").equals("N/A"))
+                // Add Trade-ID note if available
+                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
                     transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
 
-                // Transaction ID
+                // Add Transaction-ID note if available
                 if (!element.getAttribute("transactionID").isEmpty()
-                                && !element.getAttribute("transactionID").equals("N/A"))
+                                && !"N/A".equals(element.getAttribute("transactionID")))
                 {
                     if (transaction.getNote() != null)
                         transaction.setNote(transaction.getNote() + " | Transaction-ID: " //
@@ -406,12 +445,14 @@ public class IBFlexStatementExtractor implements Extractor
 
             BuySellEntryItem item = new BuySellEntryItem(transaction);
 
-            if (transaction.getPortfolioTransaction().getCurrencyCode() != null && transaction.getPortfolioTransaction().getAmount() == 0)
+            if (transaction.getPortfolioTransaction().getCurrencyCode() != null
+                            && transaction.getPortfolioTransaction().getAmount() == 0)
             {
                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                 return item;
             }
-            else if (Messages.MsgErrorOrderCancellationUnsupported.equals(transaction.getPortfolioTransaction().getNote()))
+            else if (Messages.MsgErrorOrderCancellationUnsupported
+                            .equals(transaction.getPortfolioTransaction().getNote()))
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
                 return item;
@@ -422,29 +463,28 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * Constructs a Transaction object for a Corporate Transaction defined
-         * in eElement.
+         * in element.
          */
-        private Function<Element, Item> buildCorporateTransaction = eElement -> {
-            Money proceeds = Money.of(asCurrencyCode(eElement.getAttribute("currency")),
-                            Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("proceeds"))));
+        private Function<Element, Item> buildCorporateTransaction = element -> {
+            Money proceeds = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                            Values.Amount.factorize(Double.parseDouble(element.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
             {
                 BuySellEntry transaction = new BuySellEntry();
 
-                if (Double.parseDouble(eElement.getAttribute("quantity")) >= 0)
+                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
                     transaction.setType(PortfolioTransaction.Type.BUY);
                 else
                     transaction.setType(PortfolioTransaction.Type.SELL);
 
-                transaction.setDate(ExtractorUtils.asDate(eElement.getAttribute("reportDate")));
+                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
-                double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
+                double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 transaction.setShares(Values.Share.factorize(qty));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
-                transaction.setNote(eElement.getAttribute("description"));
+                transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
                 transaction.setMonetaryAmount(proceeds);
 
@@ -455,24 +495,65 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 // Set transaction type
                 PortfolioTransaction transaction = new PortfolioTransaction();
-                if (Double.parseDouble(eElement.getAttribute("quantity")) >= 0)
+                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
                     transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 else
                     transaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-                transaction.setDateTime(ExtractorUtils.asDate(eElement.getAttribute("reportDate")));
+                transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
-                Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
+                Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
-                transaction.setNote(eElement.getAttribute("description"));
+                transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                transaction.setNote(element.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
 
                 return new TransactionItem(transaction);
             }
+        };
+
+        /**
+         * Constructs a Transaction object for a SalesTax Transaction defined in
+         * element.
+         */
+        private Function<Element, Item> buildSalesTaxTransaction = element -> {
+            AccountTransaction transaction = new AccountTransaction();
+
+            // Set transaction type
+            transaction.setType(AccountTransaction.Type.TAXES);
+
+            // Set date
+            transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
+
+            // Set amount
+            Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                            asAmount(element.getAttribute("salesTax")));
+            setAmount(element, transaction, amount);
+
+            // Set note
+            transaction.setNote(element.getAttribute("taxableDescription"));
+
+            // Add Tax-Transaction-ID note if available
+            if (!element.getAttribute("taxableTransactionID").isEmpty()
+                            && !"N/A".equals(element.getAttribute("taxableTransactionID")))
+                transaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | "
+                                + transaction.getNote());
+
+            // Add Transaction-ID note if available
+            if (!element.getAttribute("transactionID").isEmpty()
+                            && !"N/A".equals(element.getAttribute("transactionID")))
+                transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
+                                + transaction.getNote());
+
+            // Transactions which do not have an account-id will not be
+            // imported.
+            if (!"-".equals(element.getAttribute("accountId")))
+                return new TransactionItem(transaction);
+            else
+                return null;
         };
 
         private Unit createUnit(Element element, Unit.Type unitType, Money amount)
@@ -485,10 +566,9 @@ public class IBFlexStatementExtractor implements Extractor
             else
             {
                 BigDecimal fxRateToBase;
-                String fxRateToBaseString = element.getAttribute("fxRateToBase");
 
-                if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
-                    fxRateToBase = asExchangeRate(fxRateToBaseString);
+                if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
+                    fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
                 else
                     fxRateToBase = BigDecimal.ONE;
 
@@ -512,10 +592,9 @@ public class IBFlexStatementExtractor implements Extractor
             if (ibAccountCurrency != null && !ibAccountCurrency.equals(amount.getCurrencyCode()))
             {
                 BigDecimal fxRateToBase;
-                String fxRateToBaseString = element.getAttribute("fxRateToBase");
 
-                if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
-                    fxRateToBase = asExchangeRate(fxRateToBaseString);
+                if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
+                    fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
                 else
                     fxRateToBase = BigDecimal.ONE;
 
@@ -541,15 +620,14 @@ public class IBFlexStatementExtractor implements Extractor
                     // If the transaction currency is different from the
                     // security currency (as stored in PP) we need to supply the
                     // gross value in the security currency.
-                    // 
-                    // We assume that the security currency is the same that IB 
+                    //
+                    // We assume that the security currency is the same that IB
                     // thinks of as base currency for this transaction (fxRateToBase).
                     // @formatter:on
                     BigDecimal fxRateToBase;
-                    String fxRateToBaseString = element.getAttribute("fxRateToBase");
 
-                    if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
-                        fxRateToBase = asExchangeRate(fxRateToBaseString);
+                    if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
+                        fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
                     else
                         fxRateToBase = BigDecimal.ONE;
 
@@ -568,7 +646,14 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Imports Trades, CorporateActions and CashTransactions from Document
+         * @formatter:off
+         * Imports from Document
+         * - AccountInformation
+         * - Trades
+         * - CashTransaction
+         * - CorporateAction
+         * - SalesTaxes
+         * @formatter:on
          */
         private void importModelObjects(String type, Function<Element, Item> handleNodeFunction)
         {
@@ -611,6 +696,9 @@ public class IBFlexStatementExtractor implements Extractor
             // Process all CorporateTransactions
             importModelObjects("CorporateAction", buildCorporateTransaction);
 
+            // Process all SalesTaxes
+            importModelObjects("SalesTax", buildSalesTaxTransaction);
+
             // TODO: Process all FxTransactions and ConversionRates
         }
 
@@ -628,15 +716,13 @@ public class IBFlexStatementExtractor implements Extractor
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
-            String assetCategory = element.getAttribute("assetCategory");
-            String exchange = element.getAttribute("exchange");
             String quoteFeed = QuoteFeed.MANUAL;
 
             // yahoo uses '-' instead of ' '
             String currency = asCurrencyCode(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
-            Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
+            Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replace(' ', '-'));
 
             // Store cusip in isin if isin is not available
             if (isin.length() == 0 && cusip.length() > 0)
@@ -645,7 +731,7 @@ public class IBFlexStatementExtractor implements Extractor
             String conID = element.getAttribute("conid");
             String description = element.getAttribute("description");
 
-            if (Arrays.asList(ASSETKEY_OPTION, ASSETKEY_FUTURE_OPTION).contains(assetCategory))
+            if (Arrays.asList(ASSETKEY_OPTION, ASSETKEY_FUTURE_OPTION).contains(element.getAttribute("assetCategory")))
             {
                 computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+", ""));
                 // e.g a put option for oracle: ORCL 171117C00050000
@@ -653,7 +739,7 @@ public class IBFlexStatementExtractor implements Extractor
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
-            if (ASSETKEY_STOCK.equals(assetCategory) || ASSETKEY_FUND.equals(assetCategory))
+            if (Arrays.asList(ASSETKEY_STOCK, ASSETKEY_FUND, ASSETKEY_CERTIFICATE).contains(element.getAttribute("assetCategory")))
             {
                 computedTickerSymbol = tickerSymbol;
                 if (!CurrencyUnit.USD.equals(currency))
@@ -678,8 +764,8 @@ public class IBFlexStatementExtractor implements Extractor
                     // Since all european stock have ISIN set, this should not
                     // produce duplicate security (later on).
                     // @formatter:on
-                    if (tickerSymbol.isPresent() && exchanges.containsKey(exchange))
-                        computedTickerSymbol = computedTickerSymbol.map(t -> t + '.' + exchanges.get(exchange));
+                    if (tickerSymbol.isPresent() && exchanges.containsKey(element.getAttribute("exchange")))
+                        computedTickerSymbol = computedTickerSymbol.map(t -> t + '.' + exchanges.get(element.getAttribute("exchange")));
 
                 }
 
@@ -737,16 +823,16 @@ public class IBFlexStatementExtractor implements Extractor
             // Figure out how many shares were holding related to this Dividend
             // Payment
             long numShares = 0;
-            String desc = element.getAttribute("description");
             double amount = Double.parseDouble(element.getAttribute("amount"));
 
             // Regex Pattern matches the Dividend per Share and calculate number
             // of shares
-            Pattern pDividendPerShares = Pattern.compile(".*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*");
-            Matcher m = pDividendPerShares.matcher(desc);
-            if (m.find())
+            Pattern pDividendPerShares = Pattern.compile(
+                            ".*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*");
+            Matcher mDividendPerShares = pDividendPerShares.matcher(element.getAttribute("description"));
+            if (mDividendPerShares.find())
             {
-                double dividendPerShares = Double.parseDouble(m.group("dividendPerShares"));
+                double dividendPerShares = Double.parseDouble(mDividendPerShares.group("dividendPerShares"));
                 numShares = Math.round(amount / dividendPerShares) * Values.Share.factor();
             }
 
@@ -793,6 +879,7 @@ public class IBFlexStatementExtractor implements Extractor
                                         .equals(((AccountTransaction) i.getSubject()).getType()) || //
                                         AccountTransaction.Type.TAXES //
                                                         .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .filter(i -> i.getSecurity() != null)
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
         dividendTaxTransactions.forEach((k, v) -> {
@@ -802,7 +889,7 @@ public class IBFlexStatementExtractor implements Extractor
                 // @formatter:off
                 // It is possible that several dividend transactions exist on
                 // the same day without one or with several taxes transactions.
-                // 
+                //
                 // We simplify here only one dividend transaction with one
                 // related taxes transaction.
                 // @formatter:on

@@ -104,7 +104,7 @@ public class ImportPDFHandler
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
-        fileDialog.setFilterExtensions(new String[] { "*.pdf;*.zip" }); //$NON-NLS-1$
+        fileDialog.setFilterExtensions(new String[] { "*.pdf;*.PDF;*.zip;*.ZIP" }); //$NON-NLS-1$
         fileDialog.setFilterPath(helper.getPath());
         fileDialog.open();
 

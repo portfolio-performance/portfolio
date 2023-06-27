@@ -1,0 +1,104 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 13 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 21.06.2011 in EUR 2.083,09
+24.06 24.06.11 Zahlungseingang 35,00
+SEBASTIAN MICHLENZ 03046 CO TTBUS
+BO,4RD HIN-LUXX
+27.06 27.06.11 EIGENE KREDITKARTENABRECHN. -223,32
+KREDITKARTENABRECHNUNG
+24.06.11 9999999999999999
+27.06 27.06.11 Zahlungseingang 44,00
+CHRISTOPH GERADS
+HWLUXX E8500 INTEL EARTH
+30.06 30.06.11 Lohn, Gehalt, Rente 1.111,11
+ZF SACHS AG ERNST-SACHS-STR. 62
+ENTGELT     99999999/201106
+30.06 30.06.11 Zahlungseingang 254,00
+PAYPAL
+QQW4CU22523JGDUE ABBUCHUNG VOM PAYPAL-KONTO
+110629P3TX9957BR
+01.07 01.07.11 Überweisung -400,00
+Mustermann KARL
+DATUM 30.06.2011, 23.02 UHR 1.TAN 987307
+01.07 01.07.11 Entgeltabrechnung -4,05
+Entgeltabrechnung siehe Anlage
+01.07 01.07.11 Abrechnung 30.06.2011 0,00
+Abrechnung 30.06.2011 siehe Anlage
+01.07 01.07.11 Lastschrift -26,00
+IGM SCHWEINFURT
+99999999 BEITRAG BIS 06/11
+04.07 04.07.11 Überweisung -2.100,00
+Mustermann, Max
+CASH DATUM 03.07.2011, 20.04 UHR
+1.TAN 565402
+Endsaldo am 04.07.2011 in EUR 2.023,44
+Anlage Rechnungsabschluss:
+Abrechnung 30.06.2011
+Information zur Abrechnung
+Entgelte vom 01.06.2011 bis 30.06.2011                               4,05S
+Entgelte / Auslagen                                    4,05S
+--------------
+Abrechnung 30.06.2011                                                4,05S
+Rechnungsnummer: 2754-06-30-20.07.31.203611
+Abrechnung 30.06.2011
+Information zur Abrechnung
+StarMoney 17.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 13 2 von 2
+Kontostand am 30.06.2011                                        4.549,44 +
+--------------
+Abrechnungszeitraum vom 01.04.2011 bis 30.06.2011
+Abrechnung 30.06.2011                                                0,00H
+Aktuelle Sollzinssätze am Abrechnungstag:
+18,5000 v.H. Überz-Zins am  30.06.2011
+für Kontoüberziehungen
+Die Anpassung des Zinssatzes für Kontoüberziehungen ist abhängig von der
+Entwicklung des "Gleitenden Ein-Jahreszinssatzes für Bundeswertpapiere".
+Kontostand/Rechnungsabschluss                                   4.549,44 +
+am 30.06.2011
+Rechnungsnummer: 7716-06-30-20.07.31.003611
+GENEHMIGUNGSFIKTION:
+Bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an
+unsere Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte
+unserem Preis- und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der ein-
+zelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer einge-
+räumten oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Die Genehmigung umfasst
+auch die im Rechnungsabschluss enthaltenen Belastungsbuchungen aufgrund
+von Einzugsermächtigungslastschriften. Einwendungen gegen Rechnungsab-
+schlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde
+(z.B. Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäfts-
+bedingungen sowie Nummer 2.4 unserer Bedingungen für Zahlungen mittels
+Lastschriften im Einzugsermächtigungs- und Abbuchungsauftragsverfahren).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugs-
+papieren erfolgen unter dem Vorbehalt der Einlösung.
+Einzugsermächtigungs- und Abbuchungsauftragslastschriften, Schecks und
+andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum
+Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert werden.
+Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungs-
+willen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B. durch
+Bezahltmeldung).Für Lastschriften aus anderen Verfahren gelten die
+Einlösungsregeln in den hierfür vereinbarten besonderen Bedingungen.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen
+Geschäftsbedingungen und besonderen Bedingungen können Sie jederzeit bei
+uns einsehen, sie werden auf Wunsch ausgehändigt.
+
+```

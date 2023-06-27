@@ -1,0 +1,153 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+             Frankfurt, 03.07.2021
+0101012000002054153040
+Herrn
+Max Mustermann
+Strasse Str. 8
+99999 Strasse
+Kontoauszug Nr:    002/2021                              Seite 1 von 3
+Kontonummer :      1999999999      IBAN: DE03 1013 0800 1003 9999 99
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    31.03.2021                     in EUR             5.069,02+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.04.     31.03.  Zinsabschluss  01.01.2021 - 31.03.2021                5,60-
+01.04.     06.04.  Überweisung                                         300,00+
+                   Einzahlung Depot                                           
+                   BYLADEM1KSW                                                
+                   DE78793501010190999999                                     
+                   Max Mustermann                                            
+                   KREF: 4043-03-24-12.05.09.204421-2021032                   
+06.04.     08.04.  Ausführung ORDER Kauf LU1681038243                   60,00-
+                   173306526
+07.04.     09.04.  Ausführung ORDER Kauf LU0533032008                   60,00-
+                   173347634                                                  
+07.04.     08.04.  Ausführung ORDER Kauf DE000ETF9082                   60,00-
+                   173305329
+07.04.     09.04.  Ausführung ORDER Kauf LU1900068328                   60,00-
+                   173345845                                                  
+07.04.     01.04.  Abgeltungssteuer aus Stockdividende in               37,54-
+                   NL00150001Q9
+07.04.     09.04.  Ausführung ORDER Kauf IE00BM67HK77                   60,00-
+                   173343627                                                  
+14.04.     16.04.  Ausführung ORDER Kauf US01609W1027                1.414,46-
+                   173751608
+17.04.     19.04.  Depotgebühren 01.01.2021 - 31.01.2021,                3,17-
+                   Depot-Nr. 1003039527, inkl. MwSt.                          
+17.04.     19.04.  Depotgebühren 01.02.2021 - 28.02.2021,                3,13-
+                   Depot-Nr. 1003039527, inkl. MwSt.
+17.04.     19.04.  Depotgebühren 01.03.2021 - 31.03.2021,                3,25-
+                   Depot-Nr. 1003039527, inkl. MwSt.                          
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002054153040 0113101010000101
+Kontoauszug Nr:    002/2021                              Seite 2 von 3
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+19.04.     21.04.  Ausführung ORDER Kauf KYG596691041                1.487,90-
+                   173764145
+20.04.     22.04.  Ausführung ORDER Kauf US6541061031                2.109,92-
+                   173408450                                                  
+26.04.     26.04.  Überweisung                                         500,00+
+                   CASH aus Bar zurück
+                   BYLADEM1KSW
+                   DE09793501010000999999
+                   Max Mustermann und Max Mustermann
+                   KREF: BYLADEM1KSWG2C11574079647U8
+30.04.     28.04.  Dividendenzahlung NL00150001Q9                       41,13+
+03.05.     05.05.  Ausführung ORDER Kauf IE00BM67HK77                   60,00-
+                   174509411
+03.05.     05.05.  Ausführung ORDER Kauf DE000ETF9082                   60,00-
+                   174469184                                                  
+03.05.     05.05.  Ausführung ORDER Kauf LU0533032008                   60,00-
+                   174513652
+03.05.     05.05.  Ausführung ORDER Kauf LU1681038243                   60,00-
+                   174470491                                                  
+03.05.     05.05.  Ausführung ORDER Kauf LU1900068328                   60,00-
+                   174511730
+03.05.     04.05.  Überweisung                                         300,00+
+                   Einzahlung Depot                                           
+                   BYLADEM1KSW                                                
+                   DE78793501010190999999                                     
+                   Max Mustermann                                            
+                   KREF: 4043-03-24-12.05.09.204421-2021032                   
+04.05.     05.05.  Spitzenregulierung in NL00150001Q9                    1,06+
+13.05.     17.05.  Ausführung ORDER Kauf US01609W1027                  528,40-
+                   175129175                                                  
+26.05.     25.05.  Dividendenzahlung SE0008294953                        8,73+
+26.05.     28.04.  Storno Dividendenzahlung NL00150001Q9                41,13-
+26.05.     28.04.  Dividendenzahlung NL00150001Q9                       40,50+
+27.05.     28.04.  Storno Dividendenzahlung NL00150001Q9                40,50-
+27.05.     28.04.  Dividendenzahlung NL00150001Q9                       40,61+
+28.05.     22.03.  Storno Dividendenzahlung NL00150001Q9                12,77-
+28.05.     22.03.  Dividendenzahlung NL00150001Q9                       12,48+
+01.06.     03.06.  Ausführung ORDER Kauf LU0533032008                   50,00-
+                   175834088                                                  
+01.06.     03.06.  Ausführung ORDER Kauf LU1681038243                   50,00-
+                   175770414
+01.06.     03.06.  Ausführung ORDER Kauf LU1900068328                   50,00-
+                   175830308                                                  
+01.06.     03.06.  Ausführung ORDER Kauf IE00BNH72088                   50,00-
+                   175806480
+01.06.     03.06.  Ausführung ORDER Kauf IE00BM67HK77                   50,00-
+                   175824530                                                  
+01.06.     02.06.  Überweisung                                         300,00+
+                   Einzahlung Depot
+                   BYLADEM1KSW
+                   DE78793501010190999999
+                   Max Mustermann
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002054153040
+Kontoauszug Nr:    002/2021                              Seite 3 von 3
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+                   KREF: 4043-03-24-12.05.09.204421-2021032
+01.06.     03.06.  Ausführung ORDER Kauf DE000ETF9082                   50,00-
+                   175769013                                                  
+07.06.     07.06.  Dividendenzahlung FR0000121147                        1,81+
+09.06.     08.06.  Dividendenzahlung PLOPTTC00011                       46,91+
+Neuer Saldo 30.06.2021 Nr. 002/2021         Währung EUR                 74,48+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatexDEGIRO Bank AG
+      Revision
+      Postfach 100551
+      41405 Neuss
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002054153040
+
+```

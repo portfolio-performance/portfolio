@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+ Oskar.de GmbH
+Seitzstraße 8e
+80538 München 
+Telefon: 089 215 413 81
+Seite 1/1
+Herrn München
+26.04.2023
+Max Mustermann
+Muster 27 a Max Mustermann
+76123 ABC Stamm-Nr.: 1217456    Portfolio: 1
+Depot-Nr.: 137001
+Vorgangs-Nr.: 1801
+Referenz-Nr.: 4010
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 26.04.2023 Ausführungsplatz: Div. Ausführungspl.
+Auftragszeit: 10:43:10:00
+Nominale ISIN: IE00BFNM3P36 WKN: A2N6TH Kurs 
+STK 4,235 iShs IV-iShs MSCI EMIMI ES ETF EUR 5,064047016
+Reg. Shares USD Acc. o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 21,45
+Zu Lasten Konto 1123407 Valuta: 28.04.2023 EUR 21,45
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit 
+26.04.2023 10:49:40:56
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: BEST
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Oskar.de GmbH • Geschäftsführung: Dominik Nienhaus, Jens Ohr, Peter Schille • HRB Mannheim 730224 • UStID: DE317659755 • www.oskar.de
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

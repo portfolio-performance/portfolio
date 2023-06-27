@@ -1,0 +1,179 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.2.qualifier
+-----------------------------------------
+Sparkasse
+S
+Schweinfurt-Haßberge
+Herrn
+Ihr Ansprechpartner:
+Max Mustermann
+Lena Hochrein
+Kundenberatung Hofheim
+Stadt
+Straße 7
+Frankenweg 7
+97461 Hofheim
+97494 Bundorf
+Telefon 09521 58-764
+Fax 09521 58-499
+lena.hochrein@sparkasse-sw-has.de
+ 
+ 
+ 
+1. Dezember 2021
+Kontoauszug 20/2021 Seite 1 von 3
+S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+            2.648,17
+ Kontostand am 29.10.2021, Auszug Nr.   19
+             -600,00
+02.11.2021 Dauerauftrag / Wert: 01.11.2021
+Max Mustermann ETF
+              -34,50
+02.11.2021 Lastschrift
+IGM Schweinfurt Industriegewerkschaft Metall BEITRAG BIS
+10/21 MANDATSREF 114089 3701 GLAEUBIGER-ID
+DE71ZZZ000000535 93 NAECHSTER BEITRAGSEINZUG IN
+BEKA NNTER HOEHE UND VEREINBARTEM TURNUS
+162144784 1140893701 Gläubiger-ID:
+DE71ZZZ00000011111
+           -1.000,00
+08.11.2021 Überweisung online
+Max Mustermann DATUM 07.11.2021, 14.38 UHR
+ed167428d-1111111-14375169-20211107
+              -57,30
+16.11.2021 Lastschrift
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . WES
+Handel . Dienstlei stung GmbH, Ihr Einkauf bei WES Han
+del . Dienstleistung GmbH 1016806442351 PP.9962.PP
+PAYPAL 4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+               -8,30
+16.11.2021 Lastschrift
+Lotto24 by Adyen Lotto24 C11111111 T558459002550
+C7739369178101997C 1636257542382004 Gläubiger-ID:
+NL48ZZZ342764500000
+              -86,39
+23.11.2021 Lastschrift
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . Re-In
+Retail Internati onal GmbH, Ihr Einkauf bei Re-In Re tail
+International GmbH 1016920528968 PP.9962.PP PAYPAL
+4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+              -12,34
+23.11.2021 Lastschrift
+AMAZON PAYMENTS EUROPE S.C.A.
+305-0111111-8690705 AMZN Mktp DE 6W
+ZH55YDCWHOML8K 6WZH55YDCWHOML8K
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
+DE94ZZZ00000111111
+Übertrag:               849,34
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 20/2021 Seite 2 von 3
+S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11,  Max Mustermann
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:               849,34
+              -73,73
+24.11.2021 Lastschrift
+AMAZON PAYMENTS EUROPE S.C.A.
+305-9919388-8166721 AMZN Mktp DE FQ
+HRADKBJ0P27QTJ FQHRADKBJ0P27QTJ
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
+DE94ZZZ00000111111
+             -250,00
+29.11.2021 Überweisung online
+solarisBank AG BISON App DATUM 27.11.2021, 14.49 UHR
+7387004d-13537109-14483336-20211127
+              -10,00
+29.11.2021 Lastschrift
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . Telekom
+Deutschland GmbH, Ihr Ein kauf bei Telekom Deutschland
+GmbH 10111111108 PAYPAL 4CU2224VNSRPG
+Gläubiger-ID: LU96ZZZ0000000000000000058
+            1.111,11
+29.11.2021 Lohn, Gehalt, Rente
+ZF FRIEDRICHSHAFEN A Lohn/Gehalt 09006580/202111
+  
+           -1.000,00
+30.11.2021 Überweisung online
+Max Mustermann DATUM 30.11.2021, 17.24 UHR
+f1fd88a43-111118-16500185-20211130
+             -600,00
+30.11.2021 Dauerauftrag
+Max Mustermann ETF
+              -10,96
+30.11.2021 Lastschrift
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . eBay S.a r.l., Ihr
+Einkauf bei eB ay S.a r.l. 10111111238 PAYPAL
+4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+               -5,10
+30.11.2021 Entgeltabrechnung / Wert: 01.12.2021
+siehe Anlage Nr. 1
+            2.398,86
+ Kontostand am 30.11.2021 um 20:02 Uhr
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+1
+Anzahl Anlagen
+2.000,00
+Ihr Kreditlimit EUR:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 20/2021 Seite 3 von 3
+S-Giro Smart 111111111, DE34 1111 0101 0111 1111 11,  Max Mustermann
+Entgeltabschluss: Anlage     1
+Entgelte vom 30.10.2021 bis 30.11.2021                               5,10-
+Grundpreis (Kontoführung)                              4,00-
+Zahlungsverkehr                                        1,10-
+                                                            --------------
+Abrechnung 30.11.2021                                                5,10-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20211130-BY044-00013729379
+  
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+
+```

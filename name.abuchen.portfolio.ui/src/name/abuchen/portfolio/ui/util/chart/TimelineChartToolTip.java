@@ -87,6 +87,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.defaultValueFormat = defaultValueFormat;
     }
 
+    public Format getDefaultValueFormat()
+    {
+        return this.defaultValueFormat;
+    }
+
     public void overrideValueFormat(String series, Format valueFormat)
     {
         this.overrideValueFormat.put(series, valueFormat);
@@ -116,7 +121,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     }
 
     @Override
-    protected Object getFocusObjectAt(Event event)
+    protected final Object getFocusObjectAt(Event event)
     {
         return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
     }

@@ -30,31 +30,31 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
      * @formatter:off
      * Information:
      * Targobank AG always creates two documents per transaction.
-     * 
+     *
      * 1. Transaction, e.g. sale or dividend
-     * 2. tax statement 
-     * 
-     * To offset the taxes due with the transaction, we use the ex-tag as a 
+     * 2. tax statement
+     *
+     * To offset the taxes due with the transaction, we use the ex-tag as a
      * transaction date, which we later replace again with the payment date in
      * postProcessing().
-     * 
+     *
      * The reason for this is that sometimes the transaction
      * date is different between the taxes document and the transaction.
-     * 
+     *
      * @Override public List<Item> postProcessing(List<Item> items)
      * @formatter:on
      */
 
-    private static final String TO_BE_DELETED = "to_be_deleted"; //$NON-NLS-1$
-    private static final String ATTRIBUTE_PAY_DATE = "pay_date"; //$NON-NLS-1$
+    private static final String TO_BE_DELETED = "to_be_deleted";
+    private static final String ATTRIBUTE_PAY_DATE = "pay_date";
 
     public TargobankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("TARGO"); //$NON-NLS-1$
-        addBankIdentifier("Targobank"); //$NON-NLS-1$
-        addBankIdentifier("TARGOBANK AG"); //$NON-NLS-1$
+        addBankIdentifier("TARGO");
+        addBankIdentifier("Targobank");
+        addBankIdentifier("TARGOBANK AG");
 
         addBuySellTransaction();
         addTaxTreatmentForBuySellTransaction();
@@ -65,7 +65,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Targobank AG"; //$NON-NLS-1$
+        return "Targobank AG";
     }
 
     private void addBuySellTransaction()
@@ -89,7 +89,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^Transaktionstyp (?<type>(Kauf|Verkauf))$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
@@ -149,7 +149,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Effektenabrechnung \\(Steuerbeilage\\) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.TAXES);
@@ -243,8 +243,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // @formatter:of
-                // Temporarily set the ex-day as the transaction day 
-                // and will be corrected to the payDay in the postProcessing(). 
+                // Temporarily set the ex-day as the transaction day
+                // and will be corrected to the payDay in the postProcessing().
                 // (See information on top)
                 // @formatter:on
 
@@ -334,8 +334,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 // @formatter:of
-                // Temporarily set the ex-day as the transaction day 
-                // and will be corrected to the payDay in the postProcessing(). 
+                // Temporarily set the ex-day as the transaction day
+                // and will be corrected to the payDay in the postProcessing().
                 // (See information on top)
                 // @Formatter:on
 
@@ -371,7 +371,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("amount", "currency").optional()
                 .match("^Anrechenbare ausl.ndische Quellensteuer (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> { 
+                .assign((t, v) -> {
                     if (t.getMonetaryAmount().isZero())
                     {
                         t.setAmount(asAmount(v.get("amount")));
@@ -464,7 +464,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // It is possible that several sell transactions exist on
                 // the same day without one or with several taxes transactions.
-                // 
+                //
                 // We simplify here only one sell transaction with one
                 // related taxes transaction.
                 // @formatter:on
@@ -526,7 +526,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // It is possible that several dividend transactions exist on
                 // the same day without one or with several taxes transactions.
-                // 
+                //
                 // We simplify here only one dividend transaction with one
                 // related taxes transaction.
                 // @formatter:on
@@ -558,7 +558,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(dividendTransaction.getUnitSum(Unit.Type.TAX).getCurrencyCode(),
                                             dividendTransaction.getUnitSum(Unit.Type.TAX).getAmount());
 
-                            if (tax.isGreaterOrEqualThan(taxTransaction.getMonetaryAmount()))
+                            if (tax.isGreaterOrEqualTo(taxTransaction.getMonetaryAmount()))
                                 taxTransaction.setMonetaryAmount(taxTransaction.getMonetaryAmount().subtract(tax));
                         }
 
@@ -619,6 +619,6 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         if (first != null && second == null)
             return first;
 
-        return first == null ? second : first + "; " + second; //$NON-NLS-1$
+        return first == null ? second : first + "; " + second;
     }
 }

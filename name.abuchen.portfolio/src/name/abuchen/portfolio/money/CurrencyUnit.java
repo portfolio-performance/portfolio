@@ -73,6 +73,25 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         return CACHE.get(currencyCode);
     }
 
+    public static CurrencyUnit getInstanceBySymbol(String currencySymbol)
+    {
+        if (currencySymbol == null)
+            return null;
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            if (currencySymbol.equals(unit.getCurrencySymbol()))
+                return unit;
+        }
+
+        return null;
+    }
+
+    public static boolean containsCurrencyCode(String currencyCode)
+    {
+        return CACHE.containsKey(currencyCode);
+    }
+
     public static List<Pair<String, List<CurrencyUnit>>> getAvailableCurrencyUnitsGrouped()
     {
         NavigableMap<Integer, Pair<String, List<CurrencyUnit>>> sublists = new TreeMap<>();

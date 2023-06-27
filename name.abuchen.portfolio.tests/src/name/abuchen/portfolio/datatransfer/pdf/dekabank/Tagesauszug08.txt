@@ -1,0 +1,74 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Max Mustermann
+Max Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Stadt BLZ: 793 517 30
+Spk Ostunterfranken
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+2. Oktober 2009
+Kauf von Fondsanteilen Auszug: 5 / Seite 1 von 2
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchung haben wir für Ihr Depot durchgeführt:
+LASTSCHRIFTEINZUG 
+Fondsbezeichnung: Deka-GeldmarktPlan TF 
+ISIN: LU0268059614 Unterkonto: 00 Auftragsnummer: 8101 2521
+Verwahrart: GiroSammel Abrechnungstag: 02.10.2009
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil  B estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Einzugsbetrag EUR 400,00 Preis Bestand alt: 1,612
+= Abrechnungsbetrag EUR 400,00 EUR 400,00 EUR 996,160000 Anteilumsatz: 0,402
+Bestand neu: 2,014
+Ihr erteilter Sparer-Pauschbetrag für Max Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn und realisierte E  UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 485,63
+Anrechenbare ausländische Quellensteuer EUR 3,72
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der Jahres-
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und
+Deka-ZukunftsPlan sind in der Ansparphase abgeltungssteuerfrei. Diese werden erst in der Auszahlphase
+steuerlich berücksichtigt!   
+Bitte prüfen Sie die vorliegenden Informationen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 5 / Seite 2 von 2
+ 
+Zu Ihrer persönlichen Anlagestrategie mit Deka Investmentfonds und den Fonds unserer Kooperationspartner
+beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls den aktuellen Rechenschaftsbericht und Verkaufsprospekt mit den Details Ihrer
+Fondsanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+ 
+Über Chancen, Risiken und Kosten der Anlage informiert Sie das Fondsporträt des jeweiligen Fonds.
+Wünschen Sie aktuelle Informationen zu unseren Fonds, können Sie diese jederzeit im Internet über
+www.deka.de aufrufen.
+  
+Deka ist "Top-Fondsgesellschaft"
+ 
+Die Höchstnote von 5 Sternen wurde der Deka bei einer
+Preisverleihung des Wirtschaftsmagazins "Capital" im Januar
+2009 verliehen. 
+ 
+Capital untersuchte dabei 100 Fondsgesellschaften nach
+Lückenlosigkeit der Produktpalette, Fondsqualität, Management
+und Service. Von diesen erhielten lediglich 8 weitere Anbieter die
+Bestnote.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068

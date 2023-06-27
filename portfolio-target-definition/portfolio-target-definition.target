@@ -3,14 +3,6 @@
 <target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.26/R-4.26-202211231800/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.26.0.v20221123-2302"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.26.0.v20221123-2302"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.1900.v20221108-1024"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1900.v20221108-1024"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.26.0.v20221123-2302"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>
 		<unit id="org.junit" version="4.12.0.v201504281640"/>
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
@@ -51,6 +43,14 @@
 		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository"/>
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
 		<unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.14.0.202301260747"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/eclipse/updates/4.28/R-4.28-202306050440/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.28.0.v20230525-0648"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.28.0.v20230525-0648"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.2100.v20230415-0944"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2100.v20230415-0944"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.28.0.v20230605-0440"/>
 	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
 		<dependencies>

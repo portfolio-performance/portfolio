@@ -28,10 +28,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("onvista bank"); //$NON-NLS-1$
-        addBankIdentifier("OnVista Bank"); //$NON-NLS-1$
-        addBankIdentifier("onvist a bank"); //$NON-NLS-1$
-        addBankIdentifier("Frankfurt am Main"); //$NON-NLS-1$
+        addBankIdentifier("onvista bank");
+        addBankIdentifier("OnVista Bank");
+        addBankIdentifier("onvist a bank");
+        addBankIdentifier("Frankfurt am Main");
 
         addBuySellTransaction();
         addReinvestTransaction();
@@ -46,7 +46,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "OnVista Bank GmbH"; //$NON-NLS-1$
+        return "OnVista Bank GmbH";
     }
 
     private void addBuySellTransaction()
@@ -70,9 +70,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("(^|Wir haben für Sie )(?<type>verkauft|Gesamtf.lligkeit|Ausbuchung:)( .*)?$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("verkauft")
-                                    || v.get("type").equals("Gesamtfälligkeit")
-                                    || v.get("type").equals("Ausbuchung:"))
+                    if ("verkauft".equals(v.get("type"))
+                                    || "Gesamtfälligkeit".equals(v.get("type"))
+                                    || "Ausbuchung:".equals(v.get("type")))
                     {
                         t.setType(PortfolioTransaction.Type.SELL);
                     }
@@ -338,7 +338,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 + "|[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+)$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
-                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                    if (v.get("notation") != null && !"STK".equalsIgnoreCase(v.get("notation")))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
                         t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -394,7 +394,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             entry.setType(AccountTransaction.Type.DIVIDENDS);
             return entry;
         });
-        
+
         pdfTransaction
                 // If we have a gross reinvestment, then it is taxes.
 
@@ -494,7 +494,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.,\\d]+$")
                                     .assign((t, v) -> {
                                         // Percentage quotation, workaround for bonds
-                                        if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                                        if (v.get("notation") != null && !"STK".equalsIgnoreCase(v.get("notation")))
                                         {
                                             BigDecimal shares = asBigDecimal(v.get("shares"));
                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -756,7 +756,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                     return item;
                 });
-        
+
         block.set(pdfTransaction);
     }
 
@@ -768,17 +768,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Wertlose Ausbuchung"
                         + "|Kapitalerh.hung"
                         + "|Kapitalherabsetzung"
-                        + "|Umtausch" 
+                        + "|Umtausch"
                         + "|Ausbuchung der Rechte", (context, lines) -> {
             Pattern pDate = Pattern.compile("(^|^[\\s]+).*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
-            // read the current context here
+
             for (String line : lines)
             {
-                Matcher m = pDate.matcher(line);
-                if (m.matches())
-                {
-                    context.put("date", m.group("date"));
-                }
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                    context.put("date", mDate.group("date"));
             }
         });
         this.addDocumentTyp(type);
@@ -848,7 +846,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("note").optional()
                 .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise\\.) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
-                
+
                 // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
                 .section("note").optional()
                 .match("^(?<note>Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte\\. Ein separater Beleg wird nicht erstellt\\.).*$")
@@ -901,7 +899,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
-                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                    if (v.get("notation") != null && !"STK".equalsIgnoreCase(v.get("notation")))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
                         t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -925,7 +923,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Für die Registrierung der Namens-Aktien (auf Ihren Namen) im Aktionärs-Register belasten wir Ihrem Konto vorstehenden 
+                // Für die Registrierung der Namens-Aktien (auf Ihren Namen) im Aktionärs-Register belasten wir Ihrem Konto vorstehenden
                 .section("note").optional()
                 .match("^F.r die (?<note>Registrierung der Namens\\-Aktien) .*$")
                 .assign((t, v) -> t.setNote(v.get("note")))
@@ -953,28 +951,22 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // EUR - Verrechnungskonto: 0 111111 222
                 Matcher m = pCurrency.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group("currency"));
-                }
+
                 // Ihre Kontonummer : 172306238 : Customer Cash Account  EUR
                 m = pCurrency2.matcher(line);
                 if (m.matches())
-                {
                     context.put("currency", m.group("currency2"));
-                }
 
                 // Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
                 m = pYear.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year"));
-                }
+
                 // KONTOAUSZUG Nr. 2 per 30.06.2015
                 m = pYear2.matcher(line);
                 if (m.matches())
-                {
                     context.put("year", m.group("year2"));
-                }
             }
         });
         this.addDocumentTyp(type);
@@ -999,7 +991,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>.berweisung(seingang|ausgang) SEPA)( .*)?$")
                 .assign((t, v) -> {
                     // Is sign is negative change to REMOVAL
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.REMOVAL);
 
                     t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
@@ -1031,7 +1023,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$")
                 .assign((t, v) -> {
                     // Is sign is positiv change to FEES_REFUND
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.FEES);
                     else
                         t.setType(AccountTransaction.Type.FEES_REFUND);
@@ -1049,7 +1041,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>.berziehungszinsen)$")
                 .assign((t, v) -> {
                     // Is sign is positiv change to INTEREST
-                    if (v.get("sign").equals("-"))
+                    if ("-".equals(v.get("sign")))
                         t.setType(AccountTransaction.Type.INTEREST_CHARGE);
                     else
                         t.setType(AccountTransaction.Type.INTEREST);
@@ -1284,7 +1276,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Handelstag 15.12.2020 Kurswert USD 4.872,01 
+                // Handelstag 15.12.2020 Kurswert USD 4.872,01
                 // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
                 .section("fxCurrency", "baseCurrency", "termCurrency", "exchangeRate").optional()
                 .match("^.* Kurswert (?<fxCurrency>[\\w]{3}) [\\.,\\d]+([-\\s])?$")
@@ -1318,14 +1310,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("Umtausch", (context, lines) -> {
             Pattern pDate = Pattern.compile("(^|^[\\s]+).*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
-            // read the current context here
+
             for (String line : lines)
             {
-                Matcher m = pDate.matcher(line);
-                if (m.matches())
-                {
-                    context.put("date", m.group("date"));
-                }
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                    context.put("date", mDate.group("date"));
             }
         });
         this.addDocumentTyp(type);
@@ -1375,7 +1365,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<notation>[\\w]{3}) (?<shares>[\\.,\\d]+)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?$")
                 .assign((t, v) -> {
                     // Percentage quotation, workaround for bonds
-                    if (v.get("notation") != null && !v.get("notation").equalsIgnoreCase("STK"))
+                    if (v.get("notation") != null && !"STK".equalsIgnoreCase(v.get("notation")))
                     {
                         BigDecimal shares = asBigDecimal(v.get("shares"));
                         t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
@@ -1441,7 +1431,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         transaction
                 .section("n").optional()
                 .match("zu versteuern \\(negativ\\) (?<n>.*)")
-                .assign((t, v) -> type.getCurrentContext().put("negative", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
 
         // If we have a gross reinvestment, we set a flag and don't book tax
         // below.
@@ -1449,14 +1439,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("n").optional()
                 .match("^Ertragsthesaurierung .*$")
                 .match("Steuerliquidit.t (?<n>.*)")
-                .assign((t, v) -> type.getCurrentContext().put("noTax", "X"));
+                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
         transaction
                 // Handelsplatz außerbörslich Lang & Schwarz Frz. Finanztrans. Steuer EUR 11,19-
                 .section("currency", "tax").optional()
                 .match("^.* Finanztrans\\. Steuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1466,7 +1456,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("(^|^.* )Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1477,7 +1467,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("(^|^.* )Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1487,12 +1477,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("currency", "tax").optional()
                 .match("(^|^.* )Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
                 })
-                
+
                 // ausländische Dividende EUR 4,13
                 // ausländische Quellensteuer 27% DKK 8,34
                 // anrechenbare Quellensteuer 15% DKK 4,64
@@ -1500,7 +1490,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("ausländische Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1513,12 +1503,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("creditableWithHoldingTax", "currency").optional()
                 .match("(^.* davon |^davon )anrechenbare US-Quellensteuer( [\\.,\\d]+%|.*)? (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
-                
+
                 // ausl. Dividendenanteil (Ausschüttung) EUR 0,98
                 // anrechenbare Quellensteuer EUR 0,03
                 // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
@@ -1526,40 +1516,40 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("anrechenbare Quellensteuer (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
                 .match(".* davon anrechenbare Quellensteuer Fondseingangsseite [\\w]{3} [\\.,\\d]+$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                     }
                 })
 
                 // einbehaltene Kapitalertragsteuer EUR 1,81
-                // einbehaltene Kapitalertragsteuer EUR              0,39     
+                // einbehaltene Kapitalertragsteuer EUR              0,39
                 .section("tax", "currency").optional()
                 .match("^einbehaltene Kapitalertragsteuer ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
                 })
 
                 // einbehaltener Solidaritätszuschlag EUR 0,10
-                // einbehaltener Solidaritätszuschlag  EUR              0,02     
+                // einbehaltener Solidaritätszuschlag  EUR              0,02
                 .section("tax", "currency").optional()
                 .match("^einbehaltener Solidarit.tszuschlag ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
                 })
 
                 // einbehaltene Kirchensteuer EUR 5,86
-                // einbehaltener Kirchensteuer  EUR              0,02 
+                // einbehaltener Kirchensteuer  EUR              0,02
                 .section("tax", "currency").optional()
                 .match("^einbehaltene Kirchensteuer(  Ehegatte\\/Lebenspartner)? ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }
@@ -1569,7 +1559,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .section("tax", "currency").optional()
                 .match("^einbehaltene Kirchensteuer Ehegatte\\/Lebenspartner ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    if (!"X".equals(type.getCurrentContext().get("negative")) && !"X".equals(type.getCurrentContext().get("noTax")))
+                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
                     {
                         processTaxEntries(t, v, type);
                     }

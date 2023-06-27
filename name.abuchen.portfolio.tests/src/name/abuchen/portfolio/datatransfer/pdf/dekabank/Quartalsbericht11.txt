@@ -1,0 +1,611 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Jahresdepotauszug per 31.12.2008
+Depotübersicht 
+Depot: 0111111111   
+Depotinhaber:
+...
+..
+... Richard Mustermann    .... Freistellungsauftrag   
+Erteilt 2008: EUR 600,00  
+Beansprucht: EUR 85,44  
+Herrn
+Richard Mustermann
+Musterstraße 9
+11111 Stadt
+ 
+ISIN Unterkonto Bezeichnung Wert Wertentwicklung
+in EUR in EUR 
+per 31.12.2008 * per 31.12.2008
+LU0268059614  00 Deka-GeldmarktPlan TF 597,21 -2,79
+LU0348413815  00 DekaLux-PharmaTech TF 1.419,65 -82,65
+DE0008474511  00 AriDeka 1.102,77 -806,33
+             VL-Vertrag: gesperrt bis zum  31.12.2010, Vertragsinhaber: Richard Mustermann  
+LU0133666759  00 Deka-ConvergenceAktien TF 1.148,35 -1.499,01
+LU0052859252  00 DekaLux-Pazifik 1.576,43 -1.390,66
+LU0062624902  00 DekaLux-Deutschland TF A 1.749,70 -1.450,30
+DE0009771824  00 Deka-Geldmarkt: Euro TF 0,00 +0,75
+DE0009771980  00 Deka-EuropaBond TF 1.691,57 -57,82
+DE0009786285  00 Deka-EuropaPotential TF 1.449,50 -1.621,71
+IE0005258151  00 Deka-PharmaTech TF 0,00 -353,80
+XF0009994050  00 Deka-BonusRente  
+DE0005424519  00 - Deka-BR 100 534,52 -278,50
+   Beitragszusage: Auf Basis der bisher eingezahlten Altersvorsorgebeiträge   
+(einschließlich Zulagen) stehen Ihnen aus Ihrem Altersvorsorgevertrag
+Deka-BonusRente zu Beginn der Auszahlungsphase mindestens 874,50
+EUR zur Verfügung.
+   Gesamt in EUR 11.269,70 -7.542,82
+Depotpreis inkl. 19% MwSt: 10,00 EUR belastet im Depot 0111111111 LU0268059614 00
+Entgelte werden gemäß Preisverzeichnis erhoben.
+ 
+Besondere Hinweise zur Deka-BonusRente:
+Mit diesem Jahresdepotauszug erhalten Sie Zusatzinformationen nach § 7 Abs. 4 AltZertG zu Ihrer Deka-BonusRente. Das Jahresendereporting zur
+Deka-BonusRente mit den Bescheinigungen nach § 92 und § 10 a Abs. 5 EStG geht Ihnen mit separater Post Ende Februar 2009 zu. Die
+Bescheinigung nach § 10 a Abs. 5 EStG benötigen Sie im Rahmen der Einkommensteuererklärung, um einen zusätzlichen Sonderausgabenabzug
+geltend zu machen.
+Sofern Sie die DekaBank per Dauerzulageantrag bevollmächtigt haben, die Zulage jedes Jahr für Sie automatisch zu beantragen, wird diese auf
+Grundlage der von Ihnen mitgeteilten Daten beantragt und nach Eingang der Zulage Ihrem Deka-BonusRente Vertrag gutgeschrieben.
+ 
+* Beachten Sie hierzu bitte die Erläuterungen unter "Hinweise zu Ihrem Jahresdepotauszug" auf der Rück- bzw. Folgeseite
+Weitere Informationen entnehmen Sie unserer Homepage www.deka.de (Menüpunkt Service) oder rufen Sie uns unter (0 69) 71 47 - 6 52 montags bis
+freitags in der Zeit von 8.00 bis 18.00 Uhr an.
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+HINWEISE ZU IHREM JAHRESDEPOTAUSZUG Jahresbescheinigung 2008:
+Mit in Kraft treten des Steueränderungsgesetzes 2003 sind Kreditinstitute
+Wert in EUR per 31.12.2008: verpflichtet, für die bei ihnen geführten Depots eine Jahresbescheinigung zu
+Der Wert der Investmentanlage berechnet sich aus dem Anteilsbestand per 31. erstellen. Sind im Kalenderjahr 2008 Kapitalerträge oder private
+Dezember 2008 multipliziert mit dem Preis je Anteil . Die Bewertung des Fonds Veräußerungsgeschäfte angefallen, werden Ihnen diese per 31. Dezember 2008
+erfolgt mit dem jeweils letzten verfügbaren Rücknahmepreis, der zum Zeitpunkt in der Jahresbescheinigung ausgewiesen.
+der Erstellung dieses Auszugs vorlag. Bitte entnehmen Sie den Fondspreis zum
+letzten Handelstag des Jahres dem Jahresbericht der betreffenden Fonds. Die gesetzliche Verpflichtung zur Erstellung besteht gegenüber unbeschränkt
+einkommensteuerpflichtigen natürlichen Personen. Haben Sie mehr als ein Depot
+Wertentwicklung in EUR per 31.12.2008: in unserem Hause, dann können die Angaben von mehreren Depots in einer
+Die Berechnung der Wertentwicklung im Rahmen des Jahresdepotauszuges Jahresbescheinigung zusammengefasst sein. Bei betrieblichen Konten besteht
+erfolgt für den Betrachtungszeitraum 1. Januar bis 31. Dezember des keine Verpflichtung zur Ausstellung einer Jahresbescheinigung, wenn das Institut
+betreffenden Kalenderjahres. weiß, dass es sich um ein betriebliches Depot handelt.
+Für die Berechnung der Wertentwicklung werden für den Betrachtungszeitraum
+die Anfangs- und Endbestände sowie Buchungen bei denen es zu einer stücke- Inländische Kapitalerträge aus Investmentanteilen bei Privatvermögen
+und/oder geldmäßigen Bewegung kam, herangezogen. Gegebenenfalls errechnen sich aus dem steuerpflichtigen Anteil von Ausschüttungen und
+abgeführte Steuern werden hierbei nicht berücksichtigt. Eventuell einbehaltene Thesaurierungen des Kalenderjahres 2008 bezogen auf deutsche Fonds. In der
+Gebühren und Ausgabeaufschläge reduzieren Ihre Wertentwicklung. Es wird Jahresbescheinigung sowie der Jahres-Steuerbescheinigung erfolgt der Ausweis
+keine Wertentwicklung für das Unterkonto ausgewiesen, wenn dieses im in den Einzelpositionen "Zinsen und andere Erträge (ohne Dividenden) aus
+Betrachtungszeitraum ohne Bestand ist. Investmentanteilen" und "Dividenden und ähnliche Erträge aus
+Allgemeine Risikohinweise: Investmentanteilen".
+Anteile an Investmentfonds sind Wertpapiere, deren Preise durch die
+börsentäglichen Kursschwankungen der im jeweiligen Investmentfonds Ausländische Kapitalerträge aus Investmentanteilen bei Privatvermögen
+befindlichen Vermögenswerte bestimmt werden und deshalb steigen oder auch errechnen sich analog, aber bezogen auf Fonds, die nach dem für
+fallen können. Kursänderungen bei den Vermögensgegenständen (z. B. Aktien, Großbritannien, Irland, Luxemburg oder die Schweiz geltenden Recht aufgelegt
+Anleihen) und Wechselkursschwankungen können somit den Wert einer Anlage wurden. In der Jahresbescheinigung sowie der Jahres-Steuerbescheinigung
+in Investmentfonds sowohl positiv als auch negativ beeinflussen. erfolgt der Ausweis in den Einzelpositionen "Zinsen und andere Erträge (ohne
+Dividenden) aus ausländischen Investmentanteilen" und "Dividenden und
+Verwahrung des Anteilsbestandes: ähnliche Erträge aus ausländischen Investmentanteilen".
+Die Anteile werden im Girosammel-Depot oder in Form einer Gutschrift in
+Wertpapierrechnung verwahrt. Die Anteilbruchteile stellen das Miteigentum an Ausländische Quellensteuern können in der Anlage AUS der
+einer Bruchteilgemeinschaft dar. Einkommensteuererklärung ausgewiesen werden.
+Beanspruchter Freistellungsauftrag für das Kalenderjahr 2008: Steuerfreie Erträge nach dem Doppelbesteuerungsabkommen unterliegen nicht
+Die Höhe des von Ihnen erteilten Freistellungsauftrages entnehmen Sie bitte Ihrer der deutschen Einkommensteuer, aber dem sogenannten Progressionsvorbehalt
+Depotübersicht oder Ihrem Depotauszug. Für 2008 und Folgejahre gestellte und sind daher in der Anlage AUS auszuweisen.
+Freistellungsaufträge gelten für alle bestehenden und zukünftigen freistellbaren
+DekaBank Depots, die von einem vermittelnden Institut betreut werden. Bitte Weitere Informationen erhalten Sie bei Ihrem Steuerberater.
+beachten Sie, dass die Bemessungsgrundlage für die Zinsabschlagsteuer und die
+Einkommensteuer in vielen Fällen nicht identisch ist. Deshalb kann die Höhe des Werbungskosten:
+beanspruchten Freistellungsauftrages von den "inländischen bzw. ausländischen Werbungskosten, z.B. Depotpreis, die Ihnen im Zusammenhang mit Ihren
+Kapitalerträgen aus Investmentanteilen bei Privatvermögen" abweichen. Investmentanteilen entstanden sind, müssen im Rahmen der
+Einkommensteuererklärung auf die Kapitalerträge, die dem
+Bescheinigung vermögenswirksamer Leistungen für 2008: Halbeinkünfteverfahren unterliegen und die übrigen steuerpflichtigen
+Wenn in Ihrem Depot vermögenswirksame Leistungen (VL) verwahrt werden, Kapitalerträge aufgeteilt werden. Aufteilungsmaßstab kann hierbei das Verhältnis
+erhalten Sie mit dem Jahresdepotauszug per 31. Dezember 2008 eine der voll steuerpflichtigen Erträge zu den Erträgen, die dem
+Bescheinigung der im Kalenderjahr 2008 eingezahlten VL-Leistungen. Bitte fügen Halbeinkünfteverfahren unterliegen, sein.
+Sie diese Bescheinigung Ihrer Einkommensteuererklärung bei. Sie dient als Antrag
+zur Gewährung einer Sparzulage. Zinsinformationsverordnung:
+Aufgrund der am 01. Juli 2005 in Kraft getretenen Zinsinformationsverordnung
+Zahlungseingänge, die nicht mehr im Kalenderjahr 2008 erfolgen, (z.B. im Januar (auf Grundlage der EU-Zinsrichtlinie 2003/ 48 / EG des Rates vom 03. Juni 2003)
+2009 für Dezember 2008) werden erst in der Bescheinigung für das Kalenderjahr ist die DekaBank verpflichtet, Zinserträge von wirtschaftlichen Eigentümern mit
+2009 ausgewiesen. ausländischem Wohnsitz innerhalb der angeschlossenen EU-Staaten an das
+Bundeszentralamt für Steuern zu melden.
+Sollten auf Ihrem Vertrag Zahlungseingänge fehlen, fragen Sie bitte erst bei Dieser Richtlinie unterliegen alle Depots von Privatanlegern, die in einem anderen
+Ihrem Arbeitgeber nach, auf welches Konto die vermögenswirksamen Leistungen Mitgliedstaat der Europäischen Union ansässig sind.
+überwiesen wurden. Erst mit dieser Information können wir die Ziel dieser Richtlinie ist es, innerhalb der Europäischen Union durch Austausch
+Zahlungseingänge überprüfen. von Informationen eine effektive Besteuerung von Zinserträgen zu ermöglichen.
+Dazu gehören nach den Bestimmungen der Zinsinformationsverordnung, unter
+Vermögensbeteiligungen gem. Paragraph 19a EStG: Beachtung bestimmter Sonderregelungen, auch solche Zinserträge, die im
+Die gesetzliche Sperrfrist von sechs Jahren ist seit dem Steueränderungsgesetz Rahmen von Ausschüttungen oder Anteilscheinrückgaben von Investmentfonds
+2001 entfallen. Die Vermögensbeteiligungen sind frei verfügbar. Ggf. sind gezahlt werden.
+zivilrechtlich vereinbarte Haltedauern zwischen Arbeitnehmer und Arbeitgeber zu
+beachten.
+Jahres-Steuerbescheinigung 2008:
+Wurde Ihnen im Kalenderjahr 2008 Zinsabschlagsteuer und Solidaritätszuschlag
+einbehalten oder Kapitalertragsteuer (20 %) auf inländische Dividendenanteile
+nicht voll bzw. gar nicht erstattet, erhalten Sie mit dem Jahresdepotauszug per
+31. Dezember 2008 eine Jahres-Steuerbescheinigung. In der tabellarischen
+Zusammenfassung sind die jeweiligen Summen angedruckt. Für die in den
+Positionen "anrechenbarer Zinsabschlag (30%)", "anrechenbare
+Kapitalertragsteuer (20%)" und "anrechenbarer Solidaritätszuschlag"
+ausgewiesenen Beträge kann eine Anrechnung im Rahmen der
+Einkommensteuerklärung erfolgen. Wurden keine deutschen Steuern
+einbehalten, entfällt die Jahres-Steuerbescheinigung.
+ 
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 1
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-GeldmarktPlan TF
+ISIN: LU0268059614 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Lastschrifteinzug 600,00 1.003,330000  +0,598 03.09.2008 03.09.2008
+Depotpreis 10,00 1.013,930000  -0,010 12.12.2008 12.12.2008
+Bestand am 31.12.2008 597,21  1.015,670000  0,588   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+DekaLux-PharmaTech TF
+ISIN: LU0348413815 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Kauf 1.502,30 95,110000  +15,795 30.06.2008 30.06.2008
+Bestand am 31.12.2008 1.419,65  89,880000  15,795   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Deka-BonusRente Vertragsnr.: 0111111111 999405 00
+Deka-BR 100
+ISIN: DE0005424519 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 250,19 45,250000  5,529   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Lastschrifteinzug 188,25 47,630000  +3,952 19.02.2008 27.12.2007
+Abrechnungsbetrag Thesaurierung 0,27 37,340000  +0,007 01.07.2008 01.07.2008
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich schriftlich an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Fortsetzung auf Seite 2
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 2
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Fortsetzung von vorheriger Seite        
+Lastschrifteinzug 114,00 38,960000  +2,926 03.09.2008 18.08.2008
+Lastschrifteinzug 270,00 36,030000  +7,494 01.10.2008 01.10.2008
+Vertragsgebühr 10,00 28,040000  -0,357 12.12.2008 12.12.2008
+Bestand am 31.12.2008 534,52  27,340000  19,551   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+AriDeka
+ISIN: DE0008474511 Unterkonto: 00
+Verwahrart: GiroSammel  
+VL-Vertrag: gesperrt bis zum 31.12.2010, Vertragsinhaber: Richard Mustermann
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 1.501,10 70,630000  21,253   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Kauf 34,00 65,460000  +0,519 31.01.2008 31.01.2008
+Abrechnungsbetrag Ausschüttung 16,09 62,470000  +0,258 22.02.2008 22.02.2008
+Kauf 34,00 65,490000  +0,519 29.02.2008 29.02.2008
+Kauf 34,00 61,660000  +0,551 31.03.2008 31.03.2008
+Kauf 34,00 65,480000  +0,519 30.04.2008 30.04.2008
+Kauf 34,00 66,890000  +0,508 30.05.2008 30.05.2008
+Kauf 34,00 58,850000  +0,578 30.06.2008 30.06.2008
+Kauf 34,00 58,900000  +0,577 31.07.2008 31.07.2008
+Kauf 34,00 59,510000  +0,571 29.08.2008 29.08.2008
+Kauf 34,00 52,190000  +0,651 30.09.2008 30.09.2008
+Kauf 34,00 43,870000  +0,775 31.10.2008 31.10.2008
+Kauf 34,00 41,630000  +0,817 28.11.2008 28.11.2008
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 3
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Fortsetzung von vorheriger Seite        
+Kauf 34,00 40,100000  +0,848 30.12.2008 30.12.2008
+Bestand am 31.12.2008 1.102,77  38,100000  28,944   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Kauf 997,36 173,110000  +5,761 07.03.2008 07.03.2008
+Lastschrifteinzug 600,00 169,920000  +3,531 04.04.2008 04.04.2008
+Lastschrifteinzug 450,00 181,970000  +2,473 13.06.2008 13.06.2008
+Lastschrifteinzug 600,00 173,860000  +3,451 01.07.2008 01.07.2008
+Abrechnungsbetrag Thesaurierung 0,00 127,530000  +0,000 01.10.2008 01.10.2008
+Bestand am 31.12.2008 1.148,35  75,470000  15,216   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+DekaLux-Pazifik
+ISIN: LU0052859252 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 2.967,09 513,960000  5,773   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Fortsetzung auf Seite 4
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 4
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Fortsetzung von vorheriger Seite        
+Abrechnungsbetrag Ausschüttung 38,51 239,570000  +0,161 20.11.2008 20.11.2008
+Bestand am 31.12.2008 1.576,43  265,660000  5,934   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+DekaLux-Deutschland TF A
+ISIN: LU0062624902 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 3.000,00 100,080000  29,976   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Lastschrifteinzug 200,00 88,100000  +2,270 05.05.2008 05.05.2008
+Abrechnungsbetrag Ausschüttung 3,55 45,320000  +0,078 20.11.2008 20.11.2008
+Bestand am 31.12.2008 1.749,70  54,130000  32,324   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Deka-Geldmarkt: Euro TF
+ISIN: DE0009771824 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 996,61 67,080000  14,857   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Kauf aus Ertrag 11,13 66,330000  +0,168 02.01.2008 02.01.2008
+Fortsetzung auf Seite 5
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 5
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Fortsetzung von vorheriger Seite        
+Verkauf 997,36 66,380000  -15,025 07.03.2008 07.03.2008
+Bestand am 31.12.2008 0,00  66,510000  0,000   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Deka-EuropaBond TF
+ISIN: DE0009771980 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 1.749,39 37,150000  47,090   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Abrechnungsbetrag Ausschüttung 72,52 36,290000  +1,998 20.08.2008 20.08.2008
+Bestand am 31.12.2008 1.691,57  34,460000  49,088   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 3.071,21 85,430000  35,950   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Bestand am 31.12.2008 1.449,50  40,320000  35,950   
+Bewertung mit dem Rücknahmepreis vom 30.12.2008
+ 
+Fortsetzung auf Seite 6
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2008
+Umsatz-Jahresübersicht
+Seite 6
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-PharmaTech TF
+ISIN: IE0005258151 Unterkonto: 00
+Verwahrart: GiroSammel  
+ 
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2007 1.856,10 38,350000  48,399   
+Bewertung mit dem Rücknahmepreis vom 28.12.2007
+Abrechnungsbetrag Thesaurierung 0,00 31,040000  +0,000 30.06.2008 30.06.2008
+Verkauf 1.502,30 31,040000  -48,399 30.06.2008 30.06.2008
+Bestand am 31.12.2008 0,00  31,040000  0,000   
+Bewertung mit dem Rücknahmepreis vom 30.06.2008
+ 
+Dieser Depotauszug besteht aus 6 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+vom Name, Vorname Steuernummer / Identifikationsnummer
+Arbeit-
+nehmer
+auszu- 2008
+füllen
+99 1 5
+Anlage VL  9
+Wichtiger Hinweis: 87
+Herrn
+Richard Mustermann Diese Bescheinigung benötigen Sie, wenn Sie eine
+Musterstraße 9 Arbeitnehmer-Sparzulage nach dem Fünften
+11111 Stadt Vermögensbildungsgesetz (VermBG) beantragen wollen. In
+ diesem Fall fügen Sie bitte die Bescheinigung Ihrer
+Einkommensteuererklärung / Ihrem Antrag auf
+Arbeitnehmer-Sparzulage bei.
+Bescheinigung vermögenswirksamer Leistungen für 2008
+(§ 15 Abs. 1 VermBG, § 5 VermBDV 1994)
+Arbeitnehmer (Name, Vorname) geboren am
+Mustermann, Richard 01.01.1980
+Straße, Hausnummer
+Musterstraße 9
+Postleitzahl, Wohnort
+11111 Stadt
+1. Vertrag 2. Vertrag
+Art der Anlage *) 0 1 0
+Institutsschlüssel für die
+Arbeitnehmer- Sparzulage 1 1111111 1
+Vertragsnummer
+(nur für Finanzamt) 2 11111111111111 2
+Vermögenswirksame Leistungen 
+(auf volle Euro aufgerundet) 3 408,00 3
+Ende der Sperrfrist
+(Format: TT.MM.JJJJ) 4 31.12.2010 4
+Anlageinstitut, Unternehmen, Empfänger
+DekaBank
+Deutsche Girozentrale
+60625 Frankfurt am Main erstellt per 31. Dezember 2008
+*) 1 = Sparvertrag über Wertpapiere oder andere Vermögensbeteiligungen (§ 4 VermBG)
+Vertragsnummer der DekaBank: V119701696 (1. Vertrag)
+Anlage VL
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+Jahresbescheinigung über Kapitalerträge und Veräußerungsgeschäfte aus Finanzanlagen für
+die bei uns geführten Depots für Investmentfonds (§24c EStG) des Privatvermögens
+ 
+Richard Mustermann, 11111 Stadt, Musterstraße 9
+ 
+Für den Zeitraum vom 01.01.2008 bis 31.12.2008 werden folgende Angaben für die Besteuerung der Einkünfte aus Kapitalvermögen nach §20 EStG sowie
+der Einkünfte aus privaten Veräußerungsgeschäften nach §23 Abs. 1 Satz 1 Nr. 2 bis 4 EStG bescheinigt:  
+Einnahmen Anzurechnende inländische (r)
+Inländische Kapitalerträge (Anl. KAP) Zinsabschlag / Kapitalertragsteuer
+EUR EUR / CT
+Zinsen und andere Erträge (ohne Dividenden) aus Investmentanteilen (einschließlich
+Zwischengewinne)  Zeile 8 Anlage KAP 76,06 0,00
+Dividenden und ähnliche Erträge aus Investmentanteilen
+Zeile 19 Anlage KAP 15,60 0,00
+Einnahmen Anzurechnender inländischer
+Ausländische Kapitalerträge ( Anl. KAP) Zinsabschlag
+EUR EUR / CT
+Zinsen und andere Erträge (ohne Dividenden) aus ausländischen Investmentanteilen
+(Investmentsteuergesetz) 1,26 0,00
+Zeile 32 Anlage KAP 
+Dividenden und ähnliche Erträge aus ausländischen Investmentanteilen
+(Investmentsteuergesetz) 48,12
+Zeile 34 Anlage KAP
+Anzurechnende Solidaritätszuschläge (Anl. KAP) EUR / CT
+Summe aller anzurechnenden Solidaritätszuschläge zur Kapitalertragsteuer / zum Zinsabschlag
+Zeile 44 Anlage KAP 0,00
+Aufwendungen (Anl. KAP) EUR
+Aufwendungen im Zusammenhang mit Kapitalerträgen 10,00
+Ausländische Einkünfte und Steuern (Anl. AUS) 1. Staat/Fonds 2. Staat/Fonds 3. Staat/Fonds
+LU0268059614 LU0133666759 LU0052859252
+Kapitalvermögen Einkunftsquelle Einkunftsquelle Einkunftsquelle
+Einnahmen, die in den Zeilen 31und 32 der Anlage KAP enthalten sind EUR EUR EUR
+Zeile 6 Anlage AUS -2,93
+Einnahmen, die in den Zeilen 33 und 34 der Anlage KAP enthalten sind 4,73 43,39
+Zeile 7 Anlage AUS
+Zinsen und andere Erträge (ohne Dividenden) aus einem inländ. Sondervermögen, die aus
+ausländ. Quellen stammen
+Zeile 8 Anlage AUS
+Dividenden und ähnliche Erträge aus einem inländ. Sondervermögen, die aus ausländ.
+Quellen stammen
+Zeile 9 Anlage AUS
+Ausl. Steuern (Wahlrecht zur Anrechnung oder zum Abzug gemäß der Anleitung zur Anlage
+AUS "zu den Zeilen 4 bis 20 bzw. zu den Zeilen 12, 13  und 17")
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Seite 2
+Richard Mustermann, 11111 Stadt, Musterstraße 9
+ 
+ 
+ 
+Ausländische Einkünfte und Steuern (Anl. AUS) 4. Staat/Fonds 5. Staat/Fonds 6. Staat/Fonds
+LU0062624902   
+Kapitalvermögen Einkunftsquelle Einkunftsquelle Einkunftsquelle
+Einnahmen, die in den Zeilen 31und 32 der Anlage KAP enthalten sind EUR EUR EUR
+Zeile 6 Anlage AUS 4,19   
+Einnahmen, die in den Zeilen 33 und 34 der Anlage KAP enthalten sind   
+Zeile 7 Anlage AUS
+Zinsen und andere Erträge (ohne Dividenden) aus einem inländ. Sondervermögen, die aus   
+ausländ. Quellen stammen
+Zeile 8 Anlage AUS
+Dividenden und ähnliche Erträge aus einem inländ. Sondervermögen, die aus ausländ.   
+Quellen stammen
+Zeile 9 Anlage AUS
+Ausl. Steuern (Wahlrecht zur Anrechnung oder zum Abzug gemäß der Anleitung zur Anlage   
+AUS "zu den Zeilen 4 bis 20 bzw. zu den Zeilen 12, 13  und 17")
+  
+Private Veräußerungsgeschäfte (Anl. SO)
+A rt des Wirtschaftsguts Zeitpunkt der Zeitpunkt der Veräußerungspreis Anschaffungskosten Aufwendungen im Ergebnis (EUR) Dem
+(ISIN, Anschaffung (Datum) Veräußerung (Datum) (EUR) oder an deren Stelle Zusammenhang mit Halbeinkünftever-
+Wertpapierbezeichnung) tretender Wert (EUR) dem Veräußerungs- fahren unterliegend
+geschäft (nur Trans- (ja/nein)
+aktionskosten) (EUR)
+ DE0009771824, 02.01.2008 07.03.2008 11,15 11,14 0,01 nein
+Deka-Geldmarkt: Euro TF,
+Anteile 0,168              
+ IE0005258151, 30.06.2008 Transfer *   
+Deka-PharmaTech TF,
+Anteile 48,399              
+ LU0268059614, 03.09.2008 12.12.2008 10,10 9,98 0,12 nein
+Deka-GeldmarktPlan TF,
+Anteile 0,010              
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Seite 3
+Richard Mustermann, 11111 Stadt, Musterstraße 9
+Die Jahresbescheinigung über Kapitalerträge und Veräußerungsgeschäfte aus Finanzanlagen soll Ihnen das Ausfüllen der Anlagen KAP, AUS und SO zur Einkommensteuer-/
+Feststellungserklärung erleichtern.
+Haben Sie weitere, hier nicht aufgeführte Einnahmen aus Kapitalvermögen erzielt oder private Veräußerungsgeschäfte getätigt, müssen diese zusätzlich in den
+Anlagen KAP, AUS oder SO erklärt werden.
+Die Jahresbescheinigung ersetzt NICHT die Steuerbescheinigung nach § 45 a Abs. 2 oder 3 EStG. Für die Anrechnung von Kapitalertragsteuer / Zinsabschlag / Körperschaftsteuer
+ist weiterhin die Steuerbescheinigung der Einkommensteuer- / Feststellungserklärung beizufügen.
+Bei der Übernahme der bescheinigten Angaben in der Einkommensteuer- / Feststellungserklärung beachten Sie bitte folgende Hinweise:
+Soweit die bescheinigten Erträge und / oder Aufwendungen zu den Einkünften aus Land- und Forstwirtschaft, aus Gewerbebetrieb, aus selbständiger Arbeit oder aus Vermietung
+und Verpachtung gehören, sind sie diesen Einkünften zuzurechnen und in den dafür vorgesehenen Anlagen zur Einkommensteuer-/ Feststellungserklärung anzugeben.
+Kapitalerträge (Anlage KAP)
+Die Einnahmen sind einschließlich freigestellter Einnahmen (Freistellungsauftrag), anzurechnender / erstatteter Kapitalertragsteuer / Zinsabschlag / Solidaritätszuschlag
+bescheinigt.
+Bei der Veräußerung oder Rückgabe von Anteilen an ausländischen thesaurierenden Fonds unterliegen nicht nur die zum Ende des letzten Geschäftsjahres des Fonds als
+zugeflossen geltenden Erträge, sondern auch zum Ende früherer Geschäftsjahre als zugeflossen geltenden Erträge dem Zinsabschlag. In der Einkommensteuer-/
+Feststellungserklärung sind jedoch die im Jahr der Veräußerung oder Rückgabe des Investmentanteils als zugeflossen geltenden Erträge anzugeben, weil die zum Ende früherer
+Geschäftsjahre als zugeflossen geltenden Erträge bereits in früheren Kalenderjahren zu versteuern waren. Der Zinsabschlag kann nur angerechnet werden, soweit die zum Ende
+früherer Geschäftsjahre thesaurierten Erträge bei der Veranlagung erfasst wurden. Bisher nicht bei der Veranlagung erfasste Erträge sind für die betreffenden Jahre nachzumelden.
+Die Erträge aus ausländischen Wertpapieren unterliegen der Einkommensteuer mit dem Bruttobetrag, d.h. einschließlich der ausländischen Steuern.
+Aufwendungen sind nur insoweit bescheinigt, als sie im Zusammenhang mit der Konto- und/oder Depotführung entstanden sind (Depotgebühren, Kosten der
+Erträgnisaufstellung, Beratungsgebühren, Entgelte für Verwaltungsdienstleistungen).
+Die Prüfung, ob
+      - die angeführten Aufwendungen tatsächlich Werbungskosten sind oder
+      - weitere Aufwendungen, die in die Anlage KAP zu übernehmen sind, entstanden sind, obliegt dem Steuerpflichtigen.
+Veräußerungsgeschäfte bei Wertpapieren (Anlage SO):
+Die Bescheinigung enthält Angaben nur, soweit die erforderlichen Daten bei dem Institut vorhanden sind (z.B. nur Veräußerungszeitpunkt und Veräußerungskosten). Die Prüfung,
+ob
+   - es sich um ein steuerpflichtiges Veräußerungsgeschäft innerhalb der Behaltensfrist (Kauf und Verkauf innerhalb von einem Jahr) handelt,
+   - die angeführten Aufwendungen tatsächlich Werbungskosten sind oder
+   - weitere Aufwendungen, die in die Anlage SO zu übernehmen sind, entstanden sind,  
+obliegt dem Steuerpflichtigen. 
+Im Jahr der Veräußerung oder Rückgabe von Anteilen an Investmentfonds sind der vereinnahmte Veräußerungspreis um hierin enthaltene Zwischengewinne und thesaurierte
+Kapitaleinnahmen sowie die Anschaffungskosten um gezahlte Zwischengewinne zu bereinigen. Das bereinigte Veräußerungsergebnis unterliegt der Besteuerung und ist in die
+Steuererklärung zu übernehmen. Bitte prüfen Sie, ob das Kreditinstitut seiner Verpflichtung, das Veräußerungsergebnis so zu berechnen und zu bescheinigen, nachgekommen ist.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Seite 4
+Richard Mustermann, 11111 Stadt, Musterstraße 9
+Vermerke des bescheinigenden Instituts:
+* Transfer des Sondervermögens innerhalb des DekaBank Konzerns, daher keine Realisierung von Spekulationsgewinnen bzw. -verlusten.
+Für eine Aufteilung von steuerfreien Erträgen nach Doppelbesteuerungsabkommen auf einzelne Länder verweisen wir auf die "steuerlichen Hinweise" im jeweiligen
+Rechenschaftsbericht.
+Ausländische Einkünfte und Steuern (Anl. AUS)
+Das Bundesministerium für Finanzen sieht für die Einkommensteuererklärung in der Anlage AUS eine Trennung der anrechenbaren/abziehbaren ausländischen
+Quellensteuer für Zinsen und Dividenden nach dem Halbeinkünfteverfahren vor. Im amtlichen Muster der Jahresbescheinigung wird diese Trennung allerdings vom
+Bundesministerium für Finanzen nicht berücksichtigt. Bitte beachten Sie, dass für den Fonds DE0007483612 (Deka-ImmobilienGlobal), den Fonds DE0009809566
+(Deka-ImmobilienEuropa) und den Fonds DE0008474263 (DWS Convertibles) in der Jahresbescheinigung (Feld: Ausl. Steuern (Wahlrecht zur Anrechnung oder zum Abzug
+gemäß der Anleitung zur Anlage AUS ''zu den Zeilen 4 bis 20 bzw. zu den Zeilen 12, 13 und 17") sowohl anrechenbare/abziehbare ausländische Quellensteuer aus Zinsen
+und aus Dividenden in einem Betrag ausgewiesen sind. Haben Sie diese Fonds zum Ertragstermin im Bestand gehalten, dann berücksichtigen Sie bitte folgende Werte für
+Ihre Einkommensteuer:
+- DE0007483612 (Deka-ImmobilienGlobal), anrechenbare Quellensteuer auf  Zinsen 0,0207406 EUR pro Anteil und auf Dividenden 0,0589223 EUR pro Anteil
+- DE0009809566 (Deka-ImmobilienEuropa), anrechenbare Quellensteuer auf Zinsen 0,0171105 EUR pro Anteil und auf Dividenden 0,0068846 EUR pro Anteil
+- DE0008474263 (DWS Convertibles), anrechenbare Quellensteuer auf Zinsen 0,0131000 EUR pro Anteil und auf Dividenden 0,0107000 EUR pro Anteil
+Als Anteilbestand gilt der für die Ertragsausschüttung vom 7. Januar 2008 bzw 21. November 2008 gültige Depotbestand. Bitte tragen Sie die Beträge in voller Höhe in die
+Einkommensteuererklärung ein, da das Finanzamt automatisch für Dividenden das Halbeinkünfteverfahren berücksichtigt.
+Die vorliegende Bescheinigung kann nicht zur Verwendung für betriebliche Zwecke genutzt werden.
+ 
+EUR / CT
+Steuerfreie Erträge nach Doppelbesteuerungsabkommen 0,00
+ 
+Zeile 35 Anlage AUS
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+ 
+ Vertragsnummer: 01111111111111110
+Diese Bescheinigung ist für Ihre Unterlagen bestimmt.
+Zusatzinformationen nach §7 Abs.4 AltZertG
+n Verwendung der eingezahlten Altersvorsorgebeiträge
+384,00 Euro wurden in den Fonds Deka-BR 100 investiert.
+n Einbehaltene anteilige Abschluss- und Vertriebskosten
+Ausgabeaufschlag :  D eka-BR 100
+3,50 % des Anteilwertes
+n Einbehaltene Kosten für die Verwaltung des gebildeten Kapitals
+Verwaltungsvergütung p.a.:  D eka-BR 100
+1,00 % des durchschnittl. Fondsvermögens
+Depotbankgebühr p.a.:  D eka-BR 100
+0,10 % des durchschnittl. Fondsvermögens
+Vertragsgebühr in 2008 10,00 Euro
+n Erwirtschaftete Erträge
+Deka-BR 100
+5,25 Euro
+Nächster Thesaurierungszeitpunkt des Fonds ist der 30.06.2009
+Nach §7 Abs. 4 AltZertG informieren wir Sie, dass ethische, soziale und ökologische Belange bei der
+Verwendung der eingezahlten Altersvorsorgebeiträge nicht berücksichtigt werden.
+Allein verbindliche Informationsgrundlage zu den Fonds ist der jeweils gültige Verkaufsprospekt mit den
+Vertragsbedingungen, den zuletzt veröffentlichten Rechenschafts- und Halbjahresberichten sowie das
+Preisverzeichnis. Diese erhalten Sie auf Wunsch von Ihrem Berater ausgehändigt oder können Sie bei der
+DekaBank Deutsche Girozentrale, Postfach 11 05 23, 60040 Frankfurt (Telefon: 069/7147-652; Internet:
+www.deka.de) anfordern. 
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068

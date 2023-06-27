@@ -22,6 +22,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -271,7 +272,10 @@ public class SecuritiesChart
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
-        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits);
+        SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits), //
+        SHOW_PERCENTAGE_AXIS(Messages.LabelChartDetailSettingsShowPercentageAxis), //
+        SHOW_MAIN_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesMain), //
+        SHOW_PERCENTAGE_HORIZONTAL_LINES(Messages.LabelChartDetailSettingsShowHorizontalLinesPercentage);
 
         private final String label;
 
@@ -390,10 +394,9 @@ public class SecuritiesChart
     private IntervalOption intervalOption = IntervalOption.Y2;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
-                    ChartDetails.SCALING_LINEAR);
+                    ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
-    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     private int swtAntialias = SWT.ON;
@@ -414,18 +417,17 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
-        chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(this.messagePainter);
+        chart.addPlotPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.addPlotPaintListener(this.messagePainter);
         chart.getPlotArea().addDisposeListener(this.messagePainter);
 
         messagePainter.setMessage(Messages.SecuritiesChart_NoDataMessage_NoSecuritySelected);
 
-        setupTooltip();
-
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        setupTooltip();
     }
 
     public IntervalOption getIntervalOption()
@@ -606,6 +608,9 @@ public class SecuritiesChart
 
     public void addButtons(ToolBarManager toolBar)
     {
+        chart.getMeasurementTool().addButtons(toolBar);
+        toolBar.add(new Separator());
+
         List<Action> viewActions = new ArrayList<>();
 
         for (IntervalOption option : IntervalOption.values())
@@ -621,7 +626,7 @@ public class SecuritiesChart
             viewActions.add(action);
             toolBar.add(action);
         }
-
+        toolBar.add(new Separator());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
@@ -667,6 +672,10 @@ public class SecuritiesChart
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
+        subMenuChartSettings.add(new Separator());
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_AXIS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES));
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -706,6 +715,12 @@ public class SecuritiesChart
                     case PURCHASEPRICE:
                         chartConfig.remove(ChartDetails.CLOSING);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
+                        break;
+                    case SHOW_MAIN_HORIZONTAL_LINES:
+                        chartConfig.remove(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES);
+                        break;
+                    case SHOW_PERCENTAGE_HORIZONTAL_LINES:
+                        chartConfig.remove(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
                         break;
                     default:
                         break;
@@ -752,7 +767,6 @@ public class SecuritiesChart
             chart.clearMarkerLines();
             chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
-            customBehindPaintListener.clear();
             customTooltipEvents.clear();
             chart.resetAxes();
             chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
@@ -797,7 +811,7 @@ public class SecuritiesChart
             double[] valuesRelativePositive = new double[range.size];
             double[] valuesRelativeNegative = new double[range.size];
             double[] valuesZeroLine = new double[range.size];
-            double firstQuote = 0;
+            Double firstQuote = null;
 
             // Disable SWT antialias for more than 1000 records due to SWT
             // performance issue in Drawing
@@ -878,13 +892,42 @@ public class SecuritiesChart
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
             IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
+            IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
+
+            if (firstQuote == null)
+                firstQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
+
             yAxis2nd.setRange(
                             new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
+
+            if (firstQuote != 0)
+            {
+                yAxis3rd.setRange(new Range(yAxis1st.getRange().lower / firstQuote - 1,
+                                yAxis1st.getRange().upper / firstQuote - 1));
+            }
 
             yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
             yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
+            // hide percentage axis in logarithmic mode
+            yAxis3rd.getTick().setVisible(chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_AXIS)
+                            && !chartConfig.contains(ChartDetails.SCALING_LOG));
+
+            // ensure that at least one set of horizontal lines is shown
+            if (!chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES)
+                            && !chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES))
+                chartConfig.add(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
+
+            if (chartConfig.contains(ChartDetails.SHOW_MAIN_HORIZONTAL_LINES) || !yAxis3rd.getTick().isVisible())
+                yAxis1st.getGrid().setStyle(LineStyle.DOT);
+            else
+                yAxis1st.getGrid().setStyle(LineStyle.NONE);
+
+            if (chartConfig.contains(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES) && yAxis3rd.getTick().isVisible())
+                yAxis3rd.getGrid().setStyle(LineStyle.DOT);
+            else
+                yAxis3rd.getGrid().setStyle(LineStyle.NONE);
 
             if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
             {
@@ -1016,6 +1059,7 @@ public class SecuritiesChart
             // attributes
             Optional<AttributeType> attributeName = ReadOnlyClient.unwrap(client).getSettings().getAttributeTypes()
                             .filter(attr -> attr.getId().equals(key)).findFirst();
+
             // could not find name of limit attribute --> don't draw
             if (attributeName.isEmpty())
                 return;
@@ -1052,8 +1096,7 @@ public class SecuritiesChart
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
-        @SuppressWarnings("nls")
-        String lineID = smaSeries + " (" + smaDaysWording + ")";
+        String lineID = smaSeries + " (" + smaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(smaLines.getDates());
@@ -1074,8 +1117,7 @@ public class SecuritiesChart
         if (emaLines == null || emaLines.getValues() == null || emaLines.getDates() == null)
             return;
 
-        @SuppressWarnings("nls")
-        String lineID = emaSeries + " (" + emaDaysWording + ")";
+        String lineID = emaSeries + " (" + emaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         ILineSeries lineSeriesEMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesEMA.setXDateSeries(emaLines.getDates());
@@ -1672,6 +1714,7 @@ public class SecuritiesChart
             if (font == null)
                 font = FontDescriptor.createFrom(e.gc.getFont()).increaseHeight(5).createFont(e.display);
 
+            Font defaultFont = e.gc.getFont();
             e.gc.setFont(font);
 
             Point txtExtend = e.gc.textExtent(message);
@@ -1679,6 +1722,8 @@ public class SecuritiesChart
             int posY = (e.height - txtExtend.y) / 2;
             e.gc.setForeground(Colors.DARK_GRAY);
             e.gc.drawText(message, posX, posY);
+
+            e.gc.setFont(defaultFont);
         }
 
         @Override

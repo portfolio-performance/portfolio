@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.ui.views.payments;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -24,27 +25,22 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class PaymentsView extends AbstractFinanceView
 {
-    private static final String KEY_TAB = PaymentsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
-    private static final String KEY_YEAR = PaymentsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
-    private static final String KEY_MODE = PaymentsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
-    private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
-    private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
-                    + "-use-consolidate-retired"; //$NON-NLS-1$
-
     @Inject
     private Client client;
 
@@ -54,46 +50,63 @@ public class PaymentsView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory factory;
 
+    private PaymentsViewInput viewInput;
+    private ClientFilterMenu clientFilterMenu;
     private PaymentsViewModel model;
 
     private CTabFolder folder;
 
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) PaymentsViewInput viewInput)
+    {
+        this.viewInput = viewInput;
+    }
+
     @PostConstruct
     public void setupModel()
     {
+        if (viewInput == null)
+            viewInput = PaymentsViewInput.fromPreferences(preferences);
+
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new PaymentsViewModel(this, preferences, converter, client);
+        model = new PaymentsViewModel(converter, client);
+        setToContext(PaymentsViewModel.class.getName(), model);
 
-        int year = preferences.getInt(KEY_YEAR);
-        LocalDate now = LocalDate.now();
-        if (year < 1900 || year > now.getYear())
-            year = now.getYear() - 2;
+        // setup filter
+        clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
+            Client filteredClient = filter.filter(client);
+            model.setFilteredClient(filteredClient);
+            setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+            model.recalculate();
+        });
 
-        PaymentsViewModel.Mode mode = PaymentsViewModel.Mode.ALL;
-        String prefMode = preferences.getString(KEY_MODE);
-
-        if (prefMode != null && !prefMode.isEmpty())
+        String selection = viewInput.getClientFilter();
+        if (selection != null)
         {
-            try
-            {
-                mode = PaymentsViewModel.Mode.valueOf(prefMode);
-            }
-            catch (Exception ignore)
-            {
-                // use default mode
-            }
+            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                            .ifPresent(item -> {
+                                clientFilterMenu.select(item);
+                                Client filteredClient = item.getFilter().filter(client);
+                                model.setFilteredClient(filteredClient);
+                                setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
+                                // no recalculation needed as it is done as part
+                                // of the model#configure call
+                            });
         }
 
-        boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
-        boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
+        clientFilterMenu.addListener(
+                        filter -> viewInput.setClientFilter(clientFilterMenu.getSelectedItem().getUUIDs()));
 
-        model.configure(year, mode, useGrossValue, useConsolidateRetired);
+        model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
+                        viewInput.isUseConsolidateRetired());
 
         model.addUpdateListener(() -> {
-            preferences.setValue(KEY_YEAR, model.getStartYear());
-            preferences.setValue(KEY_MODE, model.getMode().name());
-            preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
-            preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, model.usesConsolidateRetired());
+            viewInput.setYear(model.getStartYear());
+            viewInput.setMode(model.getMode());
+            viewInput.setUseGrossValue(model.usesGrossValue());
+            viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
         });
     }
 
@@ -144,10 +157,10 @@ public class PaymentsView extends AbstractFinanceView
         toolBar.add(new StartYearSelectionDropDown(model));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
-                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
-                        model.getClientFilterMenu()::menuAboutToShow);
-        model.getClientFilterMenu().addListener(f -> dropDown.setImage(
-                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+                        clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
+                        clientFilterMenu::menuAboutToShow);
+        clientFilterMenu.addListener(f -> dropDown
+                        .setImage(clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
         toolBar.add(dropDown);
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
@@ -193,17 +206,20 @@ public class PaymentsView extends AbstractFinanceView
         createTab(folder, Images.VIEW_TABLE, PaymentsPerMonthMatrixTab.class);
         createTab(folder, Images.VIEW_TABLE, PaymentsPerQuarterMatrixTab.class);
         createTab(folder, Images.VIEW_TABLE, PaymentsPerYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerMonthChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerQuarterChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, PaymentsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, PaymentsAccumulatedChartTab.class);
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerMonthChartBuilder());
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerQuarterChartBuilder());
+        createChartTab(folder, Images.VIEW_BARCHART, new PaymentsPerYearChartBuilder());
+        createChartTab(folder, Images.VIEW_LINECHART, new PaymentsAccumulatedChartBuilder());
+        createTab(folder, Images.CALENDAR_OFF, PaymentsYearlyOverviewTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
-        int tab = preferences.getInt(KEY_TAB);
+        int tab = viewInput.getTab();
         if (tab < 0 || tab > 7)
             tab = 0;
         folder.setSelection(tab);
-        folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));
+        folder.addDisposeListener(e -> viewInput.setTab(folder.getSelectionIndex()));
+
+        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences));
 
         return folder;
     }
@@ -219,10 +235,22 @@ public class PaymentsView extends AbstractFinanceView
         item.setImage(image.image());
     }
 
+    private void createChartTab(CTabFolder folder, Images image, PaymentsChartBuilder chartBuilder)
+    {
+        PaymentsChartTab tab = this.make(PaymentsChartTab.class, model);
+        tab.setChartBuilder(chartBuilder);
+        Control control = tab.createControl(folder);
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(tab.getLabel());
+        item.setControl(control);
+        item.setData(tab);
+        item.setImage(image.image());
+    }
+
     @Override
     protected void addPanePages(List<InformationPanePage> pages)
     {
-        super.addPanePages(pages);
+        pages.add(make(PaymentsTooltipPane.class));
         pages.add(make(SecurityPriceChartPane.class));
         pages.add(make(HistoricalPricesPane.class));
         pages.add(make(TransactionsPane.class));

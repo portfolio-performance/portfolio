@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+        Frankfurt, 28.03.2023
+0202462000003103238231
+Herr Auftragsdatum      24.05.2023n
+Max Muster Handelstag         25.05.2023
+Musterstraße Ausführungszeit    00:00 Uhr
+PLZ Musterstadt Valuta             29.05.2023
+Musterland Auftragsnummer     111111111/1
+Ausf.platz/-art    KAG/außerbörsl.
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer: 22222222222
+Depotinhaber:     Muster, Max
+Nr.111111111/1     Verkauf     COMGEST GROWTH ASIA (IE00BQ3D6V05/A12GPB)
+Ausgeführt    :        0,385884 St.     Kurswert      :               3,51 EUR
+Kurs          :        9,108000 EUR     Provision     :               5,90 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                       *Fremde Spesen :               0,00 EUR
+Verwahrart    : Wertpapierrechnung
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Musterland                  Bemessungs-
+                                        grundlage     :               0,00 EUR
+Gewinn/Verlust:            0,10 EUR   **Einbeh. KESt  :               0,03 EUR
+                                        Endbetrag     :              -2,42 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               0,00 EUR
+                             Regulierung              :               0,00 EUR
+                             Schlussnoten             :               0,00 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Einbehaltene Kapitalerstragsteuer. Details dazu finden Sie im Steuerreport
+    unter der Transaktion-Nr.: 3333333333.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003103298230 0113202460000102
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003103298230 0113202460000202

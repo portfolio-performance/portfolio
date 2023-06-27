@@ -66,6 +66,7 @@ public class PDFImportAssistant
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
+        extractors.add(new MerkurPrivatBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new OpenBankSAPDFExtractor(client));
         extractors.add(new PictetCieGruppeSAPDFExtractor(client));
@@ -75,12 +76,13 @@ public class PDFImportAssistant
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new RevolutLtdPDFExtractor(client));
-        extractors.add(new SantanderConsumerBankAGPDFExtractor(client));
+        extractors.add(new SantanderConsumerBankPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
         extractors.add(new SolarisbankAGPDFExtractor(client));
+        extractors.add(new StakePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
@@ -93,7 +95,6 @@ public class PDFImportAssistant
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
-        extractors.add(new YuhPDFExtractor(client));
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

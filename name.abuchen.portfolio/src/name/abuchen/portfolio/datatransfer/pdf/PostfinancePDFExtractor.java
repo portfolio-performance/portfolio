@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -28,10 +27,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     /***
      * Postfinance offers three accounts with different currencies (CHF,
      * EUR, USD) There are two possibilities to buy shares of foreign
-     * currencies: 
-     * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency 
-     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken) 
-     * 
+     * currencies:
+     * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
+     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken)
+     *
      * User manual:
      * https://isotest.postfinance.ch/corporates/help/PostFinance_Testplattform_BenHB.pdf
      */
@@ -39,11 +38,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("PostFinance"); //$NON-NLS-1$
+        addBankIdentifier("PostFinance");
 
         addBuySellTransaction();
         addSettlementTransaction();
         addDividendeTransaction();
+        addPaymentTransaction();
         addAnnualFeesTransaction();
         addInterestTransaction();
         addTaxesTransaction();
@@ -54,7 +54,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "PostFinance AG"; //$NON-NLS-1$
+        return "PostFinance AG";
     }
 
     private void addBuySellTransaction()
@@ -78,30 +78,38 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$")
                 .assign((t, v) -> {
-                    if (v.get("type").equals("Verkauf"))
+                    if ("Verkauf".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // @formatter:off
                 // UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
                 // 60 47.29 EUR 2'837.40
+                // @formatter:on
                 .section("name", "isin", "currency")
-                .match("^(?<name>.*) ISIN: (?<isin>[\\w]{12}) .*$")
+                .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$")
                 .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // 60 47.29 EUR 2'837.40
+                // @formatter:on
                 .section("shares")
                 .match("^(?<shares>[\\.,'\\d\\s]+) [\\.,'\\d\\s]+ [\\w]{3} [\\.,'\\d\\s]+.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
                 // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
+                // @formatter:on
                 .section("date")
                 .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
+                // @formatter:off
                 // Zu Ihren Lasten EUR 2'850.24
                 // Zu Ihren Gunsten CHF 7'467.50
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> {
@@ -109,8 +117,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // @formatter:off
                 // 55 49.76 EUR 2'736.80
                 // Wechselkurs 1.08279
+                // @formatter:on
                 .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
                 .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+).*$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+).*$")
@@ -128,7 +138,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
+                // @formatter:off
                 // Börsentransaktion: Kauf Unsere Referenz: 153557048
+                // @formatter:on
                 .section("note").optional()
                 .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -158,24 +170,32 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
-                // ISIN LU0188802960 
+                // @formatter:off
+                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                // ISIN LU0188802960
+                // @formatter:on
                 .section("name", "currency", "isin")
                 .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
-                .match("^ISIN (?<isin>[\\w]{12}).*$")
+                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
+                // @formatter:off
+                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                // @formatter:on
                 .section("shares")
                 .match("^(?<name>.*) [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // E-Vermögensverwaltung Datum: 20.12.2021 
+                // @formatter:off
+                // E-Vermögensverwaltung Datum: 20.12.2021
+                // @formatter:on
                 .section("date")
                 .match("^E\\-Verm.gensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet. 
+                // @formatter:off
+                // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Der Totalbetrag von (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+) .*$")
                 .assign((t, v) -> {
@@ -183,8 +203,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
-                // Kurswert in Handelswährung JPY 34 019.00 
-                // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
+                // @formatter:off
+                // Kurswert in Handelswährung JPY 34 019.00
+                // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
+                // @formatter:on
                 .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency").optional()
                 .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+).*$")
                 .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
@@ -198,7 +220,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                // Auftrag 10111111 
+                // @formatter:off
+                // Auftrag 10111111
+                // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Auftrag .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -223,33 +247,47 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                // ISIN: NL0000009355
-                // UNILEVER DUTCH CERT NKN: 2560588 60
-                // Dividende 0.4104 EUR
-                .section("isin", "name", "currency").optional()
-                .match("^ISIN: (?<isin>[\\w]{12}).*$")
-                .match("^(?<name>.*) NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
-                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                .oneOf(
+                                // @formatter:off
+                                // ISIN: NL0000009355
+                                // UNILEVER DUTCH CERT NKN: 2560588 60
+                                // Dividende 0.4104 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("isin", "name", "currency")
+                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .match("^(?<name>.*) NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
+                                        .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // UBS ETF CH - SLI CHF A ISIN: CH0032912732NKN: 3291273 34
+                                // Dividende 1.66 CHF
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "currency")
+                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])([\\s]+)?NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
+                                        .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
-                // UBS ETF CH - SLI CHF A ISIN: CH0032912732NKN: 3291273 34
-                // Dividende 1.66 CHF
-                .section("name", "isin", "currency").optional()
-                .match("^(?<name>.*) ISIN: (?<isin>[\\w]{12})([\\s]+)?NKN: [\\d]+ [\\.,'\\d\\s]+.*$")
-                .match("^(Dividende|Kapitalgewinn) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
+                // @formatter:off
                 // Anzahl 60
+                // @formatter:on
                 .section("shares")
                 .match("^Anzahl (?<shares>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Valutadatum 05.06.2019
+                // @formatter:on
                 .section("date")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // @formatter:off
                 // Total EUR 20.93
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> {
@@ -257,8 +295,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // @formatter:off
                 // Dividende Unsere Referenz: 169933304
                 // Kapitalgewinn Unsere Referenz: 149619136
+                // @formatter:on
                 .section("note").optional()
                 .match("^(Dividende|Kapitalgewinn) Unsere (?<note>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
@@ -269,6 +309,50 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addPaymentTransaction()
+    {
+        DocumentType type = new DocumentType("Zahlungsverkehr");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DEPOSIT);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- Gutschrift .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // @formatter:off
+                // Valutadatum 02.05.2023
+                // @formatter:on
+                .section("date")
+                .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // Total CHF 1'200.00
+                // @formatter:on
+                .section("currency", "amount")
+                .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$")
+                .assign((t, v) -> {
+                    t.setAmount(asAmount(v.get("amount")));
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                })
+
+                // @formatter:off
+                // Zahlungsverkehr - Gutschrift Unsere Referenz: 391377700
+                // @formatter:on
+                .section("note").optional()
+                .match("^.* (?<note>Referenz: .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(TransactionItem::new);
     }
 
     private void addAnnualFeesTransaction()
@@ -288,9 +372,11 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // @formatter:off
                 // Jahresgebühr Unsere Referenz: 161333839
                 // Valutadatum 03.01.2019
                 // Betrag belastet CHF 90.00
+                // @formatter:on
                 .section("date", "currency", "amount")
                 .find("Jahresgeb.hr .*")
                 .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
@@ -301,7 +387,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
 
+                // @formatter:off
                 // Jahresgebühr Unsere Referenz: 161333839
+                // @formatter:on
                 .section("note1", "note2")
                 .match("^(?<note1>Jahresgeb.hr) Unsere (?<note2>Referenz: .*)$")
                 .assign((t, v) -> t.setNote(v.get("note1") + " - " + trim(v.get("note2"))))
@@ -318,7 +406,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
             Pattern pYear = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*$");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
@@ -407,9 +495,11 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // @formatter:off
                 // Gebührenausweis 01.01.2015 - 31.12.2015
                 // Zusammenstellung der belasteten Kontoführungsgebühr:
                 // CHF 60.00
+                // @formatter:on
                 .section("note", "date", "currency", "amount")
                 .match("^(?i:Geb.hrenausweis) "
                                 + "(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
@@ -436,7 +526,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
             Pattern pNote = Pattern.compile("^Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$");
-            // read the current context here
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
@@ -462,8 +552,10 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                // @formatter:off
                 // Verrechnungssteuer 35.00% 40.83
                 // 31.12.2019 Kontostand nach Zinsabschluss 10 075.83
+                // @formatter:on
                 .section("amount", "date")
                 .match("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+).*$")
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontostand nach Zinsabschluss .*$")
@@ -488,6 +580,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}).*$");
             Pattern pYear = Pattern.compile("^Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*$");
+
             for (String line : lines)
             {
                 Matcher m = pCurrency.matcher(line);
@@ -894,17 +987,23 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Abgabe (Eidg. Stempelsteuer) EUR 4.26
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // @formatter:off
                 // Quellensteuer 15.00% (NL) EUR 3.69
+                // @formatter:on
                 .section("currency", "withHoldingTax").optional()
                 .match("^Quellensteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
+                // @formatter:off
                 // Verrechnungssteuer 35% (CH) CHF 19.75
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Verrechnungssteuer [\\.,'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
@@ -913,22 +1012,30 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Kommission EUR 8.58
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Börsengebühren CHF 1.50
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Börsengebühren und sonstige Spesen EUR 0.60
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // Umsatzabgabe JPY 51.00 
+                // @formatter:off
+                // Umsatzabgabe JPY 51.00
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.,'\\d\\s]+).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type));

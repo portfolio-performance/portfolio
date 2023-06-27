@@ -381,7 +381,7 @@ public class DashboardView extends AbstractHistoricView
         int[] index = { 0 };
         getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
 
-        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard(null));
+        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard());
         newAction.setImageDescriptor(Images.VIEW_PLUS.descriptor());
         toolBar.add(newAction);
     }
@@ -398,7 +398,7 @@ public class DashboardView extends AbstractHistoricView
                 manager.add(new Separator());
             }
 
-            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
+            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> duplicateDashboard(board)));
             manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
             manager.add(new ConfirmAction(Messages.ConfigurationDelete,
                             MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
@@ -473,7 +473,7 @@ public class DashboardView extends AbstractHistoricView
         return scrolledComposite;
     }
 
-    private void updateScrolledCompositeMinSize()
+    public void updateScrolledCompositeMinSize()
     {
         // because this method can be called *after* calculating data in the
         // background, all widgets can already be disposed
@@ -765,9 +765,23 @@ public class DashboardView extends AbstractHistoricView
         updateWidgets();
     }
 
-    private void createNewDashboard(Dashboard template)
+    private void createNewDashboard()
     {
-        Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
+        NewDashboardDialog dialog = new NewDashboardDialog(Display.getCurrent().getActiveShell());
+        if (dialog.open() != Window.OK)
+            return;
+
+        Dashboard newDashboard = dialog.createDashboard();
+
+        getClient().addDashboard(newDashboard);
+        getClient().touch();
+
+        selectDashboard(newDashboard);
+    }
+
+    private void duplicateDashboard(Dashboard template)
+    {
+        Dashboard newDashboard = template.copy();
 
         InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ConfigurationNew,
                         Messages.ColumnName, newDashboard.getName(), null);
@@ -909,93 +923,7 @@ public class DashboardView extends AbstractHistoricView
         Dashboard newDashboard = new Dashboard();
         newDashboard.setName(Messages.LabelDashboard);
 
-        newDashboard.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "L1Y0"); //$NON-NLS-1$
-
-        Dashboard.Column column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelKeyIndicators);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.IRR.name());
-        widget.setLabel(WidgetFactory.IRR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.DELTA.name());
-        widget.setLabel(WidgetFactory.DELTA.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelTTWROROneDay);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
-        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
-        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
-
-        column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelRiskIndicators);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWN.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWN.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWNDURATION.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWNDURATION.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.VOLATILITY.name());
-        widget.setLabel(WidgetFactory.VOLATILITY.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.SEMIVOLATILITY.name());
-        widget.setLabel(WidgetFactory.SEMIVOLATILITY.getLabel());
-        column.getWidgets().add(widget);
-
-        column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.PerformanceTabCalculation);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.CALCULATION.name());
-        widget.setLabel(WidgetFactory.CALCULATION.getLabel());
-        column.getWidgets().add(widget);
+        NewDashboardDialog.buildIndicatorDashboard(newDashboard);
 
         return newDashboard;
     }
