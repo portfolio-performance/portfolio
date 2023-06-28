@@ -20,8 +20,6 @@ import org.eclipse.swt.widgets.Event;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -82,10 +80,6 @@ public class MeasurementTool
 
     public void addButtons(ToolBarManager toolBar)
     {
-        if (!PortfolioPlugin.getDefault().getPreferenceStore()
-                        .getBoolean(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES))
-            return;
-
         var action = createAction();
         // store buttons to update their image on context menu action
         buttons.add(action);
@@ -95,9 +89,7 @@ public class MeasurementTool
 
     public void addContextMenu(IMenuManager manager)
     {
-        if (PortfolioPlugin.getDefault().getPreferenceStore()
-                        .getBoolean(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES))
-            manager.add(createAction());
+        manager.add(createAction());
     }
 
     private SimpleAction createAction()
