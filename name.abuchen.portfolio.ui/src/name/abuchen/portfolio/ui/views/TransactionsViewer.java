@@ -380,14 +380,29 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("6", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money
-                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient().getBaseCurrency())));
+                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient().getBaseCurrency())
+                        // In the overview only the TRANSFER_OUT transactions
+                        // are shown and the corresponding TRANSFER_IN
+                        // transactions are filtered to avoid "duplicates". Thus
+                        // we show the full transaction fees in the TRANSFER_OUT
+                        // here.
+                        + ((t instanceof AccountTransaction accountTransaction
+                                        && accountTransaction.getType() == AccountTransaction.Type.TRANSFER_OUT)
+                                                        ? " + " //$NON-NLS-1$
+                                                                        + Values.Money.formatNonZero(t.getCrossEntry()
+                                                                        .getCrossTransaction(t)
+                                                                        .getUnitSum(Transaction.Unit.Type.FEE),
+                                                                                        owner.getClient()
+                                                                                                        .getBaseCurrency())
+                                                        : ""))); //$NON-NLS-1$
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Transaction.Unit.Type.FEE))
                         .attachTo(column);
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money
-                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient().getBaseCurrency())));
+                        .formatNonZero(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient().getBaseCurrency())
+        ));
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Transaction.Unit.Type.TAX))
                         .attachTo(column);
         support.addColumn(column);

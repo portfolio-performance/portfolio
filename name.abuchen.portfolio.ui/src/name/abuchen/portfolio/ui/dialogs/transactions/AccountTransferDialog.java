@@ -123,6 +123,14 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 
         // other input fields
 
+        Input removedFxAmount = new Input(editArea, Messages.ColumnDebit);
+        removedFxAmount.bindValue(Properties.removedFxAmount.name(), Messages.ColumnDebit, Values.Amount, true);
+        removedFxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
+
+        Input sourceFee = new Input(editArea, "- " + Messages.ColumnFees); //$NON-NLS-1$
+        sourceFee.bindValue(Properties.sourceFee.name(), Messages.ColumnFees, Values.Amount, false);
+        sourceFee.bindCurrency(Properties.sourceAccountCurrency.name());
+
         Input fxAmount = new Input(editArea, Messages.ColumnAmount);
         fxAmount.bindValue(Properties.fxAmount.name(), Messages.ColumnAmount, Values.Amount, true);
         fxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
@@ -145,6 +153,14 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);
         amount.bindCurrency(Properties.targetAccountCurrency.name());
 
+        Input targetFee = new Input(editArea, "- " + Messages.ColumnFees); //$NON-NLS-1$ $
+        targetFee.bindValue(Properties.targetFee.name(), Messages.ColumnFees, Values.Amount, false);
+        targetFee.bindCurrency(Properties.targetAccountCurrency.name());
+
+        Input creditedAmount = new Input(editArea, Messages.ColumnCredit);
+        creditedAmount.bindValue(Properties.creditedAmount.name(), Messages.ColumnCredit, Values.Amount, true);
+        creditedAmount.bindCurrency(Properties.targetAccountCurrency.name());
+
         // note
 
         Label lblNote = new Label(editArea, SWT.LEFT);
@@ -166,8 +182,18 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
                         .thenRight(dateTime.button, 0);
 
+        // removedFxAmount
+        // sourceFee
         // fxAmount - exchange rate - amount
-        forms.thenBelow(fxAmount.value).width(amountWidth).label(fxAmount.label) //
+        // targetFee
+        // creditedAmount
+        forms.thenBelow(removedFxAmount.value).width(amountWidth).label(removedFxAmount.label) //
+                        .suffix(removedFxAmount.currency, currencyWidth) //
+                        // sourceFee
+                        .thenBelow(sourceFee.value).left(fxAmount.value).width(amountWidth).label(sourceFee.label) //
+                        .suffix(sourceFee.currency, currencyWidth) //
+                        // fxAmount - exchange rate - amount
+                        .thenBelow(fxAmount.value).left(removedFxAmount.value).width(amountWidth).label(fxAmount.label) //
                         .thenRight(fxAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
@@ -175,8 +201,15 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .thenRight(exchangeRate.currency).width(amountWidth) //
                         .thenRight(amount.label) //
                         .thenRight(amount.value).width(amountWidth) //
-                        // note
                         .suffix(amount.currency, currencyWidth) //
+                        // targetFee
+                        .thenBelow(targetFee.value).left(fxAmount.value).width(amountWidth).label(targetFee.label) //
+                        .suffix(targetFee.currency, currencyWidth) //
+                        // creditedAmount
+                        .thenBelow(creditedAmount.value).left(fxAmount.value).width(amountWidth)
+                        .label(creditedAmount.label) //
+                        .suffix(creditedAmount.currency, currencyWidth) //
+                        // note
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(target.value.getControl()).right(amount.value).label(lblNote);
 

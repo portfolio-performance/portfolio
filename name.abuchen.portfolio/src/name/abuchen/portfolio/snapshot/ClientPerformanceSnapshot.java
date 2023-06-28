@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -450,10 +449,12 @@ public class ClientPerformanceSnapshot
                         taxesBySecurity.computeIfAbsent(t.getSecurity(), s -> MutableMoney.of(termCurrency))
                                         .subtract(value);
                         break;
-                    case BUY:
-                    case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
+                        addFees(account, t, mFees);
+                        break;
+                    case BUY:
+                    case SELL:
                         // no operation
                         break;
                     default:
@@ -497,6 +498,7 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case TRANSFER_IN:
                     case TRANSFER_OUT:
+
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -562,6 +564,16 @@ public class ClientPerformanceSnapshot
             this.taxes.add(new TransactionPair<AccountTransaction>(account, transaction));
             taxesBySecurity.computeIfAbsent(transaction.getSecurity(),
                             s -> MutableMoney.of(converter.getTermCurrency())).add(tax);
+        }
+    }
+
+    private void addFees(Account account, AccountTransaction transaction, MutableMoney mFees)
+    {
+        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter).with(converter.at(transaction.getDateTime()));
+        if (!fee.isZero())
+        {
+            mFees.add(fee);
+            this.fees.add(new TransactionPair<AccountTransaction>(account, transaction));
         }
     }
 
@@ -644,16 +656,36 @@ public class ClientPerformanceSnapshot
      */
     private Money determineTransferAmount(AccountTransaction t)
     {
+        // Fees are converted with the exchange rate provider to
+        // match
+        // other places where fees are calculated.
+        Money feesSource = t.getUnitSum(Unit.Type.FEE, converter).with(converter.at(t.getDateTime()));
+        Money feesTarget = t.getCrossEntry().getCrossTransaction(t).getUnitSum(Unit.Type.FEE, converter)
+                        .with(converter.at(t.getDateTime()));
+        Money feesTotal = feesSource.add(feesTarget);
+        
         if (converter.getTermCurrency().equals(t.getCurrencyCode()))
-            return t.getMonetaryAmount();
+        {
+            Money result = t.getMonetaryAmount();
+            if(t.getType() == AccountTransaction.Type.TRANSFER_OUT)
+                result = result.subtract(feesTotal);
+            return result;
+        }
 
-        Transaction other = t.getCrossEntry().getCrossTransaction(t);
+        AccountTransaction other = (AccountTransaction) t.getCrossEntry().getCrossTransaction(t);
         if (converter.getTermCurrency().equals(other.getCurrencyCode()))
-            return other.getMonetaryAmount();
+        {
+            Money result = other.getMonetaryAmount();
+            if (other.getType() == AccountTransaction.Type.TRANSFER_OUT)
+                result = result.subtract(feesTotal);
+            return result;
+        }
 
         MutableMoney m = MutableMoney.of(converter.getTermCurrency());
         m.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
         m.add(other.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        m.subtract(feesTotal); // Either the amount of t or of other is with
+                               // fees.
         return m.divide(2).toMoney();
     }
 }

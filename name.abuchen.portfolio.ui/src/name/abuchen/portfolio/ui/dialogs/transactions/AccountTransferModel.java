@@ -26,9 +26,10 @@ public class AccountTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        sourceAccount, targetAccount, date, time, fxAmount, exchangeRate, inverseExchangeRate, amount, //
+        sourceAccount, targetAccount, date, time, removedFxAmount, fxAmount, //
+        exchangeRate, inverseExchangeRate, amount, creditedAmount, //
         note, sourceAccountCurrency, targetAccountCurrency, exchangeRateCurrencies, //
-        inverseExchangeRateCurrencies, calculationStatus;
+        inverseExchangeRateCurrencies, calculationStatus, sourceFee, targetFee;
     }
 
     private final Client client;
@@ -40,9 +41,13 @@ public class AccountTransferModel extends AbstractModel
     private LocalDate date = LocalDate.now();
     private LocalTime time = PresetValues.getTime();
 
+    private long removedFxAmount;
     private long fxAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
     private long amount;
+    private long creditedAmount;
+    private long sourceFee;
+    private long targetFee;
     private String note;
 
     private IStatus calculationStatus = ValidationStatus.ok();
@@ -101,18 +106,12 @@ public class AccountTransferModel extends AbstractModel
 
         sourceTransaction.clearUnits();
 
-        if (sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode()))
-        {
-            sourceTransaction.setAmount(amount);
-            t.getTargetTransaction().setAmount(amount);
-        }
-        else
+        sourceTransaction.setAmount(removedFxAmount);
+        if (!(sourceAccount.getCurrencyCode().equals(targetAccount.getCurrencyCode())))
         {
             // TODO improve naming of fields: the source amount is called
             // 'fxAmount' while the target amount is just called 'amount' but
             // then the source account holds the 'forex' which is switched
-            sourceTransaction.setAmount(fxAmount);
-            t.getTargetTransaction().setAmount(amount);
 
             Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
                             Money.of(sourceAccount.getCurrencyCode(), fxAmount), //
@@ -121,6 +120,14 @@ public class AccountTransferModel extends AbstractModel
 
             sourceTransaction.addUnit(forex);
         }
+        t.getTargetTransaction().setAmount(amount - targetFee);
+        
+        if (sourceFee != 0)
+            sourceTransaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE,
+                            Money.of(sourceAccount.getCurrencyCode(), sourceFee)));
+        if (targetFee != 0)
+            t.getTargetTransaction().addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE,
+                            Money.of(targetAccount.getCurrencyCode(), targetFee)));
     }
 
     @Override
@@ -128,6 +135,8 @@ public class AccountTransferModel extends AbstractModel
     {
         this.source = null;
 
+        setSourceFee(0);
+        setTargetFee(0);
         setFxAmount(0);
         setAmount(0);
         setNote(null);
@@ -145,8 +154,17 @@ public class AccountTransferModel extends AbstractModel
         this.time = transactionDate.toLocalTime();
         this.note = entry.getSourceTransaction().getNote();
 
-        this.fxAmount = entry.getSourceTransaction().getAmount();
-        this.amount = entry.getTargetTransaction().getAmount();
+        // In AccountTransferEntry getAmount() always includes the fees. Here
+        // amount includes the fees of the target account (but fxAmount is
+        // without any fees). This way the monetary value of amount equals the
+        // monetary value of fxAmount with respect to their currencies.
+        this.removedFxAmount = entry.getSourceTransaction().getAmount();
+        this.creditedAmount = entry.getTargetTransaction().getAmount();
+
+        this.sourceFee = entry.getSourceTransaction().getUnitSum(Transaction.Unit.Type.FEE).getAmount();
+        this.targetFee = entry.getTargetTransaction().getUnitSum(Transaction.Unit.Type.FEE).getAmount();
+        this.fxAmount = removedFxAmount - sourceFee;
+        this.amount = creditedAmount + targetFee;
 
         Optional<Transaction.Unit> forex = entry.getSourceTransaction().getUnit(Transaction.Unit.Type.GROSS_VALUE);
 
@@ -272,6 +290,16 @@ public class AccountTransferModel extends AbstractModel
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
     }
 
+    public long getRemovedFxAmount()
+    {
+        return removedFxAmount;
+    }
+
+    public void setRemovedFxAmount(long foreignCurrencyAmount)
+    {
+        setFxAmount(foreignCurrencyAmount - sourceFee);
+    }
+
     public long getFxAmount()
     {
         return fxAmount;
@@ -280,6 +308,8 @@ public class AccountTransferModel extends AbstractModel
     public void setFxAmount(long foreignCurrencyAmount)
     {
         firePropertyChange(Properties.fxAmount.name(), this.fxAmount, this.fxAmount = foreignCurrencyAmount);
+        firePropertyChange(Properties.removedFxAmount.name(), this.removedFxAmount,
+                        this.removedFxAmount = foreignCurrencyAmount + sourceFee);
 
         triggerAmount(Math.round(exchangeRate.doubleValue() * foreignCurrencyAmount));
 
@@ -300,7 +330,7 @@ public class AccountTransferModel extends AbstractModel
         firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
         firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
-        triggerAmount(Math.round(newRate.doubleValue() * fxAmount));
+        triggerAmount(Math.round(newRate.doubleValue() * (fxAmount - sourceFee)));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -344,9 +374,44 @@ public class AccountTransferModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
+    public long getCreditedAmount()
+    {
+        return creditedAmount;
+    }
+
+    public void setCreditedAmount(long amount)
+    {
+        setAmount(amount + targetFee);
+    }
+
+    public long getSourceFee()
+    {
+        return sourceFee;
+    }
+
+    public void setSourceFee(long sourceFeeAmount)
+    {
+        firePropertyChange(Properties.sourceFee.name(), this.sourceFee, this.sourceFee = sourceFeeAmount);
+        setFxAmount(removedFxAmount - sourceFeeAmount);
+    }
+
+    public long getTargetFee()
+    {
+        return targetFee;
+    }
+
+    public void setTargetFee(long targetFeeAmount)
+    {
+        firePropertyChange(Properties.targetFee.name(), this.targetFee, this.targetFee = targetFeeAmount);
+        firePropertyChange(Properties.creditedAmount.name(), this.creditedAmount,
+                        this.creditedAmount = this.amount - targetFeeAmount);
+    }
+
     public void triggerAmount(long amount)
     {
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+        firePropertyChange(Properties.creditedAmount.name(), this.creditedAmount,
+                        this.creditedAmount = amount - targetFee);
     }
 
     public String getNote()

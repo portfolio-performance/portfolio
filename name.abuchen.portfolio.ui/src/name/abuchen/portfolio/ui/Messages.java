@@ -126,6 +126,7 @@ public class Messages extends NLS
     public static String ColumnChangeOnPrevious_MenuLabel;
     public static String ColumnChangeOnPrevious_MenuLabelAmount;
     public static String ColumnColor;
+    public static String ColumnCredit;
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
@@ -148,6 +149,7 @@ public class Messages extends NLS
     public static String ColumnDaysBetweenPostfix;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
+    public static String ColumnDebit;
     public static String ColumnDebitNote;
     public static String ColumnAbsolutePerformance_MenuLabel;
     public static String ColumnAbsolutePerformance_Description;
