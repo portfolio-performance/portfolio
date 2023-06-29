@@ -159,6 +159,10 @@ public class EditReportingPeriodsDialog extends Dialog
 
                     periods.addAll(index, movedItems);
                 }
+                else
+                {
+                    periods.addAll(movedItems);
+                }
 
                 tableViewer.refresh();
 

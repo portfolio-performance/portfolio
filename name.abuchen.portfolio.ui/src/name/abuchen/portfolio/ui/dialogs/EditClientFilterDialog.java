@@ -16,18 +16,26 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -189,12 +197,78 @@ public class EditClientFilterDialog extends Dialog
         treeViewer.setContentProvider(new ContentProvider(client));
         treeViewer.setInput(items);
 
+        setupDnD();
+
         new ContextMenu(treeViewer.getTree(), this::fillContextMenu).hook();
 
         Label info = new Label(container, SWT.NONE);
         info.setText(Messages.LabelClientFilterEditTooltip);
 
         return container;
+    }
+
+    private void setupDnD()
+    {
+        Transfer[] types = new Transfer[] { LocalSelectionTransfer.getTransfer() };
+        treeViewer.addDragSupport(DND.DROP_MOVE, types, new DragSourceAdapter()
+        {
+            @Override
+            public void dragStart(DragSourceEvent event)
+            {
+                // only allow dragging of filters
+                IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+                event.doit = selection.size() == 1 && selection.getFirstElement() instanceof ClientFilterMenu.Item;
+            }
+
+            @Override
+            public void dragSetData(DragSourceEvent event)
+            {
+                IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+                LocalSelectionTransfer.getTransfer().setSelection(selection);
+                LocalSelectionTransfer.getTransfer().setSelectionSetTime(event.time & 0xFFFFFFFFL);
+            }
+        });
+
+        treeViewer.addDropSupport(DND.DROP_MOVE, types, new ViewerDropAdapter(treeViewer)
+        {
+            @Override
+            public boolean validateDrop(Object target, int operation, TransferData transferType)
+            {
+                return target instanceof ClientFilterMenu.Item;
+            }
+
+            @Override
+            public boolean performDrop(Object data)
+            {
+                IStructuredSelection selection = (IStructuredSelection) data;
+
+                List<ClientFilterMenu.Item> movedItems = new ArrayList<>();
+                for (Object o : selection.toList())
+                    movedItems.add((ClientFilterMenu.Item) o);
+
+                items.removeAll(movedItems);
+
+                Object destination = getCurrentTarget();
+                int index = items.indexOf(destination);
+                if (index >= 0)
+                {
+
+                    int location = getCurrentLocation();
+                    if (location == ViewerDropAdapter.LOCATION_ON || location == ViewerDropAdapter.LOCATION_AFTER)
+                        index++;
+
+                    items.addAll(index, movedItems);
+                }
+                else
+                {
+                    items.addAll(movedItems);
+                }
+
+                treeViewer.refresh();
+
+                return true;
+            }
+        });
     }
 
     private void fillContextMenu(IMenuManager manager)
