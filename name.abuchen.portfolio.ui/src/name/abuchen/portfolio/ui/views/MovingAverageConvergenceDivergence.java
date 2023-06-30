@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,11 +87,11 @@ public class MovingAverageConvergenceDivergence
             if (date.isAfter(interval.getEnd()))
                 break;
 
-            long value = price.getValue();
+            double valueDivided = price.getValue() / Values.Quote.divider();
 
-            minuendEma = (value / Values.Quote.divider() * macdMinuendSmoothingFactor)
+            minuendEma = (valueDivided * macdMinuendSmoothingFactor)
                             + (minuendEma * (1 - macdMinuendSmoothingFactor));
-            subtrahendEma = (value / Values.Quote.divider() * macdSubtrahendSmoothingFactor)
+            subtrahendEma = (valueDivided * macdSubtrahendSmoothingFactor)
                             + (subtrahendEma * (1 - macdSubtrahendSmoothingFactor));
             double macdValue = minuendEma - subtrahendEma;
             signalEma = (macdValue * signalLineSmoothingFactor) + (signalEma * (1 - signalLineSmoothingFactor));
@@ -97,8 +99,8 @@ public class MovingAverageConvergenceDivergence
             if (date.isBefore(interval.getStart()))
                 continue;
 
-            valuesMacd.add(macdValue);
-            valuesSignal.add(signalEma);
+            valuesMacd.add(round(macdValue, 2));
+            valuesSignal.add(round(signalEma, 2));
             datesMacd.add(date);
         }
 
@@ -107,6 +109,13 @@ public class MovingAverageConvergenceDivergence
         signalLine.setDates(timelineDates);
         macd.setValues(Doubles.toArray(valuesMacd));
         signalLine.setValues(Doubles.toArray(valuesSignal));
+    }
+
+    private static double round(double value, int places)
+    {
+        BigDecimal bigDecimal = BigDecimal.valueOf(value);
+        BigDecimal result = bigDecimal.setScale(places, RoundingMode.HALF_UP);
+        return result.doubleValue();
     }
 
 }
