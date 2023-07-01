@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+JWyNX aNnmV PAGE 1 from 1
+A. AEAaLy 18 DATE 02.06.2023
+131 56 rwMMPGwX EXECUTION d008-0f58
+SAVINGS PLAN dbc9-ad4d
+SECURITIES ACCOUNT 0781322201
+SECURITIES SETTLEMENT SAVINGS PLAN
+OVERVIEW
+Savings plan execution on 02.06.2023 on the Lang & Schwarz Exchange.
+The counterparty to the transaction is Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION QUANTITY AVERAGE RATE AMOUNT
+Berkshire Hathaway Inc. 0.081967 Pcs. 305.00 EUR 25.00 EUR
+Reg.Shares B New DL -,00333
+ISIN: US0846707026
+TOTAL 25.00 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+DE27502109007011534672 06.06.2023 -25.00 EUR
+Berkshire Hathaway Inc. Reg.Shares B New DL -,00333 in giro collection storage in Germany.
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 02.06.2023 / 65418192 / 1e89-a75f
