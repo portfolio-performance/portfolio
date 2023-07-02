@@ -1,14 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.collect.Iterables;
 import com.google.common.primitives.Doubles;
 
 import name.abuchen.portfolio.model.Security;
@@ -23,9 +20,8 @@ public class MovingAverageConvergenceDivergence
     private static final int MACD_MINUEND_PERIOD = 12;
     private static final int MACD_SUBTRAHEND_PERIOD = 26;
     private static final int SIGNAL_LINE_PERIOD = 9;
-    private double macdMinuendSmoothingFactor;
-    private double macdSubtrahendSmoothingFactor;
-    private double signalLineSmoothingFactor;
+    private static final int MAX_MACD_PERIOD = Math.max(MACD_MINUEND_PERIOD, MACD_SUBTRAHEND_PERIOD);
+    private static final int SIGNAL_LINE_START = SIGNAL_LINE_PERIOD + MAX_MACD_PERIOD - 1;
     private Security security;
     private ChartInterval interval;
     private ChartLineSeriesAxes macd;
@@ -33,11 +29,8 @@ public class MovingAverageConvergenceDivergence
 
     public MovingAverageConvergenceDivergence(Security security, ChartInterval interval)
     {
-        this.security = security;
+        this.security = Objects.requireNonNull(security);
         this.interval = Objects.requireNonNull(interval);
-        this.macdMinuendSmoothingFactor = 2.0 / (MACD_MINUEND_PERIOD + 1);
-        this.macdSubtrahendSmoothingFactor = 2.0 / (MACD_SUBTRAHEND_PERIOD + 1);
-        this.signalLineSmoothingFactor = 2.0 / (SIGNAL_LINE_PERIOD + 1);
         this.macd = new ChartLineSeriesAxes();
         this.signalLine = new ChartLineSeriesAxes();
 
@@ -56,30 +49,23 @@ public class MovingAverageConvergenceDivergence
 
     private void calculateMacd()
     {
-        if (security == null)
-            return;
-
         List<SecurityPrice> prices = security.getPricesIncludingLatest();
-        if (prices == null)
+        if (prices.isEmpty())
             return;
 
-        int index = Collections.binarySearch(prices, new SecurityPrice(interval.getStart(), 0),
-                        new SecurityPrice.ByDate());
-
-        if (index < 0)
-            index = -index - 1;
-
-        if (index >= prices.size())
+        if (Iterables.getLast(prices).getDate().isBefore(interval.getStart()))
             return;
 
+        long count = 0L;
         List<LocalDate> datesMacd = new ArrayList<>();
+        List<LocalDate> datesSignal = new ArrayList<>();
         List<Double> valuesMacd = new ArrayList<>();
         List<Double> valuesSignal = new ArrayList<>();
 
-        // seed the running EMAs with the first value
-        double minuendEma = prices.get(index).getValue() / Values.Quote.divider();
-        double subtrahendEma = minuendEma;
-        double signalEma = 0;
+        ExponentialMovingAverageCalculator minuendEmaCalc = new ExponentialMovingAverageCalculator(MACD_MINUEND_PERIOD);
+        ExponentialMovingAverageCalculator subtrahendEmaCalc = new ExponentialMovingAverageCalculator(
+                        MACD_SUBTRAHEND_PERIOD);
+        ExponentialMovingAverageCalculator signalEmaCalc = new ExponentialMovingAverageCalculator(SIGNAL_LINE_PERIOD);
 
         for (SecurityPrice price : prices) // NOSONAR
         {
@@ -88,34 +74,59 @@ public class MovingAverageConvergenceDivergence
                 break;
 
             double valueDivided = price.getValue() / Values.Quote.divider();
-
-            minuendEma = (valueDivided * macdMinuendSmoothingFactor)
-                            + (minuendEma * (1 - macdMinuendSmoothingFactor));
-            subtrahendEma = (valueDivided * macdSubtrahendSmoothingFactor)
-                            + (subtrahendEma * (1 - macdSubtrahendSmoothingFactor));
+            double minuendEma = minuendEmaCalc.average(valueDivided);
+            double subtrahendEma = subtrahendEmaCalc.average(valueDivided);
             double macdValue = minuendEma - subtrahendEma;
-            signalEma = (macdValue * signalLineSmoothingFactor) + (signalEma * (1 - signalLineSmoothingFactor));
+            double signalEma = ++count >= MAX_MACD_PERIOD ? signalEmaCalc.average(macdValue) : Double.NaN;
 
             if (date.isBefore(interval.getStart()))
                 continue;
 
-            valuesMacd.add(round(macdValue, 2));
-            valuesSignal.add(round(signalEma, 2));
-            datesMacd.add(date);
+            if (count >= MAX_MACD_PERIOD)
+            {
+                valuesMacd.add(macdValue);
+                datesMacd.add(date);
+            }
+
+            if (count >= SIGNAL_LINE_START)
+            {
+                valuesSignal.add(signalEma);
+                datesSignal.add(date);
+            }
         }
 
-        Date[] timelineDates = TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0]));
-        macd.setDates(timelineDates);
-        signalLine.setDates(timelineDates);
+        macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
+        signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
         macd.setValues(Doubles.toArray(valuesMacd));
         signalLine.setValues(Doubles.toArray(valuesSignal));
     }
 
-    private static double round(double value, int places)
+    private static final class ExponentialMovingAverageCalculator
     {
-        BigDecimal bigDecimal = BigDecimal.valueOf(value);
-        BigDecimal result = bigDecimal.setScale(places, RoundingMode.HALF_UP);
-        return result.doubleValue();
-    }
+        private final double smoothingFactor;
+        private final int period;
+        private double previous = Double.NaN;
+        private double initialTotal;
+        private int initialCount;
 
+        private ExponentialMovingAverageCalculator(int period)
+        {
+            this.smoothingFactor = 2.0 / (period + 1);
+            this.period = period;
+        }
+
+        private double average(double value)
+        {
+            if (initialCount == period)
+                previous = previous + smoothingFactor * (value - previous);
+            else
+            {
+                initialTotal += value;
+                if (++initialCount == period)
+                    // Calculate the first EMA value
+                    previous = initialTotal / initialCount;
+            }
+            return previous;
+        }
+    }
 }

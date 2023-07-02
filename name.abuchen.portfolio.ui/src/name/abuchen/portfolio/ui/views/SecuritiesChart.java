@@ -489,6 +489,8 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseFIFO, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailMarkerPurchaseMovingAverage, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
+        toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
         toolTip.addExtraInfo((composite, focus) -> {
             if (focus instanceof Date focusDate)
