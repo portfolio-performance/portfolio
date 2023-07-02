@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,18 +20,22 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -45,17 +51,9 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.util.BuildInfo;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class AboutDialog extends Dialog
 {
-    private static final int DETAILS_BTN_ID = 4711;
-
-    private Composite container;
-    private StackLayout layout;
-
-    private Text infoTextBox;
-
     @Inject
     public AboutDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
     {
@@ -65,14 +63,38 @@ public class AboutDialog extends Dialog
     @Override
     protected Control createDialogArea(Composite parent)
     {
-        container = new Composite(parent, SWT.NONE);
-        layout = new StackLayout();
-        container.setLayout(layout);
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setBackground(Colors.WHITE);
+        GridDataFactory.fillDefaults().grab(true, true).hint(700, 500).applyTo(container);
+        GridLayoutFactory.fillDefaults().spacing(5, 5).margins(5, 5).applyTo(container);
 
-        layout.topControl = createAboutText(container);
-        createInfoArea(container);
+        Control aboutText = createAboutText(container);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(aboutText);
+
+        CTabFolder folder = new CTabFolder(container, SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(folder);
+
+        makeSoftwareTab(folder);
+        makeCodeContributorsTab(folder);
+        makeTranslatorsTab(folder);
+        makeHelpWritersTab(folder);
+        makeInstallationDetailsTab(folder);
+
+        folder.setSelection(0);
 
         return container;
+    }
+
+    @Override
+    protected void setShellStyle(int newShellStyle)
+    {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent)
+    {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
     }
 
     private Control createAboutText(Composite parent)
@@ -106,68 +128,83 @@ public class AboutDialog extends Dialog
 
         aboutTextBox.addListener(SWT.MouseDown, e -> openBrowser(e, aboutTextBox));
 
-        String contributionsText = generateDeveloperListText(Messages.AboutTextDevelopers)
-                        + Messages.AboutTextTranslationDevelopers + "\n\n" + Messages.AboutTextOtherSoftware; //$NON-NLS-1$
-        styles = new ArrayList<>();
-        contributionsText = addMarkdownLikeHyperlinks(contributionsText, styles);
-
-        StyledText contributionsBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
-        contributionsBox.setText(contributionsText);
-        contributionsBox.setStyleRanges(styles.toArray(new StyleRange[0]));
-
-        contributionsBox.addListener(SWT.MouseDown, e -> openBrowser(e, contributionsBox));
-
         // layout
 
         GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 10).applyTo(area);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.CENTER, SWT.TOP).applyTo(imageLabel);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(aboutTextBox);
-        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(contributionsBox);
 
         return area;
     }
 
-    private void createInfoArea(Composite container)
+    private void makeSoftwareTab(CTabFolder folder)
     {
-        Composite area = new Composite(container, SWT.NONE);
-        area.setLayout(new FillLayout());
-
-        infoTextBox = new Text(area, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
+        String componentsText = read("about.software.txt"); //$NON-NLS-1$
+        constructTab(folder, "Software", componentsText); //$NON-NLS-1$
     }
 
-    @Override
-    protected void createButtonsForButtonBar(Composite parent)
+    private void makeCodeContributorsTab(CTabFolder folder)
     {
-        Button b = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        b.setFocus();
+        String developers = generateDeveloperListText(read("about.contributors.txt")); //$NON-NLS-1$
+        String text = MessageFormat.format(Messages.AboutTextDeveloped, developers);
 
-        createButton(parent, DETAILS_BTN_ID, Messages.LabelInstallationDetails, false);
+        constructTab(folder, "Code Contributors", text); //$NON-NLS-1$
     }
 
-    @Override
-    protected void buttonPressed(int buttonId)
+    private void makeTranslatorsTab(CTabFolder folder)
     {
-        if (buttonId != DETAILS_BTN_ID)
-        {
-            super.buttonPressed(buttonId);
-            return;
-        }
+        String translatorsText = read("about.translations.txt"); //$NON-NLS-1$
+        constructTab(folder, "Translators", translatorsText); //$NON-NLS-1$
+    }
 
-        boolean showsAbout = layout.topControl == container.getChildren()[0];
+    private void makeHelpWritersTab(CTabFolder folder)
+    {
+        String helpWritersText = read("about.writers.txt"); //$NON-NLS-1$
+        constructTab(folder, "Writers", helpWritersText); //$NON-NLS-1$
+    }
 
-        if (showsAbout)
-        {
-            infoTextBox.setText(buildInfoText());
-            layout.topControl = container.getChildren()[1];
-            container.layout();
-            getButton(DETAILS_BTN_ID).setText(Messages.LabelInfo);
-        }
-        else
-        {
-            layout.topControl = container.getChildren()[0];
-            container.layout();
-            getButton(DETAILS_BTN_ID).setText(Messages.LabelInstallationDetails);
-        }
+    private void constructTab(CTabFolder folder, String label, String text)
+    {
+        List<StyleRange> styles = new ArrayList<>();
+        String body = addMarkdownLikeHyperlinks(text, styles);
+
+        StyledText textBox = new StyledText(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
+        textBox.setMargins(5, 5, 5, 5);
+        textBox.setText(body);
+        textBox.setStyleRanges(styles.toArray(new StyleRange[0]));
+
+        textBox.addListener(SWT.MouseDown, e -> openBrowser(e, textBox));
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(label);
+        item.setControl(textBox);
+    }
+
+    private void makeInstallationDetailsTab(CTabFolder folder)
+    {
+        Text installationDetails = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
+        installationDetails.setText(""); //$NON-NLS-1$
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.LabelInstallationDetails);
+        item.setControl(installationDetails);
+
+        folder.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            if (item == e.item && installationDetails.getText().isEmpty())
+            {
+                installationDetails.setText("Loading..."); //$NON-NLS-1$
+                new Job(Messages.LabelInfo)
+                {
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor)
+                    {
+                        String infoText = buildInfoText();
+                        Display.getDefault().asyncExec(() -> installationDetails.setText(infoText));
+                        return Status.OK_STATUS;
+                    }
+                }.schedule();
+            }
+        }));
     }
 
     private String addMarkdownLikeHyperlinks(String aboutText, List<StyleRange> styles)
@@ -220,35 +257,15 @@ public class AboutDialog extends Dialog
 
     private String generateDeveloperListText(String developers)
     {
-        List<String> developerList = Arrays.asList(TextUtil.trim(developers.split(","))); //$NON-NLS-1$
+        StringBuilder text = new StringBuilder();
 
-        int developersTextLineLength = 0;
+        developers.lines().forEach(line -> {
+            if (!text.isEmpty())
+                text.append(", "); //$NON-NLS-1$
+            text.append("[").append(line).append("](https://github.com/").append(line).append(")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        });
 
-        StringBuilder developerText = new StringBuilder();
-        developerText.append(Messages.AboutTextDeveloped + "\n  "); //$NON-NLS-1$
-
-        for (int i = 0; i < developerList.size(); i++)
-        {
-            if (i == developerList.size() - 1)
-                developerText.append("and [" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + ").\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            else
-                developerText.append("[" + developerList.get(i) + "]" + "(https://github.com/" + developerList.get(i) + "), "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-
-            // Line break if...
-            if (developersTextLineLength + developerList.get(i).length() >= 80)
-            {
-                developerText.append("\n  "); //$NON-NLS-1$
-                developersTextLineLength = 0;
-            }
-            else
-            {
-                developersTextLineLength += developerList.get(i).length();
-            }
-        }
-
-        developerText.append("  Many thanks for your support.\n\n"); //$NON-NLS-1$
-
-        return developerText.toString();
+        return text.toString();
     }
 
     private void openBrowser(Event event, StyledText textBox)
@@ -330,6 +347,14 @@ public class AboutDialog extends Dialog
         }
 
         builder.append("]");
+    }
+
+    private String read(String name)
+    {
+        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(name), StandardCharsets.UTF_8.name()))
+        {
+            return scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+        }
     }
 
 }
