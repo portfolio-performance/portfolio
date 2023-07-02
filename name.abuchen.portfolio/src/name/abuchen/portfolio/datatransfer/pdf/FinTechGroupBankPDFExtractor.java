@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -370,6 +371,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                     if (t.getPortfolioTransaction().getType().isLiquidation()
                                     && t.getPortfolioTransaction().getMonetaryAmount().isLessThan(t.getPortfolioTransaction().getUnitSum(Type.FEE)))
                     {
+                        t.setMonetaryAmount(t.getPortfolioTransaction().getUnitSum(Type.FEE).subtract(t.getPortfolioTransaction().getMonetaryAmount()));
                         t.getPortfolioTransaction().removeUnits(Type.FEE);
                         type.getCurrentContext().putBoolean("separateFeeTransaction", true);
                     }
