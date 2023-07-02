@@ -23,7 +23,7 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn
         restore-keys: |
           ${{ runner.os }}-mvn-
     - name: Set up JDK 17
@@ -51,7 +51,7 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn
         restore-keys: |
           ${{ runner.os }}-mvn-
     - name: Set up JDK 17
