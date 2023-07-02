@@ -23,5 +23,5 @@ Require-Bundle: org.eclipse.emf.common,
  org.eclipse.e4.ui.workbench,
  org.eclipse.core.runtime,
  org.eclipse.osgi.services,
- org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.core.di.annotations
 Automatic-Module-Name: name.abuchen.portfolio.bootstrap
