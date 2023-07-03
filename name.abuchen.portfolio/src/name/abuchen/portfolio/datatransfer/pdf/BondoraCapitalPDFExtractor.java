@@ -35,7 +35,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(Zusammenfassung|Summary)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^([\\d]{2}.[\\d]{2}.[\\d]{4}|[\\d]{4}.[\\d]{2}.[\\d]{2}) .*$");
+        Block block = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) .*$");
         type.addBlock(block);
         block.setMaxSize(1);
 
@@ -48,7 +48,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction
                 .section("type").optional()
-                .match("^([\\d]{2}.[\\d]{2}.[\\d]{4}|[\\d]{4}.[\\d]{2}.[\\d]{2}) "
+                .match("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) "
                                 + "(?<type>(.berweisen"
                                 + "|Transfer"
                                 + "|Abheben"
@@ -73,7 +73,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         section -> section
                                 .attributes("date", "note", "amount")
-                                .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\.[\\d]{2}\\.[\\d]{2})) "
+                                .match("^(?<date>([\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\.[\\d]{2}\\.[\\d]{2})) "
                                                 + "(?<note>(.berweisen"
                                                 + "|Transfer"
                                                 + "|Abheben"
@@ -106,10 +106,12 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                         // 03/02/2023 Go & Grow Zinsen €1.62 €9,074.6
                         // 03/03/2023 Go & Grow Zinsen €1.62 €9,076.22
                         // 03/04/2023 Go & Grow Zinsen €1.63 €9,077.85
+                        // 4/1/2023 Go & Grow returns €0.84 €4,723.86
+                        // 4/6/2023 Transfer €50 €4,777.24
                         // @formatter:on
                         section -> section
                                 .attributes("date", "note", "amount")
-                                .match("^(?<date>([\\d]{2}\\/[\\d]{2}\\/[\\d]{4}|[\\d]{4}\\/[\\d]{2}\\/[\\d]{2})) "
+                                .match("^(?<date>([\\d]{1,2}\\/[\\d]{1,2}\\/[\\d]{4}|[\\d]{4}\\/[\\d]{1,2}\\/[\\d]{1,2})) "
                                                 + "(?<note>(.berweisen"
                                                 + "|Transfer"
                                                 + "|Abheben"
@@ -146,7 +148,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         section -> section
                                 .attributes("date", "note", "amount")
-                                .match("^(?<date>([\\d]{2}\\-[\\d]{2}\\-[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) "
+                                .match("^(?<date>([\\d]{1,2}\\-[\\d]{1,2}\\-[\\d]{4}|[\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2})) "
                                                 + "(?<note>(.berweisen"
                                                 + "|Transfer"
                                                 + "|Abheben"
