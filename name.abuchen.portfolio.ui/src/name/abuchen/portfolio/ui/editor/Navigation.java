@@ -322,9 +322,23 @@ public final class Navigation
     private void createGeneralDataSection(Client client)
     {
         Item generalData = new Item(Messages.LabelSecurities);
-        generalData.actionMenu = manager -> manager.add(CommandAction.forCommand(context, Images.PLUS,
-                        DomainElement.WATCHLIST.getPaletteLabel(), UIConstants.Command.NEW_DOMAIN_ELEMENT,
-                        UIConstants.Parameter.TYPE, DomainElement.WATCHLIST.name()));
+        generalData.actionMenu = manager -> {
+
+            manager.add(CommandAction.forCommand(context, DomainElement.WATCHLIST.getPaletteLabel(),
+                            UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
+                            DomainElement.WATCHLIST.name()));
+
+            manager.add(new Separator());
+
+            var elements = EnumSet.of(DomainElement.INVESTMENT_VEHICLE, DomainElement.CRYPTO_CURRENCY,
+                            DomainElement.CONSUMER_PRICE_INDEX, DomainElement.EXCHANGE_RATE);
+
+            for (var element : elements)
+            {
+                manager.add(CommandAction.forCommand(context, element.getPaletteLabel(),
+                                UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE, element.name()));
+            }
+        };
 
         roots.add(generalData);
 
@@ -468,7 +482,7 @@ public final class Navigation
 
         section.actionMenu = manager -> {
 
-            manager.add(CommandAction.forCommand(context, Images.PLUS, DomainElement.TAXONOMY.getPaletteLabel(),
+            manager.add(CommandAction.forCommand(context, DomainElement.TAXONOMY.getPaletteLabel(),
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
                             DomainElement.TAXONOMY.name()));
 
