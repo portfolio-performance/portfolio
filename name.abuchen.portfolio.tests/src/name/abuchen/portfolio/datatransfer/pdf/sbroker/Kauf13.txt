@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=259/4851/002
+DEPOTUNTERBEZEICHNUNG=
+Kauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=YjvQPD NTVTv
+ADRESSZEILE3=TWZdfud. 07
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=23351 jNPlrQhJYA
+ADRESSZEILE5=
+HBunoG YYvBO
+768/4844/002 15651559
+ADRESSZEILE6=
+WOLnKKP. 45
+BELEGNUMMER=35390
+29686 EwgZlNtJZW
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+ihAiWY ssGqr
+Wiesbaden, 05.05.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N. LU0292096186
+Nominal Kurs
+STK 21,413 EUR 21,5250
+Handelstag 05.05.2020 EUR 460,91-
+Kurswert
+Handelszeit 09:06
+Handelsplatz Xetra
+Verwahrart Girosammelverwahrung
+Wert Betrag zu Ihren Lasten
+07.05.2020 EUR 460,91
+Die Höhe des von der Kapitalverwaltungsgesellschaft (KVG) festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie
+die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDKF/ITS/035390/060520/004110

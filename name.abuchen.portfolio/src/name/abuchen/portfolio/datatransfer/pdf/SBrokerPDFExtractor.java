@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -167,6 +168,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         .attributes("currency", "amount")
                                         .find("Wert Konto\\-Nr\\. Betrag zu Ihren (Gunsten|Lasten).*")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Wert Betrag zu Ihren Lasten
+                                // 07.05.2020 EUR 460,91
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .find("Wert Betrag zu Ihren (Gunsten|Lasten).*")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -383,6 +397,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // Wert Devisenkurs Betrag zu Ihren Gunsten
+                                // 07.09.2021 EUR/USD 1,19025 EUR 5,30
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .find("Wert Devisenkurs Betrag zu Ihren (Gunsten|Lasten)")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
+                                ,
+                                // @formatter:off
                                 // Ausmachender Betrag 20,31+ EUR
                                 // @formatter:on
                                 section -> section
@@ -456,6 +483,26 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // 07.09.2021 EUR/USD 1,19025 EUR 5,30
+                                // ausländische Dividende EUR 70,32
+                                // @formatter:on
+                                section -> section
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                                        .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
+
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
+
+                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // @formatter:off
                                 // 15.01.2018 00/0000/000 EUR/USD 1,19265 EUR 0,65
                                 // ausl. Dividendenanteil (Thesaurierung) EUR 45,10
                                 // @formatter:on
@@ -482,10 +529,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // 000/0000/000 70314707
                                 // @formatter:on
                                 section -> section
-                                        .attributes("note", "note1")
-                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$")
-                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$")
-                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>Abrechnungs\\-Nr\\.) .*$")
+                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note2>[\\d]+) .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                                 ,
                                 // @formatter:off
                                 // Abrechnungsnr. 12345678

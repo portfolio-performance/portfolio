@@ -1,0 +1,49 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=685/8812/002
+DEPOTUNTERBEZEICHNUNG=
+Kauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=coVBXG ZaFjQ
+ADRESSZEILE3=TSBWJGs. 95
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=50325 wqumjIndDz
+ADRESSZEILE5=
+dQjbUh eCuFM
+319/2718/002 21461152
+ADRESSZEILE6=
+sNumPJq. 58
+BELEGNUMMER=11714
+76753 HVFSbdxgYi
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+PokLhK iJuix
+Wiesbaden, 08.04.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Johnson & Johnson Registered Shares DL 1 US4781601046
+Nominal Kurs
+STK 8,000 EUR 136,9800
+Handelstag 08.04.2021 EUR 1.095,84-
+Kurswert
+EUR 10,47-
+Handelszeit 21:20
+Orderentgelt
+Handelsplatz Quotrix
+Verwahrart Girosammelverwahrung
+Wert Betrag zu Ihren Lasten
+12.04.2021 EUR 1.106,31
+Wir werden in Ihrem Depot wie angegeben buchen.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/011714/090421/004445
