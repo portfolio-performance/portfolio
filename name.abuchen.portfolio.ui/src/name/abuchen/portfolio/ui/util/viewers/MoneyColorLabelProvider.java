@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -10,27 +9,17 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.trail.Trail;
-import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public final class MoneyColorLabelProvider extends ColumnLabelProvider
 {
     private final Function<Object, Money> valueProvider;
-    private final Function<Object, String> toolTipProvider;
     private final Client client;
 
     public MoneyColorLabelProvider(Function<Object, Money> valueProvider, Client client)
     {
-        this(valueProvider, null, client);
-    }
-
-    public MoneyColorLabelProvider(Function<Object, Money> valueProvider, Function<Object, String> toolTipProvider,
-                    Client client)
-    {
         this.valueProvider = valueProvider;
-        this.toolTipProvider = toolTipProvider;
         this.client = client;
     }
 
@@ -62,24 +51,5 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
             return null;
 
         return Values.Money.format(money, client.getBaseCurrency());
-    }
-
-    @Override
-    public String getToolTipText(Object element)
-    {
-        if (toolTipProvider == null)
-            return null;
-
-        String tooltip = toolTipProvider.apply(element);
-
-        if (!(element instanceof TrailProvider t))
-            return tooltip;
-
-        Optional<Trail> trail = t.explain(tooltip);
-
-        if (!trail.isPresent() || trail.get().getRecord().isEmpty())
-            return null;
-        else
-            return tooltip;
     }
 }
