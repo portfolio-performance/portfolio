@@ -7,10 +7,12 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -44,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -147,16 +150,23 @@ public class CommandPalettePopup extends PopupDialog
     private TextLayout textLayout;
 
     @Inject
-    public CommandPalettePopup(IEclipseContext context)
+    public CommandPalettePopup(IEclipseContext context, @Optional @Named(UIConstants.Parameter.TYPE) String type)
     {
         super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);
 
         List<Class<? extends ElementProvider>> provider = new ArrayList<>();
-        provider.add(NavigationElements.class);
-        provider.add(BookmarkElements.class);
-        provider.add(TransactionElements.class);
-        provider.add(ViewElements.class);
+
+        // for now: if a parameter is given, then it must be to show only new
+        // domain element actions
+        if (type == null)
+        {
+            provider.add(NavigationElements.class);
+            provider.add(BookmarkElements.class);
+            provider.add(TransactionElements.class);
+            provider.add(ViewElements.class);
+        }
+
         provider.add(NewDomainElements.class);
 
         for (Class<? extends ElementProvider> clazz : provider)
