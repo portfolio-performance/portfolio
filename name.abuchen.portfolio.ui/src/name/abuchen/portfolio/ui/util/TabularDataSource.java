@@ -240,7 +240,7 @@ public class TabularDataSource implements Named
             else if (s2 == null)
                 return 1;
 
-            return s1.compareTo(s2);
+            return TextUtil.compare(s1, s2);
         }
     }
 
