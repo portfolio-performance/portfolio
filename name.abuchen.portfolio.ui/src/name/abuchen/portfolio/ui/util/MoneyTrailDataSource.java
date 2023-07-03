@@ -1,68 +1,33 @@
-package name.abuchen.portfolio.ui.util.viewers;
+package name.abuchen.portfolio.ui.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trail.Trail;
-import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 
-public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
+public class MoneyTrailDataSource
 {
-    protected MoneyTrailToolTipSupport(ColumnViewer viewer, int style, boolean manualActivation)
+    private Trail trail;
+
+    public MoneyTrailDataSource(Trail trail)
     {
-        super(viewer, style, manualActivation);
+        this.trail = trail;
     }
 
-    public static final void enableFor(ColumnViewer viewer, int style)
-    {
-        new MoneyTrailToolTipSupport(viewer, style, false);
-    }
-
-    @Override
-    protected Composite createViewerToolTipContentArea(Event event, ViewerCell cell, Composite parent)
-    {
-        if (cell == null)
-            return super.createViewerToolTipContentArea(event, cell, parent);
-
-        Object element = cell.getElement();
-
-        if (!(element instanceof TrailProvider))
-            return super.createViewerToolTipContentArea(event, cell, parent);
-
-        Optional<Trail> trail = ((TrailProvider) element).explain(getText(event));
-
-        if (!trail.isPresent())
-            return super.createViewerToolTipContentArea(event, cell, parent);
-
-        return createTrailTable(parent, trail.get());
-    }
-
-    @Override
-    public boolean isHideOnMouseDown()
-    {
-        return false;
-    }
-
-    private Composite createTrailTable(Composite parent, Trail trail)
+    public Composite createPlainComposite(Composite parent)
     {
         int depth = trail.getDepth();
 
@@ -128,14 +93,9 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         if (inputs.isEmpty())
             return;
 
-        outputs.forEach(label -> label.addMouseTrackListener(new MouseTrackListener()
+        outputs.forEach(label -> label.addMouseTrackListener(new MouseTrackAdapter()
         {
             private Color background = Colors.INFO_TOOLTIP_BACKGROUND;
-
-            @Override
-            public void mouseHover(MouseEvent e)
-            {
-            }
 
             @Override
             public void mouseExit(MouseEvent e)

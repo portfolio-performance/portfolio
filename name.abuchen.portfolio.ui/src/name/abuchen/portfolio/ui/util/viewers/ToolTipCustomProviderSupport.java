@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.snapshot.trail.Trail;
+import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 
 public class ToolTipCustomProviderSupport extends ColumnViewerToolTipSupport
@@ -89,6 +91,14 @@ public class ToolTipCustomProviderSupport extends ColumnViewerToolTipSupport
             return composite;
         }
         else if (toolTip instanceof TabularDataSource source)
+        {
+            return source.createPlainComposite(parent);
+        }
+        else if (toolTip instanceof Trail trail)
+        {
+            return new MoneyTrailDataSource(trail).createPlainComposite(parent);
+        }
+        else if (toolTip instanceof MoneyTrailDataSource source)
         {
             return source.createPlainComposite(parent);
         }
