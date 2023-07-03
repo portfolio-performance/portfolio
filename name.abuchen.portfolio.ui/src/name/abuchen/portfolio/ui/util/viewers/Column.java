@@ -2,10 +2,18 @@ package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.ui.Images;
 
@@ -50,8 +58,8 @@ public class Column
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
     private Supplier<CellLabelProvider> labelProvider;
+    private UnaryOperator<Object> toolTipProvider;
     private Images image;
-
     private Options<Object> options;
 
     private String groupLabel;
@@ -71,6 +79,30 @@ public class Column
         this.label = label;
         this.style = style;
         this.defaultWidth = defaultWidth;
+    }
+
+    public static Optional<Column> lookup(Widget tableOrTree, ViewerCell cell)
+    {
+        if (cell == null)
+            return Optional.empty();
+
+        int columnIndex = cell.getColumnIndex();
+
+        if (tableOrTree instanceof Tree tree)
+        {
+            TreeColumn column = tree.getColumn(columnIndex);
+            return Optional.ofNullable((Column) column.getData(Column.class.getName()));
+
+        }
+        else if (tableOrTree instanceof Table table)
+        {
+            TableColumn column = table.getColumn(columnIndex);
+            return Optional.ofNullable((Column) column.getData(Column.class.getName()));
+        }
+        else
+        {
+            return Optional.empty();
+        }
     }
 
     /* package */String getId()
@@ -108,7 +140,7 @@ public class Column
         setSorter(sorter);
         this.defaultSortDirection = direction;
     }
-    
+
     public void setSortDirction(int direction)
     {
         this.defaultSortDirection = direction;
@@ -122,6 +154,11 @@ public class Column
     public void setLabelProvider(Supplier<CellLabelProvider> labelProvider)
     {
         this.labelProvider = labelProvider;
+    }
+
+    public void setToolTipProvider(UnaryOperator<Object> toolTipProvider)
+    {
+        this.toolTipProvider = toolTipProvider;
     }
 
     public void setImage(Images image)
@@ -208,6 +245,11 @@ public class Column
     public Supplier<CellLabelProvider> getLabelProvider()
     {
         return labelProvider != null ? labelProvider : () -> null;
+    }
+
+    public UnaryOperator<Object> getToolTipProvider()
+    {
+        return toolTipProvider;
     }
 
     /* package */Images getImage()
