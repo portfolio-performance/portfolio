@@ -1,5 +1,14 @@
 package name.abuchen.portfolio.datatransfer.pdf.sbroker;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
+
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -19,18 +28,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -643,6 +645,64 @@ public class SBrokerPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.43))));
+    }
+
+    @Test
+    public void testWertpapierKauf13()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0292096186"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-05-05T09:06"), hasShares(21.413), //
+                        hasSource("Kauf13.txt"), hasNote("Abrechnungs-Nr. 15651559"), //
+                        hasAmount("EUR", 460.91), hasGrossValue("EUR", 460.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf14()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4781601046"), hasWkn(null), hasTicker(null), //
+                        hasName("Johnson & Johnson Registered Shares DL 1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-08T21:20"), hasShares(8.000), //
+                        hasSource("Kauf14.txt"), hasNote("Abrechnungs-Nr. 21461152"), //
+                        hasAmount("EUR", 1106.31), hasGrossValue("EUR", 1095.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.47))));
     }
 
     @Test
@@ -1702,6 +1762,35 @@ public class SBrokerPDFExtractorTest
                                 hasSource("Dividende12.txt"), hasNote("Thesaurierung (0,52 EUR)"), //
                                 hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), hasForexGrossValue("USD", 0.00), //
                                 hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testDividende13()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4781601046"), hasWkn(null), hasTicker(null), //
+                        hasName("Johnson & Johnson Registered Shares DL 1"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-09-07T00:00"), hasShares(8.000), //
+                        hasSource("Dividende13.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.30), hasGrossValue("EUR", 7.12), hasForexGrossValue("USD", 8.47), //
+                        hasTaxes("EUR", 1.07 + 0.71 + 0.04), hasFees("EUR", 0.00))));
     }
 
     @Test
