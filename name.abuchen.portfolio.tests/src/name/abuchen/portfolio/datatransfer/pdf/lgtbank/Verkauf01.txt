@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P__.P__.
+Post CH AG
+CH-8027 
+________________________
+Z_ü_r_____
+ic_h_  PF 1909 A -PRIORITY_______________________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 1
+Zürich, 8. Juni 2023
+ 
+Abrechnung Verkauf Portfolio: 1234567.000
+Auftragsnummer: 209179086 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung XX - 9.9119.6077-01
+Titel Xtrackers(IE)PLC - Xtrackers MSCI World ESG UCITS ETF
+Namen-Anteile -1C- / Class USD
+Verwaltungsgesellschaft / AIFM DWS Investment S.A.
+ISIN IE00BZ02LR44
+Valorennummer 41359963
+Wertpapierkennnummer A2AQST
+Auftragserteilung 07.06.2023 18:43:24 
+Abschlussdatum 08.06.2023 11:22:14
+Ausführungsplatz Tradeweb EU MTF
+Auftragstyp Bestens
+Anzahl 260 Stück
+Kurs USD 32.095
+Kurswert USD 8'344.70
+Eidg. Umsatzabgabe  USD -12.51
+Gutschrift USD Konto 2026457.055 USD 8'332.19
+Valuta 12.06.2023
+Wir entnehmen die Titel Ihrem oben genannten Depot.
+Die Gutschrift auf oben erwähntem Konto erfolgt vorbehaltlich des effektiven Zahlungseinganges.
+2026457 00A T ZH I TRD1001 39509429 12:09 08.06.2023 %Media:XML-A4H
+____
+____
