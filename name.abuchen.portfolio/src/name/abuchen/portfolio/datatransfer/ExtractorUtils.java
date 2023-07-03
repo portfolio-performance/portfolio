@@ -54,6 +54,7 @@ public class ExtractorUtils
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("L/d/yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
 
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
