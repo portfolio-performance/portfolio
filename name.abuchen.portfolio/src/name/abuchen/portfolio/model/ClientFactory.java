@@ -826,6 +826,9 @@ public class ClientFactory
                 // client input as we do not have access to the preferences
                 // here)
 
+                // remove obsolete MARKET properties
+                removeMarketSecurityProperty(client);
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -1506,6 +1509,12 @@ public class ClientFactory
             // = 3,95 EUR) because otherwise the user cannot open the file at
             // all (and manually fix the issue)
         }
+    }
+
+    private static void removeMarketSecurityProperty(Client client)
+    {
+        for (Security security : client.getSecurities())
+            security.removePropertyIf(p -> p.getType() == SecurityProperty.Type.MARKET);
     }
 
     @SuppressWarnings("nls")
