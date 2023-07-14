@@ -1,6 +1,6 @@
 # About
 
-[Portfolio Performance](https://www.portfolio-performance.info) calculates the overall performance of your investment portfolio.
+[Portfolio Performance](https://www.portfolio-performance.info): Track and evaluate the performance of your investment portfolio across stocks, cryptocurrencies, and other assets.
 
 ## Status
 
