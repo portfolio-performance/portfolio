@@ -31,7 +31,6 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -300,15 +299,24 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // portfolio-report.net, but for now the list of exchanges is only
         // available for Yahoo search provider.
 
-        List<SecurityProperty> markets = subject.getProperties()
-                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).toList();
+        var markets = PortfolioReportQuoteFeed.getMarkets(subject);
 
-        markets.stream().map(p -> {
-            Exchange exchange = new Exchange(p.getValue(), MarketIdentifierCodes.getLabel(p.getName()));
-            if ("XFRA".equals(p.getName())) //$NON-NLS-1$
-                exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
+        markets.stream().map(market -> {
+            Exchange exchange = new Exchange(market.getSymbol(),
+                            MarketIdentifierCodes.getLabel(market.getMarketCode()));
+
+            // symbol might be null because it was added only later to
+            // MarketInfo, when deserializing from JSON, it might not be set
+            if (market.getSymbol() != null)
+            {
+                if ("XFRA".equals(market.getMarketCode())) //$NON-NLS-1$
+                    exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
+                if ("XETR".equals(market.getMarketCode())) //$NON-NLS-1$
+                    exchange.setId(exchange.getId() + ".DE"); //$NON-NLS-1$
+            }
+
             return exchange;
-        }).forEach(answer::add);
+        }).filter(e -> e.getId() != null).forEach(answer::add);
 
         Set<String> candidates = new HashSet<>();
         answer.forEach(e -> candidates.add(e.getId()));
