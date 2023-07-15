@@ -51,7 +51,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 
         if (!newConfigurations.isEmpty())
         {
-            migratCustomFiltersIntoClient(newConfigurations);
+            migrateCustomFiltersIntoClient(newConfigurations);
             migrateWidgets(newConfigurations);
             migrateCharts(newConfigurations);
         }
@@ -61,7 +61,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
         client.touch();
     }
 
-    private void migratCustomFiltersIntoClient(List<Configuration> newConfigurations)
+    private void migrateCustomFiltersIntoClient(List<Configuration> newConfigurations)
     {
         // migrate filter definitions
         ConfigurationSet set = client.getSettings()
@@ -121,8 +121,11 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
     private List<Configuration> loadSelectedFilters(List<Configuration> newConfigurations)
     {
         // create migration mapping
+
+        // caution: The user can create multiple identical filter which result
+        // in #getData not being unique
         Map<String, String> old2new = newConfigurations.stream()
-                        .collect(Collectors.toMap(Configuration::getData, Configuration::getUUID));
+                        .collect(Collectors.toMap(Configuration::getData, Configuration::getUUID, (r, l) -> r));
 
         // migrate only known keys in order to prevent legacy keys ending up in
         // the settings
