@@ -19,7 +19,7 @@ import name.abuchen.portfolio.model.Security;
 
 public class SecurityCache
 {
-    private static final Security DUPLICATE_SECURITY_MARKER = new Security();
+    private static final Security DUPLICATE_SECURITY_MARKER = new Security(null, null);
 
     private static final List<String> MESSAGES = Arrays.asList(Messages.MsgErrorDuplicateISIN,
                     Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);

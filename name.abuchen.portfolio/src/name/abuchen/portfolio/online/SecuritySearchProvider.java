@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 public interface SecuritySearchProvider
@@ -47,7 +47,7 @@ public interface SecuritySearchProvider
             return false;
         }
 
-        Security create(ClientSettings settings);
+        Security create(Client client);
 
     }
 

@@ -190,11 +190,8 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
-            Security s = new Security();
-            s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
-            return s;
-        });
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name,
+                        () -> new Security(null, asCurrencyCode(values.get("currency")))); //$NON-NLS-1$
 
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$

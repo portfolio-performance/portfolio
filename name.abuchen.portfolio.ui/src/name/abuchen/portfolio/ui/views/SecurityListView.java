@@ -129,7 +129,7 @@ public class SecurityListView extends AbstractFinanceView
             manager.add(new Separator());
 
             manager.add(new SimpleAction(Messages.SecurityMenuEmptyInstrument + "...", a -> { //$NON-NLS-1$
-                Security newSecurity = new Security();
+                Security newSecurity = new Security(null, getClient().getBaseCurrency());
                 newSecurity.setFeed(QuoteFeed.MANUAL);
                 newSecurity.setCurrencyCode(getClient().getBaseCurrency());
                 openEditDialog(newSecurity);

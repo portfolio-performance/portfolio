@@ -23,7 +23,7 @@ public class PortfolioReportNetTest
 
         OnlineItem item = OnlineItem.from(jsonObject);
 
-        Security security = item.create(new Client().getSettings());
+        Security security = item.create(new Client());
 
         assertValues(security);
 
