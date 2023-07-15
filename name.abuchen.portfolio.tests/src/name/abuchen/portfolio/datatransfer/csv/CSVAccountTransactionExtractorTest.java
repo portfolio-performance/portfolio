@@ -108,7 +108,7 @@ public class CSVAccountTransactionExtractorTest
     public void testDividendTransaction()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
 
@@ -154,10 +154,10 @@ public class CSVAccountTransactionExtractorTest
     public void testIfMultipleSecuritiesWithSameISINExist()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
-        Security security2 = new Security();
+        Security security2 = new Security("", "EUR");
         security2.setIsin("DE0007164600");
         client.addSecurity(security2);
 
@@ -227,7 +227,7 @@ public class CSVAccountTransactionExtractorTest
     public void testTypeIsDeterminedByUnaryMinusOperatorAndSecurity()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
 
@@ -267,7 +267,7 @@ public class CSVAccountTransactionExtractorTest
     public void testBuyTransaction()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
 
@@ -295,7 +295,7 @@ public class CSVAccountTransactionExtractorTest
     public void testBuyTransactionFailsWhenSharesAreMissing()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
 
@@ -314,7 +314,7 @@ public class CSVAccountTransactionExtractorTest
     public void testBuyTransactionFailsWhenSecurityIsMissing()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setIsin("DE0007164600");
         client.addSecurity(security);
 

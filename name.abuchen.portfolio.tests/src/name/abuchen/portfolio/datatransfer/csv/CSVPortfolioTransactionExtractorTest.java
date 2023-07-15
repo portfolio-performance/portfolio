@@ -74,7 +74,7 @@ public class CSVPortfolioTransactionExtractorTest
     public void testTransferTransaction()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setTickerSymbol("SAP.DE");
         client.addSecurity(security);
 
@@ -115,7 +115,7 @@ public class CSVPortfolioTransactionExtractorTest
     public void testBuyTransaction()
     {
         Client client = new Client();
-        Security security = new Security();
+        Security security = new Security("", "EUR");
         security.setTickerSymbol("SAP.DE");
         client.addSecurity(security);
 

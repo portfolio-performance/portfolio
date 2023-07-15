@@ -39,15 +39,15 @@ public class PortfolioMergeTest
 
         client = new Client();
 
-        securityA = new Security();
+        securityA = new Security("", CurrencyUnit.EUR);
         securityA.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(10)));
         client.addSecurity(securityA);
 
-        securityB = new Security();
+        securityB = new Security("", CurrencyUnit.EUR);
         securityB.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(11)));
         client.addSecurity(securityB);
 
-        securityX = new Security();
+        securityX = new Security("", CurrencyUnit.EUR);
         securityX.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(12)));
         client.addSecurity(securityX);
 

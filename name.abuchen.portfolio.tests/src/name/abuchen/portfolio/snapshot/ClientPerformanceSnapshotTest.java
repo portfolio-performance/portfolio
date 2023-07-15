@@ -172,7 +172,7 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
 
-        Security security = new Security();
+        Security security = new Security("", CurrencyUnit.EUR);
         security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(100)));
         security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), Values.Quote.factorize(110)));
         client.addSecurity(security);
@@ -203,7 +203,7 @@ public class ClientPerformanceSnapshotTest
     {
         Client client = new Client();
 
-        Security security = new Security();
+        Security security = new Security("", CurrencyUnit.EUR);
         security.addPrice(new SecurityPrice(LocalDate.of(2010, Month.JANUARY, 1), Values.Quote.factorize(100)));
         security.addPrice(new SecurityPrice(LocalDate.of(2011, Month.JUNE, 1), Values.Quote.factorize(110)));
         client.addSecurity(security);
