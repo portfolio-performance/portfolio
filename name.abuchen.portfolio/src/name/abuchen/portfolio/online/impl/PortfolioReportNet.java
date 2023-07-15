@@ -15,7 +15,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.json.JClient;
-import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
@@ -170,13 +170,11 @@ public class PortfolioReportNet
         }
 
         @Override
-        public Security create(ClientSettings settings)
+        public Security create(Client client)
         {
-            Security security = new Security();
+            Security security = new Security(name, client.getBaseCurrency());
 
             security.setOnlineId(id);
-
-            security.setName(name);
 
             security.setIsin(isin);
             security.setWkn(wkn);
@@ -187,9 +185,12 @@ public class PortfolioReportNet
 
             if (!markets.isEmpty())
             {
+                var market = markets.get(0);
+
+                security.setCurrencyCode(market.getCurrencyCode());
                 security.setFeed(PortfolioReportQuoteFeed.ID);
                 security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                markets.get(0).getMarketCode());
+                                market.getMarketCode());
             }
 
             return security;
@@ -292,5 +293,17 @@ public class PortfolioReportNet
             throw new IllegalArgumentException();
 
         return ((OnlineItem) item).update(security);
+    }
+
+    public static Security createFrom(ResultItem item, Client client)
+    {
+        if (item instanceof OnlineItem onlineItem)
+        {
+            return onlineItem.create(client);
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
     }
 }

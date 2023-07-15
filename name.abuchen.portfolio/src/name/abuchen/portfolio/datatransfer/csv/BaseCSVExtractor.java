@@ -117,8 +117,7 @@ import name.abuchen.portfolio.money.Money;
         {
             name = constructName(isin, tickerSymbol, wkn, name);
             security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
-                Security s = new Security();
-                s.setCurrencyCode(client.getBaseCurrency());
+                Security s = new Security(null, client.getBaseCurrency());
 
                 onSecurityCreated.accept(s);
 

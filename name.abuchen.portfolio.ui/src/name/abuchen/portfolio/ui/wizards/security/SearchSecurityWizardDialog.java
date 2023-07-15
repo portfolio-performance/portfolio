@@ -48,9 +48,8 @@ public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
         {
             Client client = ((SearchSecurityWizard) this.getWizard()).getClient();
 
-            newSecurity = new Security();
+            newSecurity = new Security(null, client.getBaseCurrency());
             newSecurity.setFeed(QuoteFeed.MANUAL);
-            newSecurity.setCurrencyCode(client.getBaseCurrency());
 
             setReturnCode(OK);
             close();
