@@ -1514,7 +1514,7 @@ public class ClientFactory
     private static void removeMarketSecurityProperty(Client client)
     {
         for (Security security : client.getSecurities())
-            security.removePropertyIf(p -> p.getType() == SecurityProperty.Type.MARKET);
+            security.removePropertyIf(p -> p == null || p.getType() == SecurityProperty.Type.MARKET);
     }
 
     @SuppressWarnings("nls")
