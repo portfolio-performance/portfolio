@@ -144,14 +144,25 @@ public class Trade implements Adaptable
         List<LocalDate> dates = new ArrayList<>();
         List<Double> values = new ArrayList<>();
 
+        // need mutable variable within lambda below, using array workaround
+        double[] collateral = {0};
         transactions.stream().forEach(t -> {
             dates.add(t.getTransaction().getDateTime().toLocalDate());
 
             double amount = t.getTransaction().getMonetaryAmount().with(converter.at(t.getTransaction().getDateTime()))
                             .getAmount() / Values.Amount.divider();
 
-            if (t.getTransaction().getType().isPurchase())
+            if (t.getTransaction().getType().isPurchase() == isLong())
+            {
+                collateral[0] += amount;
                 amount = -amount;
+            }
+            else if (!isLong())
+            {
+                // for short trade, for the closing transaction, we look
+                // how much collateral we should return
+                amount = collateral[0] - amount;
+            }
 
             values.add(amount);
         });
@@ -159,7 +170,21 @@ public class Trade implements Adaptable
         if (end == null)
         {
             dates.add(LocalDate.now());
-            values.add(exitValue.getAmount() / Values.Amount.divider());
+            double amount = exitValue.getAmount() / Values.Amount.divider();
+            if (!isLong())
+                amount = collateral[0] - amount;
+            values.add(amount);
+        }
+
+        if (!isLong())
+        {
+            LocalDate endDate;
+            if (end == null)
+                endDate = LocalDate.now();
+            else
+                endDate = end.toLocalDate();
+            dates.add(endDate);
+            values.add(collateral[0]);
         }
 
         this.irr = IRR.calculate(dates, values);
