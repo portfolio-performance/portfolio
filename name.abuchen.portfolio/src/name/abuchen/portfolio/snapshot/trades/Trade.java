@@ -55,12 +55,19 @@ public class Trade implements Adaptable
         this.portfolio = portfolio;
     }
 
+    public boolean isLong()
+    {
+        return transactions.get(0).getTransaction().getType().isPurchase();
+    }
+
     /* package */ void calculate(Client client, CurrencyConverter converter)
     {
+        boolean isLong = this.isLong();
+
         // for purchases, getMonetaryAmount() returns the value including taxes
         // and fees paid
         this.entryValue = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isPurchase())
+                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                         .map(t -> t.getTransaction().getMonetaryAmount()
                                         .with(converter.at(t.getTransaction().getDateTime())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
@@ -68,7 +75,7 @@ public class Trade implements Adaptable
         // for purchases, getGrossValue() returns the value without taxes and
         // fees paid
         this.entryValueWithoutTaxesAndFees = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isPurchase())
+                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                         .map(t -> t.getTransaction().getGrossValue()
                                         .with(converter.at(t.getTransaction().getDateTime())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
@@ -78,7 +85,7 @@ public class Trade implements Adaptable
             // for sales, getMonetaryAmount() returns the sales proceeds with
             // (after) taxes and fees deducted
             this.exitValue = transactions.stream() //
-                            .filter(t -> t.getTransaction().getType().isLiquidation())
+                            .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
                             .map(t -> t.getTransaction().getMonetaryAmount()
                                             .with(converter.at(t.getTransaction().getDateTime())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
@@ -86,13 +93,13 @@ public class Trade implements Adaptable
             // for sales, getGrossValue() returns the sales proceeds without
             // (before) taxes and fees deducted
             this.exitValueWithoutTaxesAndFees = transactions.stream() //
-                            .filter(t -> t.getTransaction().getType().isLiquidation())
+                            .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
                             .map(t -> t.getTransaction().getGrossValue()
                                             .with(converter.at(t.getTransaction().getDateTime())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             this.holdingPeriod = Math.round(transactions.stream() //
-                            .filter(t -> t.getTransaction().getType().isPurchase())
+                            .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares() * Dates.daysBetween(
                                             t.getTransaction().getDateTime().toLocalDate(), end.toLocalDate()))
                             .sum() / (double) shares);
@@ -111,7 +118,7 @@ public class Trade implements Adaptable
             this.exitValueWithoutTaxesAndFees = exitValue;
 
             this.holdingPeriod = Math.round(transactions.stream() //
-                            .filter(t -> t.getTransaction().getType().isPurchase())
+                            .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares()
                                             * Dates.daysBetween(t.getTransaction().getDateTime().toLocalDate(), now))
                             .sum() / (double) shares);
@@ -230,7 +237,10 @@ public class Trade implements Adaptable
 
     public Money getProfitLoss()
     {
-        return exitValue.subtract(entryValue);
+        if (isLong())
+            return exitValue.subtract(entryValue);
+        else
+            return entryValue.subtract(exitValue);
     }
 
     public Money getProfitLossMovingAverage()
@@ -240,7 +250,10 @@ public class Trade implements Adaptable
 
     public Money getProfitLossWithoutTaxesAndFees()
     {
-        return exitValueWithoutTaxesAndFees.subtract(entryValueWithoutTaxesAndFees);
+        if (isLong())
+            return exitValueWithoutTaxesAndFees.subtract(entryValueWithoutTaxesAndFees);
+        else
+            return entryValueWithoutTaxesAndFees.subtract(exitValueWithoutTaxesAndFees);
     }
 
     public Money getProfitLossMovingAverageWithoutTaxesAndFees()
@@ -260,7 +273,10 @@ public class Trade implements Adaptable
 
     public double getReturn()
     {
-        return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
+        if (isLong())
+            return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
+        else
+            return 1 - (exitValue.getAmount() / (double) entryValue.getAmount());
     }
 
     public double getReturnMovingAverage()
