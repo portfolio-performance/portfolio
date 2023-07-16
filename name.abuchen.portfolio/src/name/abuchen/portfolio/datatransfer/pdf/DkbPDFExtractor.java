@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -592,6 +593,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from INTEREST to INTEREST_CHARGE
                     if ("-".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
@@ -621,6 +624,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Zinsen f.r Dispositionskredit) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>(([\\-|\\+])))$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from INTEREST to INTEREST_CHARGE
                     if ("-".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
@@ -650,6 +655,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Kapitalertragsteuer) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>(([\\-|\\+])))$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "+" change from TAXES to TAX_REFUND
                     if ("+".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.TAX_REFUND);
 
@@ -699,6 +706,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
                     // since year is not within the date correction
                     // necessary in first receipt of year
                     if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
@@ -768,6 +776,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
                     // since year is not within the date correction
                     // necessary in first receipt of year
                     if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
@@ -811,6 +820,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
                     // since year is not within the date correction
                     // necessary in first receipt of year
                     if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
@@ -855,9 +865,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 + "|R.ckruf\\/Nachforschung"
                                 + "|Identifikationscode"
                                 + "|Stornorechnung"
-                                + "|Girokarte)).*$")
+                                + "|Girokarte"
+                                + "|Entgelt f.r Konto ohne)).*$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "Stornorechnung" change from FEES to FEES_REFUND
+                    if ("Stornorechnung".equals(v.get("note2")))
+                        t.setType(AccountTransaction.Type.FEES_REFUND);
+
                     // since year is not within the date correction
                     // necessary in first receipt of year
                     if (context.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
@@ -869,10 +885,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     {
                         t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + context.get("year")));
                     }
-                    if ("Stornorechnung".equals(v.get("note2")))
-                    {
-                        t.setType(AccountTransaction.Type.FEES_REFUND);
-                    }
+
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote(v.get("note1") + " " + v.get("note2"));
@@ -880,6 +893,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("BUCHUNG IDENTIFIKATIONSCODE".equals(t.getNote()))
                         t.setNote("Buchung Identifikationscode");
+
+                    if ("Rechnung Entgelt für Konto ohne".equals(t.getNote()))
+                        t.setNote("Entgelt für Konto ohne mtl. Eingang");
                 })
 
                 .wrap(TransactionItem::new));
@@ -889,7 +905,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("Ihre Abrechnung vom ", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^Beleg BuchungVerwendungszweck (?<currency>[\\w]{3})$");
-            Pattern pcentury = Pattern.compile("^.*Abrechnungsdatum: [\\d]{2}\\. .*(?<year>[\\d]{2})[\\d]{2}$");
+            Pattern pCentury = Pattern.compile("^.*Abrechnungsdatum: [\\d]{2}\\. .*(?<year>[\\d]{2})[\\d]{2}$");
 
             for (String line : lines)
             {
@@ -897,7 +913,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                 if (m.matches())
                     context.put("currency", m.group("currency"));
 
-                m = pcentury.matcher(line);
+                m = pCentury.matcher(line);
                 if (m.matches())
                     context.put("year", m.group("year"));
             }
@@ -943,17 +959,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                             + v.get("date").substring(6, 8)));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(trim(v.get("note")));
 
                                             // Deletes characters that occur during
                                             // withdrawals from foreign banks
-                                            v.put("note", trim(v.get("note")));
-                                            if (v.get("note").startsWith("*"))
-                                                v.put("note", v.get("note").substring(1, v.get("note").length() - 1));
+                                            if (t.getNote().startsWith("*"))
+                                                t.setNote(trim(t.getNote().substring(1)));
 
-                                            if (v.get("note").endsWith(">"))
-                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
-
-                                            t.setNote(trim(v.get("note")));
+                                            if (t.getNote().endsWith(">"))
+                                                t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
                                         })
                                 ,
                                 section -> section
@@ -968,17 +982,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                             + v.get("date").substring(6, 8)));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(trim(v.get("note")));
 
                                             // Deletes characters that occur during
                                             // withdrawals from foreign banks
-                                            v.put("note", trim(v.get("note")));
-                                            if (v.get("note").startsWith("*"))
-                                                v.put("note", v.get("note").substring(1, v.get("note").length() - 1));
+                                            if (t.getNote().startsWith("*"))
+                                                t.setNote(trim(t.getNote().substring(1)));
 
-                                            if (v.get("note").endsWith(">"))
-                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
-
-                                            t.setNote(trim(v.get("note")));
+                                            if (t.getNote().endsWith(">"))
+                                                t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
                                         })
                             )
 
@@ -1064,17 +1076,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(trim(v.get("note")));
 
                                             // Deletes characters that occur during
                                             // withdrawals from foreign banks
-                                            v.put("note", trim(v.get("note")));
-                                            if (v.get("note").startsWith("*"))
-                                                v.put("note", v.get("note").substring(1, v.get("note").length() - 1));
+                                            if (t.getNote().startsWith("*"))
+                                                t.setNote(trim(t.getNote().substring(1)));
 
-                                            if (v.get("note").endsWith(">"))
-                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
-
-                                            t.setNote(trim(v.get("note")));
+                                            if (t.getNote().endsWith(">"))
+                                                t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
                                         })
                                 ,
                                 section -> section
@@ -1090,17 +1100,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                            t.setNote(trim(v.get("note")));
 
                                             // Deletes characters that occur during
                                             // withdrawals from foreign banks
-                                            v.put("note", trim(v.get("note")));
-                                            if (v.get("note").startsWith("*"))
-                                                v.put("note", v.get("note").substring(1, v.get("note").length() - 1));
+                                            if (t.getNote().startsWith("*"))
+                                                t.setNote(trim(t.getNote().substring(1)));
 
-                                            if (v.get("note").endsWith(">"))
-                                                v.put("note", v.get("note").substring(0, v.get("note").length() - 1));
-
-                                            t.setNote(trim(v.get("note")));
+                                            if (t.getNote().endsWith(">"))
+                                                t.setNote(trim(t.getNote().substring(0, t.getNote().length() - 1)));
                                         })
                             )
 
