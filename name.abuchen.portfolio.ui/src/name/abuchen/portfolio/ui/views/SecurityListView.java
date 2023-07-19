@@ -383,12 +383,6 @@ public class SecurityListView extends AbstractFinanceView
     @Optional
     public void onSecurityCreated(@UIEventTopic(UIConstants.Event.Domain.SECURITY_CREATED) Security newSecurity)
     {
-        if (watchlist != null)
-        {
-            watchlist.addSecurity(newSecurity);
-            getClient().touch();
-        }
-
         setSecurityTableInput();
         securities.getTableViewer().setSelection(new StructuredSelection(newSecurity), true);
     }
