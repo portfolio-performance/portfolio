@@ -731,6 +731,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 ,
                                 // @formatter:off
+                                // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                // St.             :        248,34        Bruttothesaurierung
+                                //                                        pro Stück          :      -0,1323 USD
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
+                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
+                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
                                 // Nr.111111111                   ISH.FOOBAR 12345666 x.EFT (DE1234567890/AB1234)
                                 // Zinstermin      :  28.04.2016          Zinsbetrag      :        73,75 EUR
                                 // @formatter:on
@@ -809,6 +821,47 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                //                                        Endbetrag          :        -0,15 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("type", "fxGross", "fxCurrency", "exchangeRate", "currency")
+                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
+                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            type.getCurrentContext().putBoolean("negative", true);
+
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                            // If we have a negative amount and no gross reinvestment,
+                                            // we first book the dividends received and then the tax charge
+                                            if ("Bruttothesaurierung".equals(v.get("type")))
+                                            {
+                                                t.setAmount(0L);
+                                            }
+                                            else
+                                            {
+                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
+                                                {
+                                                    exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                }
+                                                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+
+                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                                Money gross = Money.of(asCurrencyCode(v.get("currency")),
+                                                                BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
+                                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                t.setMonetaryAmount(gross);
+                                            }
+                                        })
+                                ,
+                                // @formatter:off
                                 // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
                                 //                                        Endbetrag          :        -8,26 EUR
                                 // @formatter:on
@@ -839,6 +892,29 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("fxGross", "fxCurrency", "currency", "exchangeRate")
                                         .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
+                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
+                                        .assign((t, v) -> {
+                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
+
+                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // @formatter:off
+                                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
+                                // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                // @formatter:on
+                                section -> section
+                                        .attributes("fxGross", "fxCurrency", "currency", "exchangeRate")
+                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
@@ -929,16 +1005,43 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
-                // @formatter:off
-                // Nr.1784953069                  PICTET-GL.MEGAT.SEL.P EO  (LU0386882277/A0RLJD)
-                // St.             :          10,0        Bruttothesaurierung
-                //                                        pro Stück          :       2,3189 EUR
-                // @formatter:on
-                .section("name", "isin", "wkn", "currency")
-                .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
-                .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
-                .match("^.* pro St.ck([:\\s]+) [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                .oneOf(
+                                // @formatter:off
+                                // Nr.1784953069                  PICTET-GL.MEGAT.SEL.P EO  (LU0386882277/A0RLJD)
+                                // St.             :          10,0        Bruttothesaurierung
+                                //                                        pro Stück          :       2,3189 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
+                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
+                                        .match("^.* pro St.ck([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                // St.             :        248,34        Bruttothesaurierung
+                                //                                        pro Stück          :      -0,1323 USD
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
+                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
+                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                // St.             :        248,34        Bruttothesaurierung
+                                // pro Stück          :      -0,1323 USD
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "wkn", "currency")
+                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
+                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
+                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
                 // @formatter:off
                 // St.             :         168,9        Bruttothesaurierung
@@ -998,6 +1101,28 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
+                                // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                //                                        Endbetrag          :        -0,15 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("termCurrency", "gross", "baseCurrency", "exchangeRate")
+                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? \\-[\\.,\\d]+ (?<termCurrency>[\\w]{3})$")
+                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$")
+                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
+                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
+                                        .assign((t, v) -> {
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
+
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // @formatter:off
                                 // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
                                 // Valuta          :    08.10.2021       *Einbeh. Steuer     :        15,24 EUR
                                 // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
@@ -1049,9 +1174,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
                 // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
                 // Extag           :       17.02.2022    Bruttoausschüttung :           34,66 USD
+                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
                 // @formatter:on
                 .section("note", "amount", "currency").optional()
-                .match("^.* (?<note>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^.* (?<note>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
 
                     if (t.getNote() != null)
