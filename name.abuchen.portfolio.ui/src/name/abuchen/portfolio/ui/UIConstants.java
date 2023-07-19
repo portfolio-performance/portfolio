@@ -30,11 +30,6 @@ public interface UIConstants
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
 
-        interface Domain // NOSONAR
-        {
-            String SECURITY_CREATED = "domain/security-created"; //$NON-NLS-1$
-        }
-
         interface ExchangeRates // NOSONAR
         {
             String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$

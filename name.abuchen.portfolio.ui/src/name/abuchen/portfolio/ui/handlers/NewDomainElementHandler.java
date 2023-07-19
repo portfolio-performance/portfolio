@@ -35,6 +35,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityCreatedEvent;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
@@ -126,8 +128,13 @@ public class NewDomainElementHandler
             view.getClient().markDirty();
             new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
 
-            broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+            postSecurityCreatedEvent(view.getClient(), newSecurity);
         }
+    }
+
+    private void postSecurityCreatedEvent(Client client, Security security)
+    {
+        broker.post(ChangeEventConstants.Security.CREATED, new SecurityCreatedEvent(client, security));
     }
 
     private void createNewCryptocurrency(AbstractFinanceView view)
@@ -226,7 +233,7 @@ public class NewDomainElementHandler
                 view.getClient().addSecurity(newSecurity);
                 view.getClient().markDirty();
                 new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
-                broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+                postSecurityCreatedEvent(view.getClient(), newSecurity);
             }
         }
     }
