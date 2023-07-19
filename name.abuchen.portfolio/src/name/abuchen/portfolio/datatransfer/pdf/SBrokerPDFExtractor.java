@@ -59,7 +59,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung )?(Ausgabe Investmentfonds|Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -268,7 +268,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(Dividendengutschrift|"
                         + "Aussch.ttung|"
-                        + "Gutschrift)");
+                        + "Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift"
@@ -626,7 +626,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^(Kauf.*|Verkauf.*|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
+        Block block = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -770,6 +770,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "(?<note>(Lastschrift"
                                 + "|.berweisung online"
                                 + "|.berweisung"
+                                + "|.berweisung Vordruck"
                                 + "|Kartenzahlung"
                                 + "|EIGENE KREDITKARTENABRECHN\\."
                                 + "|Rechnung"
@@ -782,8 +783,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Basislastschrift"
                                 + "|Zahlungseingang"
                                 + "|Bargeldeinzahlung"
+                                + "|Bargeldeinzahlung SB"
                                 + "|Geldautomat"
                                 + "|Bargeldausz\\.Debitk\\.GA"
+                                + "|BargAuszDebitFremdGA"
                                 + "|Barumsatz"
                                 + "|sonstige Buchung"
                                 + "|sonstige Entgelte"
@@ -807,6 +810,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
                         v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                    if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                        v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
                     if ("GutschriftÜberweisung".equals(v.get("note")))
                         v.put("note", "Gutschrift (Überweisung)");
@@ -836,6 +842,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "(Lastschrift"
                         + "|.berweisung online"
                         + "|.berweisung"
+                        + "|.berweisung Vordruck"
                         + "|Kartenzahlung"
                         + "|EIGENE KREDITKARTENABRECHN\\."
                         + "|Rechnung"
@@ -848,8 +855,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Basislastschrift"
                         + "|Zahlungseingang"
                         + "|Bargeldeinzahlung"
+                        + "|Bargeldeinzahlung SB"
                         + "|Geldautomat"
                         + "|Bargeldausz\\.Debitk\\.GA"
+                        + "|BargAuszDebitFremdGA"
                         + "|Barumsatz"
                         + "|sonstige Buchung"
                         + "|sonstige Entgelte"
@@ -872,6 +881,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
                 // 06.04.2017 06.04.2017 Überweisung            3.000,00-
                 // 02.05.2018 02.05.2018 Basislastschrift              260,00-
+                // 01.04.2019 30.03.2019 Bargeldeinzahlung SB              500,00+
+                // 13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
                 // @formatter:on
                 .section("date", "note", "type", "amount")
                 .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
@@ -879,6 +890,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "(?<note>(Lastschrift"
                                 + "|.berweisung online"
                                 + "|.berweisung"
+                                + "|.berweisung Vordruck"
                                 + "|Kartenzahlung"
                                 + "|EIGENE KREDITKARTENABRECHN\\."
                                 + "|Rechnung"
@@ -891,8 +903,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Basislastschrift"
                                 + "|Zahlungseingang"
                                 + "|Bargeldeinzahlung"
+                                + "|Bargeldeinzahlung SB"
                                 + "|Geldautomat"
                                 + "|Bargeldausz\\.Debitk\\.GA"
+                                + "|BargAuszDebitFremdGA"
                                 + "|Barumsatz"
                                 + "|sonstige Buchung"
                                 + "|sonstige Entgelte"
@@ -918,6 +932,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
                         v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                    if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                        v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
                     if ("GutschriftÜberweisung".equals(v.get("note")))
                         v.put("note", "Gutschrift (Überweisung)");
@@ -961,6 +978,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>(Lastschrift"
                                 + "|.berweisung online"
                                 + "|.berweisung"
+                                + "|.berweisung Vordruck"
                                 + "|Kartenzahlung"
                                 + "|EIGENE KREDITKARTENABRECHN\\."
                                 + "|Rechnung"
@@ -973,8 +991,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Basislastschrift"
                                 + "|Zahlungseingang"
                                 + "|Bargeldeinzahlung"
+                                + "|Bargeldeinzahlung SB"
                                 + "|Geldautomat"
                                 + "|Bargeldausz\\.Debitk\\.GA"
+                                + "|BargAuszDebitFremdGA"
                                 + "|Barumsatz"
                                 + "|sonstige Buchung"
                                 + "|sonstige Entgelte"
@@ -998,6 +1018,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
                         v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                    if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                        v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
                     if ("GutschriftÜberweisung".equals(v.get("note")))
                         v.put("note", "Gutschrift (Überweisung)");
@@ -1108,6 +1131,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                     // Formatting some notes
                     if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
                         v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                    if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                        v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
                     if ("GutschriftÜberweisung".equals(v.get("note")))
                         v.put("note", "Gutschrift (Überweisung)");
@@ -1308,6 +1334,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                                 // @formatter:off
                                 // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
+                                // 10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
                                 // @formatter:on
                                 section -> section
                                         .attributes("date", "note", "amount", "type")
@@ -1383,6 +1410,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
                 // 2% für Währungsumrechnung 2,97 -
+                //
+                // 10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
+                // 1,75% für Einsatz der Karte im Ausland 0,50+
                 // @formatter:on
                 .section("date", "note", "amount")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
@@ -1390,8 +1420,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + ".* "
                                 + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
                                 + "[\\.,\\d]+"
-                                + "([\\s])?\\-$")
-                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?\\-$")
+                                + "([\\s])?[\\-|\\+]$")
+                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?[\\-|\\+]$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -1556,9 +1586,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         transaction
                 // @formatter:off
                 // Handelszeit 09:02 Orderentgelt                EUR 10,90-
+                // Handelszeit 09:04 Orderentgelt EUR 9,97 -
                 // @formatter:on
                 .section("currency", "fee").optional()
-                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
@@ -1567,42 +1598,42 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Orderentgelt$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Börse Stuttgart Börsengebühr EUR 2,29-
                 // @formatter:on
                 .section("currency", "fee").optional()
-                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Provision 1,48- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Provision (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Transaktionsentgelt Börse 0,60- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Übertragungs-/Liefergebühr 0,12- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Provision 2,5015 % vom Kurswert 1,25- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
@@ -1647,7 +1678,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Kurswert$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
