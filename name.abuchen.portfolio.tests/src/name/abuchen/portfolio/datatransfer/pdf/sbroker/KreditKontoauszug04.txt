@@ -1,0 +1,65 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.63.0
+-----------------------------------------
+ Allgemeine Fragen zu Ihrer VISA Card beantwortet
+Ihnen: 
+Tel.: +49 (0)89 411 116 - 336
+Fax: +49 (0)89 411 116 - 400
+SPARKASSE SCHWEINFURT-HASSBERGE, 97410 SCHWEINFURT E-Mail: kreditkartenservice@bayerncard.de 
+Bei Kartenverlust wählen Sie bitte: 
+Tel.: +49 (0)89 411 116 - 446
+                              
+                              
+                              
+Herrn                         
+Max Mustermann               
+Strasse 8              
+99999 Stadt               
+Abrechnung: Dezember 2019
+Ihre Abrechnung vom 04.11.2019 bis 03.12.2019 Abrechnungsdatum: 3. Dezember 2019
+VISA Card-Nummer: 9999 62XX XXXX 9999
+Karteninhaber: Max Mustermann 
+Seite 1 von 2
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+Beleg BuchungVerwendungszweck EUR
+08.11.19 05.11.19 PAYPAL *OTTO GMBH, 35314369001 302,93+
+12.11.19 13.11.19 ALIEXPRESS.COM, London 25,28 -
+10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
+1,75% für Einsatz der Karte im Ausland 0,50+
+18.11.19 19.11.19 PAYPAL *GERDMARQUAR, 35314369001 94,90 -
+35314369001
+Zwischensumme Seite 1 35,43 -
+ Allgemeine Fragen zu Ihrer VISA Card beantwortet
+Ihnen: 
+Tel.: +49 (0)89 411 116 - 336
+Fax: +49 (0)89 411 116 - 400
+SPARKASSE SCHWEINFURT-HASSBERGE, 97410 SCHWEINFURT E-Mail: kreditkartenservice@bayerncard.de 
+Bei Kartenverlust wählen Sie bitte: 
+Tel.: +49 (0)89 411 116 - 446
+                              
+                              
+                              
+Herrn                         
+Max Mustermann               
+Strasse 8              
+99999 Stadt               
+Abrechnung: Dezember 2019
+Ihre Abrechnung vom 04.11.2019 bis 03.12.2019 Abrechnungsdatum: 3. Dezember 2019
+VISA Card-Nummer: 9999 62XX XXXX 9999
+Karteninhaber: Max Mustermann 
+Seite 2 von 2
+Angabe des Unternehmens / Betrag in
+Verwendungszweck EUR
+Neuer Saldo 35,43 -
+Sehr geehrter Herr Max Mustermann,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen Ihrer Sparkasse unter BCS
+Kartenservice, Postfach 2562, 94015 Passau unverzüglich nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt
+werden. 
+Der Rechnungsbetrag wird Ihrem Konto Nr. 190 747 063, BLZ Hinweis:
+793 501 01 belastet. Über Zinsen und Gebühren informieren auch der Preisaushang
+und das Preisverzeichnis in den Geschäftsstellen Ihres
+Der monatliche Verfügungsrahmen Ihrer VISA Card beträgt Kreditinstitutes.
+1.500 EUR. Umsatzsteuernummer: DE133906578
+
+```

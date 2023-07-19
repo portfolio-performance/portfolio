@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+~$~|WP|684844||||||||SBROKERL210803.WP||||20210803||8256|0000|||||~$~
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Wertpapierabrechnung EMAILVERSAND=N
+DEPOTNUMMER=749/8853/958
+Kauf Limitauftrag DEPOTUNTERBEZEICHNUNG=
+Kommissionsgesch ft VERSANDARTENSCHLUESSEL=0000ä
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=NNaEPw PpYpH
+ADRESSZEILE3=rFynmVS. 25
+Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=05917 LQxKsYPStU OT uVdRjZIP
+RKpqUX hQfYl 719/1894/019 53941243 ADRESSZEILE5=
+ecNsyMS. 17 ADRESSZEILE6=
+47449 BegRcjzROT OT UucqkwsL BELEGNUMMER=5570
+SEITENNUMMER=1
+Depotinhaber STEUERERSTATTUNG=N
+SrpNjb SOLCE
+Wiesbaden, 03.08.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Reckitt Benckiser Group Registered Shares LS -,10 GB00B24CGK77
+Nominal Kurs
+STK 15,000 EUR 66,5000
+Handelstag 03.08.2021 Kurswert EUR 997,50 -
+Handelszeit 09:04 Orderentgelt EUR 9,97 -
+Handelsplatz auûerbörslich
+Lang & Schwarz
+Verwahrart Wertpapierrechnung
+Lagerland Groûbritannien
+Wert Betrag zu Ihren Lasten
+05.08.2021 EUR 1.007,47
+Mit freundlichen Grüûen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.18/ABREABHNHANDKFDI/POB1618/008125/040821/002412
+SBRO_WP_v1.7P.SBROKERL210803.WP_8256
