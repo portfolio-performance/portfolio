@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -50,6 +51,7 @@ public class MeasurementTool
     private ArrayList<IAction> buttons = new ArrayList<>();
 
     private boolean isActive = false;
+    private boolean showRelativeChange = true;
 
     private Color color = Colors.BLACK;
 
@@ -98,6 +100,16 @@ public class MeasurementTool
                         isActive ? Images.MEASUREMENT_ON : Images.MEASUREMENT_OFF, //
                         a -> {
                             isActive = !isActive;
+
+                            if (isActive)
+                            {
+                                // do not show relative change for chart show
+                                // percentages as it does not make sense once
+                                // negative values are included
+                                showRelativeChange = !(chart.getToolTip()
+                                                .getDefaultValueFormat() instanceof DecimalFormat fmt)
+                                                || fmt.toPattern().indexOf('%') < 0;
+                            }
 
                             // update images of tool bar buttons
                             ImageDescriptor image = isActive ? Images.MEASUREMENT_ON.descriptor()
@@ -173,9 +185,16 @@ public class MeasurementTool
             e.gc.fillOval(p1.x - 2, p1.y - 2, 5, 5);
             e.gc.fillOval(p2.x - 2, p2.y - 2, 5, 5);
 
-            String text = String.valueOf(ChronoUnit.DAYS.between(start.date(), end.date())) + " | " //$NON-NLS-1$
-                            + chart.getToolTip().getDefaultValueFormat().format(end.value() - start.value()) + " | " //$NON-NLS-1$
-                            + Values.PercentWithSign.format(end.value() / start.value() - 1);
+            var buffer = new StringBuilder();
+            buffer.append(String.valueOf(ChronoUnit.DAYS.between(start.date(), end.date())));
+            buffer.append(" | "); //$NON-NLS-1$
+            buffer.append(chart.getToolTip().getDefaultValueFormat().format(end.value() - start.value()));
+            if (showRelativeChange)
+            {
+                buffer.append(" | "); //$NON-NLS-1$
+                buffer.append(Values.PercentWithSign.format(end.value() / start.value() - 1));
+            }
+            var text = buffer.toString();
 
             Point txtExtend = e.gc.textExtent(text);
             Rectangle plotArea = chart.getPlotArea().getClientArea();
