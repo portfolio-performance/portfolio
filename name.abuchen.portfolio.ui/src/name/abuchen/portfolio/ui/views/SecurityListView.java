@@ -62,6 +62,7 @@ import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.util.Pair;
 
 public class SecurityListView extends AbstractFinanceView
 {
@@ -381,10 +382,20 @@ public class SecurityListView extends AbstractFinanceView
 
     @Inject
     @Optional
-    public void onSecurityCreated(@UIEventTopic(UIConstants.Event.Domain.SECURITY_CREATED) Security newSecurity)
+    public void onSecurityCreated(
+                    @UIEventTopic(UIConstants.Event.Domain.SECURITY_CREATED) Pair<Security, Client> data)
     {
+        if (data.getRight() != getClient())
+            return; // if security was created by other client, ignore event
+
+        if (watchlist != null)
+        {
+            watchlist.addSecurity(data.getLeft());
+            getClient().touch();
+        }
+
         setSecurityTableInput();
-        securities.getTableViewer().setSelection(new StructuredSelection(newSecurity), true);
+        securities.getTableViewer().setSelection(new StructuredSelection(data.getLeft()), true);
     }
 
     @Override

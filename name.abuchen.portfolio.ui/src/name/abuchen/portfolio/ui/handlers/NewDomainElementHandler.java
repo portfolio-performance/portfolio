@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class NewDomainElementHandler
@@ -126,8 +127,13 @@ public class NewDomainElementHandler
             view.getClient().markDirty();
             new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
 
-            broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+            postSecurityCreatedEvent(newSecurity, view.getClient());
         }
+    }
+
+    private void postSecurityCreatedEvent(Security security, Client client)
+    {
+        broker.post(UIConstants.Event.Domain.SECURITY_CREATED, new Pair<Security, Client>(security, client));
     }
 
     private void createNewCryptocurrency(AbstractFinanceView view)
@@ -226,7 +232,7 @@ public class NewDomainElementHandler
                 view.getClient().addSecurity(newSecurity);
                 view.getClient().markDirty();
                 new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
-                broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+                postSecurityCreatedEvent(newSecurity, view.getClient());
             }
         }
     }
