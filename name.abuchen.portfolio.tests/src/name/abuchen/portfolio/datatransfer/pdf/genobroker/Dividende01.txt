@@ -1,0 +1,31 @@
+Mustermann
+Strasse 2 
+88888 Musterhausen
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster                                                                                                           Seite 1
+                                                                                     Depotnummer         000000000
+                                                                                     Kundennummer        12345678
+                                                                                     Abrechnungsnr.      60007000
+														 Datum               13.07.2023
+ 
+Dividendengutschrift
+Nominale                                                  Wertpapierbezeichnung                                                                                    ISIN                                 (WKN)
+Stück 1.000                              CROPENERGIES AG
+INHABER-AKTIEN O.N.
+DE000A0LAUP1    (A0LAUP)
+Zahlbarkeitstag                         14.07.2023
+Bestandsstichtag                      11.07.2023
+Ex-Tag                                     12.07.2023
+Geschäftsjahr                           01.03.2022 - 28.02.2023
+Dividende pro Stück                      0,60         EUR
+Dividendengutschrift                                                                                                                          600,00+   EUR
+Kapitalertragsteuerpflichtige Dividende                                      600,00     EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 3,96 EUR                                                15,87  -  EUR
+Berechnungsgrundlage für die Kapitalertragsteuer                     584,13     EUR
+Kapitalertragsteuer 25 % auf 584,13 EUR                                                                                             146,03-    EUR
+Solidaritätszuschlag 5,5 % auf 146,03 EUR                                                                                               8,03-    EUR
+Ausmachender Betrag                                                                                                                        445,94+   EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 14.07.2023 zu Gunsten des Kontos 12345678 (IBAN DE05 7206 9274 0000 0000 
+55), BLZ 720 692 74 (BIC GENODEF1ZUS). 
+Keine Steuerbescheinigung.
