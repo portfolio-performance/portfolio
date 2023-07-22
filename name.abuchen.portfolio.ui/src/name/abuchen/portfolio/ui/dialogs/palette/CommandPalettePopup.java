@@ -6,13 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -46,7 +42,6 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -149,8 +144,7 @@ public class CommandPalettePopup extends PopupDialog
 
     private TextLayout textLayout;
 
-    @Inject
-    public CommandPalettePopup(IEclipseContext context, @Optional @Named(UIConstants.Parameter.TYPE) String type)
+    public CommandPalettePopup(IEclipseContext context, String type)
     {
         super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);

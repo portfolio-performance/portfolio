@@ -2,8 +2,6 @@ package name.abuchen.portfolio.ui.handlers;
 
 import javax.inject.Named;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -13,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class OpenCommandPaletteHandler
@@ -25,23 +24,30 @@ public class OpenCommandPaletteHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, IEclipseContext context,
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Optional @Named(UIConstants.Parameter.TYPE) String type)
     {
         if (!MenuHelper.isClientPartActive(part))
             return;
 
-        IEclipseContext childContext = context.createChild();
-        childContext.set(PortfolioPart.class, (PortfolioPart) part.getObject());
-        childContext.set(UIConstants.Parameter.TYPE, type);
+        // use the EclipseContext of the active view
 
-        CommandPalettePopup popup = ContextInjectionFactory.make(CommandPalettePopup.class, childContext);
+        // We need a context that lives longer than the palette popup so that
+        // commands can be executed after the popup has been closed. We cannot
+        // create a new context here because we have no event when to dispose
+        // it. We cannot use the context of the part because it does not include
+        // enough objects for the palette elements.
 
-        // dispose child context only after the dialog is close so that the
-        // command execution has access to a live context (otherwise handler
-        // configuration might not be available)
-        popup.addDisposeListener(childContext::dispose);
-        popup.open();
+        // If there is no active view, then the client is either locked
+        // (password not provided), loading, or failed to load. In these cases
+        // we do not show a command palette at all.
+
+        PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
+        final java.util.Optional<AbstractFinanceView> currentView = portfolioPart.getCurrentView();
+        if (currentView.isEmpty())
+            return;
+
+        new CommandPalettePopup(currentView.get().getContext(), type).open();
     }
 
 }
