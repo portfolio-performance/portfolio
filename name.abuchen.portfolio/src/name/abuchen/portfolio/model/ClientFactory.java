@@ -828,6 +828,10 @@ public class ClientFactory
 
                 // remove obsolete MARKET properties
                 removeMarketSecurityProperty(client);
+            case 57:
+                // remove securities in watchlists which are not present in "all
+                // securities", see #3452
+                removeWronglyAddedSecurities(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -836,6 +840,16 @@ public class ClientFactory
             default:
                 break;
         }
+    }
+
+    private static void removeWronglyAddedSecurities(Client client)
+    {
+        client.getWatchlists().forEach(w -> new ArrayList<>(w.getSecurities()).forEach(s -> {
+            if (!client.getSecurities().contains(s))
+            {
+                w.getSecurities().remove(s);
+            }
+        }));
     }
 
     private static void fixAssetClassTypes(Client client)
