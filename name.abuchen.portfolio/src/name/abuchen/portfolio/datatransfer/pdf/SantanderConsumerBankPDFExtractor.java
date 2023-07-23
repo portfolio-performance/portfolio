@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -282,7 +281,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 19.05.2023 19.05.2023 34,00 34,01 Einzahlung von ...
-        // @fromatter:on
+        // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ Einzahlung.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -305,6 +304,33 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 20.05.2023 20.05.2023 -1,00 33,01 Auszahlung auf ...
+        // @formatter:on
+        Block removalBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\.,\\d]+ Auszahlung .*$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.REMOVAL);
+                            return entry;
+                        })
+
+                        .section("date", "amount", "note")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Auszahlung (?<note>.*)$")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -312,6 +338,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         transaction
                 // @formatter:off
                 // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
+                // @formatter:on
                 .section("withHoldingTax", "currency").optional() //
                 .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
