@@ -1,5 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf.santanderconsumerbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -8,14 +16,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -281,8 +281,8 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
@@ -292,6 +292,11 @@ public class SantanderConsumerBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-05-31"), hasAmount("EUR", 6.63), //
                         hasSource("Kontoauszug01.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-05-20"), hasAmount("EUR", 1), //
+                        hasSource("Kontoauszug01.txt"),
+                        hasNote("auf Konto IBAN AT123456789012345678"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-05-19"), hasAmount("EUR", 34), //
