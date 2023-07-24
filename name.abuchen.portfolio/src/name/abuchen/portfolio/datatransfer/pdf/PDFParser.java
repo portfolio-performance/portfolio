@@ -26,19 +26,21 @@ import name.abuchen.portfolio.model.TypedMap;
     /* package */ static class DocumentType
     {
         private List<Pattern> mustInclude = new ArrayList<>();
+        private List<Pattern> mustNotInclude = new ArrayList<>();
 
         private List<Block> blocks = new ArrayList<>();
         private DocumentContext context = new DocumentContext();
         private BiConsumer<DocumentContext, String[]> contextProvider;
 
-        public DocumentType(List<Pattern> mustInclude)
-        {
-            this.mustInclude.addAll(mustInclude);
-        }
-
         public DocumentType(String mustInclude)
         {
-            this(mustInclude, null);
+            this.mustInclude.add(Pattern.compile(mustInclude));
+        }
+
+        public DocumentType(String mustInclude, String mustNotInclude)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
+            this.mustNotInclude.add(Pattern.compile(mustNotInclude));
         }
 
         public DocumentType(String mustInclude, BiConsumer<DocumentContext, String[]> contextProvider)
@@ -47,11 +49,27 @@ import name.abuchen.portfolio.model.TypedMap;
             this.contextProvider = contextProvider;
         }
 
+        public DocumentType(String mustInclude, String mustNotInclude,
+                        BiConsumer<DocumentContext, String[]> contextProvider)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
+            this.mustNotInclude.add(Pattern.compile(mustNotInclude));
+            this.contextProvider = contextProvider;
+        }
+
         public boolean matches(String text)
         {
+            // Check if the text matches the mustInclude patterns
             for (Pattern pattern : mustInclude)
             {
                 if (!pattern.matcher(text).find())
+                    return false;
+            }
+
+            // Check if matches mustNotInclude to skip processing
+            for (Pattern pattern : mustNotInclude)
+            {
+                if (pattern.matcher(text).find())
                     return false;
             }
 
