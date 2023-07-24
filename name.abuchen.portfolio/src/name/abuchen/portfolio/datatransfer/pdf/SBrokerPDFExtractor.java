@@ -49,7 +49,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(?<![\\d]{4} )(Wertpapier Abrechnung|Wertpapierabrechnung)");
+        DocumentType type = new DocumentType("(?<![\\d]{4} )(Wertpapier Abrechnung|Wertpapierabrechnung)", "Kontoauszug [\\d]+\\/[\\d]{4} .*");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -188,20 +188,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         )
 
                 // @formatter:off
-                // Ausführungskurs 146,8444 USD Auftragserteilung/ -ort Persönlich im Institut
                 // Devisenkurs (EUR/USD) 1,1762 vom 28.07.2021
                 // Kurswert 15.605,81- EUR
                 // @formatter:on
-                .section("fxCurrency", "baseCurrency", "termCurrency", "exchangeRate", "gross", "currency").optional()
-                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<fxCurrency>[\\w]{3}).*$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional()
                 .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$")
-                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$")
                 .assign((t, v) -> {
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -449,15 +447,15 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // Ausschüttung 31,32 USD 27,48+ EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross")
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -467,17 +465,15 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // ausländische Dividende EUR 70,32
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                                        .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                                        .match("^ausl.ndische Dividende [\\w]{3} (?<gross>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
-                                            v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -487,17 +483,17 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // ausländische Dividende EUR 70,32
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                                        .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                                        .match("^ausl.ndische Dividende [\\w]{3} (?<gross>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
 
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -507,7 +503,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // ausl. Dividendenanteil (Thesaurierung) EUR 45,10
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                                         .match("^ausl\\. Dividendenanteil \\(Thesaurierung\\) [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> {
@@ -516,8 +512,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -883,6 +879,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // 02.05.2018 02.05.2018 Basislastschrift              260,00-
                 // 01.04.2019 30.03.2019 Bargeldeinzahlung SB              500,00+
                 // 13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
+                // 22.03.2019 21.03.2019 BargAuszDebitFremdGA              500,00-
                 // @formatter:on
                 .section("date", "note", "type", "amount")
                 .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
@@ -1064,6 +1061,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Bargeldeinzahlung"
                         + "|Geldautomat"
                         + "|Bargeldausz\\.Debitk\\.GA"
+                        + "|BargAuszDebitFremdGA"
                         + "|Barumsatz"
                         + "|sonstige Buchung"
                         + "|sonstige Entgelte"
@@ -1108,6 +1106,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 + "|Bargeldeinzahlung"
                                 + "|Geldautomat"
                                 + "|Bargeldausz\\.Debitk\\.GA"
+                                + "|BargAuszDebitFremdGA"
                                 + "|Barumsatz"
                                 + "|sonstige Buchung"
                                 + "|sonstige Entgelte"
@@ -1397,13 +1396,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                 .wrap(TransactionItem::new));
 
-        Block feesExchangeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
-        type.addBlock(feesExchangeBlock);
-        feesExchangeBlock.set(new Transaction<AccountTransaction>()
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
 
                 .subject(() -> {
                     AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.FEES);
+                    entry.setType(AccountTransaction.Type.FEES_REFUND);
                     return entry;
                 })
 
@@ -1414,16 +1413,20 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // 10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
                 // 1,75% für Einsatz der Karte im Ausland 0,50+
                 // @formatter:on
-                .section("date", "note", "amount")
+                .section("date", "note", "amount", "type")
                 .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
                                 + ".* "
                                 + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
                                 + "[\\.,\\d]+"
                                 + "([\\s])?[\\-|\\+]$")
-                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?[\\-|\\+]$")
+                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?(?<type>[\\-|\\+])$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
+
+                    // Is type is "-" change from FEES_REFUND to FEES
+                    if ("-".equals(v.get("type")))
+                        t.setType(AccountTransaction.Type.FEES);
 
                     t.setDateTime(asDate(v.get("date")));
                     t.setAmount(asAmount(v.get("amount")));
