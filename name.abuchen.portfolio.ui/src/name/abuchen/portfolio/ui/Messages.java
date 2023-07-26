@@ -591,6 +591,7 @@ public class Messages extends NLS
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
     public static String LabelCountry;
+    public static String BtnLabelCrosshair;
     public static String LabelCurrencies;
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
@@ -786,7 +787,7 @@ public class Messages extends NLS
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
-    public static String LabelMeasureDistance;
+    public static String BtnLabelMeasureDistance;
     public static String LabelMetricCheckInterval;
     public static String LabelMetric;
     public static String LabelMetricDays;

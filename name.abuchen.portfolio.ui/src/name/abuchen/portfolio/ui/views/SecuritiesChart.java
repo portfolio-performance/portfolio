@@ -614,7 +614,7 @@ public class SecuritiesChart
 
     public void addButtons(ToolBarManager toolBar)
     {
-        chart.getMeasurementTool().addButtons(toolBar);
+        chart.getChartToolsManager().addButtons(toolBar);
         toolBar.add(new Separator());
 
         List<Action> viewActions = new ArrayList<>();

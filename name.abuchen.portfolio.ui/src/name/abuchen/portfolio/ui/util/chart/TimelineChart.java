@@ -80,7 +80,7 @@ public class TimelineChart extends Chart // NOSONAR
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
     private Map<Object, IAxis> addedAxis = new HashMap<>();
 
-    private MeasurementTool measurementTool;
+    private ChartToolsManager chartTools;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
@@ -140,7 +140,7 @@ public class TimelineChart extends Chart // NOSONAR
 
         toolTip = new TimelineChartToolTip(this);
 
-        measurementTool = new MeasurementTool(this);
+        chartTools = new ChartToolsManager(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
@@ -242,9 +242,9 @@ public class TimelineChart extends Chart // NOSONAR
         return toolTip;
     }
 
-    public MeasurementTool getMeasurementTool()
+    public ChartToolsManager getChartToolsManager()
     {
-        return measurementTool;
+        return chartTools;
     }
 
     private void paintTimeGrid(PaintEvent e)
