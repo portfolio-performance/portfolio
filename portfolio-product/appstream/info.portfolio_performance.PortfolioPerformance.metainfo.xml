@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>info.portfolio_performance.PortfolioPerformance</id>
+  <name>Portfolio Performance</name>
+  <summary>Track the performance of an investment portfolio</summary>
+  <url type="homepage">https://www.portfolio-performance.info/en/</url>
+  <icon type="remote">https://www.portfolio-performance.info/images/logo.svg</icon>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>EPL-1.0</project_license>
+  <description>
+    <p>Record the full history of your transactions: purchases, sales, taxes, fees, ...</p>
+    <p>Calculate performance indicators such as the True-Time Weighted Rate of Return or the Internal Rate of Return (IRR) for your holdings.</p>
+    <p>Update historical quotes from a variety of sources: Yahoo Finance, Finnhub.io, Quandl, or AlphaVantage. Alternatively, scrape quotes from HTML pages or JSON documents.</p>
+    <p>All data is stored in XML for further processing and can be exported as CSV or JSON.</p>
+    <p>Rebalance your investment portfolio based on a freely defined Asset Allocation.</p>
+    <p>Keep foreign currency accounts using the exchange rates published by the European Central Bank (ECB).</p>
+  </description>
+  <categories>
+    <category>Office</category>
+    <category>Finance</category>
+    <category>Java</category>
+  </categories>
+  <keywords>
+    <keyword>finance</keyword>
+    <keyword>portfolio</keyword>
+    <keyword>investment</keyword>
+  </keywords>
+  <releases>
+    <release version="0.64.5" date="2023-07-23">
+      <description>
+        <ul xml:lang="en">
+          <li>Fix: Fixed an issue where new securities were mistakenly added to the watchlist of another file.</li>
+          <li>Fix: New securities are now created in the reporting currency when the provider does not provide currency information.</li>
+          <li>Improved PDF importer for GENO, sBroker, FlatEx, FFB, DKB, Deutsche Bank.</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Behebt ein Problem, bei dem neue Wertpapiere fälschlicherweise der Watchlist einer anderen Datei hinzugefügt wurden</li>
+          <li>Fix: Neue Wertpapiere werden in der Berichtswährung erstellt, wenn der Provider keine Währungsinformationen zur Verfügung stellt</li>
+          <li>Verbesserung der PDF Importer: GENO, sBroker, FlatEx, FFB, DKB, Deutsche Bank</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.4" date="2023-07-15">
+      <description>
+        <ul xml:lang="en">
+          <li>Fix: Fixes Cannot invoke “name.abuchen.portfolio.model.SecurityProperty.getType()” because “p” is null</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Behebt Cannot invoke “name.abuchen.portfolio.model.SecurityProperty.getType()” because “p” is null</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.3" date="2023-07-15">
+      <description>
+        <ul xml:lang="en">
+          <li>Fix: Fixes a problem with migration of filter configuration if identical filter exist</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Behebt ein Problem mit der Migration von Filter-Konfigurationen wenn identische Filter existieren</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.2" date="2023-07-14">
+      <description>
+        <ul xml:lang="en">
+          <li>New: Filter configurations are no longer stored in the settings but in the file itself. This makes it easier to synchronize them between computers and to edit them better</li>
+          <li>New: MACD indicator in the price chart (Moving Average Convergence/Divergence)</li>
+          <li>New: the Measurement Tool is now active for all - it allows to easily measure distances and changes in the charts</li>
+          <li>Improvement of PDF importers: LGT Bank, sBroker, Bondora, FlatEx, Trade Republic, Vanguard</li>
+          <li>Improvement: More possibilities to create new instruments (securities, crypto currencies, etc): via keyboard shortcut Ctrl-N, via the (+) symbol next to "Securities" in the page navigation</li>
+          <li>Improvement: Tables from the tooltips remember the column widths</li>
+          <li>Improvement: tooltip for yields per year now contains all years</li>
+          <li>Improvement: columns with the ticker symbol in the classifications</li>
+          <li>Fix: Update of latest price via Yahoo Finance is fixed</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Filter-Konfigurationen werden jetzt nicht mehr in den Einstellungen sondern in der Datei selber gespeichert. Damit können die einfacher zwischen Rechnern synchronisiert werden und besser editiert werden</li>
+          <li>Neu: MACD Indikator im Kursdiagramm (Moving Average Convergence/Divergence) (zu Deutsch: Indikator für das Zusammen-/Auseinanderlaufen des gleitenden Durchschnitts)</li>
+          <li>Neu: das Measurement Tool ist jetzt für alle aktive - damit kann man einfach in den Diagrammen Abstände und Änderungen messen</li>
+          <li>Verbesserung der PDF Importer: LGT Bank, sBroker, Bondora, FlatEx, Trade Republic, Vanguard</li>
+          <li>Verbesserung: Weitere Möglichkeiten neue Wertpapiere anzulegen: per Tastaturkürzel Ctrl-N, über das (+) Symbol neben "Wertpapiere" in der Seitennavigation</li>
+          <li>Verbesserung: Tabellen aus den Tooltips merken sich die Spaltenbreiten</li>
+          <li>Verbesserung: Tooltip zu den Erträgen pro Jahr enthält jetzt alle Jahre</li>
+          <li>Verbesserung: Spalten mit dem Ticker Symbol bei den Klassifizierungen</li>
+          <li>Fix: Aktualisierung des aktuellen Kurses über Yahoo Finance wieder möglich</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.1" date="2023-06-25" />
+    <release version="0.64.0" date="2023-06-17" />
+    <release version="0.63.1" date="2023-06-04" />
+    <release version="0.63.0" date="2023-06-04" />
+    <release version="0.62.1" date="2023-05-07" />
+    <release version="0.62.0" date="2023-04-01" />
+    <release version="0.61.4" date="2023-03-14" />
+    <release version="0.61.3" date="2023-02-24" />
+    <release version="0.61.1" date="2023-02-21" />
+    <release version="0.61.0" date="2023-02-05" />
+    <release version="0.60.2" date="2023-01-11" />
+    <release version="0.60.1" date="2022-12-29" />
+    <release version="0.60.0" date="2022-12-18" />
+    <release version="0.59.5" date="2022-12-04" />
+    <release version="0.59.4" date="2022-11-20" />
+    <release version="0.59.3" date="2022-11-06" />
+    <release version="0.59.2" date="2022-10-09" />
+    <release version="0.59.1" date="2022-08-22" />
+    <release version="0.59.0" date="2022-07-17" />
+    <release version="0.58.5" date="2022-06-19" />
+    <release version="0.58.4" date="2022-06-04" />
+    <release version="0.58.3" date="2022-05-31" />
+    <release version="0.58.2" date="2022-05-30" />
+    <release version="0.58.1" date="2022-05-30" />
+    <release version="0.58.0" date="2022-05-29" />
+    <release version="0.57.2" date="2022-04-18" />
+    <release version="0.57.1" date="2022-04-04" />
+    <release version="0.57.0" date="2022-04-03" />
+    <release version="0.56.6" date="2022-03-05" />
+    <release version="0.56.5" date="2022-02-06" />
+    <release version="0.56.4" date="2022-01-23" />
+    <release version="0.56.3" date="2022-01-09" />
+    <release version="0.56.2" date="2021-12-02" />
+    <release version="0.56.1" date="2021-11-22" />
+    <release version="0.56.0" date="2021-11-07" />
+    <release version="0.55.0" date="2021-09-20" />
+    <release version="0.54.3" date="2021-08-15" />
+    <release version="0.54.2" date="2021-07-29" />
+    <release version="0.54.1" date="2021-07-26" />
+    <release version="0.54.0" date="2021-07-18" />
+    <release version="0.53.3" date="2021-06-27" />
+    <release version="0.53.2" date="2021-06-20" />
+    <release version="0.53.1" date="2021-06-16" />
+    <release version="0.53.0" date="2021-06-13" />
+    <release version="0.52.0" date="2021-04-18" />
+    <release version="0.51.3" date="2021-03-28" />
+    <release version="0.51.2" date="2021-03-14" />
+    <release version="0.51.1" date="2021-03-02" />
+    <release version="0.51.0" date="2021-03-01" />
+    <release type="stable" date="2021-02-07T00:00:01Z" version="0.50.4" />
+  </releases>
+  <content_rating type="oars-1.0" />
+  <launchable type="desktop-id">info.portfolio_performance.PortfolioPerformance.desktop</launchable>
+  <screenshots>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot1@2x.png</image>
+      <caption>Dashboard showing performance trend of portfolio for different years</caption>
+    </screenshot>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot2@2x.png</image>
+      <caption>Pie chart of the holdings in the portfolio</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot3@2x.png</image>
+      <caption>Historical performance chart of an index</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot4@2x.png</image>
+      <caption>Comparison of portfolio performance against an index</caption>
+    </screenshot>
+  </screenshots>
+
+  <developer_name>Andreas Buchen</developer_name>
+
+  <url type="bugtracker">https://github.com/buchen/portfolio/issues</url>
+
+  <!--FIXME: where to donate to the application-->
+  <!-- <url type="donation">http://www.homepage.com/donation.html</url> -->
+
+  <url type="help">https://forum.portfolio-performance.info/</url>
+
+  <url type="translate">https://poeditor.com/join/project?hash=4lYKLpEWOY</url>
+
+  <url type="vcs-browser">https://github.com/buchen/portfolio</url>
+
+  <update_contact>info@portfolio-performance.info</update_contact>
+</component>
