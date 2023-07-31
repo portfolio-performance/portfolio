@@ -6,4 +6,4 @@ if [ -z $task ]; then
   exit 1
 fi
 
-java -jar ../../../portfolio-releng/target/portfolio-releng-1.0-SNAPSHOT-jar-with-dependencies.jar release-notes $task $(pwd)/../../portfolio-product/appstream/info.portfolio_performance.PortfolioPerformance.metainfo.xml
+java -jar ../../../portfolio-releng/target/portfolio-releng-1.0-SNAPSHOT-jar-with-dependencies.jar release-notes $task $(pwd)/../../portfolio-product/metainfo/info.portfolio_performance.PortfolioPerformance.metainfo.xml
