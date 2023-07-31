@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.3
+-----------------------------------------
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, TX  75201
+Account Number: 9WW-81198 
+OFFICE SERVING YOU BpSwvIIVvdW lkpPurdjcLsNDcdmLAdnEKj 6
+TASTYWORKS, INC 36548 TFIIGB
+vWfpIWx
+Account cleared by
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, Texas 75201
+Account Number: 7tQ-04084                                         Account Name: ltkEyZzIHfx FKSNQZu
+M C
+Acct Add’l Tag K A
+Type B/S Trade Date Settle Date QTY SYM PRICE Principal COMM Tran Fee Fees Number Net Amount Trade# T P
+2 S 12/30/22 01/04/23 47 NET 44.4501000 2,089.15 0.00 0.06 0.03 H4161 2,089.06 TUA0104 6 1  
+Desc: CLOUDFLARE INC CLASS A COMMON STOCK PAR VALUE $0.001 PER SHARE Interest/STTax: 0.00 CUSIP: 18915M107
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED
+2 S 12/30/22 01/04/23 5 NVDA 143.9103000 719.55 0.00 0.03 0.00 H7949 719.52 TUA0104 6 1  
+Desc: NVIDIA CORP Interest/STTax: 0.00 CUSIP: 67066G104
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED
+2 S 12/30/22 01/04/23 22 TSLA 121.2212000 2,666.87 0.00 0.08 0.01 H5506 2,666.78 TUA0104 6 1  
+Desc: TESLA INC COMMON STOCK Interest/STTax: 0.00 CUSIP: 88160R101
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED
+SUMMARY FOR CURRENT TRADE DATE: 12/30/22
+TOTAL SHARES BOUGHT: 0.00 TOTAL DOLLARS BOUGHT: 0.00
+TOTAL SHARES SOLD: -74.00 TOTAL DOLLARS SOLD: 5,475.36
+ProcessDate:12/30/2022 Page: 1

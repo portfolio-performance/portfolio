@@ -86,6 +86,7 @@ public class PDFImportAssistant
         extractors.add(new StakePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
+        extractors.add(new TastytradePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));

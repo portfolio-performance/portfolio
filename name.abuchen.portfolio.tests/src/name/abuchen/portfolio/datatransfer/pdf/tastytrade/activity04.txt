@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.3
+-----------------------------------------
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, TX  75201
+Account Number: 5WV-83919 
+OFFICE SERVING YOU IhTNdblxQqT TBfimbQfUIGFRXOYoXfRnle 1
+TASTYWORKS, INC 13023 WwXRfe
+mNfzadP
+Account cleared by
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, Texas 75201
+Account Number: 7Qd-44720                                         Account Name: cZvGIQoJjGG aARcybR
+M C
+Acct Add’l Tag K A
+Type B/S Trade Date Settle Date QTY SYM PRICE Principal COMM Tran Fee Fees Number Net Amount Trade# T P
+2 B 03/24/23 03/28/23 8 MSFT 277.2600000 2,218.08 0.00 0.00 0.00 K6313 2,218.08 TUA0328 6 1  
+Desc: MICROSOFT CORP Interest/STTax: 0.00 CUSIP: 594918104
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED
+SUMMARY FOR CURRENT TRADE DATE: 03/24/23
+TOTAL SHARES BOUGHT: 8.00 TOTAL DOLLARS BOUGHT: -2,218.08
+TOTAL SHARES SOLD: 0.00 TOTAL DOLLARS SOLD: 0.00
+ProcessDate:03/24/2023 Page: 1
