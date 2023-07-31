@@ -112,7 +112,7 @@
 		<repositories>
 			<repository>
 				<id>portfolio-non-maven-dependencies</id>
-				<url>https://www.portfolio-performance.info/maven-repo/</url>
+				<url>https://portfolio-performance.github.io/portfolio-maven-repo/</url>
 			</repository>
 		</repositories>
 	</location>
@@ -134,7 +134,7 @@
 		<repositories>
 			<repository>
 				<id>portfolio-non-maven-dependencies</id>
-				<url>https://www.portfolio-performance.info/maven-repo/</url>
+				<url>https://portfolio-performance.github.io/portfolio-maven-repo/</url>
 			</repository>
 		</repositories>
 	</location>
