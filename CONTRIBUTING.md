@@ -172,45 +172,27 @@ Hint: if you run into resolution problems, try deleting the `~/.m2/repository/p2
 
 ## Translations
 
-The project uses Java property files to translate the application into multiple langauges.
+Currently, Portfolio Performance is translated into 13 languages.
 
-There are two ways to contribute translations:
-* Register and translate using [POEditor](https://poeditor.com/join/project?hash=4lYKLpEWOY). If you only want to contribute to one language (or fix the translation for existing labels), this is the easiest way. On regular basis we pull the tranlations from POEditor into the source code.
-* Update the property files directly. Open the default property file (the one without the language). The *Resource Bundle Editor* (installed above) will detect all existing languages and display a consolidated editor.
+To contribute a new language or assist with translations:
 
-When adding new labels,
-* right-click in the source editor [Source -> Externalize Strings](https://help.eclipse.org/latest/topic/org.eclipse.jdt.doc.user/reference/ref-wizard-externalize-strings.htm?cp=1_4_10_3)
-* use the formatting excactly as done by the Resource Bundle Editor 
-* use [DeepL](https://www.deepl.com) to translate new labels into all existing languages
+* Register with the [POEditor project](https://poeditor.com/join/project?hash=4lYKLpEWOY).
+* Open a [ticket](https://github.com/portfolio-performance/portfolio/issues/new/choose) if you plan to a add a new language and need test builds.
+* Before we create a new release, we download and merge the updated translations into the code base.
 
+If you are contributing code:
+
+- Use [Source -> Externalize Strings](https://help.eclipse.org/latest/topic/org.eclipse.jdt.doc.user/reference/ref-wizard-externalize-strings.htm?cp=1_4_10_3) to externalize strings.
+- Utilize [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor) to edit and format resource files, as the update process from POEditor relies on the same format.
+- Translate new labels into all existing languages using [DeepL](https://www.deepl.com).
 
 ### Label descriptions
 
-To distinguish the respective variable names for translations and to avoid duplications, we have compiled a list of possible variable names (syntax) here. Through the years of development of Portfolio Performance, many others have also been added, so this is a list of basic variable names and their descriptions.
+For naming externalized labels:
 
-| Variable name	| Label syntax	| Label description	|
-| :---------	| :----------- 	| :----------- 	|
-| Attributes...	| Attributes...				| Attributes to a model												|
-| 				| AttributeSettings...		| Settings for attributes											|
-| Btn...		| BtnLabel...				| Buttons, action buttons											|
-| 				| BtnTooltip...				| Description for buttons, action buttons							|
-| Chart...		| Chart...					| Graphical outputs e.g. diagram or charts							|
-| Column...		| Column...					| Columns of a table												|
-| CSV...		| CSV...					| CSV Importer														|
-| 				| CSVConfig...				| - Configuration													|
-| 				| CSVExport...				| - Export															|
-| 				| CSVFormat...				| - Formatting														|
-| 				| CSVImport...				| - Import															|
-| Filter...		| Filter...					| Filter															|
-| Label...		| Label...					| Static translations												|
-| 				| LabelChartDetails...		| Static translations for graphical outputs e.g. diagram or charts	|
-| Menu...		| Menu...					| Menu navigation and drop-down menu								|
-| Msg...		| Msg...					| Static descriptions												|
-| 				| MsgCheck...				| Check messages as descriptions									|
-| 				| MsgError...				| Dynamic descriptions in case of error								|
-| Pref...		| Pref...					| Preferences (user setting in the Preferences menu)				|
-| PDF...		| PDF...					| PDF Importer														|
-| Tooltip...	| Tooltip...				| Tooltip, QuickInfo												|
+- Use ```Label```, ```Msg```, ```Column``` as common prefixes for short labels, longer messages, and column headers respectively.
+- Use specific prefixes like ```PDF```, ```CSV```, ```Preferences```, etc. if the area is big and distinct enough, but avoid creating new areas.
+- Follow the label naming pattern used in the code area you are contributing to.
 
 
 ## Images, Logo and color
