@@ -86,11 +86,11 @@
 					<pomDependencies>consider</pomDependencies>
 					<executionEnvironment>JavaSE-17</executionEnvironment>
 					<exclusions>
- 						<exclusion>
- 							<groupId>com.google.code.findbugs</groupId>
- 							<artifactId>jsr305</artifactId>
- 						</exclusion>
- 					</exclusions>
+						<exclusion>
+							<groupId>com.google.code.findbugs</groupId>
+							<artifactId>jsr305</artifactId>
+						</exclusion>
+					</exclusions>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -188,6 +188,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_zh_TW</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_da</id>
 							<removeAll />
 						</filter>
@@ -244,6 +249,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_zh</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_zh_TW</id>
 							<removeAll />
 						</filter>
 						<filter>
@@ -458,11 +468,11 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.8.10</version>
 				</plugin>
-	            <plugin>
-	                <groupId>com.github.os72</groupId>
-	                <artifactId>protoc-jar-maven-plugin</artifactId>
-	                <version>3.11.4</version>
-	            </plugin>
+				<plugin>
+					<groupId>com.github.os72</groupId>
+					<artifactId>protoc-jar-maven-plugin</artifactId>
+					<version>3.11.4</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
