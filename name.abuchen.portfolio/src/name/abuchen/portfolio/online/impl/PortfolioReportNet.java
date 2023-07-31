@@ -24,7 +24,7 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public class PortfolioReportNet
 {
-    /* package */ static class MarketInfo
+    public static class MarketInfo
     {
         private String marketCode;
         private String currencyCode;
@@ -85,7 +85,7 @@ public class PortfolioReportNet
         }
     }
 
-    /* package */ static class OnlineItem implements ResultItem
+    public static class OnlineItem implements ResultItem
     {
         private String id;
         private String name;
@@ -167,6 +167,11 @@ public class PortfolioReportNet
         public boolean hasPrices()
         {
             return !markets.isEmpty();
+        }
+        
+        public List<MarketInfo> getMarkets()
+        {
+            return markets;
         }
 
         @Override

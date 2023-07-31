@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -17,10 +18,13 @@ import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 
 public final class ImportExtractedItemsWizard extends Wizard
 {
@@ -121,6 +125,8 @@ public final class ImportExtractedItemsWizard extends Wizard
     {
         if (!pages.isEmpty())
         {
+            var newSecurities = new ArrayList<Security>();
+
             boolean isDirty = false;
             for (int index = 0; index < pages.size(); index++)
             {
@@ -142,6 +148,11 @@ public final class ImportExtractedItemsWizard extends Wizard
                         entry.getItem().apply(action, page);
                         action.setInvestmentPlanItem(false);
                         isDirty = true;
+
+                        if (entry.getItem() instanceof Extractor.SecurityItem)
+                        {
+                            newSecurities.add(entry.getItem().getSecurity());
+                        }
                     }
                 }
             }
@@ -154,6 +165,17 @@ public final class ImportExtractedItemsWizard extends Wizard
                 // created (say: an outbound delivery of a security where there
                 // no held shares)
                 new ConsistencyChecksJob(client, false).schedule();
+            }
+
+            if (!newSecurities.isEmpty())
+            {
+                // run async to allow the other dialog to close
+
+                Display.getDefault().asyncExec(() -> {
+                    FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(ActiveShell.get(), client,
+                                    newSecurities);
+                    dialog.open();
+                });
             }
         }
 

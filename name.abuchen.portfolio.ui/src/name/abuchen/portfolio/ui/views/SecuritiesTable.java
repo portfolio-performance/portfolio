@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +103,7 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
@@ -935,8 +935,17 @@ public final class SecuritiesTable implements ModificationListener
         {
             manager.add(new SimpleAction(
                             MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
-                            a -> new UpdateQuotesJob(getClient(), Arrays.stream(selection.toArray())
-                                            .map(Security.class::cast).collect(Collectors.toList())).schedule()));
+                            a -> new UpdateQuotesJob(getClient(),
+                                            selection.toList().stream().map(Security.class::cast).toList())
+                                                            .schedule()));
+
+            manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
+                            a -> Display.getDefault().asyncExec(() -> {
+                                FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(getShell(), getClient(),
+                                                selection.toList().stream().map(Security.class::cast).toList());
+                                dialog.open();
+                            })));
+
         }
 
         // if any retired security in selection, add "unretire/activate all"
