@@ -33,13 +33,24 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class CoinGeckoQuoteFeed implements QuoteFeed
+public class CoinGeckoQuoteFeed implements QuoteFeed
 {
-    /* package */ static class Coin
+    public static class Coin
     {
         private String id;
         private String symbol;
         private String name;
+
+        private Coin()
+        {
+        }
+
+        public Coin(String id, String symbol, String name)
+        {
+            this.id = id;
+            this.symbol = symbol;
+            this.name = name;
+        }
 
         public String getId()
         {
@@ -266,7 +277,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
      * all coins existing on the platform. In order to avoid unnecessary calls
      * the mapping will be buffered locally in a HashMap.
      */
-    /* package */ synchronized List<Coin> getCoins() throws IOException
+    public synchronized List<Coin> getCoins() throws IOException
     {
         if (coins == null)
         {
