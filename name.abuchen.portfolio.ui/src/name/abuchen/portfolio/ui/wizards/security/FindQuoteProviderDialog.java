@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -283,9 +284,17 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         ProgressMonitorPart progressMonitor = new ProgressMonitorPart(parent, new GridLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(progressMonitor);
 
+        setupDirtyListener(tableViewer);
         triggerJob(tableViewer, progressMonitor);
 
         return area;
+    }
+
+    private void setupDirtyListener(TableViewer tableViewer)
+    {
+        PropertyChangeListener listener = e -> Display.getDefault().asyncExec(() -> tableViewer.refresh(true));
+        client.addPropertyChangeListener("dirty", listener); //$NON-NLS-1$
+        tableViewer.getTable().addDisposeListener(e -> client.removePropertyChangeListener("dirty", listener)); //$NON-NLS-1$
     }
 
     private void triggerJob(TableViewer tableViewer, IProgressMonitor progressMonitor)
