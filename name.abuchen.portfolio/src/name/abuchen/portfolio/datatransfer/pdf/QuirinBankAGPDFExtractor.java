@@ -102,7 +102,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransactionFormat02(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -220,7 +220,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransactionFormat02(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -267,13 +267,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
-                // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
-                // Devisenkurs  1,309900
+                // Devisenkurs EUR/USD 1,110890
                 .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
-                .match("^(Bruttobetrag|Gross Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .match("^(Bruttobetrag|Gross Amount) (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                .match("^(Ausmachender Betrag) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                .match("^(Devisenkurs) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
+                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                 .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("gross")));
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
@@ -294,7 +295,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransactionFormat01(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
@@ -399,7 +400,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     return null;
                 });
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransactionFormat02(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
@@ -689,7 +690,29 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 }));
     }
 
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    private <T extends Transaction<?>> void addTaxesSectionsTransactionFormat01(T transaction, DocumentType type)
+    {
+        transaction
+                // Kapitalertragsteuer EUR - 752,05
+                // Kapitalertragsteuer: EUR -73,71
+                .section("currency", "tax").optional()
+                .match("^Kapitalertragsteuer: (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Solidaritätszuschlag EUR - 41,36
+                // Solidaritätszuschlag: EUR -4,05
+                .section("currency", "tax").optional()
+                .match("^Solidarit.tszuschlag: (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // Kirchensteuer EUR - 1,00
+                // Kirchensteuer EUR: -1,00
+                .section("currency", "tax").optional()
+                .match("^Kirchensteuer: (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransactionFormat02(T transaction, DocumentType type)
     {
         transaction
                 // Ausl. Quellensteuer -32,62 USD -24,90 EUR
