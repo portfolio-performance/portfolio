@@ -25,6 +25,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.ProgressMonitorPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -52,7 +53,6 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 
@@ -238,12 +238,23 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
     }
 
     @Override
+    protected Point getInitialSize()
+    {
+        Point preferredSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+
+        // create dialog with a minimum size
+        preferredSize.x = Math.min(Math.max(preferredSize.x, 700), 1000);
+        preferredSize.y = Math.min(Math.max(preferredSize.y, 500), 700);
+        return preferredSize;
+    }
+
+    @Override
     protected Control createDialogArea(Composite parent)
     {
         Composite area = (Composite) super.createDialogArea(parent);
 
         Composite tableArea = new Composite(area, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 300).applyTo(tableArea);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
         Composite compositeTable = new Composite(tableArea, SWT.NONE);
@@ -251,10 +262,10 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         TableColumnLayout layout = new TableColumnLayout();
         compositeTable.setLayout(layout);
 
-        TableViewer tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        TableViewer tableViewer = new TableViewer(compositeTable,
+                        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
+        tableViewer.setUseHashlookup(true);
 
-        ColumnEditingSupport.prepare(tableViewer);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(tableViewer);
 
@@ -279,8 +290,10 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
     private void triggerJob(TableViewer tableViewer, IProgressMonitor progressMonitor)
     {
-        var job = new CheckPortfolioReportThread(item -> Display.getDefault().asyncExec(tableViewer::refresh),
-                        securities);
+        var job = new CheckPortfolioReportThread(item -> Display.getDefault().asyncExec(() -> {
+            if (!tableViewer.getTable().isDisposed())
+                tableViewer.refresh();
+        }), securities);
 
         Display.getCurrent().asyncExec(() -> {
             try
@@ -293,6 +306,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
             }
         });
+
+        tableViewer.getTable().addDisposeListener(e -> progressMonitor.setCanceled(true));
     }
 
     private void addColumns(TableViewer tableViewer, TableColumnLayout layout)
