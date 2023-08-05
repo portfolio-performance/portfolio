@@ -162,7 +162,7 @@ Hint: if you run into resolution problems, try deleting the `~/.m2/repository/p2
 ## Contribute code
 
 * Write a [good commit message](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) in English
-* If the change is related to a Github issue, add a line `Issue: #<ISSUE NUMBER>` after an empty line
+* If the change is related to a Github issue, add a line `Closes #<ISSUE NUMBER>` after an empty line
 * If the change is related to an thread in the forum, add a line `Issue: https://...` with the link to the post in the forum
 * Format the source code. The formatter configuration is part of the project source code. Exception: Do *not* reformat the PDF importer source code. Instead, carefully insert new code into the existing formatting.
 * Add [test cases](https://github.com/buchen/portfolio/tree/master/name.abuchen.portfolio.tests) where applicable. Today, there are no tests that test the SWT UI. But add tests for all calculations.
