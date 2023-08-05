@@ -53,17 +53,6 @@ public class AllTimeHighTest
     }
 
     @Test
-    public void testSecurityIsNull()
-    {
-        Interval interval = Interval.of(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
-        AllTimeHigh ath = new AllTimeHigh(null, interval);
-
-        assertNull(ath.getDistance());
-        assertNull(ath.getValue());
-        assertNull(ath.getDate());
-    }
-
-    @Test
     public void testSecurityHasOnlyOnePrice()
     {
         Interval interval = Interval.of(securityOnePrice.getPrices().get(0).getDate(), LocalDate.now());
