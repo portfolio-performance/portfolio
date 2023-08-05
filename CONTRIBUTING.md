@@ -141,7 +141,7 @@ First, add the *Launch Configuration* view to your workspace:
 
 ### Build with Maven
 
-It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/buchen/portfolio/actions) build.
+It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/portfolio-performance/portfolio/actions) build.
 
 The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 17 installation.
 
@@ -165,7 +165,7 @@ Hint: if you run into resolution problems, try deleting the `~/.m2/repository/p2
 * If the change is related to a Github issue, add a line `Closes #<ISSUE NUMBER>` after an empty line
 * If the change is related to an thread in the forum, add a line `Issue: https://...` with the link to the post in the forum
 * Format the source code. The formatter configuration is part of the project source code. Exception: Do *not* reformat the PDF importer source code. Instead, carefully insert new code into the existing formatting.
-* Add [test cases](https://github.com/buchen/portfolio/tree/master/name.abuchen.portfolio.tests) where applicable. Today, there are no tests that test the SWT UI. But add tests for all calculations.
+* Add [test cases](https://github.com/portfolio-performance/portfolio/tree/master/name.abuchen.portfolio.tests) where applicable. Today, there are no tests that test the SWT UI. But add tests for all calculations.
 * Do not merge the the master branch into your feature branch. Instead, [rebase](https://docs.github.com/en/get-started/using-git/about-git-rebase) your local changes to the head of the master branch.
 * [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) - for example using [GitHub Desktop](https://desktop.github.com/) using this [tutorial](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/creating-your-first-repository-using-github-desktop)
 
@@ -201,7 +201,7 @@ Images and logos used must be subject to [Creative Commons CC0](https://creative
 
 * We only use icon from [iconmonstr.com](https://iconmonstr.com).
 * If a color change icon is used, the passive state is gray and the active state is orange.
-* Please add all used images, logos and icons in the [Images](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
+* Please add all used images, logos and icons in the [Images](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
 
 
 ### Format and size
@@ -298,7 +298,7 @@ The test file is an XML file. People anonymize their personal information and ac
 * Follow the naming convention for test files (type in the local language, two digit counter):
 	* `testIBFlexStatementFile01.xml`
 * Samples
-	*  Transaction in XML-File: [IBFlexStatementExtractorTest](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java) - see `testIBFlexStatementFile01()`
+	*  Transaction in XML-File: [IBFlexStatementExtractorTest](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java) - see `testIBFlexStatementFile01()`
 
 
 ## PDF importer
@@ -322,7 +322,7 @@ The naming convention is BANK**Extractor** and BANK**ExtractorTest** for extract
 
 ### Imported transactions
 
-Portfolio Performance separates between [PortfolioTransaction](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java) (booked on a securities account) and [AccountTransaction](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java) (booked on a cash account). The available types are defined as enum within the file, for example for purchase (BUY) and sale (SELL) of securities, etc.
+Portfolio Performance separates between [PortfolioTransaction](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/PortfolioTransaction.java) (booked on a securities account) and [AccountTransaction](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/model/AccountTransaction.java) (booked on a cash account). The available types are defined as enum within the file, for example for purchase (BUY) and sale (SELL) of securities, etc.
 
 
 ### Anatomy of a PDF importer
@@ -353,10 +353,10 @@ The structure of the PDF importers is as follows:
   	* `addTaxesSectionsTransaction` --> handling of taxes
   	* `addFeesSectionsTransaction` --> handling of fees
 * Overwrite the value extractor methods if the documents work with non-standard (English, German) locales:
-	* Example: [Bank SLM](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
-	* Example:  [Baader Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
+	* Example: [Bank SLM](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
+	* Example:  [Baader Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
 * Add post processing on imported transaction using a `postProcessing` method:
-	* Example: [Targobank](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/TargobankPDFExtractor.java)
+	* Example: [Targobank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/TargobankPDFExtractor.java)
 
 
 ### Naming conventions for detected values
@@ -399,25 +399,25 @@ The importers are structured according to the following scheme and the mapping v
    * `fee` --> Amount
    * `currency` --> Currency
 
-A finished PDF importer as a basis would be e.g. the [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF importer.
+A finished PDF importer as a basis would be e.g. the [V-Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF importer.
 
 
 ### Auxiliary classes
 
-The utility class about standardized conversions, is called by the [AbstractPDFExtractor](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
-and processed in the [ExtractorUtils](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorUtils.java).
-The [ExtrExchangeRate](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtrExchangeRate.java) helps processing for foreign currencies.
+The utility class about standardized conversions, is called by the [AbstractPDFExtractor](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
+and processed in the [ExtractorUtils](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorUtils.java).
+The [ExtrExchangeRate](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtrExchangeRate.java) helps processing for foreign currencies.
 
-Use the [Money](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (it includes the currency and the value rounded to cents). Use *BigDecimal* for exchange rates and the conversion between currencies.
+Use the [Money](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (it includes the currency and the value rounded to cents). Use *BigDecimal* for exchange rates and the conversion between currencies.
 
-Use [TextUtil](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) class for some string manipulation such as trimming strings and stripping whitespace characters. The text created from PDF files has some corner cases that are not supported by the usual Java methods.
+Use [TextUtil](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) class for some string manipulation such as trimming strings and stripping whitespace characters. The text created from PDF files has some corner cases that are not supported by the usual Java methods.
 
 
 ### Formatting of PDF importer
 
 Due to the many comments with text fragments from the PDF documents, we do not auto-format the PDF importer class files. Instead, carefully insert new code into the existing formatting manually. To protect formatting from automatic formatting, use the `@formatter:off` and `@formatter:on`.
 
-Please take a look at the formatting and structure in the other PDF importers! Example: [V-Bank AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java)
+Please take a look at the formatting and structure in the other PDF importers! Example: [V-Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java)
 
 
 ### Test cases
@@ -439,14 +439,14 @@ Via the application menu, users can create a test case file. The test file is th
 	* `Depotauszug01.txt` --> security account transaction history (settlement account)
 * Samples
 	* From April 2023 we will use the simplified notation of test cases (preferred variant)
-	   * [Baader Bank](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/baaderbank/BaaderBankPDFExtractorTest.java) with `testWertpapierKauf23()`
-	   * [Sbroker](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testDividende11()`
-	   * [Sbroker](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testGiroKontoauszug10()`
-	*  one transaction per PDF (old version): [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
-	* supporting securities with multiple currencies: [Erste Bank Gruppe](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) with `testWertpapierKauf09()` / `testWertpapierKauf09WithSecurityInEUR()` and `testDividende10()`/`testDividende10WithSecurityInEUR()`
+	   * [Baader Bank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/baaderbank/BaaderBankPDFExtractorTest.java) with `testWertpapierKauf23()`
+	   * [Sbroker](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testDividende11()`
+	   * [Sbroker](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testGiroKontoauszug10()`
+	*  one transaction per PDF (old version): [Erste Bank Gruppe](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
+	* supporting securities with multiple currencies: [Erste Bank Gruppe](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) with `testWertpapierKauf09()` / `testWertpapierKauf09WithSecurityInEUR()` and `testDividende10()`/`testDividende10WithSecurityInEUR()`
 		* Background: in the PP model, the currency of the transaction always must match the currency of the security and its historical prices. However, sometimes securities are purchased on an different exchange with prices in an another currency. The importer try to handle this case automatically. This is reflected in the two test cases
-	* multiple transactions per PDF: [DKB AG](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java) with `testGiroKontoauszug01()`
-	* if transactions are created based on two separate PDF files, use post processing: [Targobank](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/targobank/TargobankPDFExtractorTest.java) with:
+	* multiple transactions per PDF: [DKB AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/dkb/DkbPDFExtractorTest.java) with `testGiroKontoauszug01()`
+	* if transactions are created based on two separate PDF files, use post processing: [Targobank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/targobank/TargobankPDFExtractorTest.java) with:
 		* `testDividende01()` (single import)
 		* `testDividende01WithSecurityInEUR()` (single import)
 		* `testTaxTreatmentForDividende01()` (single import)
@@ -518,7 +518,7 @@ The structure of the trade calendars is as follows:
 * Days of weekend
 	* `weekend` --> Sets the default days for the weekend in the Trade Calendar, e.g., *Saturday and Sunday*
 
-The [HolidayTypes](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/HolidayType.java) helps to edit holidays and in the [HolidayName](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/HolidayName.java) there are all holidays or trade-free days.
+The [HolidayTypes](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/HolidayType.java) helps to edit holidays and in the [HolidayName](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/HolidayName.java) there are all holidays or trade-free days.
 
 
 ### Test cases
@@ -533,4 +533,4 @@ The structure of the test cases is as follows:
 * The regular trading-free days are followed by the one-time trading-free days.
 * The respective trade-free day to the test is named in the comment.
 * Samples 
-	* Trade calendar: [New York Stock Exchange](https://github.com/buchen/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/util/TradeCalendarTest.java) - see `testTradeCalenderNYSE()`
+	* Trade calendar: [New York Stock Exchange](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/util/TradeCalendarTest.java) - see `testTradeCalenderNYSE()`
