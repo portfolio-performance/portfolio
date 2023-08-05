@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -120,20 +121,18 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // 55 49.76 EUR 2'736.80
                 // Wechselkurs 1.08279
+                // Zu Ihren Lasten CHF 2'968.50
                 // @formatter:on
-                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
-                .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+).*$")
+                .section("baseCurrency", "fxGross", "exchangeRate", "termCurrency").optional()
+                .match("^[\\.,'\\d\\s]+ [\\.,'\\d\\s]+ (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+).*$")
                 .match("^Wechselkurs (?<exchangeRate>[\\.,'\\d\\s]+).*$")
-                .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
+                .match("^Zu Ihren (Lasten|Gunsten) (?<termCurrency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("currency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -155,7 +154,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addSettlementTransaction()
     {
-        DocumentType type = new DocumentType("Transaktionsabrechnung: Zeichnung");
+        DocumentType type = new DocumentType("Transaktionsabrechnung: (Zeichnung|Fondssparplan)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -165,39 +164,73 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Transaktionsabrechnung: Zeichnung Seite: .*$");
+        Block firstRelevantLine = new Block("^Transaktionsabrechnung: (Zeichnung|Fondssparplan) Seite: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
-                // @formatter:off
-                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
-                // ISIN LU0188802960
-                // @formatter:on
-                .section("name", "currency", "isin")
-                .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
-                .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                .oneOf(
+                                // @formatter:off
+                                // Position Anteile Währung Kurs
+                                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                // ISIN LU0188802960
+                                // @formatter:on
+                                section -> section
+                                        .attributes("isin", "name", "currency")
+                                        .find("Position Anteile W.hrung Kurs.*")
+                                        .match("^(?<name>.*) [\\w]{3} [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
+                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                ,
+                                // @formatter:off
+                                // Position Anteile Währung Kurs
+                                // PF - Global Fund A 1.216 CHF 162.830
+                                // ISIN CH0014933193
+                                // @formatter:on
+                                section -> section
+                                        .attributes("name", "isin", "currency")
+                                        .find("Position Anteile W.hrung Kurs.*")
+                                        .match("^(?<name>.*) [\\.,'\\d\\s]+ (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
+                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
 
-                // @formatter:off
-                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
-                // @formatter:on
-                .section("shares")
-                .match("^(?<name>.*) [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                .oneOf(
+                                // @formatter:off
+                                // Position Anteile Währung Kurs
+                                // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                // @formatter:on
+                                section -> section
+                                        .attributes("shares")
+                                        .find("Position Anteile W.hrung Kurs.*")
+                                        .match("^.* [\\w]{3} (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                ,
+                                // @formatter:off
+                                // Position Anteile Währung Kurs
+                                // PF - Global Fund A 1.216 CHF 162.830
+                                // @formatter:on
+                                section -> section
+                                        .attributes("shares")
+                                        .find("Position Anteile W.hrung Kurs.*")
+                                        .match("^.* (?<shares>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
+                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        )
 
                 // @formatter:off
                 // E-Vermögensverwaltung Datum: 20.12.2021
+                // Selfservice Fonds Datum: 31.07.2023
                 // @formatter:on
                 .section("date")
-                .match("^E\\-Verm.gensverwaltung Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .match("^(E\\-Verm.gensverwaltung|Selfservice Fonds) Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                 // @formatter:off
                 // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
+                // Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet.
                 // @formatter:on
                 .section("currency", "amount")
-                .match("^Der Totalbetrag von (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+) .*$")
+                .match("^Der Totalbetrag von ([\\s]+)?(?<currency>[\\w]{3}) (?<amount>[\\.,'\\d\\s]+) .*$")
                 .assign((t, v) -> {
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -207,15 +240,15 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                 // Kurswert in Handelswährung JPY 34 019.00
                 // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
                 // @formatter:on
-                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency").optional()
-                .match("^Kurswert in Handelsw.hrung (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d\\s]+).*$")
-                .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) (?<currency>[\\w]{3}) [\\.,'\\d\\s]+.*$")
+                .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                .match("^Kurswert in Handelsw.hrung [\\w]{3} (?<fxGross>[\\.,'\\d\\s]+).*$")
+                .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d\\s]+) [\\w]{3} [\\.,'\\d\\s]+.*$")
                 .assign((t, v) -> {
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
