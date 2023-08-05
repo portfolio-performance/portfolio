@@ -308,7 +308,7 @@ public enum WidgetFactory
 
     WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
 
-    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
+    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
