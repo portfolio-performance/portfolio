@@ -197,7 +197,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 // Valuta 14. Mai 2020
                 // @formatter:on
                 .section("date")
-                .match("^Valuta (?<date>[\\d]{2}\\. .* [\\d]{4})$")
+                .match("^Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                 // @formatter:off
@@ -211,11 +211,23 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // @formatter:off
+                // Auftragsnummer: 330401346 Kontonummer: 1234567.031
+                // @formatter:on
+                .section("note").optional()
+                .match("^(?<note>Auftragsnummer: [\\d]+) .*$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // @formatter:off
                 // Ausschüttungsart Ordentliche Dividende
                 // @formatter:on
                 .section("note").optional()
                 .match("^Aussch.ttungsart (?<note>.*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(trim(v.get("note")));
+                })
 
                 .wrap(TransactionItem::new);
 

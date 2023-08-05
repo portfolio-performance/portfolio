@@ -259,7 +259,7 @@ public class LGTBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(551)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
+        assertThat(transaction.getNote(), is("Auftragsnummer: 256401138 | Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(198.36))));
@@ -295,8 +295,95 @@ public class LGTBankPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-03-13T00:00"), hasShares(760), //
-                        hasSource("Dividende02.txt"), hasNote("Ordentliche Dividende"), //
+                        hasSource("Dividende02.txt"), hasNote("Auftragsnummer: 200738771 | Ordentliche Dividende"), //
                         hasAmount("CHF", 1580.80), hasGrossValue("CHF", 2432.00), //
                         hasTaxes("CHF", 851.20), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0024638196"), hasWkn("2463819"), hasTicker(null), //
+                        hasName("Schindler Holding AG Inhaber-Partizipationsschein"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(130), //
+                        hasSource("Dividende03.txt"), hasNote("Auftragsnummer: 330401346 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 338.00), hasGrossValue("CHF", 520.00), //
+                        hasTaxes("CHF", 182.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0002497458"), hasWkn("249745"), hasTicker(null), //
+                        hasName("SGS Ltd Namen-Aktien"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(12), //
+                        hasSource("Dividende04.txt"), hasNote("Auftragsnummer: 303105603 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 624.00), hasGrossValue("CHF", 960.00), //
+                        hasTaxes("CHF", 336.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0031768937"), hasWkn("3176893"), hasTicker(null), //
+                        hasName("iShares ETF (CH) - iShares SLI(R) ETF (CH) Inhaber-Anteile -A-"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(490), //
+                        hasSource("Dividende05.txt"), hasNote("Auftragsnummer: 303107922 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 127.40), hasGrossValue("CHF", 196.00), //
+                        hasTaxes("CHF", 68.60), hasFees("CHF", 0.00))));
     }
 }
