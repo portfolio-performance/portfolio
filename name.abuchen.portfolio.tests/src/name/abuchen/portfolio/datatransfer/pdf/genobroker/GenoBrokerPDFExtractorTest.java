@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 
 import java.util.ArrayList;
@@ -67,6 +68,35 @@ public class GenoBrokerPDFExtractorTest
                         hasSource("Kauf01.txt"), hasNote("Auftragsnummer: 00000000 | Limit billigst"), //
                         hasAmount("EUR", 967.47), hasGrossValue("EUR", 926.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 32.95 + 5.60 + 2.52))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA84678A5089"), hasWkn("A3EHTZ"), hasTicker(null), //
+                        hasName("SPARTAN DELTA CORP. REGISTERED SHARES NEW O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-07-25T16:48"), hasShares(2100), //
+                        hasSource("Verkauf01.txt"), hasNote("Auftragsnummer 433499/69.01 | Limit bestens"), //
+                        hasAmount("EUR", 6319.37), hasGrossValue("EUR", 6331.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 12.03 + 0.10))));
     }
 
     @Test

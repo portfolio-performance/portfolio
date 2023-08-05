@@ -35,7 +35,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -45,21 +45,35 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^.*Kundennummer.*$");
+        Block firstRelevantLine = new Block("^.*Kundennummer.*$", "^Den Gegenwert buchen wir.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> { //
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
                         // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
                         // 1Ausführungskurs 30,88 EUR Auftraggeber Mustermann
                         // @formatter:on
-                        .section("name", "isin", "wkn", "currency") //
+                        .section("name", "isin", "wkn", "name1", "currency") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^(?<name1>.*)$") //
                         .match("^.*Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> { //
+                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         // @formatter:off
                         // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
@@ -80,25 +94,37 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> {
+                        .assign((t, v) -> { //
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Auftragsnummer: 210796978 Kundenportfolio
-                        // @formatter:on
-                        .section("note1", "note2").optional() //
-                        .match("^.*(?<note1>Auftragsnummer).*$") //
-                        .match(".* (?<note2>[\\d]+) .* Datum.*$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
+                        .optionalOneOf(
+                                        // @formatter:off
+                                        // Auftragsnummer: 210796978 Kundenportfolio
+                                        // STK 16,000 EUR 120,4000
+                                        // @formatter:on
+                                        section -> section //
+                                                .attributes("note1", "note2") //
+                                                .match("^.*(?<note1>Auftragsnummer).*$") //
+                                                .match(".* (?<note2>[\\d]+) .* Datum.*$") //
+                                                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
+                                        ,
+                                        // @formatter:off
+                                        //  Auftragsnummer 433499/69.01
+                                        // @formatter:on
+                                        section -> section //
+                                                .attributes("note") //
+                                                .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+).*$") //
+                                                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                )
 
                         // @formatter:off
                         // Limit billigst
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
-                        .assign((t, v) -> {
+                        .assign((t, v) -> { //
                             if (t.getNote() != null)
                                 t.setNote(t.getNote() + " | " + trim(v.get("note")));
                             else
@@ -159,7 +185,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag ([\\s]+)?(?<amount>[\\.,\\d]+)\\+ ([\\s]+)?(?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
+                        .assign((t, v) -> { //
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -171,7 +197,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional() //
                         .match("^Devisenkurs ([\\s]+)?(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$") //
                         .match("^Dividendengutschrift ([\\s]+)?(?<fxGross>[\\.,\\d]+) ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+)\\+ ([\\s]+)?(?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
+                        .assign((t, v) -> { //
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
@@ -256,6 +282,13 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
+                        // Provision 0,1900 % vom Kurswert 12,03- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
                         // Transaktionsentgelt Börse 5,60- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
@@ -267,6 +300,13 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Handelsentgelt (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Übertragungs-/Liefergebühr 0,10- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
