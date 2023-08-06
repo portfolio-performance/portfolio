@@ -209,10 +209,7 @@ public class AllTransactionsView extends AbstractFinanceView
 
             Consumer<ClientFilter> listener = f -> {
                 setInformationPaneInput(null);
-                if (f instanceof PortfolioClientFilter pcf)
-                    AllTransactionsView.this.clientFilter = pcf;
-                else
-                    AllTransactionsView.this.clientFilter = null;
+                passClientFilterToParent(f);
                 notifyModelUpdated();
             };
 
@@ -223,9 +220,20 @@ public class AllTransactionsView extends AbstractFinanceView
             // injected into the view immediately
             clientFilterMenu.trackSelectedFilterConfigurationKey(AllTransactionsView.class.getSimpleName());
 
+            // set initial filter
+            passClientFilterToParent(clientFilterMenu.getSelectedFilter());
+
             updateIcon();
 
             addDisposeListener(e -> preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name()));
+        }
+
+        private void passClientFilterToParent(ClientFilter filter)
+        {
+            if (filter instanceof PortfolioClientFilter pcf)
+                AllTransactionsView.this.clientFilter = pcf;
+            else
+                AllTransactionsView.this.clientFilter = null;
         }
 
         private void updateIcon()
