@@ -20,7 +20,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TastytradePDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.TastytradePDFExtractor.OccOsiSymbology;
+import name.abuchen.portfolio.util.OccOsiSymbology;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;

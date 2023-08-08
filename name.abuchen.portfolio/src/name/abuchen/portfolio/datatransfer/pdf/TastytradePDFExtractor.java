@@ -5,16 +5,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
+import name.abuchen.portfolio.util.OccOsiSymbology;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -31,69 +29,6 @@ import name.abuchen.portfolio.money.Values;
 public class TastytradePDFExtractor extends AbstractPDFExtractor
 {
     private List<BuySellEntry> m_optionTradesInImport =  new ArrayList<>();
-
-    /**
-     * Creates symbols for easier handling of option contracts based on
-     * Options Symbology Initiative (OSI) of Options Clearing Corporation (OCC)
-     */
-    public static class OccOsiSymbology {
-        private String symbol;
-        private Date expiration;
-        private OptionType type = OptionType.CALL;
-        private Double strike;
-        private enum OptionType {
-            CALL,
-            PUT
-        };
-
-        /**
-         * Set expiration date of option contract.
-         * 
-         * @param dateString date in pattern M/d/y
-         */
-        public void setExpiration(final String dateString) {
-            final SimpleDateFormat sdf = new SimpleDateFormat("M/d/y", Locale.US);
-            sdf.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-            try
-            {
-                expiration = sdf.parse(dateString);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * @param symbol ticker symbol of underlying security
-         * @param expiration date of expiration in pattern M/d/y
-         * @param optionType PUT or CALL
-         * @param s strike price
-         */
-        public OccOsiSymbology(final String symbol, final String expiration, final String optionType, final Double s)
-        {
-            super();
-            this.symbol = symbol;
-            if (optionType.trim().equals("PUT"))
-                type = OptionType.PUT;
-            strike = s;
-            setExpiration(expiration);
-
-        }
-
-
-        public String getOccKey() {
-            final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd", Locale.US);
-            sdf.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-            return symbol + sdf.format(expiration) + (type == OptionType.PUT ? "P" : "C") + String.format("%08.0f", strike * 1000.); 
-        }
-
-        public String getName() {
-            final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-            sdf.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-            return symbol + " " + sdf.format(expiration) + " " + String.format("%.3f", strike) + (type == OptionType.PUT ? " Put" : " Call");
-        }
-    }
 
     public TastytradePDFExtractor(Client client)
     {
@@ -259,8 +194,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             t.setSecurity(getOrCreateSecurity(v));
             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
             t.setDate(asDate(v.get("tradedate")));
-            t.setShares(this.asShares(v.get("shares")));
-            t.setAmount(asAmount(v.get("netamount"))); // one contract equals 100 shares
+            t.setShares(this.asSharesFromOption(v.get("shares"))); // one contract equals 100 shares
+            t.setAmount(asAmount(v.get("netamount")));
             t.setMonetaryAmount(Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("netamount"))));
             Money commfee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("commfee")));
             Money tranfee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tranfee")));
@@ -319,8 +254,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                             try
                                             {
                                                 netamount = new BigDecimal(nf.parse(v.get("netamount")).toString());
-                                                price = new BigDecimal(nf.parse(v.get("price")).toString()).multiply(new BigDecimal(100.));                    
-                                                shares = new BigDecimal(nf.parse(v.get("contracts")).toString());
+                                                price = new BigDecimal(nf.parse(v.get("price")).toString());                    
+                                                shares = new BigDecimal(nf.parse(v.get("contracts")).toString()).multiply(new BigDecimal(100.));
                                             }
                                             catch (ParseException e)
                                             {
@@ -329,7 +264,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                             BigDecimal gross = price.multiply(shares);
                                             BigDecimal fee = v.get("type").equals("SOLD") ? gross.subtract(netamount) : netamount.subtract(gross);                    
                                             t.setMonetaryAmount(Money.of("USD", asAmount(v.get("netamount"))));
-                                            t.setShares(this.asShares(v.get("contracts")));                      
+                                            t.setShares(this.asSharesFromOption(v.get("contracts")));                      
                                             checkAndSetFee(Money.of("USD", asAmount(fee.toString())), t, type.getCurrentContext());
                                             // save to determine type of expiration (BTC or STC), if applicable.
                                             m_optionTradesInImport.add(t);
@@ -402,7 +337,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                                 v.put("tickerSymbol", o.getOccKey());
                                                 v.put("name", o.getName());
                                             }
-                                            t.setShares(this.asSharesAbs(v.get("quantity")));
+                                            t.setShares(this.asSharesAbsFromOption(v.get("quantity")));
                                             t.setNote("Expired: ");
                                             t.setSecurity(getOrCreateSecurity(v));
                                             setTypeAndNote(t, v);
@@ -426,7 +361,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                                 v.put("tickerSymbol", o.getOccKey());
                                                 v.put("name", o.getName());
                                             }
-                                            t.setShares(this.asSharesAbs(v.get("quantity")));
+                                            t.setShares(this.asSharesAbsFromOption(v.get("quantity")));
                                             t.setNote("Assigned: ");
                                             t.setSecurity(getOrCreateSecurity(v));
                                             // Assignment means this was a short position
@@ -630,7 +565,31 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             throw new IllegalArgumentException(e);
         }
     }
-
+    
+    protected long asSharesAbsFromOption(String value)
+    {
+        try
+        {
+            return Math.round(NumberFormat.getInstance(Locale.US).parse(value.replace("-", "")).doubleValue() * 100. * Values.Share.factor());
+        }
+        catch (ParseException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    
+    protected long asSharesFromOption(String value)
+    {
+        try
+        {
+            return Math.round(NumberFormat.getInstance(Locale.US).parse(value).doubleValue() * 100. * Values.Share.factor());
+        }
+        catch (ParseException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    
     @Override
     protected long asShares(String value)
     {
