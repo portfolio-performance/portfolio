@@ -1,16 +1,8 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -19,117 +11,43 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.ChartToolsManager.ChartTool;
+import name.abuchen.portfolio.ui.util.chart.ChartToolsManager.Spot;
 
-public class MeasurementTool
+
+class MeasurementTool implements ChartTool
 {
-    private static record Spot(int time, LocalDate date, double xCoordinate, double value)
-    {
-        public static Spot from(Event e, TimelineChart chart)
-        {
-            double xCoordinate = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
-            LocalDate date = Instant.ofEpochMilli((long) xCoordinate).atZone(ZoneId.systemDefault()).toLocalDate();
-            double value = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
-
-            return new Spot(e.time, date, xCoordinate, value);
-        }
-
-        public Point toPoint(TimelineChart chart)
-        {
-            return new Point(chart.getAxisSet().getXAxis(0).getPixelCoordinate(xCoordinate),
-                            chart.getAxisSet().getYAxis(0).getPixelCoordinate(value));
-        }
-    }
 
     public static final int OFFSET = 10;
-    public static final int PADDING = 5;
+    public static final int PADDING = ChartToolsManager.PADDING;
 
     private final TimelineChart chart;
-    private ArrayList<IAction> buttons = new ArrayList<>();
 
-    private boolean isActive = false;
     private boolean showRelativeChange = true;
-
-    private Color color = Colors.BLACK;
 
     private boolean redrawOnMove = false;
     private Spot start;
     private Spot end;
 
-    /* package */ MeasurementTool(TimelineChart chart)
+    private Color color;
+
+    MeasurementTool(TimelineChart chart, Color color)
     {
         this.chart = chart;
-
-        chart.getPlotArea().addListener(SWT.MouseDown, this::onMouseDown);
-        chart.getPlotArea().addListener(SWT.MouseMove, this::onMouseMove);
-        chart.getPlotArea().addListener(SWT.MouseUp, this::onMouseUp);
-
-        chart.getPlotArea().addPaintListener(this::paintControl);
-    }
-
-    public Color getColor()
-    {
-        return color;
-    }
-
-    public void setColor(Color color)
-    {
         this.color = color;
+
+        // do not show relative change for chart show
+        // percentages as it does not make sense once
+        // negative values are included
+        this.showRelativeChange = !(chart.getToolTip().getDefaultValueFormat() instanceof DecimalFormat fmt)
+                        || fmt.toPattern().indexOf('%') < 0;
     }
 
-    public void addButtons(ToolBarManager toolBar)
+    @Override
+    public void onMouseDown(Event e)
     {
-        var action = createAction();
-        // store buttons to update their image on context menu action
-        buttons.add(action);
-        toolBar.add(action);
-
-    }
-
-    public void addContextMenu(IMenuManager manager)
-    {
-        manager.add(createAction());
-    }
-
-    private SimpleAction createAction()
-    {
-        return new SimpleAction(Messages.LabelMeasureDistance, //
-                        isActive ? Images.MEASUREMENT_ON : Images.MEASUREMENT_OFF, //
-                        a -> {
-                            isActive = !isActive;
-
-                            if (isActive)
-                            {
-                                // do not show relative change for chart show
-                                // percentages as it does not make sense once
-                                // negative values are included
-                                showRelativeChange = !(chart.getToolTip()
-                                                .getDefaultValueFormat() instanceof DecimalFormat fmt)
-                                                || fmt.toPattern().indexOf('%') < 0;
-                            }
-
-                            // update images of tool bar buttons
-                            ImageDescriptor image = isActive ? Images.MEASUREMENT_ON.descriptor()
-                                            : Images.MEASUREMENT_OFF.descriptor();
-                            buttons.forEach(button -> button.setImageDescriptor(image));
-
-                            chart.getToolTip().setActive(!isActive);
-
-                            if (!isActive)
-                            {
-                                start = end = null;
-                                redrawOnMove = false;
-                                chart.redraw();
-                            }
-                        });
-    }
-
-    private void onMouseDown(Event e)
-    {
-        if (!isActive || e.button != 1)
+        if (e.button != 1)
             return;
 
         if (redrawOnMove) // click'n'click mode
@@ -141,30 +59,33 @@ public class MeasurementTool
         chart.redraw();
     }
 
-    private void onMouseMove(Event e)
+    @Override
+    public void onMouseMove(Event e)
     {
-        if (!isActive || !redrawOnMove)
+        if (!redrawOnMove)
             return;
 
         end = Spot.from(e, chart);
         chart.redraw();
     }
 
-    private void onMouseUp(Event e)
+    @Override
+    public void onMouseUp(Event e)
     {
-        if (!isActive || start == null || e.button != 1)
+        if (start == null || e.button != 1)
             return;
 
         // if enough time has elapsed, assume it was click'n'drag
         // mode (otherwise continue in click'n'click mode)
-        if (e.time - start.time > 300)
+        if (e.time - start.time() > 300)
             redrawOnMove = false;
 
         end = Spot.from(e, chart);
         chart.redraw();
     }
 
-    private void paintControl(PaintEvent e)
+    @Override
+    public void paintControl(PaintEvent e)
     {
         if (start == null || end == null)
             return;
@@ -177,8 +98,8 @@ public class MeasurementTool
         {
             e.gc.setLineWidth(1);
             e.gc.setLineStyle(SWT.LINE_SOLID);
-            e.gc.setForeground(this.color);
-            e.gc.setBackground(this.color);
+            e.gc.setForeground(color);
+            e.gc.setBackground(color);
             e.gc.setAntialias(SWT.ON);
             e.gc.drawLine(p1.x, p1.y, p2.x, p2.y);
 
@@ -199,8 +120,8 @@ public class MeasurementTool
             Point txtExtend = e.gc.textExtent(text);
             Rectangle plotArea = chart.getPlotArea().getClientArea();
 
-            e.gc.setBackground(Colors.brighter(this.color));
-            e.gc.setForeground(Colors.getTextColor(this.color));
+            e.gc.setBackground(Colors.brighter(color));
+            e.gc.setForeground(Colors.getTextColor(color));
 
             if (p2.x < plotArea.width / 2)
             {
@@ -218,7 +139,8 @@ public class MeasurementTool
                                 p2.y - txtExtend.y / 2 - PADDING, //
                                 txtExtend.x + 2 * PADDING, //
                                 txtExtend.y + 2 * PADDING, PADDING, PADDING);
-                e.gc.drawText(text, p2.x - OFFSET - PADDING - txtExtend.x, p2.y - txtExtend.y / 2, true);
+                e.gc.drawText(text, p2.x - OFFSET - PADDING - txtExtend.x, p2.y - txtExtend.y / 2,
+                                true);
             }
         }
         finally

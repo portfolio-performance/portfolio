@@ -3,17 +3,28 @@
   <id>info.portfolio_performance.PortfolioPerformance</id>
   <name>Portfolio Performance</name>
   <summary>Track the performance of an investment portfolio</summary>
+  <summary xml:lang="de">Analysiere die Performance Deines gesamten Anlageportfolios</summary>
   <url type="homepage">https://www.portfolio-performance.info/en/</url>
   <icon type="remote">https://www.portfolio-performance.info/images/logo.svg</icon>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>EPL-1.0</project_license>
   <description>
-    <p>Record the full history of your transactions: purchases, sales, taxes, fees, ...</p>
-    <p>Calculate performance indicators such as the True-Time Weighted Rate of Return or the Internal Rate of Return (IRR) for your holdings.</p>
-    <p>Update historical quotes from a variety of sources: Yahoo Finance, Finnhub.io, Quandl, or AlphaVantage. Alternatively, scrape quotes from HTML pages or JSON documents.</p>
-    <p>All data is stored in XML for further processing and can be exported as CSV or JSON.</p>
-    <p>Rebalance your investment portfolio based on a freely defined Asset Allocation.</p>
-    <p>Keep foreign currency accounts using the exchange rates published by the European Central Bank (ECB).</p>
+    <ul>
+      <li>Record the full history of your transactions: purchases, sales, taxes, fees, ...</li>
+      <li>Calculate performance indicators such as the True-Time Weighted Rate of Return or the Internal Rate of Return (IRR) for your holdings.</li>
+      <li>Update historical quotes from a variety of sources: Yahoo Finance, Finnhub.io, Quandl, or AlphaVantage. Alternatively, scrape quotes from HTML pages or JSON documents.</li>
+      <li>All data is stored in XML for further processing and can be exported as CSV or JSON.</li>
+      <li>Rebalance your investment portfolio based on a freely defined Asset Allocation.</li>
+      <li>Keep foreign currency accounts using the exchange rates published by the European Central Bank (ECB).</li>
+    </ul>
+    <ul xml:lang="de">
+      <li>Die vollständige Historie aller Buchungen kann erfasst werden: Käufe, Verkäufe, Steuern, Gebühren, ...</li>
+      <li>Performance-Kennzahlen wie der True-Time Weighted Rate of Return oder der interne Zinsfuß (Internal Rate of Return) werden errechnet.</li>
+      <li>Historische Kurse werden automatisch von Yahoo Finance geladen oder können aus beliebigen HTML Seiten extrahiert werden.</li>
+      <li>Durch das offene Dateiformat stehen alle Daten als XML zur Verfügung oder können als CSV exportiert werden.</li>
+      <li>Unterstützung für Rebalancing anhand von frei definierbaren Asset Allocations.</li>
+      <li>Mit Hilfe der historischen Wechselkurse der Europäischen Zentralbank (ECB) können Konten und Aktien in Fremdwährung geführt werden.</li>
+    </ul>
   </description>
   <categories>
     <category>Office</category>
@@ -28,7 +39,7 @@
   <releases>
     <release version="0.64.5" date="2023-07-23">
       <description>
-        <ul xml:lang="en">
+        <ul>
           <li>Fix: Fixed an issue where new securities were mistakenly added to the watchlist of another file.</li>
           <li>Fix: New securities are now created in the reporting currency when the provider does not provide currency information.</li>
           <li>Improved PDF importer for GENO, sBroker, FlatEx, FFB, DKB, Deutsche Bank.</li>
@@ -42,7 +53,7 @@
     </release>
     <release version="0.64.4" date="2023-07-15">
       <description>
-        <ul xml:lang="en">
+        <ul>
           <li>Fix: Fixes Cannot invoke “name.abuchen.portfolio.model.SecurityProperty.getType()” because “p” is null</li>
         </ul>
         <ul xml:lang="de">
@@ -52,7 +63,7 @@
     </release>
     <release version="0.64.3" date="2023-07-15">
       <description>
-        <ul xml:lang="en">
+        <ul>
           <li>Fix: Fixes a problem with migration of filter configuration if identical filter exist</li>
         </ul>
         <ul xml:lang="de">
@@ -62,7 +73,7 @@
     </release>
     <release version="0.64.2" date="2023-07-14">
       <description>
-        <ul xml:lang="en">
+        <ul>
           <li>New: Filter configurations are no longer stored in the settings but in the file itself. This makes it easier to synchronize them between computers and to edit them better</li>
           <li>New: MACD indicator in the price chart (Moving Average Convergence/Divergence)</li>
           <li>New: the Measurement Tool is now active for all - it allows to easily measure distances and changes in the charts</li>
@@ -135,7 +146,7 @@
     <release version="0.51.2" date="2021-03-14" />
     <release version="0.51.1" date="2021-03-02" />
     <release version="0.51.0" date="2021-03-01" />
-    <release type="stable" date="2021-02-07T00:00:01Z" version="0.50.4" />
+    <release version="0.50.4" date="2021-02-07" />
   </releases>
   <content_rating type="oars-1.0" />
   <launchable type="desktop-id">info.portfolio_performance.PortfolioPerformance.desktop</launchable>
@@ -160,16 +171,16 @@
 
   <developer_name>Andreas Buchen</developer_name>
 
-  <url type="bugtracker">https://github.com/buchen/portfolio/issues</url>
+  <url type="bugtracker">https://github.com/portfolio-performance/portfolio/issues</url>
 
   <!--FIXME: where to donate to the application-->
   <!-- <url type="donation">http://www.homepage.com/donation.html</url> -->
 
   <url type="help">https://forum.portfolio-performance.info/</url>
-
+  <url type="faq">https://forum.portfolio-performance.info/c/faq</url>
   <url type="translate">https://poeditor.com/join/project?hash=4lYKLpEWOY</url>
-
-  <url type="vcs-browser">https://github.com/buchen/portfolio</url>
+  <url type="contribute">https://github.com/portfolio-performance/portfolio/blob/HEAD/CONTRIBUTING.md</url>
+  <url type="vcs-browser">https://github.com/portfolio-performance/portfolio</url>
 
   <update_contact>info@portfolio-performance.info</update_contact>
 </component>

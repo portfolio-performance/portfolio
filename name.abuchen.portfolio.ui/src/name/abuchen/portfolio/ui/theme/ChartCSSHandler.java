@@ -82,7 +82,7 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
                         && chart instanceof TimelineChart timelineChart)
         {
             Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
-            timelineChart.getMeasurementTool().setColor(newColor);
+            timelineChart.getChartToolsManager().setColor(newColor);
         }
     }
 
@@ -116,7 +116,7 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
         else if (MEASUREMENT_COLOR.equalsIgnoreCase(property) && chart instanceof TimelineChart timelineChart)
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
-            return cssValueConverter.convert(timelineChart.getMeasurementTool().getColor(), engine, null);
+            return cssValueConverter.convert(timelineChart.getChartToolsManager().getColor(), engine, null);
         }
 
         return null;

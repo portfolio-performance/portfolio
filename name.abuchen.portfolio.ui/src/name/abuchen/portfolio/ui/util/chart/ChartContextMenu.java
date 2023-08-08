@@ -48,7 +48,7 @@ import name.abuchen.portfolio.util.TextUtil;
     {
         if (chart instanceof TimelineChart timelineChart)
         {
-            timelineChart.getMeasurementTool().addContextMenu(manager);
+            timelineChart.getChartToolsManager().addContextMenu(manager);
             manager.add(new Separator());
         }
 

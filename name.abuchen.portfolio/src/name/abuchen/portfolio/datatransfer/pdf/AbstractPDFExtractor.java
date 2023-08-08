@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -13,6 +14,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -26,10 +31,15 @@ import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed.Coin;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
@@ -170,6 +180,62 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected Security getOrCreateSecurity(Map<String, String> values)
     {
+        return getOrCreateSecurity(values, () -> new Security(null, asCurrencyCode(values.get("currency")))); //$NON-NLS-1$
+    }
+
+    /**
+     * Cryptos are identified a) by the coin tickerSymbol (BTC, ETH) or directly
+     * by name. Missing crypto currencies are created for use with coin gecko
+     * quote feed
+     */
+    protected Security getOrCreateCryptoCurrency(Map<String, String> values)
+    {
+        // enrich values map with name to allow matching by name
+        Optional<CoinGeckoQuoteFeed.Coin> coin = lookupCoin(values);
+
+        if (coin.isPresent())
+            values.put("name", coin.get().getName()); //$NON-NLS-1$
+
+        return getOrCreateSecurity(values, () -> {
+            Security crypto = new Security(null, asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+
+            if (coin.isPresent())
+            {
+                crypto.setTickerSymbol(coin.get().getSymbol().toUpperCase());
+                crypto.setFeed(CoinGeckoQuoteFeed.ID);
+                crypto.setPropertyValue(SecurityProperty.Type.FEED, CoinGeckoQuoteFeed.COINGECKO_COIN_ID,
+                                coin.get().getId());
+                crypto.setLatestFeed(QuoteFeed.MANUAL);
+            }
+
+            return crypto;
+        });
+    }
+
+    private Optional<Coin> lookupCoin(Map<String, String> values)
+    {
+        try
+        {
+            String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+
+            var coins = lookupFeed().getCoins();
+            return coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol)).findAny();
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+            return Optional.empty();
+        }
+    }
+
+    @VisibleForTesting
+    protected CoinGeckoQuoteFeed lookupFeed()
+    {
+        return Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
+    }
+
+    private Security getOrCreateSecurity(Map<String, String> values, Supplier<Security> factory)
+    {
         String isin = values.get("isin"); //$NON-NLS-1$
         if (isin != null)
             isin = isin.trim();
@@ -190,8 +256,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (nameRowTwo != null)
             name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
-        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name,
-                        () -> new Security(null, asCurrencyCode(values.get("currency")))); //$NON-NLS-1$
+        Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, factory);
 
         if (security == null)
             throw new IllegalArgumentException("Unable to construct security: " + values.toString()); //$NON-NLS-1$
