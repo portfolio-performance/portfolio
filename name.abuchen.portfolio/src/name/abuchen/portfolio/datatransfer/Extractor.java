@@ -73,6 +73,7 @@ public interface Extractor
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
+        public abstract void setSecurity(Security security);
 
         public abstract String getTypeInformation();
 
@@ -248,6 +249,12 @@ public interface Extractor
         {
             return transaction.getSecurity();
         }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            transaction.setSecurity(security);
+        }
 
         @Override
         public String getSource()
@@ -323,6 +330,12 @@ public interface Extractor
         {
             return entry.getAccountTransaction().getSecurity();
         }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            entry.setSecurity(security);
+        }
 
         @Override
         public String getSource()
@@ -393,6 +406,12 @@ public interface Extractor
         {
             return null;
         }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public String getSource()
@@ -462,6 +481,12 @@ public interface Extractor
         {
             return entry.getSourceTransaction().getSecurity();
         }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            entry.setSecurity(security);
+        }
 
         @Override
         public String getSource()
@@ -516,6 +541,12 @@ public interface Extractor
         {
             return security;
         }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public Status apply(ImportAction action, Context context)
@@ -563,6 +594,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return security;
+        }
+        
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
         }
 
         @Override

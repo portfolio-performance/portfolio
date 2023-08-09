@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
-import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
@@ -25,7 +24,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class CSVImportWizard extends Wizard
@@ -168,17 +166,15 @@ public class CSVImportWizard extends Wizard
     {
         ((AbstractWizardPage) getContainer().getCurrentPage()).afterPage();
 
-        boolean isDirty = false;
-
         if (importer.getExtractor() == importer.getSecurityPriceExtractor())
-            isDirty = importSecurityPrices();
-        else
-            isDirty = importItems();
-
-        if (isDirty)
         {
-            client.markDirty();
-            new ConsistencyChecksJob(client, false).schedule();
+            var isDirty = importSecurityPrices();
+            if (isDirty)
+                client.markDirty();
+        }
+        else
+        {
+            new ImportController(client).perform(List.of(reviewPage));
         }
 
         return true;
@@ -202,24 +198,4 @@ public class CSVImportWizard extends Wizard
         }
         return isDirty;
     }
-
-    private boolean importItems()
-    {
-        InsertAction action = new InsertAction(client);
-        action.setConvertBuySellToDelivery(reviewPage.doConvertToDelivery());
-        action.setRemoveDividends(reviewPage.doRemoveDividends());
-
-        boolean isDirty = false;
-        for (ExtractedEntry entry : reviewPage.getEntries())
-        {
-            if (entry.isImported())
-            {
-                entry.getItem().apply(action, reviewPage);
-                isDirty = true;
-            }
-        }
-
-        return isDirty;
-    }
-
 }
