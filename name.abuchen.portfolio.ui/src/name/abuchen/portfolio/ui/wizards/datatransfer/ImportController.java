@@ -31,12 +31,10 @@ public class ImportController
 
         var newSecurities = new ArrayList<Security>();
 
-        boolean isDirty = false;
-        for (int index = 0; index < pages.size(); index++)
+        var isDirty = false;
+        for (ReviewExtractedItemsPage page : pages)
         {
-            ReviewExtractedItemsPage page = pages.get(index);
             page.afterPage();
-
             var isPageDirty = importPage(page, newSecurities);
             isDirty |= isPageDirty;
         }
