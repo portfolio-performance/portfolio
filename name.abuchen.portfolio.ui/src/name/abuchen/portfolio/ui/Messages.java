@@ -754,6 +754,7 @@ public class Messages extends NLS
     public static String LabelSecurityTransfer;
     public static String LabelSecurityCalendar;
     public static String LabelSecurityCalendarToolTip;
+    public static String LabelUseExistingSecurity;
     public static String LabelSelectedTransactions;
     public static String LabelSelectYear;
     public static String LabelSelectYearSince;
