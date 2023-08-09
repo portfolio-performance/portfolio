@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Monitor;
 
 import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.util.Colors;
 
 public class TabularLayout extends Layout
 {
@@ -132,7 +131,6 @@ public class TabularLayout extends Layout
                 {
                     divider = new Label(composite, SWT.NONE);
                     divider.setImage(Images.DOT_HORIZONAL.image());
-                    divider.setBackground(Colors.RED);
                 }
 
                 int yy = MARGIN;
