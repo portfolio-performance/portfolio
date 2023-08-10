@@ -522,6 +522,7 @@ public class Messages extends NLS
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
+    public static String LabelEarningsByTaxonomy;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartScaling;
@@ -1021,6 +1022,8 @@ public class Messages extends NLS
     public static String MsgUpdateRunning32BitOn64BitOS;
     public static String MsgUpdatingDashboardData;
     public static String MsgUpdatingExchangeRates;
+    public static String MsgWarningPieChartNoValues;
+    public static String MsgWarningPieChartWithNegativeValues;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
     public static String NewFileWizardAddAll;

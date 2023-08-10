@@ -58,13 +58,12 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         super(widget, data);
         this.chartBuilder = chartBuilder;
 
-        addConfig(new ChartShowYAxisConfig(this, true));
-
-        addConfig(new ClientFilterConfig(this));
         addConfig(new StartYearConfig(this, defaultYearOffset));
+        addConfig(new ClientFilterConfig(this));
         addConfig(new EarningTypeConfig(this));
         addConfig(new GrossNetTypeConfig(this));
         addConfig(new ChartHeightConfig(this));
+        addConfig(new ChartShowYAxisConfig(this, true));
 
         this.converter = data.getCurrencyConverter();
     }
