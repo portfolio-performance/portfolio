@@ -211,19 +211,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // Kurs : 55,080000 USD Provision : 0,00 EUR
                 // Devisenkurs : 1,045010 Eigene Spesen : 0,00 EUR
                 // @formatter:on
-                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<currency>[\\w]{3})$")
-                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .*$")
+                .section("gross", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<baseCurrency>[\\w]{3})$")
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .*$")
                 .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -464,18 +461,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                 // Kurs          : 114,4700 USD            Kurswert      :             528,10 EUR
                 // Devisenkurs   : 1,083790                Provision     :               5,90 EUR
-                .section("gross", "currency", "fxCurrency", "exchangeRate").optional()
-                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<currency>[\\w]{3})$")
+                .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional()
+                .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<baseCurrency>[\\w]{3})$")
                 .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -890,19 +884,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs     :        1,134800
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "currency", "exchangeRate")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate")
+                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -913,19 +904,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "currency", "exchangeRate")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate")
+                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -935,18 +923,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) ([\\*\\s]+)?Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency")
+                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) ([\\*\\s]+)?Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -1083,19 +1068,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 //                                       Endbetrag          :          -68,18 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxCurrency", "exchangeRate", "gross", "currency")
-                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
-                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency")
+                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3})$")
+                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$")
                                         .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -1129,20 +1111,17 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 //                                        Endbetrag          :       -15,24 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxCurrency", "gross", "currency", "exchangeRate")
-                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<fxCurrency>[\\w]{3})$")
-                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .attributes("termCurrency", "gross", "baseCurrency", "exchangeRate")
+                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3})$")
+                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$")
                                         .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
                                         .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
