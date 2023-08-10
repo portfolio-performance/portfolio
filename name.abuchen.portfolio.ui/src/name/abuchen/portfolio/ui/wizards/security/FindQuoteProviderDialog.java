@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -45,6 +46,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
+import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.MarketInfo;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
@@ -108,6 +111,16 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
                     // if the security already has an online id, skip it
                     if (item.security.getOnlineId() != null)
+                    {
+                        monitor.worked(1);
+                        continue;
+                    }
+
+                    // skip exchange rates and indices and well-known provider
+                    var wellKnown = Set.of(EurostatHICPQuoteFeed.ID, CoinGeckoQuoteFeed.ID);
+                    if (item.security.isExchangeRate() //
+                                    || item.security.getCurrencyCode() == null //
+                                    || wellKnown.contains(item.security.getFeed()))
                     {
                         monitor.worked(1);
                         continue;
