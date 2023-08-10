@@ -120,7 +120,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                     var wellKnown = Set.of(EurostatHICPQuoteFeed.ID, CoinGeckoQuoteFeed.ID);
                     if (item.security.isExchangeRate() //
                                     || item.security.getCurrencyCode() == null //
-                                    || wellKnown.contains(item.security.getFeed()))
+                                    || (item.security.getFeed() != null && wellKnown.contains(item.security.getFeed())))
                     {
                         monitor.worked(1);
                         continue;
