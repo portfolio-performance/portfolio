@@ -102,9 +102,12 @@ public abstract class CSVExtractor implements Extractor
 
         try
         {
+            // to toUpperCase is needed to support scientific notation which can
+            // only be parsed with an upper case 'E'
+
             Number num = (Number) field2column.get(name).getFormat().getFormat()
-                            .parseObject(stripNonNumberCharacters(value));
-            return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
+                            .parseObject(stripNonNumberCharacters(value).toUpperCase());
+            return Long.valueOf(Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)
         {
