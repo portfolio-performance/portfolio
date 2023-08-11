@@ -78,6 +78,7 @@ public class SecurityDetailsViewer
         private Label valueName;
         private Label valueISIN;
         private Label valueTickerSymbol;
+        private Label valueWKN;
 
         @Override
         Control createViewControl(Composite parent)
@@ -89,6 +90,7 @@ public class SecurityDetailsViewer
             valueName = new Label(composite, SWT.NONE);
             valueISIN = new Label(composite, SWT.NONE);
             valueTickerSymbol = new Label(composite, SWT.NONE);
+            valueWKN = new Label(composite, SWT.NONE);
 
             // layout
 
@@ -109,6 +111,7 @@ public class SecurityDetailsViewer
 
             below(valueName, valueISIN);
             below(valueISIN, valueTickerSymbol);
+            below(valueTickerSymbol, valueWKN);
 
             return composite;
         }
@@ -118,13 +121,14 @@ public class SecurityDetailsViewer
         {
             if (security == null)
             {
-                clearLabel(valueName, valueISIN, valueTickerSymbol);
+                clearLabel(valueName, valueISIN, valueTickerSymbol, valueWKN);
             }
             else
             {
                 valueName.setText(security.getName());
                 valueISIN.setText(nonNullString(security.getIsin()));
                 valueTickerSymbol.setText(nonNullString(security.getTickerSymbol()));
+                valueWKN.setText(nonNullString(security.getWkn()));
             }
         }
     }
