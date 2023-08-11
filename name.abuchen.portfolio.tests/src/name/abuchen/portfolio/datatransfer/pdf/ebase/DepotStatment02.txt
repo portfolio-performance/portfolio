@@ -1,0 +1,46 @@
+PDFExport:
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+Hallo zusammen,
+ich update gerade mein Portfolio von ebase, leider kann ich den Kontoauszug nicht importieren. Es geht darum das die "Einlagen" welche eingezahlt werden dem Buchungskonto gutgeschrieben werden.
+Der Wertpapierkauf erzeugt automatisch eine Buchung. Daher geht es nur um die Ein- und Auszahlungen,
+PDFExport:
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+European Bank for Financial Services GmbH, 80218 München
+Kontoauszug-Nr. 4
+vom 04.05.2020
+Seite 1 von 1
+Herrn Konto-Nr. 44444444444
+Name Nachname
+Straße und Nummer
+PLZ und Ort
+Kontoauszug für Ihr ebase Konto flex
+Kontostand alt: 01.04.2020 00,00 EUR
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+14.04.2020 123456 14.04.2020 SEPA Lastschrift Einzug 15,00 EUR
+Name, Vorname
+ebase - ETF
+Gläubiger-ID: DE68ZZZZZZZZZZZZ
+Mandatsreferenz: EBASZZZZZZZZZZZ
+Kontostand neu: 04.05.2020 62,28 EUR
+IBAN: DE13 44444 4444 44444, BIC: EBSGDEMXXXX
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Wir bitten Sie, den (Online-) Kontoauszug und die aufgeführten Buchungen und Berechnungen auf ihre Richtigkeit
+und Vollständigkeit hin zu überprüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieses (Online-)
+Kontoauszuges müssen Sie unverzüglich nach dessen Zugang gegenüber ebase bei der internen Revision unter Angabe
+der Kontonummer und des Datums des (Online-) Kontoauszuges erheben. Sofern Sie Ihre Einwendungen schriftlich
+geltend machen, genügt die unverzügliche Absendung. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmi-
+gung des (Online-) Kontoauszuges.
+Des Weiteren erfolgt die Gutschrift von Lastschriften und sonstiger Einzugspapiere zugunsten des Kontos bei ebase
+unter dem Vorbehalt Ihrer Einlösung.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZyyyyyyyyyyy Kai Friedrich, Jürgen Keller
+`
