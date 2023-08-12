@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -1134,6 +1135,72 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasSource("Dividende09.txt"), hasNote(null), //
                         hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), hasForexGrossValue("USD", 106.58), //
                         hasTaxes("EUR", (0.86 / 1.0897) + 9.29 + 0.29), hasFees("EUR", 1.45 + 3.00))));
+    }
+
+    @Test
+    public void testDividende09WithSecurityInEUR()
+    {
+        Security security = new Security("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile", CurrencyUnit.EUR);
+        security.setIsin("DE000A0D8Q49");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-04-15T00:00"), hasShares(221), //
+                        hasSource("Dividende09.txt"), hasNote(null), //
+                        hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), //
+                        hasTaxes("EUR", (0.86 / 1.0897) + 9.29 + 0.29), hasFees("EUR", 1.45 + 3.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende10()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A1TW21"), hasWkn(null), hasTicker(null), //
+                        hasName("RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A) MITEIGENTUMSANTEILE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-08-16T00:00"), hasShares(7.01), //
+                        hasSource("Dividende10.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.59), hasGrossValue("EUR", 8.34), //
+                        hasTaxes("EUR", 2.15 + 0.60), hasFees("EUR", 0.00))));
     }
 
     @Test
