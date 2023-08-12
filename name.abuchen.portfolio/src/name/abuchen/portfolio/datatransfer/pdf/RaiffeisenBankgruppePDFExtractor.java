@@ -265,6 +265,25 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 .oneOf(
                                 // @formatter:off
+                                // Titel: AT0000A1TW21 RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A)
+                                // MITEIGENTUMSANTEILE - Ausschüttung
+                                // Ertrag: 1,19 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("isin", "name", "name1", "currency")
+                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
+                                        .match("^(?<name1>.*) \\- Aussch.ttung$")
+                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            if (!v.get("name1").startsWith("Dividende:")
+                                                            || !v.get("name1").startsWith("Ertrag:")
+                                                            || !v.get("name1").startsWith("Fondsgesellschaft:"))
+                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                        })
+                                ,
+                                // @formatter:off
                                 // Titel: DE000BAY0017 Bayer AG
                                 // Namens-Aktien o.N.
                                 // Dividende: 2 EUR
@@ -375,15 +394,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Dividendengutschrift 68,00 USD 59,86+ EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross")
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -393,18 +412,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs: 1,0856 (13.01.2023) 109,37 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^Bruttoertrag: (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency")
+                                        .match("^Bruttoertrag: (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -1028,7 +1044,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
-                // Zahlungsverkehr-Transaktionsgebühr: -3,00 EUR 
+                // Zahlungsverkehr-Transaktionsgebühr: -3,00 EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Zahlungsverkehr\\-Transaktionsgeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
