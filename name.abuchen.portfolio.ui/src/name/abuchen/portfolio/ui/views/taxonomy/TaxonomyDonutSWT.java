@@ -31,7 +31,10 @@ public class TaxonomyDonutSWT implements IPieChart
     {
         chart = new CircularChart(parent, SeriesType.DOUGHNUT);
         chart.addLabelPainter(new RenderLabelsCenteredInPie(chart));
-        chart.addLabelPainter(new RenderLabelsOutsidePie(chart, node -> ((TaxonomyNode) node.getData()).getName()));
+        chart.addLabelPainter(new RenderLabelsOutsidePie(chart, node -> {
+            final TaxonomyNode taxonomyNode = (TaxonomyNode) node.getData();
+            return taxonomyNode != null ? taxonomyNode.getName() : ""; //$NON-NLS-1$
+        }));
 
         builder.configureToolTip(chart.getToolTip());
 
