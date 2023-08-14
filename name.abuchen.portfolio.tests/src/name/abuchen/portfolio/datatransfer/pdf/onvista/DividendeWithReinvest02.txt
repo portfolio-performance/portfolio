@@ -1,0 +1,79 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=12345678
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+Reinvestierung ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstrasse 123
+ADRESSZEILE4=12345 Berlin
+Dividende für
+Herr ADRESSZEILE5=01.04.2018 - 31.03.2019
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 123 BELEGNUMMER=1149
+12345 Berlin 123456789 12345678 / 18.03.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 18.03.2020
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+SSE PLC Shs LS-,50 GB0007908733
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 75,000 16.01.2020 13.03.2020 GBP 0,240000
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 20,39
+Aktienverlusttopf EUR 810,63 810,63
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 700,00) EUR 640,06 619,67
+Quellensteuertopf EUR 9,00 9,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag: 13.03.2020
+Jahressteuerbescheinigung folgt
+Die Ausschüttung/Dividende wurde wie folgt in neue Anteile/Aktien reinvestiert:
+Gattungsbezeichnung ISIN
+SSE PLC Shs LS-,50 GB0007908733
+Nominal Reinvestierungspreis
+STK 1,000 GBP 14,910000
+Barausgleich GBP 3,09
+Gebühren GBP 8,83-
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+13.03.2020 123456789 EUR/GBP 0,88295 EUR 6,50
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIREIN/GDBREINV/001149/190320/003539
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+352663000 53054631 2 ADRESSZEILE3=Musterstrasse 123
+ADRESSZEILE4=12345 Berlin
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=1149
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Verwahrart: Wertpapierrechnung Lagerland: Grossbritannien
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIREIN/GDBREINV/001149/190320/003539
