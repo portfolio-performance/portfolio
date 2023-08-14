@@ -37,6 +37,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+		<release version="0.65.1" date="2023-08-14">
+			<decription>
+				<ul>
+					<li>Fix: Fixes the calculation of partial assignments in earnings by taxonomy chart</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Fix: Behebt ein Problem bei der Berechnung von anteiligen Erträgen im Chart 'Erträge nach Klassifikationen'</li>
+				</ul>
+			</decription>
+		</release>
 		<release version="0.65.0" date="2023-08-14">
 			<decription>
 				<ul>
