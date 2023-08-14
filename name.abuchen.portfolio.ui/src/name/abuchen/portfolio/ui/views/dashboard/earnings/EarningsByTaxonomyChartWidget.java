@@ -49,7 +49,7 @@ import name.abuchen.portfolio.ui.views.dashboard.charts.CircularChartWidget;
 import name.abuchen.portfolio.util.ColorConversion;
 import name.abuchen.portfolio.util.Interval;
 
-record Item(InvestmentVehicle vehicle, long value)
+record Item(InvestmentVehicle vehicle, long value, int weight)
 {
 }
 
@@ -166,10 +166,11 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
                     Money value = (grossNetType == GrossNetType.GROSS ? tx.getGrossValue() : tx.getMonetaryAmount())
                                     .with(converter.at(tx.getDateTime()));
 
-                    var item = result.computeIfAbsent(vehicle, v -> new Item(v, 0));
+                    var item = result.computeIfAbsent(vehicle, v -> new Item(v, 0, Classification.ONE_HUNDRED_PERCENT));
 
                     item = new Item(item.vehicle(),
-                                    item.value() + (tx.getType().isCredit() ? value.getAmount() : -value.getAmount()));
+                                    item.value() + (tx.getType().isCredit() ? value.getAmount() : -value.getAmount()),
+                                    Classification.ONE_HUNDRED_PERCENT);
 
                     result.put(vehicle, item);
                 }
@@ -219,18 +220,18 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
 
                 long value = item.value();
 
-                if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
+                if (assignment.getWeight() < item.weight())
                 {
                     value = BigDecimal.valueOf(value) //
                                     .multiply(BigDecimal.valueOf(assignment.getWeight()), Values.MC) //
-                                    .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                                    .divide(BigDecimal.valueOf(item.weight()), Values.MC)
                                     .setScale(0, RoundingMode.HALF_DOWN).longValue();
                 }
 
-                vehicle2money.put(assignment.getInvestmentVehicle(),
-                                new Item(assignment.getInvestmentVehicle(), item.value() - value));
+                vehicle2money.put(assignment.getInvestmentVehicle(), new Item(assignment.getInvestmentVehicle(),
+                                item.value() - value, item.weight() - assignment.getWeight()));
 
-                nodes.add(new Item(item.vehicle(), item.value()));
+                nodes.add(new Item(item.vehicle(), value, assignment.getWeight()));
             }
 
             Collections.sort(nodes, (a, b) -> Long.compare(b.value(), a.value()));

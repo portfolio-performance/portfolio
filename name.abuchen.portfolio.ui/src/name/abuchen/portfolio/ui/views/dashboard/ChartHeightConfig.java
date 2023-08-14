@@ -34,7 +34,7 @@ public class ChartHeightConfig implements WidgetConfig
 
     private final WidgetDelegate<?> delegate;
 
-    private Height height = Height.TWOX;
+    private Height height = Height.NORMAL;
 
     public ChartHeightConfig(WidgetDelegate<?> delegate)
     {
