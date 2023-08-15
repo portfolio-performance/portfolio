@@ -51,6 +51,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
+                        + "|Buy"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
                         + "|SAVINGS PLAN"
@@ -67,6 +68,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
+                        + "|Buy"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
                         + "|SAVINGS PLAN"
@@ -80,10 +82,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^((Limit|Stop\\-Market|Market)\\-Order )?"
                                 + "(?<type>(Kauf"
+                                + "|Buy"
                                 + "|Verkauf"
                                 + "|Sparplanausf.hrung"
                                 + "|SAVINGS PLAN"
-                                + "|Ex.cution de l.investissement programm.))"
+                                + "|Ex.cution de l.investissement programm."
+                                + "|REINVESTIERUNG))"
                                 + " .*$")
                 .assign((t, v) -> {
                     if ("Verkauf".equals(v.get("type")))
@@ -160,11 +164,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
                                 // Stop-Market-Order Verkauf am 10.06.2020, um 11:42 Uhr.
                                 // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
+                                // Limit-Order Buy on 28.04.2023 at 11:13 (Europe/Berlin).
                                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                                 // @formatter:on
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                        .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Buy|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at) (?<time>[\\d]{2}:[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // @formatter:off
@@ -1371,6 +1376,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!type.getCurrentContext().getBoolean("negative"))
+                        processFeeEntries(t, v, type);
+                })
+
+                // @formatter:off
+                // External cost surcharge -1.00 EUR
+                // @formatter:on
+                .section("fee", "currency").optional()
+                .match("^External cost surcharge \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);
