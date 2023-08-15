@@ -114,7 +114,7 @@ public final class ClientFilterMenu implements IMenuListener
         this.client = client;
         this.preferences = preferences;
         this.filterConfig = client.getSettings()
-                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_DEFINITIONS.getKey());
+                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_DEFINITIONS);
 
         selectedItem = new Item("", Messages.PerformanceChartLabelEntirePortfolio, "", //$NON-NLS-1$ //$NON-NLS-2$
                         ClientFilter.NO_FILTER);
@@ -367,7 +367,7 @@ public final class ClientFilterMenu implements IMenuListener
 
     public static void saveSelectedFilter(Client client, String key, String clientFilterId)
     {
-        var set = client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION.getKey());
+        var set = client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION);
 
         set.lookup(key).ifPresentOrElse(config -> config.setData(clientFilterId),
                         () -> set.add(new Configuration(key, "", clientFilterId))); //$NON-NLS-1$
@@ -377,7 +377,7 @@ public final class ClientFilterMenu implements IMenuListener
 
     public static Optional<String> getSelectedFilterId(Client client, String key)
     {
-        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION.getKey())
+        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION)
                         .lookup(key).map(Configuration::getData);
     }
 }
