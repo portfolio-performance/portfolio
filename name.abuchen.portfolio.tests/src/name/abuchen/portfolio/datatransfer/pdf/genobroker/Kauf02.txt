@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.1
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster
+Depotnummer
+ 7780927547
+ Kundennummer 6068468473
+baOAsOt WqyfJV
+ Auftragsnummer 422576/44.00
+IaZRjei DaeBEn Datum 19.07.2023
+Tannholzstr. 2 Rechnungsnummer W07700-0000243913/23
+80015 VmYXrzSOwJzvjB Umsatzsteuer-ID Ym957114714   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 500 L&G-GERD KOMMER MUL.EQ.ETF         IE000FPWSL69 (WELT0B)
+REG.SHS USD ACC. ON                
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Limit-Order
+Limit 10,00 EUR 
+Schlusstag/-Zeit 19.07.2023 08:18:15 Auftraggeber IBa wyzIyzHx sIoOPm
+Ausführungskurs 9,409 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 4.704,50- EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 4.714,55- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 21.07.2023 zu Lasten des Kontos 6349786 (IBAN DE05 7206 9274 3760 2694 55),
+BLZ 72069274 (BIC GENODEF1ZUS).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7700.07191724.0001138OR07
