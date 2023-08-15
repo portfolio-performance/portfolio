@@ -1,0 +1,375 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, TX 75201
+June 1, 2023 - June 30, 2023
+PAGE 1 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+       
+Wha6rHa 4RNkFdAjQ
+Wha6rHa 4RNkFdAjQ                
+cWirGoEUbr76zAGU
+oIrznaoMMZqXxmAj
+keXSf8qGKxHLpjHg                       
+OPENING BALANCE CLOSING BALANCE
+Margin account $3,388.35 $15,364.41
+NET ACCOUNT BALANCE 3,388.35 15,364.41 Options
+1.272%
+Securities -79.00 9,560.48
+TOTAL PRICED PORTFOLIO -79.00 9,560.48
+Total Equity Holdings $3,309.35 $24,924.89 Equities
+38.654%
+THIS PERIOD YEAR TO DATE
+Taxable dividends $30.38 $30.38 Cash
+Credit interest $0.05 $0.10 60.074%
+Non-resident tax paid -9.11 -9.11
+                 
+        
+        
+See Reverse Side for Important Tax Information.  This statement shall be conclusive if not objected to in
+writing within ten days.  Errors and omissions excepted.  Please address all communications to the firm and not to individuals.
+Address changes or other material changes on your account should be directed to the office servicing your account.  Kindly
+mention your account number.  This statement should be retained for income tax purposes.
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+
+June 1, 2023 - June 30, 2023
+PAGE 2 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+SYMBOL/ ACCOUNT MARKET LAST PERIOD’S EST. ANNUAL % OF TOTAL
+DESCRIPTION CUSIP TYPE QUANTITY PRICE VALUE MARKET VALUE % CHANGE INCOME PORTFOLIO
+E QUI T I E S /  OPT I ON S
+PROSHARES ULTRAPRO S&P500   UPRO M 200 $47.38 $9,476.00 N/A $73 37.050%
+CALL UPRO   07/07/23    46   9LXVHN6 M -2 1.628 -325.52 N/A 1.273
+PROSHARES ULTRAPRO S&P 500
+EXP 07/07/2023
+PROSHARES TRUST   TQQQ M 10 41.00 410.00 N/A 4 1.603
+ULTRAPRO QQQ
+Total Equities $9,886.00 $77 38.654%
+Total Options $-325.52 1.273%
+Total Cash (Net Portfolio Balance) $15,364.41 60.074%
+TOTAL PRICED PORTFOLIO $24,924.89 $77
+ACCOUNT
+TRANSACTION DATE TYPE DESCRIPTION QUANTITY PRICE DEBIT CREDIT           
+BUY /  SELL  T R ANS ACT I ON S
+BOUGHT 06/02/23 M PUT  TQQQ   06/16/23    32 1 $0.42 $42.13
+PROSHARES ULTRAPRO QQQ
+UNSOLICITED
+CLOSING CONTRACT
+Security Number: 9SBMMS8
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 3 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ACCOUNT ACTIVITY (CONTINUED)
+ACCOUNT
+TRANSACTION DATE TYPE DESCRIPTION QUANTITY PRICE DEBIT CREDIT           
+BUY  /  SEL L T R ANSACT I ON S   (continued)
+SOLD 06/05/23 M PUT  TQQQ   06/16/23    35 1 1.01 99.85     
+PROSHARES ULTRAPRO QQQ
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9NJWKS7
+BOUGHT 06/14/23 M PROSHARES TRUST 10 37.6097 376.10
+ULTRAPRO QQQ
+UNSOLICITED
+PRODUCT DESCRIPTION UNDER
+SEPARATE COVER
+CUSIP: 74347X831
+BOUGHT 06/15/23 M PUT  UPRO   06/30/23    42 2 0.39 78.26
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+CLOSING CONTRACT
+Security Number: 9UHNHC4
+SOLD 06/15/23 M CALL UPRO   06/16/23    48 2 0.10 17.72     
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9LPDQC6
+SOLD 06/15/23 M PUT  UPRO   06/30/23    42 5 0.37 179.33     
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9UHNHC4
+BOUGHT 06/16/23 M PROSHARES ULTRAPRO S&P500 200 45.70 9,140.15
+UNSOLICITED
+PRODUCT DESCRIPTION UNDER
+SEPARATE COVER
+CUSIP: 74347X864
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 4 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ACCOUNT ACTIVITY (CONTINUED)
+ACCOUNT
+TRANSACTION DATE TYPE DESCRIPTION QUANTITY PRICE DEBIT CREDIT           
+BUY  /  SEL L T R ANSACT I ON S   (continued)
+BOUGHT 06/21/23 M PUT  UPRO   06/30/23    42 3 0.19 57.39
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+CLOSING CONTRACT
+Security Number: 9UHNHC4
+SOLD 06/21/23 M PUT  UPRO   06/30/23    44.50 3 0.59 173.59     
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9SPVCT4
+SOLD 06/21/23 M CALL UPRO   06/23/23    47 2 0.21 39.72     
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9UFYNF6
+SOLD 06/27/23 M CALL UPRO   07/07/23    46 2 0.47 91.71     
+PROSHARES ULTRAPRO S&P 500
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9LXVHN6
+SOLD 06/27/23 M PUT  TQQQ   06/30/23    38 1 0.48 46.85     
+PROSHARES ULTRAPRO QQQ
+UNSOLICITED
+OPEN CONTRACT
+Security Number: 9LYDJG3
+Total Buy / Sell Transactions $9,694.03 $648.77
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 5 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ACCOUNT ACTIVITY (CONTINUED)
+ACCOUNT
+TRANSACTION DATE TYPE DESCRIPTION QUANTITY PRICE DEBIT CREDIT           
+DI VI DEN DS AND I NT E RE ST
+INTEREST 06/16/23 M INTEREST ON CREDIT BALANCE $0.05
+AT  0.010% 05/16 THRU 06/15
+CUSIP: 00099A109
+DIVIDEND 06/28/23 M PROSHARES ULTRAPRO S&P500 0.145499 29.10
+CASH DIV  ON     200 SHS WH 8.73
+REC 06/22/23 PAY 06/28/23
+NON-QUALIFIED DIVIDEND
+NON-RES TAX WITHHELD
+CUSIP: 74347X864
+DIVIDEND 06/28/23 M PROSHARES TRUST 0.12758 1.28
+ULTRAPRO QQQ WH 0.38
+CASH DIV  ON      10 SHS
+REC 06/22/23 PAY 06/28/23
+NON-QUALIFIED DIVIDEND
+NON-RES TAX WITHHELD
+CUSIP: 74347X831
+Total Dividends And Interest $9.11 $30.43
+FUN DS  PAI D AND RE CEI VED
+CSG 06/13/23 M Journal from account 5WW93590 $21,000.00
+SEN(20230613044417)
+Total Funds Paid And Received $21,000.00
+MI SCE LL ANE OUS  T R ANS ACT I ON S
+EXPIRED 06/16/23 M CALL UPRO   06/16/23    48 2  
+PROSHARES ULTRAPRO S&P 500
+OPTION EXPIRATION - EXPIRED
+Security Number: 9LPDQC6
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 6 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ACCOUNT ACTIVITY (CONTINUED)
+ACCOUNT
+TRANSACTION DATE TYPE DESCRIPTION QUANTITY PRICE DEBIT CREDIT           
+MI SCE LL ANE OUS  T R ANS ACT I ON S   (continued)
+EXPIRED 06/16/23 M PUT  TQQQ   06/16/23    35 1  
+PROSHARES ULTRAPRO QQQ
+OPTION EXPIRATION - EXPIRED
+Security Number: 9NJWKS7
+EXPIRED 06/23/23 M CALL UPRO   06/23/23    47 2  
+PROSHARES ULTRAPRO S&P 500
+OPTION EXPIRATION - EXPIRED
+Security Number: 9UFYNF6
+EXPIRED 06/30/23 M PUT  TQQQ   06/30/23    38 1  
+PROSHARES ULTRAPRO QQQ
+OPTION EXPIRATION - EXPIRED
+Security Number: 9LYDJG3
+EXPIRED 06/30/23 M PUT  UPRO   06/30/23    44.50 3  
+PROSHARES ULTRAPRO S&P 500
+OPTION EXPIRATION - EXPIRED
+Security Number: 9SPVCT4
+Total Miscellaneous Transactions
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 7 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+    
+IMPORTANT INFORMATION
+Statement of Financial Condition
+A copy of Apex Clearing Corporation’s Audited Statement of Financial Condition as of December 31, 2022 is available on the website at www.apexfintechsolutions.com/disclosures/. A copy 
+may also be obtained at no cost by calling Apex Clearing Corporation.  As of December 31, 2022, Apex Clearing Corporation had a net capital of $466,254,287 and was $439,752,615 in 
+excess of its required net capital of $26,501,672.  As of January 31, 2023, Apex Clearing Corporation had a net capital of $503,778,156 and was $479,334,278 in excess of its required net 
+capital of $24,443,878.
+Apex’s Policy for Dividends and Interest
+Apex’s policy is to pay all dividends and interest in US Dollars. Apex will allow the following countries to be paid in their foreign currency (Canadian Dollars, British Pounds, Euros, Argentine 
+Peso, Chinese Renminbi, Korean Won, Philippine Peso and Brazilian Real).
+Participation in Fully Paid Lending Program 
+Customers participating in the Fully-Paid Securities Lending Program should be aware that shares on loan are not covered by FDIC or SIPC. Cash securities collateralizing shares are held at JP 
+Morgan Chase & Co. and not subject to FDIC or SIPC protections. Please consult the Master Securities Lending Agreement for additional information.           
+Information Regarding Cost Basis for Foreign Account Statements
+Foreign Currency: Cost basis is required to be reported in U.S. dollars for tax purposes. It is the responsibility of the account holder to convert sales proceeds paid in foreign currency to U.S. 
+dollars to avoid inaccurate cost basis calculations. When reporting the purchase or sale, you must determine the U.S. dollar amounts to be reported as of the settlement date, at the spot rate 
+or by following a reasonable spot rate convention. See Regulations section 1.6045-1(d)(8).    
+                                                                                                                                         
+Payment of Interest to holders of Municipal Securities - you may be subject to a substitute interest payment if the transfer of ownership of your municipal security has not been 
+completed prior to the next interest payment. Please contact a tax professional for more specific details.
+IMPORTANT INFORMATIO N
+To our valued customers:
+FINRA Rule 2231 requires that we advise you to promptly report any inaccuracy or discrepancy in your account (within 10 days after available) to your brokerage firm and clearing firm (where 
+these are different firms) and to re-confirm any oral communications in writing.
+https://www.finra.org/rules-guidance/notices/06-72                                                                                                                                                             
+"IMPORTANT - Part of your distribution includes a return of capital. Any distribution that represents a return of capital reduces the estimated per share value shown on your account 
+statement."
+The preceding notice is required when reporting distributions on Direct Participation Programs and/or REITs and is subject to the DPP or REIT sponsor’s final capital return determination as 
+detailed in the IRS Form 1099 or K-1, as applicable.
+Alternative or Other Investments, DPP, and Unlisted securities are not listed on a national securities exchange, are generally illiquid and that, even if a customer is able to sell the securities, 
+the price received may be less than the per share estimated value provided in the account. The evaluation method used for any particular DPP or REIT will be provided to clients upon request. 
+Certain positions are not held on Apex’s books or custodied by Apex and are not Protected by SIPC.                                                                             
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 8 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ANNOUNCEMENTS (CONTINUED)
+Pursuant to SEC Rule 606, Apex Clearing Corporation is required to make publicly available a quarterly report with regard to its routing of non-directed orders. For the purpose of this Rule, we 
+have entered into an agreement with Quantum5 Market Surveillance (a Division of S3 Matching Technologies) to disclose all required information pertaining to this rule. This information can 
+be accessed on the internet at: http://public.s3.com/rule606/apex/, or a written copy will be furnished at no cost upon request via telephone to (214) 765-1009.  
+SEC Rule 606 (b) requires a broker-dealer to disclose to its customers, upon request, "the identity of the venue to which the customer’s orders were routed for execution in the six months prior 
+to the request, whether the orders were directed orders or non-directed orders, and the time of the transactions, if any, that resulted from such orders."
+In accordance with the Emergency Economic Stabilization Act of 2008  broker-dealers are required to track and report cost basis to the IRS in three phases over the next three years.
+ jEquity securities acquired on or after January 1, 2011
+ jMutual fund and dividend reinvestment plan (DRIP) shares acquired on or after January 1, 2012:  
+ jDebit securities, options, and all other financial instruments acquired on or after January 1, 2014. (The IRS has extended this date from the previously announced date of January 1, 2013.)
+Beginning this upcoming tax reporting season the cost basis of any covered equity security transaction (purchased after 12/31/10) that is required to be reported on a 1099-B will include its 
+associated cost basis. If you have any questions about this important change to the IRS mandated reporting requirements, please contact your broker-dealer or registered advisor.
+IMPORTANT INFORMATION CONTINUED
+Please take note of the following description of Apex Clearing Corporation’s excess SIPC coverage, which reflects certain changes made to the coverage effective August 8, 2013.  The 
+Securities Investor Protection Corporation (×SIPCÖ) protects certain customer funds up to a ceiling of $500,000, including a maximum of $250,000 for cash claims. Please note SIPC does 
+not cover commodity contracts and options on futures.  For additional information regarding SIPC coverage, including a brochure, please contact SIPC at (202) 371-8300 or visit 
+www.sipc.org.
+Apex has purchased an additional insurance policy to supplement SIPC protection.  This additional insurance policy, widely known as ×excess SIPC,Ö becomes available to customers in the 
+event that SIPC limits are exhausted.  This additional insurance provides protection for securities and cash up to an aggregate limit of $150 million, subject to sub-limits for any one 
+customer of $37.5 million for securities and $900,000 for cash.  Similar to SIPC protection, this additional insurance does not protect against a loss in the market value of securities.  For 
+additional information, please contact your broker. 
+FDIC SWEEP PROGRAM
+For customers with balances in a bank deposit account as part of the Apex FDIC-Insured Sweep Program or shares of a money market mutual fund in which you have a beneficial interest, 
+those balances or shares may be liquidated on your order and the proceeds returned to your account or remitted to you in accordance with the applicable prospectus and/or Terms and 
+Conditions of the program.
+For customers participating in the Apex FDIC-Insured Sweep Program, the Apex FDIC-Insured Sweep Program allows your cash balance to be eligible for insurance protection through the FDIC 
+up to the maximum applicable insurance limits. Customers may obtain information about FDIC, by contacting the FDIC at 1-877-275-3342, 1-800-925-4618 (TDD) or by visiting www.fdic.gov. 
+Deposit Account balances in the Apex FDIC-Insured Sweep Program are not protected by SIPC or any other excess coverage by Apex Clearing Corporation. Deposit Account balances are 
+protected as established by current applicable laws regulated by the FDIC.
+NOTE: Occasionally, Apex FDIC-Insured Sweep Program’s banks ("Program Banks") may be added or removed from the Participating Bank List, which is available on Apex’s website. Apex will, 
+to the extent possible, update the Participating Bank List, with any added Program Banks at least 30 calendar days before making deposits. If a Program Bank is removed from Apex 
+FDIC-Insured Sweep Program (the "Program"), it will no longer be able to receive sweeps of your excess cash balance. If any of your excess cash balance is at a Program Bank that is removed 
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 9 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ANNOUNCEMENTS (CONTINUED)
+from the Program, Apex will transfer those funds into another Program Bank still in the Program or into your Apex Account, at Apex’s discretion. You may contact your broker to specify any 
+Program Banks into which you do not wish your excess cash balance to be swept. Please note that if there are insufficient Program Banks available in the Program, taking into account any 
+from which you have opted out, such that not all of your excess cash balance can be spread among Program Banks to ensure FDIC coverage, then some or all of your excess cash balance may 
+remain dormant in your Apex Account or may be deposited at a Program Bank but not covered by FDIC insurance. You may obtain additional information on each Program Bank at 
+www.fdic.gov.
+You are solely responsible for monitoring the total amount of your assets on deposit with each Program Bank (including non-Program funds and accounts) in order to determine the extent of 
+FDIC insurance coverage available to you on those deposits, including Program deposits. Apex shall not take into account any money you have on deposit at a Program Bank outside of the 
+Program.
+A current Apex FDIC-Insured Sweep Program Bank List and Apex FDIC-Insured Sweep Program Terms and Conditions may be found at https:/apexclearing.com/disclosures/
+IMPORTANT INFORMATION
+APEX CLEARING CORPORATION DISCLOSURE STATEMENT
+Apex Clearing Corporation ("Apex") recognizes the importance of providing information on an ongoing basis to the customers whose accounts are cleared through Apex. Your broker/dealer has 
+designated Apex as its clearing firm. In accordance with industry rules and regulations, Apex is required to disclose on an annual basis certain important regulatory notices and disclosures. To 
+comply with these requirements, Apex has published an Annual Disclosure Statement which is available on the Apex corporate web site, www.apexclearing.com. For customers who do not 
+have access to the internet please call Apex at 214-765-1009 and request a complete copy of the Annual Disclosure Statement be mailed to your address of record.
+A brief summary of the content of the Annual Disclosure Statement is as follows:
+j Anti-Money Laundering - Federal law requires all financial institutions to obtain, verify and record information that identifies each person who opens an account.
+j Privacy Policy - The privacy of customers is a responsibility which Apex respects and protects for former customers as well as current customers.
+j Margin Disclosure Statement: FINRA Rule 2264 - The Information furnished provides basic facts about purchasing securities on margin and alerts customers of certain risks 
+       involved in trading securities in a margin account.
+j Day-Trading Risk Disclosure Statement: FINRA Rule 2270 - Information to be considered before engaging in a day-trading strategy.
+j Business Continuity Plan: FINRA Rule 4370 - A further summary of Apex’s Disaster Recovery Plan to reasonable ensure business continuity.
+j SEC Rule 606 and 607 (Payment for Order Flow and Order Routing information) - (Rule 606) Requires Apex to make public a quarterly report with regard to routing of 
+      non-directed orders and (Rule 607) Requires Apex to disclose its payment for order flow practices.
+j SEC Rule 10b-10 - Requires customers are provided with prior written notification of certain transactions that are not reported immediately through a trade confirmation.
+j SIPC Information: FINRA Rule 2266 - The Securities Investor Protection Corporation ("SIPC") requires that funds are available to meet customer claims up to a ceiling of 
+      $500,000, including a maximum of $250,000 for cash claims. For more information about SIPC coverage or to receive a brochure, please visit the SIPC website at www.sipc.org 
+      or, call (202) 371-8300.
+j Investor Education and Protection: FINRA Rule 2267 - Requires Apex to provide information about FINRA’s BrokerCheck program. The investor brochure may be obtained from 
+       FINRA BrokerCHeck hotline number (800) 289-9999 or the FINRA web site address www.FINRA.org.
+j Joint NASD Industry Breakpoint Task Force - A further summary of a July 2003 report which recommends written disclosure regarding mutual fund breakpoints.
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 10 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ANNOUNCEMENTS (CONTINUED)
+j Carrying Agreements: FINRA Rule 4311 - The firm with which you have opened your securities account has retained Apex to provide certain record keeping, clearance, and 
+       settlement functions. A further summary of details is disclosed.
+j Extended Hours Trading Risk Disclosure: FINRA Rule 2265 - Risks to consider include lower liquidity, higher volatility, changing prices, unlinked markets, news announcements, 
+       wider spreads, and lack of calculation.
+j Liens and Levies - Apex will abide by the directions of federal, state, or other levying authorities.
+j Regulation E - Disclosure regarding certain electronic transfers is required under the provisions of this regulation as issued by the Board of Governors of the Federal Reserve 
+      System.
+j Municipal Securities Rulemaking Board ("MSRB") Rule G-10 requires an annual notification that 1) Apex Clearing Corporation is registered with the U.S. Securities and Exchange 
+Commission and the Municipal Securities Rulemaking Board, 2) the MSRB publishes an investor brochure that is published on their website that describes the protections that may be 
+provided by the MSRB and how to file a complaint with the regulatory authorities and 3) a copy of the MSRB Investor Brochure as well as information regarding prospective, new and 
+existing MSRB rules may be found on the MSRB website by going to the following link: http://www.msrb.org/, 
+IMPORTANT INFORMATION -  Privacy Policy
+Apex Clearing Corporation ("Apex") carries your account as a clearing broker by arrangement with your broker-dealer or registered investment advisor as Apex’s introducing client. At Apex, we 
+understand that privacy is an important issue for customers of our introducing firms. It is our policy to respect the privacy of all accounts that we maintain as clearing broker and to protect the 
+security and confidentiality of non-public personal information relating to those accounts. Please note that this policy generally applies to former customers of Apex as well as current 
+customers.
+Personal Information Collected
+In order to service your account as a clearing broker, information is provided to Apex by your introducing firm who collects information from you in order to provide the financial services that 
+you have requested. The information collected by your introducing firm and provided to Apex or otherwise obtained by Apex may come from the following sources and is not limited to:
+j Information included in your applications or forms, such as your name, address, telephone number, social security number, occupation, and income;
+j Information relating to your transactions, including account balances, positions, and activity;
+j Information which may be received from consumer reporting agencies, such as credit bureau reports;
+j information relating to your creditworthiness;
+j Information which may be received from other sources with your consent or with the consent of your introducing firm.
+In addition to servicing your account, Apex may make use of your personal information for analysis purposes, for example, to draw conclusions, detect patterns or determine preferences.
+Sharing of Nonpublic Personal Information
+Apex does not disclose non-public personal information relating to current or former customers of introducing firms to any third parties, except as required or permitted by law, including but 
+not limited to any obligations of Apex under the USA PATRIOT Act, and in order to facilitate the clearing of customer transactions in the ordinary course of business.  
+Apex has multiple affiliates and relationships with third party companies. Examples of these companies include financial and non-financial companies that perform services such as data 
+processing and companies that perform securities executions on your behalf. We may share information among our affiliates and third parties, as permitted by law, in order to better service 
+your financial needs and to pursue legitimate business interests, including to carry out, monitor and analyze our business, systems and operations.
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
+June 1, 2023 - June 30, 2023
+PAGE 11 OF 11
+ACCOUNT NUMBER WAkUG6gou82zOflR   TUA
+Wha6rHa4RNkFdAjQ
+ANNOUNCEMENTS (CONTINUED)
+Security
+Apex strives to ensure that our systems are secure and that they meet industry standards. We seek to protect non- public personal information that is provided to Apex by your introducing firm 
+or otherwise obtained by Apex by implementing physical and electronic safeguards. Where we believe appropriate, we employ firewalls, encryption technology, user authentication systems 
+(i.e. passwords and personal identification numbers) and access control mechanisms to control access to systems and data. Apex endeavors to ensure that third party service providers who 
+may have access to non-public personal information are following appropriate standards of security and confidentiality. Further, we instruct our employees to use strict standards of care in 
+handling the personal financial information of customers.  As a general policy, our staff will not discuss or disclose information regarding an account except; 1) with authorized personnel of 
+your introducing firm, 2) as required by law or pursuant to regulatory request, or 3) as  authorized by Apex to a third party or affiliate providing services to your account or pursuing Apex’s 
+legitimate business interests.
+Access to Your Information
+You may access your account information through a variety of media offered by your introducing firm and Apex (i.e. statements or online services). Please contact your introducing firm if you 
+require any additional information.
+IMPORTANT INFORMATION - Privacy Policy - CONTINUED                                                                                                                                                                                              
+Apex may use "cookies" in order to provide better service, to facilitate its customers’ use of the website, to track usage of the website, and to address security hazards. A cookie is a small 
+piece of information that a website stores on a personal computer, and which it can later retrieve.
+Changes to Apex’s Privacy Policy
+Apex reserves the right to make changes to this policy.
+How to Get in Touch with Apex about this Privacy Policy
+For reference, this Privacy Policy is available on our website at www.apexclearing.com. For more information relating to Apex’s Privacy Policy or to limit our sharing of your personal 
+information, please contact:
+Apex Clearing Corporation
+Attn: Compliance Department 350 N. St. Paul St., Suite 1300
+Dallas, Texas 75201 
+cs@apexclearing.com
+A  C  C  O  U  N  T    S  T  A  T  E  M  E  N  T
