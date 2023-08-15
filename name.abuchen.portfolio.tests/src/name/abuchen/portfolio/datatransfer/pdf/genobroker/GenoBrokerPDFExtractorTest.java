@@ -22,15 +22,19 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.GenoBrokerPDFExtractor;
@@ -68,6 +72,35 @@ public class GenoBrokerPDFExtractorTest
                         hasSource("Kauf01.txt"), hasNote("Auftragsnummer: 00000000 | Limit billigst"), //
                         hasAmount("EUR", 967.47), hasGrossValue("EUR", 926.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 32.95 + 5.60 + 2.52))));
+    }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000FPWSL69"), hasWkn("WELT0B"), hasTicker(null), //
+                        hasName("L&G-GERD KOMMER MUL.EQ.ETF REG.SHS USD ACC. ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-19T08:18"), hasShares(500), //
+                        hasSource("Kauf02.txt"), hasNote("Auftragsnummer 422576/44.00 | Limit 10,00 EUR"), //
+                        hasAmount("EUR", 4714.55), hasGrossValue("EUR", 4704.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 0.10))));
     }
 
     @Test
@@ -155,5 +188,50 @@ public class GenoBrokerPDFExtractorTest
                         hasSource("Dividende02.txt"), hasNote("Abrechnungsnr.: 000000000"), //
                         hasAmount("EUR", 6107.09), hasGrossValue("EUR", 9475.70), hasForexGrossValue("CAD", 14133.00),//
                         hasTaxes("EUR", 2368.93 + 947.57 + 52.11), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFusion01()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
+
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US69327R1014"), hasWkn("A1JZ02"), hasTicker(null), //
+                        hasName("PDC ENERGY INC. REGISTERED SHARES DL -,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1667641005"), hasWkn("852552"), hasTicker(null), //
+                        hasName("CHEVRON CORP. REGISTERED SHARES DL-,75"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        inboundDelivery( //
+                            hasDate("2023-08-07"), hasShares(23.19), //
+                            hasSource("Fusion01.txt"), hasNote(null), //
+                            hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                            hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                            hasDate("2023-08-07"), hasShares(50.00), //
+                            hasSource("Fusion01.txt"), hasNote(null), //
+                            hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                            hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }

@@ -4,6 +4,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -25,6 +30,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDeliveryInOutBoundTransaction();
     }
 
     @Override
@@ -91,9 +97,10 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Ausmachender Betrag 967,47 EUR
+                        // Ausmachender Betrag 4.714,55- EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> { //
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -221,6 +228,84 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addDeliveryInOutBoundTransaction()
+    {
+        DocumentType type = new DocumentType("Fusion", (context, lines) -> {
+            Pattern pDate = Pattern.compile("^Ex\\-Tag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+
+            for (String line : lines)
+            {
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                {
+                    context.put("date", mDate.group("date"));
+                    break;
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Einbuchung|Ausbuchung).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                        // @formatter:off
+                        // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Einbuchung|Ausbuchung).*$") //
+                        .assign((t, v) -> { //
+                            if (v.get("type").contains("Ausbuchung"))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        // @formatter:off
+                        // Gattungsbezeichnung ISIN
+                        // Stück 50- PDC ENERGY INC. US69327R1014 (A1JZ02)
+                        // REGISTERED SHARES DL -,01
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "nameContinued") //
+                        .find("(Einbuchung|Ausbuchung).*") //
+                        .match("^St.ck [\\.,\\d]+(\\-)? (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .assign((t, v) -> { //
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDateTime(asDate(context.get("date")));
+
+                            // No amount available
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            t.setCurrencyCode("EUR");
+                            t.setAmount(0);
+                        })
+
+                        // @formatter:off
+                        // Stück 50- PDC ENERGY INC.                    US69327R1014 (A1JZ02)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+)(\\-)? .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
