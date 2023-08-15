@@ -65,7 +65,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
     {
         // migrate filter definitions
         ConfigurationSet set = client.getSettings()
-                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_DEFINITIONS.getKey());
+                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_DEFINITIONS);
         set.clear();
         newConfigurations.forEach(set::add);
     }
@@ -110,7 +110,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
     private void migrateSelectedFiltersIntoClient(List<Configuration> newConfigurations)
     {
         ConfigurationSet set = client.getSettings()
-                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION.getKey());
+                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION);
         set.clear();
 
         loadSelectedFilters(newConfigurations).forEach(set::add);

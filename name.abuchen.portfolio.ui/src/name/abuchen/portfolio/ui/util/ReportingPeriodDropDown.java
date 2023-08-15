@@ -67,7 +67,10 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
                 doSelect(period);
 
                 if (!periods.contains(period))
+                {
                     periods.add(period);
+                    part.getClient().touch();
+                }
 
                 if (listener != null)
                     listener.reportingPeriodUpdated();
@@ -92,6 +95,8 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
                     doSelect(periods.get(0));
                     listener.reportingPeriodUpdated();
                 }
+
+                part.getClient().touch();
             }
         }));
     }

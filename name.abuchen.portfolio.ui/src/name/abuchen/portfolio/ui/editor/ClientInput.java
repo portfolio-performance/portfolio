@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.editor;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +10,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +45,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
+import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -60,9 +65,6 @@ import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class ClientInput
 {
-    // compatibility: the value used to be stored in the AbstractHistoricView
-    private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
-
     public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
 
     private String label;
@@ -73,7 +75,7 @@ public class ClientInput
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
-    private List<ReportingPeriod> reportingPeriods;
+    private ArrayList<ReportingPeriod> reportingPeriods; // NOSONAR mutable
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
@@ -211,6 +213,7 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
+                storeReportingPeriods();
                 ClientFactory.save(client, clientFile);
                 storePreferences(false);
 
@@ -250,6 +253,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
+                storeReportingPeriods();
                 ClientFactory.saveAs(client, clientFile, pwd, flags);
                 storePreferences(true);
 
@@ -285,6 +289,7 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
+                storeReportingPeriods();
                 ClientFactory.exportAs(client, localFile, null, flags);
             }
             catch (IOException e)
@@ -349,6 +354,7 @@ public class ClientInput
             String backupName = constructFilename(clientFile, "autosave"); //$NON-NLS-1$
             File autosaveFile = clientFile.toPath().resolveSibling(backupName).toFile();
 
+            storeReportingPeriods();
             try
             {
                 ClientFactory.save(client, autosaveFile);
@@ -459,8 +465,6 @@ public class ClientInput
         if (clientFile == null)
             return;
 
-        storeReportingPeriods();
-
         if (!forceWrite && !preferenceStore.needsSaving())
             return;
 
@@ -529,39 +533,72 @@ public class ClientInput
         }
     }
 
-    public List<ReportingPeriod> getReportingPeriods()
+    public ArrayList<ReportingPeriod> getReportingPeriods()
     {
         if (reportingPeriods != null)
             return reportingPeriods;
 
-        List<ReportingPeriod> answer = new ArrayList<>();
+        ArrayList<ReportingPeriod> answer = (ArrayList<ReportingPeriod>) client.getSettings()
+                        .getConfigurationSet(WellKnownConfigurationSets.REPORTING_PERIODS) //
+                        .getConfigurations().map(c -> reportingPeriodStringToReportingPeriod(c.getData())) //
+                        .filter(java.util.Optional::isPresent) //
+                        .map(java.util.Optional::get).collect(toMutableList());
 
-        String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
-        if (config != null && config.trim().length() > 0)
+        // if periods not in client file, load them from settings file (legacy)
+        boolean storeBack = false;
+        if (answer.isEmpty())
         {
-            String[] codes = config.split(";"); //$NON-NLS-1$
-            for (String c : codes)
-            {
-                try
-                {
-                    answer.add(ReportingPeriod.from(c));
-                }
-                catch (IOException | RuntimeException ignore)
-                {
-                    PortfolioPlugin.log(ignore);
-                }
-            }
+            storeBack = true;
+            answer = legacyStringToReportingPeriods(preferenceStore.getString("AbstractHistoricView")); //$NON-NLS-1$
         }
 
         if (answer.isEmpty())
         {
-            for (int ii = 1; ii <= 3; ii++)
-                answer.add(new ReportingPeriod.LastX(ii, 0));
+            answer = defaultReportingPeriods();
         }
 
         reportingPeriods = answer;
 
+        // immediately store periods in case they were loaded from legacy
+        if (storeBack)
+        {
+            storeReportingPeriods();
+            touch();
+        }
+
         return reportingPeriods;
+    }
+
+    private static ArrayList<ReportingPeriod> defaultReportingPeriods()
+    {
+        var answer = new ArrayList<ReportingPeriod>();
+        for (int ii = 1; ii <= 3; ii++)
+            answer.add(new ReportingPeriod.LastX(ii, 0));
+        return answer;
+    }
+
+    private static java.util.Optional<ReportingPeriod> reportingPeriodStringToReportingPeriod(String code)
+    {
+        try
+        {
+            return java.util.Optional.of(ReportingPeriod.from(code));
+        }
+        catch (IOException | RuntimeException ignore)
+        {
+            PortfolioPlugin.log(ignore);
+        }
+        return java.util.Optional.empty();
+    }
+
+    private ArrayList<ReportingPeriod> legacyStringToReportingPeriods(String string)
+    {
+        if (string == null || string.trim().length() <= 0)
+            return new ArrayList<>();
+
+        return (ArrayList<ReportingPeriod>) Arrays.stream(string.split(";")) //$NON-NLS-1$
+                        .map(c -> reportingPeriodStringToReportingPeriod(c))
+                        .filter(java.util.Optional::isPresent) //
+                        .map(java.util.Optional::get).collect(toMutableList());
     }
 
     private void storeReportingPeriods()
@@ -569,11 +606,9 @@ public class ClientInput
         if (reportingPeriods == null)
             return;
 
-        StringBuilder buf = new StringBuilder();
-        for (ReportingPeriod p : reportingPeriods)
-            buf.append(p.getCode()).append(';');
-
-        getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
+        var set = client.getSettings().getConfigurationSet(WellKnownConfigurationSets.REPORTING_PERIODS);
+        set.clear();
+        reportingPeriods.forEach(rp -> set.add(new Configuration("", "", rp.getCode()))); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Inject
@@ -692,10 +727,7 @@ public class ClientInput
 
         loadPreferences();
 
-        if (client.shouldDoFilterMigration())
-        {
-            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
-        }
+        upgradePreferences(preferenceStore, client);
 
         scheduleOnlineUpdateJobs();
 
@@ -709,6 +741,14 @@ public class ClientInput
                 Dialog dialog = new ClientMigrationDialog(Display.getDefault().getActiveShell(), client);
                 dialog.open();
             });
+        }
+    }
+
+    private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
+    {
+        if (client.shouldDoFilterMigration())
+        {
+            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
         }
     }
 

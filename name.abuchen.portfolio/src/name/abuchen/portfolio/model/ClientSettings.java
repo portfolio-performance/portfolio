@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
+import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
 
 public class ClientSettings
 {
@@ -213,6 +214,11 @@ public class ClientSettings
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    public ConfigurationSet getConfigurationSet(WellKnownConfigurationSets wellKnown)
+    {
+        return getConfigurationSet(wellKnown.getKey());
     }
 
     public Set<Map.Entry<String, ConfigurationSet>> getConfigurationSets()

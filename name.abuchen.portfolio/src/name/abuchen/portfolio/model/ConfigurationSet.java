@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -19,7 +20,8 @@ public class ConfigurationSet
          */
         CLIENT_FILTER_DEFINITIONS("client-filter-definitions"), //$NON-NLS-1$
         /** selected client filter in views; view name is key */
-        CLIENT_FILTER_SELECTION("client-filter-selection"); //$NON-NLS-1$
+        CLIENT_FILTER_SELECTION("client-filter-selection"), //$NON-NLS-1$
+        REPORTING_PERIODS("REPORTING_PERIODS"); //$NON-NLS-1$
 
         private WellKnownConfigurationSets(String key)
         {
@@ -122,6 +124,7 @@ public class ConfigurationSet
      */
     public void add(Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(configuration);
     }
 
@@ -130,6 +133,7 @@ public class ConfigurationSet
      */
     public void add(int index, Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(index, configuration);
     }
 
