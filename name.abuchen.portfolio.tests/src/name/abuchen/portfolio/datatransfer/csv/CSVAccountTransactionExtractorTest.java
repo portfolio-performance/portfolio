@@ -1,13 +1,22 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -493,5 +502,39 @@ public class CSVAccountTransactionExtractorTest
 
         assertThat(results, hasItem(dividend(hasShares(0.00000198))));
         assertThat(results, hasItem(dividend(hasShares(0.00000212))));
+    }
+
+    @Test
+    public void testInterestWithTaxesTransaction()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { //
+                                        "2013-01-01", "11:00:00", // Date + Time
+                                        "", "", "", // ISIN + TickerSymbol + WKN
+                                        "7,5", "EUR", // Amount + Currency
+                                        "INTEREST", // Type
+                                        "", "", //  Security name + Shares
+                                        "Notiz", // Note
+                                        "2,5", "", // Taxes +  Fee
+                                        "", "", "", // account + account2nd + portfolio
+                                        "10", "EUR", // Gross + Gross currency
+                                        "" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(
+                        hasDate("2013-01-01T11:00"), 
+                        hasAmount("EUR", 7.50), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 2.50),  hasFees("EUR", 0.00), //
+                        hasSource(null), hasNote("Notiz"))));
     }
 }

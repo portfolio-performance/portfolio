@@ -185,6 +185,12 @@ import name.abuchen.portfolio.money.Money;
                         t.addUnit(new Unit(Unit.Type.FEE, Money.of(t.getCurrencyCode(), Math.abs(fees))));
                 }
 
+                if (type == Type.INTEREST)
+                {
+                    if (taxes != null && taxes.longValue() != 0)
+                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+                }
+
                 if (security != null && grossAmount.isPresent())
                 {
                     // gross amount can only be relevant if a transaction is
