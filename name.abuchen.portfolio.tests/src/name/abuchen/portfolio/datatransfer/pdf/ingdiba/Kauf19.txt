@@ -1,0 +1,34 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.5
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: MXXXXXX XXXXXXX
+Herrn Direkt-Depot Nr.: 6666666666
+XXXXXX XXXXXXX Datum: 09.08.2023
+Maaaaaaaaaaa Str. 11 Seite: 1 von 1
+11111 Heeeeeeee
+Wertpapierabrechnung Kauf Einmalanlage
+Ordernummer 304273918.001
+ISIN (WKN) LU0328475792 (DBX1A7)
+Wertpapierbezeichnung Xtrackers Stoxx Europe 600
+Inhaber-Anteile 1C o.N.
+Nominale Stück 44,86352
+Kurs (Festpreisgeschäft) EUR 111,02
+Handelsplatz Direktgeschäft Inl.
+Ausführungstag / -zeit 09.08.2023 um 09:04:17 Uhr
+Kurswert EUR 4.980,75
+Handelsplatzgebühr EUR 1,90
+Provision EUR 17,35
+Endbetrag zu Ihren Lasten EUR 5.000,00
+Abrechnungs-IBAN DE49 5001 0777 7777 7777 77
+Valuta 11.08.2023
+Wertpapiere zugunsten Wertpapierrechnung Großbritannien.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8007848813_T
+
+```
