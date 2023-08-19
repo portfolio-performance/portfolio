@@ -307,7 +307,7 @@ public class TastytradePDFExtractorTest
         assertThat(P.getCurrencyCode(), is(CurrencyUnit.USD));
         assertThat(P.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(P.getDateTime(), is(LocalDateTime.parse("2023-06-02T00:00")));
-        assertThat(P.getSecurity().getName(), is("TQQQ 16 Jun 2023 32,000 Put"));
+        assertThat(P.getSecurity().getName(), is("TQQQ 16 Jun 2023 32.000 Put"));
         assertThat(P.getNote(), is("PUT TQQQ 06/16/23 32"));
         assertThat(P.getShares(), is(Values.Share.factorize(100)));
         assertThat(P.getGrossPricePerShare().toMoney(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.42))));
@@ -321,7 +321,7 @@ public class TastytradePDFExtractorTest
         assertThat(P.getCurrencyCode(), is(CurrencyUnit.USD));
         assertThat(P.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(P.getDateTime(), is(LocalDateTime.parse("2023-06-05T00:00")));
-        assertThat(P.getSecurity().getName(), is("TQQQ 16 Jun 2023 35,000 Put"));
+        assertThat(P.getSecurity().getName(), is("TQQQ 16 Jun 2023 35.000 Put"));
         assertThat(P.getNote(), is("PUT TQQQ 06/16/23 35"));
         assertThat(P.getShares(), is(Values.Share.factorize(100)));
         assertThat(P.getGrossPricePerShare().toMoney(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.01))));
@@ -348,7 +348,7 @@ public class TastytradePDFExtractorTest
         assertThat(P.getCurrencyCode(), is(CurrencyUnit.USD));
         assertThat(P.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(P.getDateTime(), is(LocalDateTime.parse("2023-06-15T00:00")));
-        assertThat(P.getSecurity().getName(), is("UPRO 30 Jun 2023 42,000 Put"));
+        assertThat(P.getSecurity().getName(), is("UPRO 30 Jun 2023 42.000 Put"));
         assertThat(P.getNote(), is("PUT UPRO 06/30/23 42"));
         assertThat(P.getShares(), is(Values.Share.factorize(200)));
         assertThat(P.getGrossPricePerShare().toMoney(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(.39))));
@@ -371,7 +371,7 @@ public class TastytradePDFExtractorTest
         assertThat(P.getCurrencyCode(), is(CurrencyUnit.USD));
         assertThat(P.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(P.getDateTime(), is(LocalDateTime.parse("2023-06-16T00:00")));
-        assertThat(P.getSecurity().getName(), is("UPRO 16 Jun 2023 48,000 Call"));
+        assertThat(P.getSecurity().getName(), is("UPRO 16 Jun 2023 48.000 Call"));
         assertThat(P.getNote(), is("Expired: Buy To Close"));
         assertThat(P.getShares(), is(Values.Share.factorize(200)));
         assertThat(P.getGrossPricePerShare().toMoney(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.0))));
@@ -447,7 +447,7 @@ public class TastytradePDFExtractorTest
         assertThat(P.getCurrencyCode(), is(CurrencyUnit.USD));
         assertThat(P.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(P.getDateTime(), is(LocalDateTime.parse("2023-06-09T00:00")));
-        assertThat(P.getSecurity().getName(), is("UPRO 09 Jun 2023 40,000 Call"));
+        assertThat(P.getSecurity().getName(), is("UPRO 09 Jun 2023 40.000 Call"));
         assertThat(P.getNote(), is("Assigned: Buy To Close"));
         assertThat(P.getShares(), is(Values.Share.factorize(500)));
         assertThat(P.getGrossPricePerShare().toMoney(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.))));
