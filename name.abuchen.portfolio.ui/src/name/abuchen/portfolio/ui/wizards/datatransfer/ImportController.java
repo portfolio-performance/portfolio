@@ -72,6 +72,7 @@ public class ImportController
         InsertAction action = new InsertAction(client);
         action.setConvertBuySellToDelivery(page.doConvertToDelivery());
         action.setRemoveDividends(page.doRemoveDividends());
+        action.setRemoveNotesInTransactions(page.doRemoveNotesInTransactions());
 
         for (ExtractedEntry entry : page.getEntries())
         {

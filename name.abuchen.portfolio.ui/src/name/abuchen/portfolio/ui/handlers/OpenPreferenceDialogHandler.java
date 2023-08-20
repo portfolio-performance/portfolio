@@ -28,6 +28,7 @@ import name.abuchen.portfolio.ui.preferences.EODHistoricalDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
+import name.abuchen.portfolio.ui.preferences.ImportWizardPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
 import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
@@ -74,6 +75,8 @@ public class OpenPreferenceDialogHandler
         pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
+
+        pm.addToRoot(new PreferenceNode("importWizard", new ImportWizardPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$

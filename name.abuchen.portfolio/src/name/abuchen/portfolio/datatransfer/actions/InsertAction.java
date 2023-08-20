@@ -23,6 +23,7 @@ public class InsertAction implements ImportAction
     private boolean convertBuySellToDelivery = false;
     private boolean removeDividends = false;
     private boolean investmentPlanItem = false;
+    private boolean addNotesInTransactions = true;
 
     public InsertAction(Client client)
     {
@@ -44,6 +45,11 @@ public class InsertAction implements ImportAction
         this.investmentPlanItem = flag;
     }
 
+    public void setRemoveNotesInTransactions(boolean flag)
+    {
+        this.addNotesInTransactions = flag;
+    }
+
     @Override
     public Status process(Security security)
     {
@@ -63,6 +69,9 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(AccountTransaction transaction, Account account)
     {
+        if (!addNotesInTransactions)
+            transaction.setNote(null);
+
         // ensure consistency (in case the user deleted the creation of the
         // security via the dialog)
         if (transaction.getSecurity() != null)
@@ -74,7 +83,7 @@ public class InsertAction implements ImportAction
             AccountTransaction removal = new AccountTransaction(transaction.getDateTime(),
                             transaction.getCurrencyCode(), transaction.getAmount(), null,
                             AccountTransaction.Type.REMOVAL);
-            removal.setNote(transaction.getNote());
+            removal.setNote(!addNotesInTransactions ? null : transaction.getNote());
             removal.setSource(transaction.getSource());
             account.addTransaction(removal);
         }
@@ -85,6 +94,9 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(PortfolioTransaction transaction, Portfolio portfolio)
     {
+        if (!addNotesInTransactions)
+            transaction.setNote(null);
+
         // ensure consistency (in case the user deleted the creation of the
         // security via the dialog)
         process(transaction.getSecurity());
@@ -95,6 +107,9 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
     {
+        if (!addNotesInTransactions)
+            entry.getPortfolioTransaction().setNote(null);
+
         // ensure consistency (in case the user deleted the creation of the
         // security via the dialog)
         process(entry.getPortfolioTransaction().getSecurity());
@@ -152,7 +167,7 @@ public class InsertAction implements ImportAction
             delivery.setDateTime(t.getDateTime());
             delivery.setSecurity(t.getSecurity());
             delivery.setMonetaryAmount(t.getMonetaryAmount());
-            delivery.setNote(t.getNote());
+            delivery.setNote(!addNotesInTransactions ? null : t.getNote());
             delivery.setSource(t.getSource());
             delivery.setShares(t.getShares());
             delivery.addUnits(t.getUnits());
@@ -171,6 +186,9 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(AccountTransferEntry entry, Account source, Account target)
     {
+        if (!addNotesInTransactions)
+            entry.setNote(null);
+
         entry.setSourceAccount(source);
         entry.setTargetAccount(target);
         entry.insert();

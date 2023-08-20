@@ -75,6 +75,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -111,6 +112,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
+    private Button cbRemoveNotesInTransactions;
 
     private final Client client;
     private final Extractor extractor;
@@ -187,6 +189,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbRemoveDividends.getSelection();
     }
 
+    public boolean doRemoveNotesInTransactions()
+    {
+        return cbRemoveNotesInTransactions.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
@@ -243,9 +250,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         cbConvertToDelivery = new Button(container, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
+        cbConvertToDelivery.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.IMPORT_WIZARD_CONVERT_BUYSELL_TO_DELIVERY));
 
         cbRemoveDividends = new Button(container, SWT.CHECK);
         cbRemoveDividends.setText(Messages.LabelRemoveDividends);
+        cbRemoveDividends.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.IMPORT_WIZARD_REMOVE_DIVIDENDS));
+
+        cbRemoveNotesInTransactions = new Button(container, SWT.CHECK);
+        cbRemoveNotesInTransactions.setText(Messages.LabelRemoveNotesInTransactions);
+        cbRemoveNotesInTransactions.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
+                        .getBoolean(UIConstants.Preferences.IMPORT_WIZARD_NOTES));
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -257,7 +273,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
-                        .thenRight(cbRemoveDividends);
+                        .thenRight(cbRemoveDividends) //
+                        .thenRight(cbRemoveNotesInTransactions);
 
         FormDataFactory.startingWith(cbConvertToDelivery) //
                         .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //

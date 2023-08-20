@@ -243,6 +243,20 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+        /**
+         * Preference for the import wizard to convert "BuySell" transactions to "Delivery" transactions
+         */
+        String IMPORT_WIZARD_CONVERT_BUYSELL_TO_DELIVERY = "IMPORT_WIZARD_CONVERT_BUYSELL_TO_DELIVERY"; //$NON-NLS-1$
+
+        /**
+         * Preference for the import wizard for "Dividends" additional one "Withdrawal" generate
+         */
+        String IMPORT_WIZARD_REMOVE_DIVIDENDS = "IMPORT_WIZARD_REMOVE_DIVIDENDS"; //$NON-NLS-1$
+
+        /**
+         * Preference for the import wizard that the notes are set for the transactions
+         */
+        String IMPORT_WIZARD_NOTES = "IMPORT_WIZARD_NOTES"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

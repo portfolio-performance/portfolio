@@ -719,6 +719,7 @@ public class Messages extends NLS
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
     public static String LabelRemoveLogo;
+    public static String LabelRemoveNotesInTransactions;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
@@ -1079,6 +1080,7 @@ public class Messages extends NLS
     public static String PrefDescriptionEODHistoricalData;
     public static String PrefDescriptionMyDividends24;
     public static String PrefDescriptionFinnhub;
+    public static String PrefDescriptionImportWizard;
     public static String PrefDescriptionLeeway;
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
@@ -1118,6 +1120,7 @@ public class Messages extends NLS
     public static String PrefTitleAPIKeys;
     public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;
+    public static String PrefTitleImportWizard;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;

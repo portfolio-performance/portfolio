@@ -44,6 +44,11 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.BACKUP_MODE, BackupMode.getDefault().name());
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, ""); //$NON-NLS-1$
+
+        // Import Wizard
+        store.setDefault(UIConstants.Preferences.IMPORT_WIZARD_CONVERT_BUYSELL_TO_DELIVERY, false);
+        store.setDefault(UIConstants.Preferences.IMPORT_WIZARD_REMOVE_DIVIDENDS, false);
+        store.setDefault(UIConstants.Preferences.IMPORT_WIZARD_NOTES, true);
     }
 
     public static int compareOSVersion(String version)
