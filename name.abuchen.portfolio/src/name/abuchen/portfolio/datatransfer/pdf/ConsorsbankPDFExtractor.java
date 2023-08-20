@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^(abzgl\\. Kapitalertragssteuer|KAPST) anteilig 50,00.*$");
+        Pattern pJointAccount = Pattern.compile("^.*(?i)(Kapitalertragssteuer|KAPST) ([\\s]+)?(anteilig|ANTEILIG) 50,00.*$");
 
         for (String line : lines)
         {
@@ -259,15 +260,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 //       UMGER. ZUM DEVISENKURS  USD        0,882100   EUR                  56,68
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxCurrency", "fxGross", "gross", "exchangeRate", "baseCurrency", "termCurrency")
-                                        .match("^Kurswert (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
+                                        .attributes("fxGross", "gross", "exchangeRate", "baseCurrency", "termCurrency")
+                                        .match("^Kurswert [\\w]{3} (?<fxGross>[\\.,\\d]+)$")
                                         .match("^([\\s]+)?(umger\\. zum Devisenkurs|UMGER\\. ZUM DEVISENKURS) ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?(?<gross>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("baseCurrency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -278,16 +279,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs 1,174000 EUR / USD
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "gross", "currency", "baseCurrency", "termCurrency", "exchangeRate")
-                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "gross", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -298,16 +299,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs 1,067400 EUR / USD
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "gross", "currency", "baseCurrency", "termCurrency", "exchangeRate")
-                                        .match("^Nettoinventarwert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "gross", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Nettoinventarwert (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^Kurswert in [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -319,33 +320,51 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Zwischensumme 7.284,43 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "baseCurrency", "termCurrency", "exchangeRate")
-                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .attributes("fxGross", "baseCurrency", "termCurrency", "exchangeRate")
+                                        .match("^Kurswert (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(t.getAccountTransaction().getCurrencyCode(), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
                         )
 
                 // @formatter:off
+                // KAUF AM 15.01.2015  UM 08:13:35 MUENCHEN NR. 12345670.001
+                // Verkauf AM 16.05.2008 UM 16:04:03 IN INL.AUSSERBOERSLICH NR.29541397.001
+                // @formatter:on
+                .section("note").optional()
+                .match("^.*NR\\.([\\s])?(?<note>[\\d]+\\.[\\d]{3}).*$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // @formatter:off
                 // Limitkurs  5,500000 EUR
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Limitkurs .*)")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(trim(v.get("note")));
+                })
 
                 // @formatter:off
                 // Ursprungs-WKN 549532
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Ursprungs-WKN .*)")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
+                    else
+                        t.setNote(trim(v.get("note")));
+                })
 
                 .wrap(BuySellEntryItem::new);
 
@@ -355,10 +374,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(?i)(Dividendengutschrift|Ertragsgutschrift)");
+        DocumentType type = new DocumentType("(?i)(Dividendengutschrift|Ertragsgutschrift|ERTRAGSTHESAURIERUNG)", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(?i)(Dividendengutschrift|Ertragsgutschrift).*$");
+        Block block = new Block("^(?i)(Dividendengutschrift|Ertragsgutschrift|ERTRAGSTHESAURIERUNG)([\\s]+)?$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
             .subject(() -> {
@@ -371,8 +390,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Storno wegen geänderten steuerrelevanten Daten. Neuabrechnung folgt.
                 .section("type").optional()
                 .match("^(?<type>Storno) .*$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                 .oneOf(
                                 // @formatter:off
@@ -386,7 +404,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         .match("^ST ([\\s]+)?[\\.,\\d]+ ([\\s]+)?WKN: ([\\s]+)?(?<wkn>[A-Z0-9]{6}).*$")
                                         .match("^(?<name>.*)$")
                                         .match("^(?<nameContinued>.*)$")
-                                        .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|ERTRAGSAUSSCHUETTUNG P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
+                                        .match("^(?i)(ZINS-\\/DIVIDENDENSATZ|(ERTRAGSAUSSCHUETTUNG|ERTRAGSTHESAURIERUNG) P\\. ST\\.) .* ([\\s]+)?(?<currency>[\\w]{3}) SCHLUSSTAG PER [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                                 ,
                                 // @formatter:off
@@ -462,6 +480,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // GUTSCHRIFT AUS STEUERLIQUIDITAET              EUR                  1,92
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^(?i)GUTSCHRIFT AUS STEUERLIQUIDITAET ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<amount>[\\.,\\d]+).*$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // @formatter:off
                                 // UMGER.ZUM DEV.-KURS                 1,093000  EUR                285,60
                                 // @formatter:on
                                 section -> section
@@ -479,18 +508,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // UMGER.ZUM DEV.-KURS                 1,104300  EUR                138,55
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxCurrency", "fxGross", "exchangeRate", "currency")
-                                        .match("^BRUTTO ([\\s]+)?(?<fxCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
-                                        .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
+                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency")
+                                        .match("^BRUTTO ([\\s]+)?(?<termCurrency>[\\w]{3}) ([\\s]+)?(?<fxGross>[\\.,\\d]+).*$")
+                                        .match("^UMGER\\.ZUM DEV\\.\\-KURS ([\\s]+)?(?<exchangeRate>[\\.,\\d]+) ([\\s]+)?(?<baseCurrency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+.*$")
                                         .assign((t, v) -> {
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -502,17 +528,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "gross", "currency", "baseCurrency", "termCurrency")
-                                        .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
+                                        .attributes("fxGross", "exchangeRate", "gross", "baseCurrency", "termCurrency")
+                                        .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
                                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3})$")
-                                        .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .match("Netto zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$")
+                                        .find("Netto zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -525,18 +551,18 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
                                 // @formatter:on
                                 section -> section
-                                        .attributes("gross", "currency", "exchangeRate", "fxGross", "fxCurrency", "termCurrency", "baseCurrency")
-                                        .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) [\\w]{3} \\/ [\\w]{3}$")
-                                        .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("Netto in (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
-                                        .match("Netto in (?<termCurrency>[\\w]{3}) zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}$")
+                                        .attributes("gross", "exchangeRate", "fxGross", "termCurrency", "baseCurrency")
+                                        .match("^Brutto in [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3})$")
+                                        .match("^Brutto in [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("Netto in [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                                        .match("Netto in [\\w]{3} zugunsten IBAN .* [\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -545,13 +571,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 .conclude(ExtractorUtils.fixGrossValueA())
 
                 .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                    {
-                        TransactionItem item = new TransactionItem(t);
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (ctx.getString(FAILURE) != null)
                         item.setFailureMessage(ctx.getString(FAILURE));
-                        return item;
-                    }
-                    return null;
+
+                    return item;
                 });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -881,14 +906,21 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 // Franzoesische Finanztransaktionssteuer 0,30% EUR 0,07
                 // @formatter:on
                 .section("tax", "currency").optional()
-                .match("^Franzoesische Finanztransaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .match("^.* Finanztransaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
+                .assign((t, v) -> processTaxEntries(t, v, type))
+
+                // @formatter:off
+                // Spanische Finanztransaktionssteuer 0,20% 2,00 EUR
+                // @formatter:on
+                .section("tax", "currency").optional()
+                .match("^.* Finanztransaktionssteuer [\\.,\\d]+% (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
                 // @formatter:off
                 // QUST 15,00000  %   EUR                 24,45  USD                 27,00
                 // @formatter:on
                 .section("withHoldingTax", "currency").optional()
-                .match("^QUST [\\.,\\d]+ ([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+) .*$")
+                .match("^QUST [\\.,\\d]+ ([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // @formatter:off
@@ -918,10 +950,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalertragsteuer (Account)
+                //
                 // abzgl. Kapitalertragsteuer 25,00 % von 5,02 EUR 1,26 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
-                .match("^abzgl\\. Kapitalertragsteuer [\\.,\\d]+ % von [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^abzgl\\. Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% von [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
@@ -929,6 +962,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalertragsteuer (Account)
+                //
                 // abzgl. Kapitalertragssteuer 25,00% 97,47 EUR 24,37 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -940,6 +974,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalertragsteuer (Account)
+                //
                 // abzgl. Kapitalertragsteuer 2,06 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -951,6 +986,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalertragsteuer (Account)
+                //
                 // KAPST 24,45% EUR 198,08
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -962,12 +998,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalerstragsteuer (Joint Account)
+                //
                 // KAPST anteilig 50,00% 25,00% EUR 0,50
                 // KAPST anteilig 50,00% 25,00% EUR 0,50
+                // KAPST               ANTEILIG 50,00 %  25,00 % EUR                  0,30
+                // KAPST               ANTEILIG 50,00 %  24,45 % EUR                  0,29
                 // @formatter:on
                 .section("tax1", "currency1", "tax2", "currency2").optional()
-                .match("^KAPST anteilig [\\.,\\d]+% [\\.,\\d]+% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
-                .match("^KAPST anteilig [\\.,\\d]+% [\\.,\\d]+% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
+                .match("^KAPST ([\\s]+)?(anteilig|ANTEILIG) [\\.,\\d]+([\\s]+)?% ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) ([\\s]+)?(?<tax1>[\\.,\\d]+).*$")
+                .match("^KAPST ([\\s]+)?(anteilig|ANTEILIG) [\\.,\\d]+([\\s]+)?% ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) ([\\s]+)?(?<tax2>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
@@ -985,6 +1024,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kapitalerstragsteuer (Joint Account)
+                //
                 // abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,72 EUR 52,18 EUR
                 // abzgl. Kapitalertragssteuer anteilig 50,00% 25,00% 208,72 EUR 52,18 EUR
                 // @formatter:on
@@ -1008,10 +1048,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Solitaritätszuschlag (Account)
+                //
+                // SOLZ 5,50% EUR 10,89
                 // SOLZ                                   5,50 % EUR                  6,10
                 // @formatter:on
                 .section("tax", "currency").optional()
-                .match("^SOLZ ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
+                .match("^SOLZ ([\\s]+)?[\\.,\\d]+([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
@@ -1019,6 +1061,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Solitaritätszuschlag (Account)
+                //
                 // abzgl. Solidaritätszuschlag 5,50 % von 1,26 EUR 0,06 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -1030,6 +1073,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Solitaritätszuschlag (Account)
+                //
                 // abzgl. Solidaritätszuschlag 5,50% 24,37 EUR 1,34 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -1041,6 +1085,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Solitaritätszuschlag (Account)
+                //
                 // abzgl. Solidaritätszuschlag 0,10 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -1051,24 +1096,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // @formatter:off
-                // Solitaritätszuschlag (Account)
-                // SOLZ 5,50% EUR 10,89
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^SOLZ [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
-                        processTaxEntries(t, v, type);
-                })
-
-                // @formatter:off
                 // Solitaritätszuschlag (Joint Account)
+                //
                 // SOLZ 5,50% EUR 0,02
                 // SOLZ 5,50% EUR 0,02
+                // SOLZ                                   5,50 % EUR                  0,01
+                // SOLZ                                   5,50 % EUR                  0,01
                 // @formatter:on
                 .section("tax1", "currency1", "tax2", "currency2").optional()
-                .match("^SOLZ [\\.,\\d]+% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
-                .match("^SOLZ [\\.,\\d]+% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
+                .match("^SOLZ ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) ([\\s]+)?(?<tax1>[\\.,\\d]+).*$")
+                .match("^SOLZ ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) ([\\s]+)?(?<tax2>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
@@ -1086,6 +1123,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Solidaritätszuschlag (Joint Account)
+                //
                 // abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
                 // abzgl. Solidaritätszuschlag 5,50% 52,18 EUR 2,86 EUR
                 // @formatter:on
@@ -1109,10 +1147,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kirchensteuer (Account)
+                //
+                // KIST 9,00% EUR 17,82
                 // KIST                                   5,50 % EUR                  6,10
                 // @formatter:on
                 .section("tax", "currency").optional()
-                .match("^KIST ([\\s]+)?[\\.,\\d]+ % ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
+                .match("^KIST ([\\s]+)?[\\.,\\d]+([\\s]+)?% ([\\s]+)?(?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                         processTaxEntries(t, v, type);
@@ -1120,6 +1160,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kirchensteuer (Account)
+                //
                 // abzgl. Kirchensteuer 9,00 % von 8,93 EUR 0,80 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -1131,6 +1172,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kirchensteuer (Account)
+                //
                 // abzgl. Kirchensteuer 5,50% 24,37 EUR 1,34 EUR
                 // @formatter:on
                 .section("tax", "currency").optional()
@@ -1141,24 +1183,16 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                 })
 
                 // @formatter:off
-                // Kirchensteuer (Account)
-                // KIST 9,00% EUR 17,82
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^KIST [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
-                        processTaxEntries(t, v, type);
-                })
-
-                // @formatter:off
                 // Kirchensteuer (Joint Account)
+                //
                 // KIST 9,00% EUR 1,00
                 // KIST 9,00% EUR 1,00
+                // KIST                                   9,00 % EUR                  0,02
+                // KIST                                   9,00 % EUR                  0,02
                 // @formatter:on
                 .section("tax1", "currency1", "tax2", "currency2").optional()
-                .match("^KIST [\\.,\\d]+% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$")
-                .match("^KIST [\\.,\\d]+% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$")
+                .match("^KIST ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) ([\\s]+)?(?<tax1>[\\.,\\d]+).*$")
+                .match("^KIST ([\\s]+)?[\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) ([\\s]+)?(?<tax2>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
@@ -1176,12 +1210,29 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Kirchensteuer (Joint Account)
+                // It is possible with joint account that only one pays church taxes
+                //
+                // KIST                                   9,00 % EUR                  0,02
+                // @formatter:on
+                .section("tax", "currency").optional()
+                .match("^KIST ([\\s]+)?[\\.,\\d]+ % (?<currency>[\\w]{3}) ([\\s]+)?(?<tax>[\\.,\\d]+).*$")
+                .assign((t, v) -> {
+                    if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
+                    {
+                        // Account 1
+                        processTaxEntries(t, v, type);
+                    }
+                })
+
+                // @formatter:off
+                // Kirchensteuer (Joint Account)
+                //
                 // abzgl. Kirchensteuer 9% 52,18 EUR 2,86 EUR
                 // abzgl. Kirchensteuer 9% 52,18 EUR 2,86 EUR
                 // @formatter:on
                 .section("tax1", "currency1", "tax2", "currency2").optional()
-                .match("^abzgl\\. Kirchensteuer [\\.,\\d]+% [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+) (?<currency1>[\\w]{3})$")
-                .match("^abzgl\\. Kirchensteuer [\\.,\\d]+% [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+) (?<currency2>[\\w]{3})$")
+                .match("^abzgl\\. Kirchensteuer [\\.,\\d]+([\\s]+)?% [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+) (?<currency1>[\\w]{3}).*$")
+                .match("^abzgl\\. Kirchensteuer [\\.,\\d]+([\\s]+)?% [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+) (?<currency2>[\\w]{3}).*$")
                 .assign((t, v) -> {
                     if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                     {
@@ -1349,9 +1400,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                 // @formatter:off
                 // Handelsplatzkosten 1,95 EUR
+                // abzgl. Handelsplatzkosten 1,95 EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^(?i)Handelsplatzkosten (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^(?i)(abzgl\\. )?Handelsplatzkosten (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
