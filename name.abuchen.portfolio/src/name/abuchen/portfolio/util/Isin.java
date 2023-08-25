@@ -26,7 +26,7 @@ public class Isin
         // are considered invalid codes because some institutions use them
         // internally
 
-        // see https://github.com/buchen/portfolio/issues/1761
+        // see https://github.com/portfolio-performance/portfolio/issues/1761
 
         if (INVALID_CODES.contains(isin.substring(0, 2)))
             return true;
