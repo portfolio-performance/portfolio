@@ -83,7 +83,7 @@ public class OSXStartupAddon
                     public void widgetSelected(SelectionEvent event)
                     {
                         executeCommand("name.abuchen.portfolio.ui.command.openBrowser", //$NON-NLS-1$
-                                        UIConstants.Parameter.URL, "https://github.com/buchen/portfolio/releases"); //$NON-NLS-1$
+                                        UIConstants.Parameter.URL, "https://github.com/portfolio-performance/portfolio/releases"); //$NON-NLS-1$
                     }
                 });
 
