@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -32,6 +33,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("SUTOR BANK");
 
         addBuySellTransaction();
+        addBuySellCryptoTransaction();
         addDividendeTransaction();
         addAccountStatementTransaction();
     }
@@ -44,7 +46,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)");
+        DocumentType type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)", "ABRECHNUNG KRYPTOHANDEL");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -217,6 +219,97 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
 
                     return new BuySellEntryItem(t);
                 });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        DocumentType type = new DocumentType("ABRECHNUNG KRYPTOHANDEL");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^ABRECHNUNG KRYPTOHANDEL$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // If type is "Verkauf" change from BUY to SELL
+                .section("type").optional()
+                .match("^Transaktionsart: (?<type>(Kauf|Verkauf))$")
+                .assign((t, v) -> {
+                    if ("Verkauf".equals(v.get("type")))
+                        t.setType(PortfolioTransaction.Type.SELL);
+                })
+
+                // @formatter:off
+                // Produktbezeichnung - Bitcoin
+                // Kennung: BTC
+                // Währung: EUR
+                // @formatter:on
+                .section("name", "tickerSymbol", "currency")
+                .match("^Produktbezeichnung \\- (?<name>.*)$")
+                .match("^Kennung: (?<tickerSymbol>[A-Z]*)$")
+                .match("^W.hrung: (?<currency>[\\w]{3})$")
+                .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
+
+                // @formatter:off
+                // Stück / Nominale: 0,031
+                // @formatter:on
+                .section("shares")
+                .match("^St.ck \\/ Nominale: (?<shares>[\\.,\\d]+)$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // Orderausführung Datum / Zeit: 13. Februar 2021 04:21:59
+                // @formatter:on
+                .section("time").optional()
+                .match("^.* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                .oneOf(
+                                // @formatter:off
+                                // Orderausführung Datum / Zeit: 13. Februar 2021 04:21:59
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Orderausf.hrung Datum \\/ Zeit: (?<date>[\\d]{1,2}\\. .* [\\d]{4}).*$")
+                                        .assign((t, v) -> {
+                                            if (type.getCurrentContext().get("time") != null)
+                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
+                                            else
+                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                        })
+                        )
+
+                .oneOf(
+                                // @formatter:off
+                                // Ausmachender Betrag: €1.220,89
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
+
+                // @formatter:off
+                // Handelsreferenz: 61ccf74741c06f001232ead6
+                // @formatter:on
+                .section("note").optional()
+                .match("^(?<note>Handelsreferenz: .*)$")
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
