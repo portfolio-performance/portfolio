@@ -1,0 +1,37 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr justTRADE
+Max Mustermann Ein Service der Sutor Bank
+Musterstraße 999 JT Technologies GmbH
+99999 Musterstadt Kaiserhofstraße 1660313 Frankfurt am Main
+Email: service@justtrade.com
+Kundennummer: 547190 Web: www.justtrade.com
+ABRECHNUNG KRYPTOHANDEL
+Sehr geehrter Herr Max Mustermann,
+dieses Dokument ist eine Bestätigung Ihrer Kryptotransaktion.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE - Kundenservice. Sie 
+finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Bitcoin
+Kennung: BTC
+Währung: EUR
+Handels- / Ausführungsplatz: Sutor Bank
+Handelsreferenz: 602745d566400f001a9eea76
+Orderausführung Datum / Zeit: 13. Februar 2021 04:21:59
+Valutatag Datum: 15. Februar 2021
+Transaktionsart: Verkauf
+Kurs: €39.383,4900
+Stück / Nominale: 0,031
+Kurswert: €1.220,89
+Ausmachender Betrag: €1.220,89
+Bitte beachten Sie, dass Gewinne aus Geschäften mit Kryptowährungen im Gegensatz zu Gewinnen aus 
+Wertpapiergeschäften nicht der Abgeltungssteuer unterliegen und nach einem Jahr Haltedauer steuerfrei sind. Die 
+bei einer kürzeren Haltedauer anfallenden Steuern sind von Ihnen im Rahmen der Einkommenssteuererklärung zu 
+deklarieren und an das zuständige Finanzamt abzuführen. Sprechen Sie hierzu ggf. mit Ihrem Steuerberater.
+MAX HEINR. SUTOR OHG TELEFON: 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX: 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

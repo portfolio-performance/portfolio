@@ -216,7 +216,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         try
         {
-            String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+            String tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
 
             var coins = lookupFeed().getCoins();
             return coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol)).findAny();
