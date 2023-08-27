@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -36,10 +37,15 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.GenoBrokerPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
@@ -69,7 +75,7 @@ public class GenoBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-06-30T09:57"), hasShares(30), //
-                        hasSource("Kauf01.txt"), hasNote("Auftragsnummer: 00000000 | Limit billigst"), //
+                        hasSource("Kauf01.txt"), hasNote("Limit billigst"), //
                         hasAmount("EUR", 967.47), hasGrossValue("EUR", 926.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 32.95 + 5.60 + 2.52))));
     }
@@ -98,9 +104,73 @@ public class GenoBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-07-19T08:18"), hasShares(500), //
-                        hasSource("Kauf02.txt"), hasNote("Auftragsnummer 422576/44.00 | Limit 10,00 EUR"), //
+                        hasSource("Kauf02.txt"), hasNote("Auftragsnummer: 422576/44.00 | Limit 10,00 EUR"), //
                         hasAmount("EUR", 4714.55), hasGrossValue("EUR", 4704.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 0.10))));
+    }
+
+    @Test
+    public void testWertpapierKauf03()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA5408991019"), hasWkn("A3EMQR"), hasTicker(null), //
+                        hasName("LOGAN ENERGY CORP. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-03T12:00"), hasShares(2100), //
+                        hasSource("Kauf03.txt"), hasNote("Auftragsnummer: 896962/04.00"), //
+                        hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), hasForexGrossValue("CAD", 735.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf03WithSecurityInEUR()
+    {
+        Security security = new Security("LOGAN ENERGY CORP. REGISTERED SHARES O.N.", CurrencyUnit.EUR);
+        security.setIsin("CA5408991019");
+        security.setWkn("A3EMQR");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-03T12:00"), hasShares(2100), //
+                        hasSource("Kauf03.txt"), hasNote("Auftragsnummer: 896962/04.00"), //
+                        hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -127,7 +197,7 @@ public class GenoBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-07-25T16:48"), hasShares(2100), //
-                        hasSource("Verkauf01.txt"), hasNote("Auftragsnummer 433499/69.01 | Limit bestens"), //
+                        hasSource("Verkauf01.txt"), hasNote("Auftragsnummer: 433499/69.01 | Limit bestens"), //
                         hasAmount("EUR", 6319.37), hasGrossValue("EUR", 6331.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 12.03 + 0.10))));
     }
