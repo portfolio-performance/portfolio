@@ -11,21 +11,27 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -42,6 +48,9 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
 {
     @Inject
     private IPreferenceStore preferences;
+
+    @Inject
+    Client client;
 
     private Label completeness;
     private Label tradeCalendar;
@@ -89,6 +98,9 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
         Composite missingTable = missingPair.getLeft();
         missing = missingPair.getRight();
 
+        // add context menu to create missing price
+        addContextMenuToAddPrices(missing);
+
         Label unexpectedLabel = new Label(container, SWT.NONE);
         unexpectedLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         unexpectedLabel.setText(Messages.LabelUnexpectedQuotes);
@@ -112,6 +124,27 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                         .thenUp(unexpectedLabel);
 
         return container;
+    }
+
+    private void addContextMenuToAddPrices(TableViewer table)
+    {
+        new ContextMenu(table.getControl(), manager -> {
+
+            var firstElement = table.getStructuredSelection().getFirstElement();
+            if (firstElement == null)
+                return;
+
+            manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
+                SecurityPriceDialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), client,
+                                security);
+                dialog.setDate(((Interval) firstElement).getStart());
+
+                if (dialog.open() != Window.OK)
+                    return;
+
+                client.markDirty();
+            }));
+        }).hook();
     }
 
     protected Pair<Composite, TableViewer> createTable(Composite parent, String showHideColumnHelperSuffix)
