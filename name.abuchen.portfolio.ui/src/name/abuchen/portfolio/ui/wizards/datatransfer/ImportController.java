@@ -77,6 +77,9 @@ public class ImportController
         {
             if (entry.isImported())
             {
+                if (!page.doImportNotesFromSource())
+                    entry.getItem().setNote(null);
+
                 action.setInvestmentPlanItem(entry.getItem().isInvestmentPlanItem());
 
                 // apply security override

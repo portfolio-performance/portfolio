@@ -73,6 +73,7 @@ public interface Extractor
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
+
         public abstract void setSecurity(Security security);
 
         public abstract String getTypeInformation();
@@ -108,6 +109,8 @@ public interface Extractor
         {
             return null;
         }
+
+        public abstract void setNote(String note);
 
         public abstract Status apply(ImportAction action, Context context);
 
@@ -249,11 +252,17 @@ public interface Extractor
         {
             return transaction.getSecurity();
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             transaction.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            transaction.setNote(note);
         }
 
         @Override
@@ -330,11 +339,17 @@ public interface Extractor
         {
             return entry.getAccountTransaction().getSecurity();
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             entry.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
         }
 
         @Override
@@ -406,11 +421,17 @@ public interface Extractor
         {
             return null;
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
         }
 
         @Override
@@ -481,11 +502,17 @@ public interface Extractor
         {
             return entry.getSourceTransaction().getSecurity();
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             entry.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
         }
 
         @Override
@@ -541,11 +568,17 @@ public interface Extractor
         {
             return security;
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            security.setNote(note);
         }
 
         @Override
@@ -595,11 +628,17 @@ public interface Extractor
         {
             return security;
         }
-        
+
         @Override
         public void setSecurity(Security security)
         {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            // not supported; prices have no notes
         }
 
         @Override

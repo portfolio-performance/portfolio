@@ -92,6 +92,23 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+    /**
+     * Preference for the import wizard to convert "BuySell" transactions to
+     * "Delivery" transactions
+     */
+    private static final String IMPORT_CONVERT_BUYSELL_TO_DELIVERY = "IMPORT_CONVERT_BUYSELL_TO_DELIVERY"; //$NON-NLS-1$
+
+    /**
+     * Preference for the import wizard for "Dividends" additional one
+     * "Withdrawal" generate
+     */
+    private static final String IMPORT_REMOVE_DIVIDENDS = "IMPORT_REMOVE_DIVIDENDS"; //$NON-NLS-1$
+
+    /**
+     * Preference for the import wizard that the notes are set for the
+     * transactions
+     */
+    private static final String IMPORT_NOTES = "IMPORT_NOTES"; //$NON-NLS-1$
 
     /**
      * If embedded into the CSV import, the first page can change the parsing
@@ -111,6 +128,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
+    private Button cbImportNotesFromSource;
 
     private final Client client;
     private final Extractor extractor;
@@ -187,6 +205,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbRemoveDividends.getSelection();
     }
 
+    public boolean doImportNotesFromSource()
+    {
+        return cbImportNotesFromSource.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
@@ -243,9 +266,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         cbConvertToDelivery = new Button(container, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
+        cbConvertToDelivery.setSelection(
+                        preferences.getBoolean(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel()));
 
         cbRemoveDividends = new Button(container, SWT.CHECK);
         cbRemoveDividends.setText(Messages.LabelRemoveDividends);
+        cbRemoveDividends.setSelection(preferences.getBoolean(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel()));
+
+        cbImportNotesFromSource = new Button(container, SWT.CHECK);
+        cbImportNotesFromSource.setText(Messages.LabelImportNotesFromSource);
+
+        // default behavior is to import the notes -> check if the key exists
+        // because the boolean value defaults to false
+        var hasKey = preferences.contains(IMPORT_NOTES + extractor.getLabel());
+        cbImportNotesFromSource.setSelection(!hasKey || preferences.getBoolean(IMPORT_NOTES + extractor.getLabel()));
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -257,7 +291,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
-                        .thenRight(cbRemoveDividends);
+                        .thenRight(cbRemoveDividends) //
+                        .thenRight(cbImportNotesFromSource);
 
         FormDataFactory.startingWith(cbConvertToDelivery) //
                         .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
@@ -735,6 +770,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel(), getAccount().getUUID());
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
+
+        preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
+        preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());
+        preferences.setValue(IMPORT_NOTES + extractor.getLabel(), doImportNotesFromSource());
     }
 
     public void setAccount(Account account)
