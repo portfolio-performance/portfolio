@@ -20,6 +20,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -61,6 +62,9 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                             : ValidationStatus.error(Messages.MsgAccountMustBeDifferent);
         }
     }
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @Inject
     private Client client;
@@ -179,6 +183,9 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .suffix(amount.currency, currencyWidth) //
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(target.value.getControl()).right(amount.value).label(lblNote);
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int widest = widest(source.label, target.label, dateTime.label, fxAmount.label, lblNote);
         startingWith(source.label).width(widest);

@@ -1059,7 +1059,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                StockSplitWizard wizard = new StockSplitWizard(view.getStylingEngine(), getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });
@@ -1069,7 +1069,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                CustomEventWizard wizard = new CustomEventWizard(getClient(), security);
+                CustomEventWizard wizard = new CustomEventWizard(view.getStylingEngine(), getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });

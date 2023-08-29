@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -61,6 +62,9 @@ public class CSVImportWizard extends Wizard
     private Client client;
     private IPreferenceStore preferences;
     private CSVImporter importer;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @Inject
     private CSVConfigManager configManager;
@@ -135,7 +139,7 @@ public class CSVImportWizard extends Wizard
     @Override
     public void addPages()
     {
-        definitionPage = new CSVImportDefinitionPage(client, importer, configManager, target != null);
+        definitionPage = new CSVImportDefinitionPage(client, importer, configManager, stylingEngine, target != null);
         if (initialConfig != null)
             definitionPage.setInitialConfiguration(initialConfig);
         addPage(definitionPage);

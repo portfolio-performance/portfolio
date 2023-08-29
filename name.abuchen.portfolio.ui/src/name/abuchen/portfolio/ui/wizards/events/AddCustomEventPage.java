@@ -13,6 +13,7 @@ import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -36,16 +37,19 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class AddCustomEventPage extends AbstractWizardPage
 {
+    private IStylingEngine stylingEngine;
+
     private CustomEventModel model;
     private BindingHelper bindings;
 
-    public AddCustomEventPage(CustomEventModel model)
+    public AddCustomEventPage(IStylingEngine stylingEngine, CustomEventModel model)
     {
         super("add-custom-event"); //$NON-NLS-1$
 
         setTitle(Messages.EventWizardTitle);
         setDescription(Messages.EventWizardDescription);
 
+        this.stylingEngine = stylingEngine;
         this.model = model;
 
         bindings = new BindingHelper(model)
@@ -106,6 +110,9 @@ public class AddCustomEventPage extends AbstractWizardPage
         text.setText("custom message"); //$NON-NLS-1$
 
         // form layout data
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(container);
 
         int labelWidth = widest(labelSecurity, labelDate);
 
