@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -65,6 +66,7 @@ import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class ClientInput
 {
+
     public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
 
     private String label;
@@ -75,7 +77,7 @@ public class ClientInput
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
-    private ArrayList<ReportingPeriod> reportingPeriods; // NOSONAR mutable
+    private ReportingPeriods reportingPeriods;
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
@@ -213,7 +215,6 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
-                storeReportingPeriods();
                 ClientFactory.save(client, clientFile);
                 storePreferences(false);
 
@@ -253,7 +254,6 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                storeReportingPeriods();
                 ClientFactory.saveAs(client, clientFile, pwd, flags);
                 storePreferences(true);
 
@@ -289,7 +289,6 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
-                storeReportingPeriods();
                 ClientFactory.exportAs(client, localFile, null, flags);
             }
             catch (IOException e)
@@ -354,7 +353,6 @@ public class ClientInput
             String backupName = constructFilename(clientFile, "autosave"); //$NON-NLS-1$
             File autosaveFile = clientFile.toPath().resolveSibling(backupName).toFile();
 
-            storeReportingPeriods();
             try
             {
                 ClientFactory.save(client, autosaveFile);
@@ -533,18 +531,25 @@ public class ClientInput
         }
     }
 
-    public ArrayList<ReportingPeriod> getReportingPeriods()
+    public ReportingPeriods getReportingPeriods()
     {
         if (reportingPeriods != null)
             return reportingPeriods;
 
+        reportingPeriods = new ReportingPeriods(this, loadReportingPeriods());
+        return reportingPeriods;
+    }
+
+    /* package */ ArrayList<ReportingPeriod> loadReportingPeriods()
+    {
         ArrayList<ReportingPeriod> answer = (ArrayList<ReportingPeriod>) client.getSettings()
                         .getConfigurationSet(WellKnownConfigurationSets.REPORTING_PERIODS) //
                         .getConfigurations().map(c -> reportingPeriodStringToReportingPeriod(c.getData())) //
                         .filter(java.util.Optional::isPresent) //
                         .map(java.util.Optional::get).collect(toMutableList());
 
-        // if periods not in client file, load them from settings file (legacy)
+        // if periods not in client file, load them from settings file
+        // (legacy)
         boolean storeBack = false;
         if (answer.isEmpty())
         {
@@ -557,16 +562,14 @@ public class ClientInput
             answer = defaultReportingPeriods();
         }
 
-        reportingPeriods = answer;
-
         // immediately store periods in case they were loaded from legacy
         if (storeBack)
         {
-            storeReportingPeriods();
+            storeReportingPeriods(answer.stream());
             touch();
         }
 
-        return reportingPeriods;
+        return answer;
     }
 
     private static ArrayList<ReportingPeriod> defaultReportingPeriods()
@@ -601,14 +604,12 @@ public class ClientInput
                         .map(java.util.Optional::get).collect(toMutableList());
     }
 
-    private void storeReportingPeriods()
+    /* package */ void storeReportingPeriods(Stream<ReportingPeriod> periods)
     {
-        if (reportingPeriods == null)
-            return;
-
         var set = client.getSettings().getConfigurationSet(WellKnownConfigurationSets.REPORTING_PERIODS);
         set.clear();
-        reportingPeriods.forEach(rp -> set.add(new Configuration("", "", rp.getCode()))); //$NON-NLS-1$ //$NON-NLS-2$
+        // null values to not generate XML tags for uuid and name
+        periods.forEach(rp -> set.add(new Configuration(null, null, rp.getCode())));
     }
 
     @Inject
