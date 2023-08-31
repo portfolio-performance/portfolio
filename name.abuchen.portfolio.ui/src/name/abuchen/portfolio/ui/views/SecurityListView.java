@@ -35,6 +35,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityCreatedEvent;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -92,8 +94,6 @@ public class SecurityListView extends AbstractFinanceView
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
                             DomainElement.CONSUMER_PRICE_INDEX.name()));
 
-
-
             manager.add(new Separator());
 
             manager.add(new Action(Messages.SecurityMenuImportCSV)
@@ -129,7 +129,7 @@ public class SecurityListView extends AbstractFinanceView
             manager.add(new Separator());
 
             manager.add(new SimpleAction(Messages.SecurityMenuEmptyInstrument + "...", a -> { //$NON-NLS-1$
-                Security newSecurity = new Security();
+                Security newSecurity = new Security(null, getClient().getBaseCurrency());
                 newSecurity.setFeed(QuoteFeed.MANUAL);
                 newSecurity.setCurrencyCode(getClient().getBaseCurrency());
                 openEditDialog(newSecurity);
@@ -381,16 +381,19 @@ public class SecurityListView extends AbstractFinanceView
 
     @Inject
     @Optional
-    public void onSecurityCreated(@UIEventTopic(UIConstants.Event.Domain.SECURITY_CREATED) Security newSecurity)
+    public void onSecurityCreated(@UIEventTopic(ChangeEventConstants.Security.CREATED) SecurityCreatedEvent event)
     {
+        if (!event.appliesTo(getClient()))
+            return; // if security was created by other client, ignore event
+
         if (watchlist != null)
         {
-            watchlist.addSecurity(newSecurity);
+            watchlist.addSecurity(event.getSecurity());
             getClient().touch();
         }
 
         setSecurityTableInput();
-        securities.getTableViewer().setSelection(new StructuredSelection(newSecurity), true);
+        securities.getTableViewer().setSelection(new StructuredSelection(event.getSecurity()), true);
     }
 
     @Override

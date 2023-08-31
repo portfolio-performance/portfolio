@@ -35,6 +35,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityCreatedEvent;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Exchange;
@@ -126,8 +128,13 @@ public class NewDomainElementHandler
             view.getClient().markDirty();
             new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
 
-            broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+            postSecurityCreatedEvent(view.getClient(), newSecurity);
         }
+    }
+
+    private void postSecurityCreatedEvent(Client client, Security security)
+    {
+        broker.post(ChangeEventConstants.Security.CREATED, new SecurityCreatedEvent(client, security));
     }
 
     private void createNewCryptocurrency(AbstractFinanceView view)
@@ -180,7 +187,7 @@ public class NewDomainElementHandler
                 for (Object object : result)
                 {
                     ResultItem item = (ResultItem) object;
-                    Security newSecurity = item.create(view.getClient().getSettings());
+                    Security newSecurity = item.create(view.getClient());
                     openEditDialog(view, newSecurity);
                 }
             }
@@ -194,9 +201,8 @@ public class NewDomainElementHandler
 
     private void createNewExchangeRate(AbstractFinanceView view)
     {
-        Security newSecurity = new Security();
+        Security newSecurity = new Security(null, view.getClient().getBaseCurrency());
         newSecurity.setFeed(QuoteFeed.MANUAL);
-        newSecurity.setCurrencyCode(view.getClient().getBaseCurrency());
         newSecurity.setTargetCurrencyCode(view.getClient().getBaseCurrency());
         openEditDialog(view, newSecurity);
     }
@@ -208,7 +214,7 @@ public class NewDomainElementHandler
 
         dialog.setTitle(Messages.SecurityMenuNewHICP);
         dialog.setMessage(Messages.SecurityMenuHICPMessage);
-        dialog.setElements(new EurostatHICPQuoteFeed().getExchanges(new Security(), new ArrayList<>()));
+        dialog.setElements(new EurostatHICPQuoteFeed().getExchanges(null, new ArrayList<>()));
 
         if (dialog.open() == Window.OK)
         {
@@ -218,18 +224,16 @@ public class NewDomainElementHandler
             {
                 Exchange region = (Exchange) object;
 
-                Security newSecurity = new Security();
+                Security newSecurity = new Security(region.getName() + " " + Messages.LabelSuffix_HICP, null); //$NON-NLS-1$
                 newSecurity.setFeed(EurostatHICPQuoteFeed.ID);
                 newSecurity.setLatestFeed(QuoteFeed.MANUAL);
-                newSecurity.setCurrencyCode(null);
                 newSecurity.setTickerSymbol(region.getId());
-                newSecurity.setName(region.getName() + " " + Messages.LabelSuffix_HICP); //$NON-NLS-1$
                 newSecurity.setCalendar(TradeCalendarManager.FIRST_OF_THE_MONTH_CODE);
 
                 view.getClient().addSecurity(newSecurity);
                 view.getClient().markDirty();
                 new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
-                broker.post(UIConstants.Event.Domain.SECURITY_CREATED, newSecurity);
+                postSecurityCreatedEvent(view.getClient(), newSecurity);
             }
         }
     }

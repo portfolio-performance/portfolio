@@ -2,12 +2,14 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -343,19 +345,39 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                     t.setNote(v.get("note"));
 
                     // @formatter:off
-                    // If we have fees, then we set the amount to 0.00
+                    // If we have fees, then we skip the transaction
                     //
                     // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
                     // Saldo der Abschlussposten
                     // @formatter:on
                     if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                        t.setAmount(0L);
+                        type.getCurrentContext().putBoolean("skipTransaction", true);
+
+                    // @formatter:off
+                    // If we have security transaction, then we skip the transaction
+                    //
+                    // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
+                    // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
+                    // @formatter:on
+                    if (v.get("note1").contains("WERTPAPIER"))
+                        type.getCurrentContext().putBoolean("skipTransaction", true);
                 })
 
                 .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
+                    TransactionItem item = new TransactionItem(t);
+
+                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                    // If we have multiple entries in the document,
+                    // then the "skipTransaction" flag must be removed.
+                    boolean skipTransaction = !type.getCurrentContext().getBoolean("skipTransaction");
+                    type.getCurrentContext().remove("skipTransaction");
+
+                    if (skipTransaction)
+                        return item;
+                    else
+                        return null;
                 }));
 
         // @formatter:off

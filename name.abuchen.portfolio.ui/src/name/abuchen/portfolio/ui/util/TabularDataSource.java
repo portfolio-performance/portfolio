@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -240,7 +241,7 @@ public class TabularDataSource implements Named
             else if (s2 == null)
                 return 1;
 
-            return s1.compareTo(s2);
+            return TextUtil.compare(s1, s2);
         }
     }
 
@@ -367,6 +368,8 @@ public class TabularDataSource implements Named
             this.builder.accept(data);
         }
 
+        int[] previousWidths = restoreWidthsFromPreferences(owner, data);
+
         Composite container = new Composite(parent, SWT.NONE);
 
         TableColumnLayout tableLayout = new TableColumnLayout();
@@ -385,7 +388,11 @@ public class TabularDataSource implements Named
             TableViewerColumn tableColumn = new TableViewerColumn(tableViewer, column.align);
             tableColumn.getColumn().setText(column.label);
             tableColumn.setLabelProvider(new TabularLabelProvider(client, column, index));
-            tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(column.width));
+
+            if (index < previousWidths.length && previousWidths[index] > 0)
+                tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(previousWidths[index]));
+            else
+                tableLayout.setColumnData(tableColumn.getColumn(), new ColumnPixelData(column.width));
 
             ColumnViewerSorter.create(new ComparatorImplementation(column, index)).attachTo(tableViewer, tableColumn);
         }
@@ -395,7 +402,59 @@ public class TabularDataSource implements Named
 
         hookContextMenu(owner, tableViewer);
 
+        // make sure widths are stored against exactly the source that was used
+        // to create the table -> cannot use instance variable
+        final Builder source = data;
+        tableViewer.getTable().addDisposeListener(e -> storeWidthsToPreferences(owner, tableViewer, source));
+
         return container;
+    }
+
+    private void storeWidthsToPreferences(AbstractFinanceView owner, TableViewer tableViewer, Builder source)
+    {
+        StringBuilder prefValue = new StringBuilder();
+        for (int index = 0; index < tableViewer.getTable().getColumnCount(); index++)
+        {
+            if (index > 0)
+                prefValue.append(',');
+            prefValue.append(tableViewer.getTable().getColumn(index).getWidth());
+        }
+
+        String key = TabularDataSource.class.getSimpleName()
+                        + source.columns.stream().map(c -> c.label).collect(Collectors.joining());
+
+        owner.getPreferenceStore().putValue(key, prefValue.toString());
+    }
+
+    private static int[] restoreWidthsFromPreferences(AbstractFinanceView owner, Builder builder)
+    {
+        try
+        {
+            var preferences = owner.getPreferenceStore();
+
+            String key = TabularDataSource.class.getSimpleName()
+                            + builder.columns.stream().map(c -> c.label).collect(Collectors.joining());
+
+            String value = preferences.getString(key);
+            if (value == null)
+                return new int[0];
+
+            String[] values = value.split(","); //$NON-NLS-1$
+            if (values.length != builder.columns.size())
+                return new int[0];
+
+            int[] widths = new int[values.length];
+            for (int ii = 0; ii < values.length; ii++)
+            {
+                widths[ii] = Integer.parseInt(values[ii]);
+            }
+
+            return widths;
+        }
+        catch (NumberFormatException e)
+        {
+            return new int[0];
+        }
     }
 
     private void hookContextMenu(AbstractFinanceView owner, TableViewer tableViewer)

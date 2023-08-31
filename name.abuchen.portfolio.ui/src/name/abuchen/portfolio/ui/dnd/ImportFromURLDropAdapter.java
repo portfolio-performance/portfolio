@@ -2,8 +2,6 @@ package name.abuchen.portfolio.ui.dnd;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,14 +19,9 @@ import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
-import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
-import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -129,20 +122,7 @@ public class ImportFromURLDropAdapter extends AbstractDropAdapter
                 return;
             }
 
-            Security newSecurity = new Security();
-            newSecurity.setName(result.get().getName());
-            newSecurity.setOnlineId(onlineId);
-            PortfolioReportNet.updateWith(newSecurity, result.get());
-
-            QuoteFeed feed = Factory.getQuoteFeedProvider(PortfolioReportQuoteFeed.ID);
-            List<Exchange> exchanges = feed.getExchanges(newSecurity, new ArrayList<>());
-
-            if (!exchanges.isEmpty())
-            {
-                newSecurity.setFeed(feed.getId());
-                newSecurity.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                exchanges.get(0).getId());
-            }
+            Security newSecurity = PortfolioReportNet.createFrom(result.get(), part.getClient());
 
             Dialog dialog = part.make(EditSecurityDialog.class, newSecurity);
 

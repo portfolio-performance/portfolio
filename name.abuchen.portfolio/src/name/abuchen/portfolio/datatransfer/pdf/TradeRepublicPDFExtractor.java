@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("TRADE REPUBLIC");
 
         addBuySellTransaction();
+        addBuySellCryptoTransaction();
         addSellWithNegativeAmountTransaction();
         addLiquidationTransaction();
         addDividendeTransaction();
@@ -51,11 +53,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
+                        + "|Buy"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
                         + "|SAVINGS PLAN"
                         + "|Ex.cution de l.investissement programm.) .*"
-                        + "|REINVESTIERUNG)");
+                        + "|REINVESTIERUNG)", 
+                        "(ABRECHNUNG CRYPTOGESCH.FT"
+                        + "|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -67,6 +72,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
+                        + "|Buy"
                         + "|Verkauf"
                         + "|Sparplanausf.hrung"
                         + "|SAVINGS PLAN"
@@ -80,10 +86,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .section("type").optional()
                 .match("^((Limit|Stop\\-Market|Market)\\-Order )?"
                                 + "(?<type>(Kauf"
+                                + "|Buy"
                                 + "|Verkauf"
                                 + "|Sparplanausf.hrung"
                                 + "|SAVINGS PLAN"
-                                + "|Ex.cution de l.investissement programm.))"
+                                + "|Ex.cution de l.investissement programm."
+                                + "|REINVESTIERUNG))"
                                 + " .*$")
                 .assign((t, v) -> {
                     if ("Verkauf".equals(v.get("type")))
@@ -160,11 +168,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
                                 // Stop-Market-Order Verkauf am 10.06.2020, um 11:42 Uhr.
                                 // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
+                                // Limit-Order Buy on 28.04.2023 at 11:13 (Europe/Berlin).
                                 // Verkauf am 26.02.2021, um 11:44 Uhr.
                                 // @formatter:on
                                 section -> section
                                         .attributes("date", "time")
-                                        .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                        .match("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Buy|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at) (?<time>[\\d]{2}:[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
                                 // @formatter:off
@@ -268,21 +277,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 2 Barausgleich 0,37 GBP
                 // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
                 // @formatter:on
-                .section("gross", "grossCurrency", "cashCompensation", "cashCompensationCurrency", "exchangeRate", "baseCurrency", "fxCurrency", "currency").optional()
-                .match("^[\\d] Bruttoertrag (?<gross>[\\.,\\d]+) (?<grossCurrency>[\\w]{3})$")
+                .section("gross", "currency", "cashCompensation", "cashCompensationCurrency", "exchangeRate", "baseCurrency", "termCurrency").optional()
+                .match("^[\\d] Bruttoertrag (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .match("^[\\d] Barausgleich (?<cashCompensation>[\\.,\\d]+) (?<cashCompensationCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<fxCurrency>[\\w]{3}) [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                 .assign((t, v) -> {
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
-                    Money grossValueBasis = Money.of(asCurrencyCode(v.get("grossCurrency")), asAmount(v.get("gross")));
+                    Money grossValueBasis = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                     Money cashCompensationValue = Money.of(asCurrencyCode(v.get("cashCompensationCurrency")), asAmount(v.get("cashCompensation")));
 
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
                     Money fxGross = grossValueBasis.subtract(cashCompensationValue);
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                     t.setAmount(gross.getAmount());
                     t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
@@ -339,6 +346,121 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
         addBuySellTaxReturnBlock(type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        DocumentType type = new DocumentType("(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN)");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                // @formatter:off
+                // Ethereum (ETH) 0,0878 Stk. 3.415,35 EUR 299,87 EUR
+                // @formatter:on
+                .section("name", "tickerSymbol", "currency")
+                .match("^(?<name>.*) \\((?<tickerSymbol>[A-Z]*)\\) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
+
+                // @formatter:off
+                // Ethereum (ETH) 0,0878 Stk. 3.415,35 EUR 299,87 EUR
+                // @formatter:on
+                .section("shares")
+                .match("^.* \\([A-Z]*\\) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                .oneOf(
+                                // @formatter:off
+                                // Market-Order Kauf am 03.01.2022, um 12:32 Uhr (Europe/Berlin) im außerbörslichen Handel (Bankhaus
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date", "time")
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), .* (?<time>[\\d]{2}:[\\d]{2}) .*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                                ,
+                                // @formatter:off
+                                // Sparplanausführung am 16.05.2023 im außerbörslichen Handel Bankhaus Scheich.
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Sparplanausf.hrung .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
+                                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        )
+
+                .oneOf(
+                                // @formatter:off
+                                // VERRECHNUNGSKONTO VALUTA BETRAG
+                                // DE40110101008224044621 03.01.2022 -300,87 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .find("VERRECHNUNGSKONTO VALUTA BETRAG")
+                                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+                                // DE00111122223333444455 16.05.2023 -24,99 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG")
+                                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
+
+                // @formatter:off
+                // SPARPLAN y646-a753
+                // @formatter:on
+                .section("note").optional()
+                .match("^SPARPLAN (?<note>.*\\-.*)$")
+                .assign((t, v) -> t.setNote("Sparplan: " + trim(v.get("note"))))
+
+                // @formatter:off
+                // xxxxxxxxxxxxxxxxxxxxx ORDER 2dc3-a410
+                // @formatter:on
+                .section("note").optional()
+                .match("^.* ORDER (?<note>.*\\-.*)$")
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | Order: " + trim(v.get("note")));
+                    else
+                        t.setNote("Order: " + trim(v.get("note")));
+                })
+
+                // @formatter:off
+                // AUSFÜHRUNG ce15-0e37
+                // 92540 Berlin AUSFÜHRUNG K7Y2-2e37
+                // @formatter:on
+                .section("note").optional()
+                .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$")
+                .assign((t, v) -> {
+                    if (t.getNote() != null)
+                        t.setNote(t.getNote() + " | Ausführung: " + trim(v.get("note")));
+                    else
+                        t.setNote("Ausführung: " + trim(v.get("note")));
+                })
+
+                .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addLiquidationTransaction()
@@ -531,15 +653,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "currency")
-                                        .match("^GESAMT (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency")
+                                        .match("^GESAMT (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -550,15 +672,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // GESAMT 0,44 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "currency")
-                                        .match("^[\\d] Bruttoertrag (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency")
+                                        .match("^[\\d] Bruttoertrag (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             t.setAmount(gross.getAmount());
                                             t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
@@ -642,15 +764,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // 1 Barausgleich 1,18 USD
                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
                 // @formatter:on
-                .section("fxGross", "fxCurrency","exchangeRate", "baseCurrency", "termCurrency", "gross", "currency").optional()
-                .match("^[\\d] Barausgleich (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .section("fxGross", "exchangeRate", "baseCurrency", "termCurrency", "gross").optional()
+                .match("^[\\d] Barausgleich (?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) [\\w]{3}$")
                 .assign((t, v) -> {
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -1371,6 +1493,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Fremde Spesen \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> {
+                    if (!type.getCurrentContext().getBoolean("negative"))
+                        processFeeEntries(t, v, type);
+                })
+
+                // @formatter:off
+                // External cost surcharge -1.00 EUR
+                // @formatter:on
+                .section("fee", "currency").optional()
+                .match("^External cost surcharge \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
                     if (!type.getCurrentContext().getBoolean("negative"))
                         processFeeEntries(t, v, type);

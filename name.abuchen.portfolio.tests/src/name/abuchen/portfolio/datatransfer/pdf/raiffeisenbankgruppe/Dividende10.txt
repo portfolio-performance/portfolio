@@ -1,0 +1,70 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+ da
+ 
+  
+Raiffeisenbank Region Amstetten eGen   
+Raiffeisenplatz 1, 3300 Amstetten  
+   b
+BLZ: 32025 UID: ATU16111800  
+ 
+ 
+a
+a  
+Abrechnung Ereignis a  
+11111111 - 16.08.2021 a  
+Depot-Nr.: 11.111.111  
+DI Max Muster DI Max Muster
+Maxstra 20
+1234 Cirty 059/551
+ciqwapqwn
+Wir haben für Sie am 16.08.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+7,01 Stk   
+Titel: AT0000A1TW21 RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A)
+MITEIGENTUMSANTEILE - Ausschüttung
+Fondsgesellschaft: Raiffeisen Kapitalanlageges. m.b.H.
+Ertrag: 1,19 EUR
+Verwahrart: SV
+Positionsdaten: Loco: AT Österreich
+Bruttobetrag: 8,34 EUR 
+Auslands-KESt: -2,15 EUR 
+KESt: -0,60 EUR 
+Zu Gunsten IBAN AT62 3202 1111 1111 1111 5,59 EUR 
+Valuta 16.08.2021
+KESt wird mit dem Finanzamt für Großbetriebe abgerechnet.
+KESt pro Fondsanteil 0,085 EUR für Neubestand
+Auslands-KESt pro Fondsanteil 0,3066 EUR für Neubestand
+Extag: 16.08.2021
+17.08.2021 1 / 2
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.
+Raiffeisenbank Region Amstetten eGen
+Raiffeisenplatz 1, 3300 Amstetten
+ b
+BLZ: 32025 UID: ATU16311100
+a
+a
+Abrechnung Ereignis a
+11111111 - 16.08.2021 a
+Depot-Nr.: 11.111.111
+DI Max Muster
+059/551
+fasfasa
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 7,01 Stk
+steuerlicher Anschaffungswert: 743,86 EUR
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 7,01 Stk
+ausschüttungsgleicher Ertrag: 12,01 EUR
+Anschaffungswertreduzierender Betrag: 8,34 EUR
+steuerlicher Anschaffungswert: 743,86 EUR
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 7,01 Stk
+steuerlicher Anschaffungswert: 747,53 EUR
+17.08.2021 2 / 2
+Irrtum vorbehalten
+Dieser Beleg trägt keine Unterschrift.

@@ -1,0 +1,89 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.63.1
+-----------------------------------------
+S Sparkasse
+Schweinfurt-Haßberge
+341 00 00 81
+Herrn Ihr Ansprechpartner:
+Max Max Lena Hochrein
+Strasse. 8 Kundenberatung Hofheim
+99999 Stadtt Marktplatz 7
+97461 Hofheim i.UFr.
+Telefon 09521 58-750
+Fax 09521 58-499
+lena.hochrein@sparkasse-sw-has.de
+ 
+ 
+ 
+1. Juli 2019
+. Kontoauszug 6/2019 Seite 1 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 31.05.2019, Auszug Nr.    5            2.171,00+
+13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
+Max Max
+28.06.2019 29.06.2019 Entgeltabrechnung                8,50-
+siehe Anlage Nr. 1
+siehe Anlage Nr. 2
+ Kontostand am 28.06.2019 um 20:04 Uhr            2.148,03+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+. Anzahl Anlagen 2
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3980805 970181.0.10.01 0(F2a7ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 6/2019 Seite 4 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99 Max Max
+Entgeltabschluss: Anlage     1
+ 
+Entgelte vom 01.06.2019 bis 28.06.2019                               8,50-
+ 
+Entgelte / Auslagen                                    8,50-
+                                                            --------------
+Abrechnung 28.06.2019                                                8,50-
+Rechnungsnummer: 20190628-BY044-00007824535
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+. Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3980805 970181.0.10.01 0(F2a7ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+
+```

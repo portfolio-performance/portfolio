@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.0
+-----------------------------------------
+Herr justTRADE
+Felix Mustermann Ein Service der Sutor Bank
+Strasse 19 JT Technologies GmbH
+36000 Stadt Kaiserhofstraße 1660313 Frankfurt am Main
+Email: service@justtrade.com
+Kundennummer: 87156 Web: www.justtrade.com
+ABRECHNUNG KRYPTOHANDEL
+Sehr geehrter Herr Felix Mustermann,
+dieses Dokument ist eine Bestätigung Ihrer Kryptotransaktion.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE - Kundenservice. Sie 
+finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Stellar
+Kennung: XLM
+Währung: EUR
+Handels- / Ausführungsplatz: Sutor Bank / B4C Markets
+Handelsreferenz: 61ccf74741c06f001232ead6
+Orderausführung Datum / Zeit: 30. Dezember 2021 01:03:19
+Valutatag Datum: 31. Dezember 2021
+Transaktionsart: Kauf
+Kurs: €0,2352
+Stück / Nominale: 1.200
+Kurswert: €282,23
+Ausmachender Betrag: €282,23
+Bitte beachten Sie, dass Gewinne aus Geschäften mit Kryptowährungen im Gegensatz zu Gewinnen aus 
+Wertpapiergeschäften nicht der Abgeltungssteuer unterliegen und nach einem Jahr Haltedauer steuerfrei sind. Die 
+bei einer kürzeren Haltedauer anfallenden Steuern sind von Ihnen im Rahmen der Einkommenssteuererklärung zu 
+deklarieren und an das zuständige Finanzamt abzuführen. Sprechen Sie hierzu ggf. mit Ihrem Steuerberater.
+MAX HEINR. SUTOR OHG TELEFON: 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX: 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

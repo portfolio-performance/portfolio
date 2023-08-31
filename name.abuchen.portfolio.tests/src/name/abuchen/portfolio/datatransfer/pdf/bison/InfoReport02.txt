@@ -1,0 +1,120 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.6.qualifier
+-----------------------------------------
+EUWAX Aktiengesellschaft | Börsenstraße 4 | 70174 Stuttgart EUWAX Aktiengesellschaft
+Börsenstraße 4
+mHLunky ZJUrsbZQ fTbsFg 70174 Stuttgart
+NSgXcqovhd. Tel.: +49 711 222 985 0
+25 E-Mail: support@bisonapp.com
+67993 bSbzFtPh
+BISON Info-Report für das Steuerjahr 2022
+Mit dem Info-Report stellt dir BISON deine Transaktionen übersichtlich und detailliert dar und
+stellt dir eine unverbindliche Berechnung über die realisierten Gewinne und Verluste bei
+BISON nach dem FiFo-Verfahren (First-In First-Out) zu Verfügung.
+Unverbindliche Berechnung des realisierten Gewinns/Verlusts nach FiFo aus Transaktionen
+bei BISON im Jahr 2022 mit einer Haltedauer unter einem Jahr:
+- 39,93 €
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto Ein-
+oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und Verluste
+eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und 2 grau
+hinterlegt.
+Diese Information stellt keine steuerliche oder rechtliche Beratung dar. Bei Fragen zu deiner
+Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich bitte an deinen
+Steuerberater.
+Mit freundlichen Grüßen
+BISON
+Anhang:
+1. Info-Report für das Steuerjahr 2022
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2022
+3. Export deiner Krypto-Einzahlungen
+4. Export deiner Krypto-Auszahlungen
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+1. Info-Report für das Steuerjahr 2022
+Bei BISON werden realisierte Gewinne und Verluste nach dem FiFo-Verfahren (First-In First-
+Out) errechnet. Gewinne und Verluste mit über einem Jahr Haltedauer werden nicht
+berücksichtigt.
+Bitte beachte, dass bei dieser Berechnung Kryptowährungen, bei denen du eine Krypto Ein-
+oder Auszahlung getätigt hast, nicht in die Berechnung der realisierten Gewinne und Verluste
+eingehen. Transaktionen für diese Kryptowährungen werden in Abschnitt 1 und 2 grau
+hinterlegt. Zusätzlich werden deine individuellen Krypto Ein- und Auszahlungen in Abschnitt 3
+und 4 gesondert aufgelistet.
+Ethereum (ETH)
+Summe realisierte Gewinne/Verluste 2022 - 39,93 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr - 39,93 €
+Bitcoin (BTC)
+Summe realisierte Gewinne/Verluste 2022 0,00 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr 0,00 €
+Gesamtsumme realisierte Gewinne/Verluste 2022 - 39,93 €
+Davon Haltedauer > 1 Jahr 0,00 €
+Davon Haltedauer ≤ 1 Jahr - 39,93 €
+Unverbindliche Berechnung des realisierten Gewinns/Verlusts
+aus Transaktionen bei BISON im Jahr 2022 mit einer - 39,93 €
+Haltedauer unter einem Jahr
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+2. Export deiner Transaktionsübersicht für das Steuerjahr 2022
+* Im Info-Report berücksichtigte Transaktionen für die unverbindliche Berechnung des
+realisierten Gewinns/Verlustes aus Transaktionen bei BISON im Jahr 2022 mit einer
+Haltedauer unter einem Jahr.
+Kauf BTC 0,00180296
+12.06.2022 21:19 26.412,09 €/BTC - 47,62 €
+Verkauf* ETH 0,03396843
+12.06.2022 21:19 1.401,94 €/ETH + 47,62 €
+Kauf 0,03396843 ETH für 87,55 € am 20.09.2021 21:14
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+3. Export deiner Krypto-Einzahlungen
+Kryptowährungen, bei denen du eine Krypto-Einzahlung getätigt hast, gehen nicht in die
+Berechnung der realisierten Gewinne und Verluste ein, da BISON keine Informationen über
+das ursprüngliche Kaufdatum bzw. den Kaufpreis einer Krypto-Einzahlung hat. Eine
+Zuordnung nach FiFo-Verfahren (First-In First-Out) ist nicht möglich.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+4. Export deiner Krypto-Auszahlungen
+Kryptowährungen, bei denen du eine Krypto-Auszahlung getätigt hast, gehen nicht in die
+Berechnung der realisierten Gewinne und Verluste ein, da diese nicht über BISON verkauft
+wurden. Eine Zuordnung nach FiFo-Verfahren (First-In First-Out) ist nicht möglich.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226
+Hinweise zum Info-Report
+Für Deutschland gilt:
+Der Tausch oder Rücktausch von Kryptowährung, die vom Verkäufer nicht selbst generiert wurden, in Euro oder eine andere Kryptowährung führen zu einem
+privaten Veräußerungsgeschäft i. S. des § 23 Abs. 1 Satz 1 Nr. 2 EStG. Das gilt jedoch nur, wenn zwischen Erwerb und Veräußerung nicht mehr als ein Jahr liegt
+(Spekulationsfrist) und die jährliche Freigrenze in Höhe von 600 EUR überschritten wurde. Diese Freigrenze gilt allerdings für den Gesamtgewinn aus sämtlichen
+privaten Veräußerungsgeschäften innerhalb eines Jahres. Verluste dürfen nur bis zu Höhe des Gewinns, der im gleichen Jahr aus privaten Veräußerungsgeschäften
+erzielt wurde, verrechnet werden. Ein Verlustrücktrag bzw. - vortrag ist grundsätzlich möglich.
+Der Gewinn aus der Veräußerung von Kryptowährung ergibt sich als DiOerenz zwischen den AnschaOungskosten und dem Veräußerungspreis. Hierbei wird die Fifo-
+Methode angewandt (§ 23 Abs. 1 Nr. 2 Satz 3 EStG), wonach unterstellt wird, dass die zuerst angeschaOten Bestände zuerst veräußert wurden. Realisierte Gewinne
+und Verluste sind in der Regel in der Anlage SO bei der Steuererklärung anzugeben.
+Diese Information stellt keine steuerliche oder rechtliche Beratung dar. Bei Fragen zu deiner Einkommensteuererklärung oder sonstigen Angelegenheiten wende dich
+bitte an deinen Steuerberater.
+Diese Bescheinigung ist maschinell erstellt und wird nicht unterschrieben.
+EUWAX +49 711 222 985 0 Sitz der Gesellschaft: Vorstand: Michael Jaeggi, Dr. Manfred Pumbo, Dragan
+Aktiengesellschaft support@bisonapp.com Stuttgart Radanovic 
+Börsenstraße 4 www.bisonapp.com Registergericht: Aufsichtsratsvorsitzender: Dr. Christian Ricken
+70174 Stuttgart Amtsgericht 
+Stuttgart, HRB 19972 
+USt-ID: DE 175042226

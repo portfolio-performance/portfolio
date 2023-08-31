@@ -30,7 +30,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
@@ -84,7 +84,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
@@ -148,7 +148,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
@@ -200,7 +200,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
@@ -263,7 +263,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
@@ -315,7 +315,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
@@ -378,7 +378,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
 
@@ -430,7 +430,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
 
@@ -483,7 +483,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
 
@@ -557,7 +557,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
 
@@ -620,7 +620,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug11.txt"), errors);
 
@@ -672,7 +672,7 @@ public class BondoraCapitalPDFExtractorTest
     {
         BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
 
@@ -717,5 +717,79 @@ public class BondoraCapitalPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.69)));
         assertThat(transaction.getSource(), is("Kontoauszug12.txt"));
         assertThat(transaction.getNote(), is("Go & Grow Zinsen"));
+    }
+
+    @Test
+    public void testKontoauszug13()
+    {
+        BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+        assertThat(transaction.getNote(), is("Transfer"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-10T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.85)));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+        assertThat(transaction.getNote(), is("Go & Grow returns"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-14T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+        assertThat(transaction.getNote(), is("Transfer"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-18T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.87)));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+        assertThat(transaction.getNote(), is("Go & Grow returns"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-21T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.87)));
+        assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
+        assertThat(transaction.getNote(), is("Go & Grow returns"));
     }
 }

@@ -1,9 +1,31 @@
 package name.abuchen.portfolio.datatransfer.pdf.lgtbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,7 +85,7 @@ public class LGTBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Valorennummer 906020"));
+        assertThat(entry.getNote(), is("Auftragsnummer: 262697612 | Valorennummer 906020"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("DKK", Values.Amount.factorize(82452.21))));
@@ -107,7 +129,7 @@ public class LGTBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(180)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Valorennummer 23159222"));
+        assertThat(entry.getNote(), is("Auftragsnummer: 323232609 | Valorennummer 23159222"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("DKK", Values.Amount.factorize(72811.75))));
@@ -117,6 +139,96 @@ public class LGTBankPDFExtractorTest
                         is(Money.of("DKK", Values.Amount.factorize(106.90))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("DKK", Values.Amount.factorize(1414.16 + 10.69))));
+    }
+
+    @Test
+    public void testWertpapierKauf03()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0031768937"), hasWkn("A0MW4N"), hasTicker(null), //
+                        hasName("iShares ETF (CH) - iShares SLI(R) ETF (CH) Inhaber-Anteile -A-"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-29T14:54:02"), hasShares(260), //
+                        hasSource("Kauf03.txt"), hasNote("Auftragsnummer: 210796978 | Valorennummer 3176893"), //
+                        hasAmount("CHF", 48502.01), hasGrossValue("CHF", 48465.46), //
+                        hasTaxes("CHF", 36.35), hasFees("CHF", 0.20))));
+    }
+
+    @Test
+    public void testWertpapierKauf04()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2051469208"), hasWkn(null), hasTicker(null), //
+                        hasName("JPMorgan Funds SICAV - Emerging Markets Sustainable Equity Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-06-08T00:00"), hasShares(480), //
+                        hasSource("Kauf04.txt"), hasNote("Auftragsnummer: 209174085 | Valorennummer 50139326"), //
+                        hasAmount("USD", 50595.78), hasGrossValue("USD", 50520.00), //
+                        hasTaxes("USD", 75.78), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ02LR44"), hasWkn("A2AQST"), hasTicker(null), //
+                        hasName("Xtrackers(IE)PLC - Xtrackers MSCI World ESG UCITS ETF Namen-Anteile -1C- / Class USD"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-06-08T11:22:14"), hasShares(260), //
+                        hasSource("Verkauf01.txt"), hasNote("Auftragsnummer: 209179086 | Valorennummer 41359963"), //
+                        hasAmount("USD", 8332.19), hasGrossValue("USD", 8344.70), //
+                        hasTaxes("USD", 12.51), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -150,7 +262,7 @@ public class LGTBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(551)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Ordentliche Dividende"));
+        assertThat(transaction.getNote(), is("Auftragsnummer: 256401138 | Ordentliche Dividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(198.36))));
@@ -160,5 +272,125 @@ public class LGTBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(77.14))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012005267"), hasWkn("1200526"), hasTicker(null), //
+                        hasName("Novartis AG Namen-Aktien"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-03-13T00:00"), hasShares(760), //
+                        hasSource("Dividende02.txt"), hasNote("Auftragsnummer: 200738771 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 1580.80), hasGrossValue("CHF", 2432.00), //
+                        hasTaxes("CHF", 851.20), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0024638196"), hasWkn("2463819"), hasTicker(null), //
+                        hasName("Schindler Holding AG Inhaber-Partizipationsschein"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(130), //
+                        hasSource("Dividende03.txt"), hasNote("Auftragsnummer: 330401346 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 338.00), hasGrossValue("CHF", 520.00), //
+                        hasTaxes("CHF", 182.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0002497458"), hasWkn("249745"), hasTicker(null), //
+                        hasName("SGS Ltd Namen-Aktien"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(12), //
+                        hasSource("Dividende04.txt"), hasNote("Auftragsnummer: 303105603 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 624.00), hasGrossValue("CHF", 960.00), //
+                        hasTaxes("CHF", 336.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        LGTBankPDFExtractor extractor = new LGTBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0031768937"), hasWkn("3176893"), hasTicker(null), //
+                        hasName("iShares ETF (CH) - iShares SLI(R) ETF (CH) Inhaber-Anteile -A-"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-03T00:00"), hasShares(490), //
+                        hasSource("Dividende05.txt"), hasNote("Auftragsnummer: 303107922 | Ordentliche Dividende"), //
+                        hasAmount("CHF", 127.40), hasGrossValue("CHF", 196.00), //
+                        hasTaxes("CHF", 68.60), hasFees("CHF", 0.00))));
     }
 }

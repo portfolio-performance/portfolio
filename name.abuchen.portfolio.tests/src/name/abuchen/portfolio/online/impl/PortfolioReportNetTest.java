@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
 
 @SuppressWarnings("nls")
@@ -19,20 +18,12 @@ public class PortfolioReportNetTest
     @Test
     public void testUpdateSecurity() throws ParseException
     {
-        JSONObject jsonObject = (JSONObject) JSONValue.parseWithException("{\n" + //
-                        "    \"isin\": \"DE0005190003\",\n" + //
-                        "    \"symbolXfra\": \"BMW\"," + //
-                        "    \"symbolXnas\": \"BAMXF\"," + //
-                        "    \"symbolXnys\": null," + //
-                        "    \"name\": \"BAY.MOTOREN WERKE AG ST\",\n" + //
-                        "    \"securityType\": \"share\",\n" + //
-                        "    \"uuid\": \"f9c39f31b1f443639e462cd8e22e3ce7\",\n" + //
-                        "    \"wkn\": \"519000\"\n" + //
-                        "}");
+        JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(
+                        "{\"events\":[],\"isin\":\"DE0005190003\",\"logoUrl\":\"https://portfolio-report-logos.s3.eu-central-1.amazonaws.com/a4ed3816-3885-43c7-836e-acdeb6ec3248.png\",\"markets\":[{\"currencyCode\":\"EUR\",\"firstPriceDate\":\"2000-01-03\",\"lastPriceDate\":\"2023-07-13\",\"marketCode\":\"XETR\",\"symbol\":\"BMW\"}],\"name\":\"BAY.MOTOREN WERKE AG ST\",\"securityTaxonomies\":[{\"rootTaxonomyUuid\":\"5b0d5647-a4e6-4db8-807b-c3a6d11697a7\",\"taxonomyUuid\":\"def0841b-cc83-408f-89e6-e0a5f3156a27\",\"weight\":\"100\"},{\"rootTaxonomyUuid\":\"072bba7b-ed7a-4cb4-aab3-91520d00fb00\",\"taxonomyUuid\":\"6ecc96ca-3a8b-4c94-8ebd-ef7a844e034e\",\"weight\":\"100\"}],\"securityType\":\"share\",\"symbolXfra\":\"BMW\",\"symbolXnas\":\"BAMXF\",\"symbolXnys\":\"\",\"tags\":[\"DAX\"],\"uuid\":\"f9c39f31b1f443639e462cd8e22e3ce7\",\"wkn\":\"519000\"}");
 
         OnlineItem item = OnlineItem.from(jsonObject);
 
-        Security security = item.create(new Client().getSettings());
+        Security security = item.create(new Client());
 
         assertValues(security);
 
@@ -52,19 +43,6 @@ public class PortfolioReportNetTest
         assertThat(item.update(security), is(true));
         assertValues(security);
         assertThat(item.update(security), is(false));
-
-        security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET, "XLSE", "x"));
-        assertThat(item.update(security), is(true));
-        assertValues(security);
-        assertThat(item.update(security), is(false));
-
-        security.getProperties().findAny().ifPresent(property -> {
-            security.removeProperty(property);
-            security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET, property.getName(), "x"));
-        });
-        assertThat(item.update(security), is(true));
-        assertValues(security);
-        assertThat(item.update(security), is(false));
     }
 
     private void assertValues(Security security)
@@ -74,9 +52,5 @@ public class PortfolioReportNetTest
         assertThat(security.getName(), is("BAY.MOTOREN WERKE AG ST"));
         assertThat(security.getOnlineId(), is("f9c39f31b1f443639e462cd8e22e3ce7"));
         assertThat(security.getProperties().count(), is(2L));
-        assertThat(security.getProperties().sorted((r, l) -> r.getName().compareTo(l.getName()))
-                        .map(p -> p.getName() + "=" + p.getValue()).reduce((r, l) -> r + ";" + l).orElse(null),
-                        is("XFRA=BMW;XNAS=BAMXF"));
     }
-
 }

@@ -1,0 +1,46 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Frau
+ADRESSZEILE2=Vorname Nachname
+Kauf Limitauftrag ADRESSZEILE3=Adresse 1234
+Kommissionsgeschäft ADRESSZEILE4=12345 Ort
+Frau ADRESSZEILE5=
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Adresse 1234 BELEGNUMMER=9271
+12345 Ort 123456000 93213477 / 03.02.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 03.02.2016
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Allianz SE vink.Namens-Aktien o.N. DE0008404005
+Nominal Kurs
+STK 7,000 EUR 140,7880
+Handelstag 03.02.2016 Kurswert EUR 985,52-
+Handelszeit 16:04 Fremdspesen EUR 1,50-
+Börse Quotrix/EDO
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.02.2016 123456044 EUR 987,02
+Fremde Spesen beinhalten ggf. gesetzliche MwSt.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/009271/040216/003851
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel

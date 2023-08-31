@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -86,7 +87,7 @@ public class Classification implements Named
 
             return data.get(key);
         }
-        
+
         public Assignment copyWith(InvestmentVehicle vehicle)
         {
             Assignment copy = new Assignment(vehicle);
@@ -539,6 +540,57 @@ public class Classification implements Named
         }
 
         return copy;
+    }
+
+    /**
+     * Returns a classification that is a copy of this classification, but all
+     * assignments are merged as direct children.
+     */
+    public Classification flattenAssignments()
+    {
+        var result = new Classification(null, id, name, this.color);
+        result.rank = this.rank;
+        result.weight = this.weight;
+        if (this.data != null)
+            result.data = new HashMap<>(this.data);
+
+        var stack = new LinkedList<Classification>();
+        stack.add(this);
+
+        while (!stack.isEmpty())
+        {
+            var c = stack.pop();
+            stack.addAll(c.getChildren());
+
+            for (Assignment assignment : c.getAssignments())
+            {
+                if (assignment.getWeight() == ONE_HUNDRED_PERCENT)
+                {
+                    result.addAssignment(assignment);
+                }
+                else
+                {
+                    Optional<Assignment> existing = result.assignments.stream()
+                                    .filter(a -> a.getInvestmentVehicle() == assignment.getInvestmentVehicle())
+                                    .findAny();
+
+                    if (existing.isPresent())
+                    {
+                        Assignment merged = new Assignment(assignment.getInvestmentVehicle());
+                        merged.weight = existing.get().getWeight() + assignment.getWeight();
+
+                        result.removeAssignment(existing.get());
+                        result.addAssignment(merged);
+                    }
+                    else
+                    {
+                        result.addAssignment(assignment);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     private static List<PKeyValue> toProtobuf(Map<String, Object> data)

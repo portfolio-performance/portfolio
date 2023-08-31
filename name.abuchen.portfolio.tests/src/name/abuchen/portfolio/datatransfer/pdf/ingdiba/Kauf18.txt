@@ -1,0 +1,48 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Muster Mustermann
+Frau Direkt-Depot Nr.: 1234567890
+Muster Mustermann Datum: 18.12.2020
+Musterstrasse 1 Seite: 1 von 2
+01234 Musterhausen
+Wertpapierabrechnung Kauf
+Ordernummer 123456789.001
+ISIN (WKN) DE000A3H2UX0 (A3H2UX)
+Wertpapierbezeichnung 1,75 % Sixt SE MTN v.2020(2024/2024)
+Zinstermin 09. DEZEMBER
+Fälligkeit 09.12.2024
+Kündigungsrecht des Emittenten ab 09.10.2024
+Nominale EUR 10.000,00
+Kurs 101,90 %
+Handelsplatz Direkthandel
+Ausführungstag / -zeit 18.12.2020 um 10:45:15 Uhr
+Kurswert EUR 10.190,00
+Stückzinsen EUR 6,23 (Zinsvaluta 21.12.2020 13 Tage)
+Provision EUR 30,38
+Endbetrag zu Ihren Lasten EUR 10.226,61
+Abrechnungs-IBAN DE90 5001 0517 1234 5678 90
+Valuta 22.12.2020
+Wertpapiere zugunsten Girosammelverwahrung.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8001314687_T
+Depotinhaber: Muster Mustermann
+Direkt-Depot Nr.: 1234567890
+Datum: 18.12.2020
+Seite: 2 von 2
+Ordernummer 123456789.001
+ISIN (WKN) DE000A3H2UX0 (A3H2UX)
+Mit Verrechnungstopf Allgemein verrechnet 6,23 EUR
+Gezahlte Stückzinsen 6,23 EUR
+Verrechnungstopf Aktien vor Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach Geschäft 0,00 EUR
+Verrechnungstopf Allgemein vor Geschäft 0,00 EUR
+Verrechnungstopf Allgemein nach Geschäft 6,23 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 0,00 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

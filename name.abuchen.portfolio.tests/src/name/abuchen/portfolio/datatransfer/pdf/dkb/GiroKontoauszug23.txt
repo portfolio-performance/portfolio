@@ -1,0 +1,291 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+YfnIwQ HlETCF kwA ouBRvOkX Fjaaa
+BiiwwPunnnwYNh 26/13 IHR DISPOKREDIT EUR 100,00
+0799 PqmF
+ÖSTERREICH
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 3888618657 / IBAN DE91 0666 2749 8047 3130 91
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+05.06. 05.06. Kartenzahlung onl 288,00
+UZR.ZEHJKSUE.AT
+SVWZ+2023-06-02Debitk.57 VISA
+DebitABWA+UZR.ZEHJKSUE.AT/WELS//AT
+05.06. 05.06. Kartenzahlung 4,50
+gZtleyAZlw oG8430
+SVWZ+2023-06-02Debitk.57 VISA DebitABWA+TyUosAMdUT
+AB4423/Linz//AT
+05.06. 05.06. Kartenzahlung 12,50
+BVOzgfZf
+SVWZ+2023-06-02Debitk.95 VISA
+DebitABWA+Gjsienak/Linz//AT
+06.06. 06.06. Kartenzahlung 9,00
+CiMCT SB
+SVWZ+2023-06-05Debitk.57 VISA DebitABWA+wWPEM
+SB/Linz//AT
+06.06. 06.06. Kartenzahlung 26,00
+DdZWhiGXUOjt EZxQihlbGQ
+SVWZ+2023-06-05Debitk.57 VISA
+DebitABWA+pNtTTgnQOgPe Netragriet/Linz//AT
+07.06. 07.06. Kartenzahlung onl 276,00
+UZR.ZEHJKSUE.AT
+SVWZ+2023-06-06Debitk.57 VISA
+DebitABWA+UZR.ZEHJKSUE.AT/WELS//AT
+07.06. 07.06. Kartenzahlung 4,34
+EZqTV mQVfs
+SVWZ+2023-06-06Debitk.95 VISA DebitABWA+WbJLW
+TKAND/Linz//AT
+08.06. 08.06. Kartenzahlung 29,00
+tnyQ iAZBzn
+SVWZ+2023-06-06Debitk.95 VISA DebitABWA+fyUW
+ZEHJDI/LINZ//AT
+08.06. 08.06. Kartenzahlung 7,00
+xKMkW .JENZDJ ZJoP
+SVWZ+2023-06-07Debitk.95 VISA DebitABWA+dylBp
+.JENZDJ GmbH/Linz//AT
+08.06. 08.06. Kartenzahlung 39,90
+qRqnmBLCmR RnqrpGkma
+SVWZ+2023-06-07Debitk.57 VISA
+DebitABWA+KWsKqEQQcC TENGSZKUS/LINZ//AT
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 1 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 6715828226 / IBAN DE91 1885 9243 9848 3631 60
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+08.06. 08.06. Kartenzahlung 33,00
+nTJRi .JENZDJ bJrB
+SVWZ+2023-06-07Debitk.95 VISA DebitABWA+btkbW
+.JENZDJ GMBH/LINZ//AT
+12.06. 12.06. Kartenzahlung 10,55
+EdsF skbAt 4698
+SVWZ+2023-06-09Debitk.95 VISA DebitABWA+OLyG
+TKAND 4698/LINZ//AT
+12.06. 12.06. Kartenzahlung onl 9,90
+SHOP.USJEUNG.AT
+SVWZ+2023-06-08Debitk.57 VISA
+DebitABWA+SHOP.USJEUNG.AT/LINZ//AT
+12.06. 12.06. Kartenzahlung 41,00
+QlhPfUj
+SVWZ+2023-06-10Debitk.57 VISA
+DebitABWA+SEGUTRA/ROVINJ//HR
+12.06. 12.06. Kartenzahlung 31,63
+IKAqYB P-0341
+SVWZ+2023-06-10Debitk.95 VISA DebitABWA+DysVzy
+P-0341/ROVINJ//HR
+12.06. 12.06. Kartenzahlung 93,70
+sEa 3461
+SVWZ+2023-06-10Debitk.57 VISA DebitABWA+WzF
+3461/KOPER//SI
+12.06. 12.06. Kartenzahlung 22,00
+IheGEvtY
+SVWZ+2023-06-09Debitk.57 VISA
+DebitABWA+Gjsienak/Linz//AT
+12.06. 12.06. Kartenzahlung onl 30,00
+UENISZEN.RTZU.ZU
+SVWZ+2023-06-08Debitk.57 VISA
+DebitABWA+UENISZEN.RTZU.ZU/123456789//SI
+13.06. 13.06. Kartenzahlung 59,00
+ILLA-aJDEv nLXNYwXPpzn
+SVWZ+2023-06-11Debitk.57 VISA DebitABWA+ILLA-
+shjdC ZALOGAJNICA/ROVINJ//HR
+13.06. 13.06. Kartenzahlung 29,58
+OvtmmO P-0341
+SVWZ+2023-06-12Debitk.57 VISA DebitABWA+PVjDsc
+P-0341/ROVINJ//HR
+14.06. 14.06. Kartenzahlung 40,50
+RMUFrL SyBMuvll
+SVWZ+2023-06-13Debitk.57 VISA DebitABWA+DzYgvb
+KANTINON/ROVINJ//HR
+15.06. 15.06. Kartenzahlung 51,00
+IRB4KVkQTqXlXc
+SVWZ+2023-06-12Debitk.57 VISA
+DebitABWA+PBZ7KONOBAJURE/ROVINJ(ROVIG//HR
+15.06. 15.06. Kartenzahlung 37,00
+ILLA-xBZAi lzEILlCBWxt
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 2 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 0028045619 / IBAN DE91 5249 8315 1205 5913 92
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+SVWZ+2023-06-14Debitk.57 VISA DebitABWA+ILLA-
+ZuSsd ZALOGAJNICA/ROVINJ//HR
+16.06. 16.06. Basislastschrift 69,06
+T-rsRLCv NuVpVLz XOCn
+EREF+500325211643MREF+AT0525-1.21225840-
+0002CRED+AT55ZZZ00000061802SVWZ+PWaPeVQ
+sXJPxucD WfIISXIC 095865114710 vom 06.06.2023 -
+Details unter mein.mAWV-MELDEPFLICHT
+BEACHTENHOTLINE BUNDESBANK.(0800) 1234-111
+20.06. 20.06. Kartenzahlung 9,80
+YirDpJ LhPQDGw
+SVWZ+2023-06-18Debitk.57 VISA DebitABWA+dyyAKv
+ETNALOV/LINZ//AT
+20.06. 20.06. Kartenzahlung 4,50
+BzSXCKEGPP dc4205
+SVWZ+2023-06-19Debitk.57 VISA DebitABWA+CbgJkpSjSV
+AB4423/Linz//AT
+21.06. 21.06. Kartenzahlung 46,37
+RYGygKqy VJqGacP
+SVWZ+2023-06-16Debitk.95 VISA
+DebitABWA+eeKNXJBq ANILSAM/ROVINJ//HR
+21.06. 21.06. Kartenzahlung 41,50
+dC mINO D.O.O.
+SVWZ+2023-06-15Debitk.57 VISA DebitABWA+WQ qNpg
+D.O.O./ROVINJ//HR
+21.06. 21.06. Kartenzahlung 4,50
+swiVTTWKvz oH6349
+SVWZ+2023-06-20Debitk.57 VISA DebitABWA+CBJrFyfjEj
+AB4423/Linz//AT
+22.06. 22.06. Kartenzahlung 14,83
+tPWZ REAOs 5484
+SVWZ+2023-06-21Debitk.95 VISA DebitABWA+TzgU
+cWMsb 4698/LINZ//AT
+22.06. 22.06. Kartenzahlung 4,50
+BYpXelpBOV mb4081
+SVWZ+2023-06-21Debitk.57 VISA DebitABWA+PvAwRwdpWm
+AB6789/Linz//AT
+23.06. 23.06. Kartenzahlung 4,50
+mQiAapKVXe ww4125
+SVWZ+2023-06-22Debitk.57 VISA DebitABWA+MDelQwqGDW
+AB6789/Linz//AT
+26.06. 26.06. Kartenzahlung 4,50
+PGgSydIDQt Oo0974
+SVWZ+2023-06-23Debitk.57 VISA DebitABWA+ylvApYiyOG
+AB4423/Linz//AT
+26.06. 26.06. Zahlungseingang 500,00
+tRIJBG FQmyRc
+27.06. 27.06. Kartenzahlung 17,42
+CUJw vNmZD 6409
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 3 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 1446221624 / IBAN DE91 7695 3824 7665 4460 16
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+SVWZ+2023-06-26Debitk.95 VISA DebitABWA+QCAT
+Cwgmy 4161/LINZ//AT
+27.06. 27.06. Kartenzahlung 4,50
+FRPOitXrFo MX8234
+SVWZ+2023-06-26Debitk.57 VISA DebitABWA+tFPnyQffPu
+AB4423/Linz//AT
+28.06. 28.06. Kartenzahlung 4,50
+cyRcFZvjmh FH4516
+SVWZ+2023-06-27Debitk.57 VISA DebitABWA+ltOTvCXXlW
+AB6789/Linz//AT
+30.06. 30.06. Kartenzahlung 4,50
+YtdoDNgoPq Ae0325
+SVWZ+2023-06-29Debitk.57 VISA DebitABWA+NixgjQlHNe
+AB5678/Linz//AT
+03.07. 01.07. Abrechnung 30.06.2023 0,00
+Abrechnung 30.06.2023siehe Anlage
+03.07. 03.07. Überweisung 1.185,90
+WGH. IJU. NdRnhw AYPXdXsWX
+KREF+HKCSE16291SVWZ+Kaj MlJ 13DATUM
+25.06.2023, 21.02 UHR
+03.07. 03.07. Kartenzahlung 32,00
+YqXTIrXUkXl gTgVOw QrbT
+SVWZ+2023-07-01Debitk.95 VISA
+DebitABWA+SdmWyuzPYlq ABcsJI Linz/Linz//AT
+03.07. 03.07. Kartenzahlung 18,00
+XpvKsd JXNMGG
+SVWZ+2023-07-01Debitk.95 VISA DebitABWA+TvdHlp
+Otrisb/Linz//AT
+03.07. 03.07. Kartenzahlung 4,50
+vEFECeUSoM Mo6982
+SVWZ+2023-06-30Debitk.57 VISA DebitABWA+QQAwjgZiSm
+AB6789/Linz//AT
+03.07. 03.07. Rechnung 4,50
+RechnungEntgelt für Konto ohne monatlichen
+Eingang20230703-BY111-00164771584
+03.07. 03.07. Kartenzahlung 52,63
+GeSM Itbal 8723
+SVWZ+2023-06-30Debitk.95 VISA DebitABWA+tmgo
+eozlb 4698/LINZ//AT
+04.07. 04.07. Kartenzahlung 6,25
+LHkxH dEZNJgMow 75
+SVWZ+2023-07-03Debitk.95 VISA DebitABWA+vCZzv
+InrzfgaYi 67/Linz//AT
+04.07. 04.07. Kartenzahlung 4,50
+ABwTODKPGR vp5837
+SVWZ+2023-07-03Debitk.57 VISA DebitABWA+JEwUJZmKbL
+AB6789/Linz//AT
+04.07. 04.07. Zahlungseingang 500,00
+PvWZIelJ dGsBU
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 4 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 4799968439 / IBAN DE91 7430 8403 8565 1779 60
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+SVWZ+UEberweisung JuniAWV-MELDEPFLICHT
+BEACHTENHOTLINE BUNDESBANK.(0800) 1234-111
+ALTER KONTOSTAND 3.322,10 H EUR
+NEUER KONTOSTAND 1.593,74 H EUR
+Abrechnung 30.06.2023
+Information zur Abrechnung
+Kontostand am 30.06.2023                                        2.402,02 +
+                                                            --------------
+Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023
+Abrechnung 30.06.2023                                                0,00+
+Sollzinssätze am 30.06.2023
+ 9,2900 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung         100,00)
+ 9,2900 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+Kontostand/Rechnungsabschluss am 30.06.2023                     2.402,02 +
+Rechnungsnummer: 51803556-DH219-22907783195
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den Sie
+auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet,
+dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten
+Kontoüberziehung anfallen können.
+Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer
+Einlösung gut, so geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.-
+Gutschrift). Das gilt auch dann, wenn die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank
+selbst zahlbar sind. Werden Schecks oder Lastschriften nicht eingelöst oder geht der Bank der Gegenwert aus
+einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß Nr. 23 dieser AGB rückgängig
+(Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des
+übernächsten Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für
+Lastschriften gelten die Einlöseregeln in den hierfür vereinbarten besonderen Bedingungen. Über die
+Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn sie nach deren Allgemeinen
+Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an den
+Scheckvorleger eingelöst.
+Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 5 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746
+Kontoauszug Nummer 004 / 2023 vom 03.06.2023 bis 04.07.2023
+Kontonummer 4738726471 / IBAN DE91 3761 0451 0232 9635 96
+und/oder sonstige Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser
+Kontoauszug einen Rechnungsabschluss darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind
+Zinsen und/oder sonstige Entgelte bis zum letzten Zinsabschlusstermin berücksichtigt.
+Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt,
+sofern Sie innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Deutsche Kreditbank AG, Bereich Revision,
+Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der Geschäftsbeziehung der elektronische
+Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+Gemäß dem Finanzkonten-Informationsaustauschgesetz (FKAustG) ermittelt die DKB AG die nach diesem Gesetz
+erforderlichen Daten zur steuerlichen Ansässigkeit und meldet diese, soweit aufgrund des Gesetzes
+erforderlich, jährlich an das Bundeszentralamt für Steuern (BZSt), das diese dann ggf. an zuständige
+ausländische Steuerbehörden weiterleitet. Gemeldet werden die erforderlichen Kundendaten, Steuer-
+Identifikationsnummer sowie Konto- und Depotnummern, Kontosalden sowie gutgeschriebene Kapitalerträge.
+DEUTSCHE KREDITBANK AG IBAN: DE91567812347890345612 Seite 6 von 6
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN USt-ID: DE137178746

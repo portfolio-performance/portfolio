@@ -51,7 +51,7 @@ public class YahooFinanceQuoteFeedTest
     {
         Security security = new Security();
         security.setTickerSymbol("AAPL");
-        String response = "{\"quoteResponse\":{\"result\":[{\"language\":\"en-US\",\"region\":\"US\",\"quoteType\":\"EQUITY\",\"quoteSourceName\":\"Nasdaq Real Time Price\",\"triggerable\":true,\"currency\":\"USD\",\"sourceInterval\":15,\"exchangeDataDelayedBy\":0,\"tradeable\":false,\"priceHint\":2,\"exchange\":\"NMS\",\"shortName\":\"Apple Inc.\",\"longName\":\"Apple Inc.\",\"messageBoardId\":\"finmb_24937\",\"exchangeTimezoneName\":\"America/New_York\",\"exchangeTimezoneShortName\":\"EDT\",\"gmtOffSetMilliseconds\":-14400000,\"market\":\"us_market\",\"esgPopulated\":false,\"postMarketChangePercent\":-0.1949872,\"postMarketTime\":1587416695,\"postMarketPrice\":276.39,\"postMarketChange\":-0.539978,\"regularMarketChange\":-5.869995,\"regularMarketChangePercent\":-2.0756702,\"regularMarketTime\":1587412802,\"regularMarketPrice\":276.93,\"regularMarketDayHigh\":281.66,\"regularMarketDayRange\":\"276.85 - 281.66\",\"regularMarketDayLow\":276.85,\"regularMarketVolume\":31089201,\"regularMarketPreviousClose\":282.8,\"bid\":277.14,\"ask\":277.06,\"bidSize\":10,\"askSize\":9,\"fullExchangeName\":\"NasdaqGS\",\"financialCurrency\":\"USD\",\"regularMarketOpen\":277.95,\"averageDailyVolume3Month\":51071277,\"averageDailyVolume10Day\":41379080,\"fiftyTwoWeekLowChange\":106.65999,\"fiftyTwoWeekLowChangePercent\":0.6264168,\"fiftyTwoWeekRange\":\"170.27 - 327.85\",\"fiftyTwoWeekHighChange\":-50.920013,\"fiftyTwoWeekHighChangePercent\":-0.15531497,\"fiftyTwoWeekLow\":170.27,\"fiftyTwoWeekHigh\":327.85,\"dividendDate\":1581552000,\"earningsTimestamp\":1588291200,\"earningsTimestampStart\":1588291200,\"earningsTimestampEnd\":1588291200,\"trailingAnnualDividendRate\":3.04,\"trailingPE\":21.987295,\"trailingAnnualDividendYield\":0.010749646,\"marketState\":\"POST\",\"epsTrailingTwelveMonths\":12.595,\"epsForward\":14.85,\"sharesOutstanding\":4375479808,\"bookValue\":20.418,\"fiftyDayAverage\":263.85883,\"fiftyDayAverageChange\":13.071167,\"fiftyDayAverageChangePercent\":0.049538486,\"twoHundredDayAverage\":275.44904,\"twoHundredDayAverageChange\":1.480957,\"twoHundredDayAverageChangePercent\":0.005376519,\"marketCap\":1211701526528,\"forwardPE\":18.648483,\"priceToBook\":13.563033,\"firstTradeDateMilliseconds\":345479400000,\"symbol\":\"AAPL\"}],\"error\":null}}";
+        String response = "{\"chart\":{\"result\":[{\"meta\":{\"currency\":\"USD\",\"symbol\":\"AAPL\",\"exchangeName\":\"NMS\",\"instrumentType\":\"EQUITY\",\"firstTradeDate\":345479400,\"regularMarketTime\":1689278404,\"gmtoffset\":-14400,\"timezone\":\"EDT\",\"exchangeTimezoneName\":\"America/New_York\",\"regularMarketPrice\":190.54,\"chartPreviousClose\":189.77,\"previousClose\":189.77,\"scale\":3,\"priceHint\":2,\"currentTradingPeriod\":{\"pre\":{\"timezone\":\"EDT\",\"end\":1689341400,\"start\":1689321600,\"gmtoffset\":-14400},\"regular\":{\"timezone\":\"EDT\",\"end\":1689364800,\"start\":1689341400,\"gmtoffset\":-14400},\"post\":{\"timezone\":\"EDT\",\"end\":1689379200,\"start\":1689364800,\"gmtoffset\":-14400}},\"tradingPeriods\":[[{\"timezone\":\"EDT\",\"end\":1689278400,\"start\":1689255000,\"gmtoffset\":-14400}]],\"dataGranularity\":\"1m\",\"range\":\"1d\",\"validRanges\":[\"1d\",\"5d\",\"1mo\",\"3mo\",\"6mo\",\"1y\",\"2y\",\"5y\",\"10y\",\"ytd\",\"max\"]},\"timestamp\":[1689255000,1689255060,1689278400],\"indicators\":{\"quote\":[{\"high\":[190.5050048828125,190.33999633789062,190.5399932861328],\"volume\":[1504949,291161,0],\"low\":[190.02000427246094,189.99000549316406,190.5399932861328],\"open\":[190.5,190.04010009765625,190.5399932861328],\"close\":[190.05999755859375,190.33999633789062,190.5399932861328]}]}}],\"error\":null}}";
 
         YahooFinanceQuoteFeed feed = Mockito.spy(new YahooFinanceQuoteFeed());
 
@@ -60,11 +60,11 @@ public class YahooFinanceQuoteFeedTest
 
         LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
-        assertThat(price.getDate(), is(LocalDate.of(2020, 4, 20)));
-        assertThat(price.getHigh(), is(Values.Quote.factorize(281.66)));
-        assertThat(price.getLow(), is(Values.Quote.factorize(276.85)));
-        assertThat(price.getValue(), is(Values.Quote.factorize(276.93)));
-        assertThat(price.getVolume(), is(31089201L));
+        assertThat(price.getDate(), is(LocalDate.of(2023, 7, 13)));
+        assertThat(price.getHigh(), is(LatestSecurityPrice.NOT_AVAILABLE));
+        assertThat(price.getLow(), is(LatestSecurityPrice.NOT_AVAILABLE));
+        assertThat(price.getValue(), is(Values.Quote.factorize(190.54)));
+        assertThat(price.getVolume(), is(LatestSecurityPrice.NOT_AVAILABLE));
     }
 
     @Test

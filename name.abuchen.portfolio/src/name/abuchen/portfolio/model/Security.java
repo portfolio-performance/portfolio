@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -83,6 +84,7 @@ public final class Security implements Attributable, InvestmentVehicle
     @Deprecated
     private String industryClassification;
 
+    @VisibleForTesting
     public Security()
     {
         this.uuid = UUID.randomUUID().toString();

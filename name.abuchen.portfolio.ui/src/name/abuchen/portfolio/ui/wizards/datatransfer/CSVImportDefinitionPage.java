@@ -30,6 +30,7 @@ import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
@@ -130,13 +131,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     private CSVConfigManager configManager;
     private final boolean onlySecurityPrices;
 
+    private IStylingEngine stylingEngine;
     private TableViewer tableViewer;
     private Menu configurationDropDownMenu;
 
     private DataBindingContext context;
 
     public CSVImportDefinitionPage(Client client, CSVImporter importer, CSVConfigManager configManager,
-                    boolean onlySecurityPrices)
+                    IStylingEngine stylingEngine, boolean onlySecurityPrices)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
@@ -145,6 +147,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         this.client = client;
         this.importer = importer;
         this.configManager = configManager;
+        this.stylingEngine = stylingEngine;
         this.onlySecurityPrices = onlySecurityPrices;
 
         if (onlySecurityPrices)
@@ -232,6 +235,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         //
         // form layout
         //
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(container);
 
         int width = widest(lblExtractor, lblDelimiter, lblEncoding);
 

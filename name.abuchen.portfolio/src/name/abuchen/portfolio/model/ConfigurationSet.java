@@ -11,6 +11,29 @@ import java.util.stream.Stream;
  */
 public class ConfigurationSet
 {
+    public enum WellKnownConfigurationSets
+    {
+        /**
+         * custom client filter configurations; data contains comma separated
+         * list of account/portfolio UUIDs
+         */
+        CLIENT_FILTER_DEFINITIONS("client-filter-definitions"), //$NON-NLS-1$
+        /** selected client filter in views; view name is key */
+        CLIENT_FILTER_SELECTION("client-filter-selection"); //$NON-NLS-1$
+
+        private WellKnownConfigurationSets(String key)
+        {
+            this.key = key;
+        }
+
+        private String key;
+
+        public String getKey()
+        {
+            return key;
+        }
+    }
+
     /**
      * A configuration has a UUID, a name given by the user, and a data string.
      */
@@ -32,7 +55,12 @@ public class ConfigurationSet
 
         public Configuration(String name, String data)
         {
-            this.uuid = UUID.randomUUID().toString();
+            this(UUID.randomUUID().toString(), name, data);
+        }
+
+        public Configuration(String uuid, String name, String data)
+        {
+            this.uuid = uuid;
             this.name = name;
             this.data = data;
         }
@@ -111,5 +139,13 @@ public class ConfigurationSet
     public void remove(Configuration configuration)
     {
         configurations.remove(configuration);
+    }
+
+    /**
+     * Removes all configurations from the set.
+     */
+    public void clear()
+    {
+        configurations.clear();
     }
 }

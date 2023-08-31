@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
@@ -217,6 +218,8 @@ public enum WidgetFactory
     EARNINGS_PER_QUARTER_CHART(Messages.LabelEarningsPerQuarter, Messages.LabelEarnings, EarningsChartWidget::perQuarter),
 
     EARNINGS_PER_MONTH_CHART(Messages.LabelEarningsPerMonth, Messages.LabelEarnings, EarningsChartWidget::perMonth),
+
+    EARNINGS_BY_TAXONOMY(Messages.LabelEarningsByTaxonomy, Messages.LabelEarnings, EarningsByTaxonomyChartWidget::new),
 
     TRADES_BASIC_STATISTICS(Messages.LabelTradesBasicStatistics, Messages.LabelTrades, TradesWidget::new),
 

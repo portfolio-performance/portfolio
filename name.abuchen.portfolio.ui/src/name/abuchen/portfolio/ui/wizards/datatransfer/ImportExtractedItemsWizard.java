@@ -13,13 +13,11 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
-import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public final class ImportExtractedItemsWizard extends Wizard
@@ -120,42 +118,7 @@ public final class ImportExtractedItemsWizard extends Wizard
     public boolean performFinish()
     {
         if (!pages.isEmpty())
-        {
-            boolean isDirty = false;
-            for (int index = 0; index < pages.size(); index++)
-            {
-                ReviewExtractedItemsPage page = pages.get(index);
-                page.afterPage();
-
-                InsertAction action = new InsertAction(client);
-                action.setConvertBuySellToDelivery(page.doConvertToDelivery());
-                action.setRemoveDividends(page.doRemoveDividends());
-
-                for (ExtractedEntry entry : page.getEntries())
-                {
-                    if (entry.isImported())
-                    {
-                        if (entry.getItem().isInvestmentPlanItem())
-                        {
-                            action.setInvestmentPlanItem(true);
-                        }
-                        entry.getItem().apply(action, page);
-                        action.setInvestmentPlanItem(false);
-                        isDirty = true;
-                    }
-                }
-            }
-
-            if (isDirty)
-            {
-                client.markDirty();
-
-                // run consistency checks in case bogus transactions have been
-                // created (say: an outbound delivery of a security where there
-                // no held shares)
-                new ConsistencyChecksJob(client, false).schedule();
-            }
-        }
+            new ImportController(client).perform(pages);
 
         return true;
     }

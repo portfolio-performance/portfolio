@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard.earnings;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -57,13 +58,12 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         super(widget, data);
         this.chartBuilder = chartBuilder;
 
-        addConfig(new ChartShowYAxisConfig(this, true));
-
-        addConfig(new ClientFilterConfig(this));
         addConfig(new StartYearConfig(this, defaultYearOffset));
+        addConfig(new ClientFilterConfig(this));
         addConfig(new EarningTypeConfig(this));
         addConfig(new GrossNetTypeConfig(this));
         addConfig(new ChartHeightConfig(this));
+        addConfig(new ChartShowYAxisConfig(this, true));
 
         this.converter = data.getCurrencyConverter();
     }
@@ -129,13 +129,13 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
             {
                 int tab = chartBuilder.getTabIndex();
                 int startYear = get(StartYearConfig.class).getStartYear();
-                String clientFilter = get(ClientFilterConfig.class).getSelectedItem().getUUIDs();
+                String filterIdent = get(ClientFilterConfig.class).getSelectedItem().getId();
                 EarningType earningsType = get(EarningTypeConfig.class).getValue();
                 PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
-                part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, clientFilter, mode,
-                                grossNetType == GrossNetType.GROSS, false));
+                part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
+                                mode, grossNetType == GrossNetType.GROSS, false));
             }
         });
 

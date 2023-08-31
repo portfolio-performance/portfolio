@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.64.2-SNAPSHOT</version>
+		<version>0.65.2-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -328,17 +328,83 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>notarize</id>
+								<id>notarize-aarch64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<!-- install from https://github.com/mitchellh/gon -->
-									<executable>gon</executable>
+									<executable>xcrun</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
-										<argument>${basedir}/target/config/notarization-config.json</argument>
+										<argument>notarytool</argument>
+										<argument>submit</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
+										<argument>--apple-id</argument>
+										<argument>${env.CODESIGN_APPLEID_USER}</argument>
+										<argument>--password</argument>
+										<argument>${env.CODESIGN_APPLEID_PWD}</argument>
+										<argument>--team-id</argument>
+										<argument>${env.CODESIGN_APPLEID_TEAMID}</argument>
+										<argument>--wait</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>staple-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>stapler</argument>
+										<argument>staple</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>notarize-x86_64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>notarytool</argument>
+										<argument>submit</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
+										<argument>--apple-id</argument>
+										<argument>${env.CODESIGN_APPLEID_USER}</argument>
+										<argument>--password</argument>
+										<argument>${env.CODESIGN_APPLEID_PWD}</argument>
+										<argument>--team-id</argument>
+										<argument>${env.CODESIGN_APPLEID_TEAMID}</argument>
+										<argument>--wait</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>staple-x86_64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>stapler</argument>
+										<argument>staple</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
 								</configuration>

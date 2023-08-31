@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature_java17
   pull_request:
       types: [opened, synchronize, reopened]
 
@@ -23,7 +22,7 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn
         restore-keys: |
           ${{ runner.os }}-mvn-
     - name: Set up JDK 17
@@ -31,6 +30,10 @@ jobs:
       with:
         java-version: 17
         distribution: zulu
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.5
+      with:
+        maven-version: 3.9.2
     - name: Build with Maven
       run: |
         mvn verify \
@@ -51,7 +54,7 @@ jobs:
         path: |
           ~/.m2/repository
           ~/.sonar/cache
-        key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-mvn
         restore-keys: |
           ${{ runner.os }}-mvn-
     - name: Set up JDK 17
@@ -59,6 +62,10 @@ jobs:
       with:
         java-version: 17
         distribution: zulu
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.5
+      with:
+        maven-version: 3.9.2
     - name: Build with Maven
       run: |
         mvn verify sonar:sonar \

@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.5
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Iris Soldat und Team Post CH AG 
+Telefon +41 848 888 700 
+www.postfinance.ch P.P. CH-4808 Zofingen A-PRIORITY 
+Herr 
+Max Mustermann 
+Mustermann Max Musterstrasse 75 C 
+Musterhausen 3857 Musterhausen 
+Transaktionsabrechnung: Fondssparplan Seite: 1 / 2 
+Selfservice Fonds Datum: 31.07.2023 
+Depot 97-133982-4 Ort der Ausführung Over-the-Counter 
+Auftrag 15186945 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Anteile Währung Kurs 
+PF - Global Fund A 1.216 CHF 162.830 
+ISIN CH0014933193 
+Kurswert in Handelswährung CHF 198.02 
+Kommission CHF 1.98 
+Total CHF 200.00 
+Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet. 
+01521 DE   000035.00 
+Transaktionsabrechnung: Fondssparplan 
+Depot 97-123456-4 Datum: 31.07.2023 Seite: 2 / 2 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Freundliche Grüsse 
+PostFinance AG 
+01521 DE   000035.00

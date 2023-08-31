@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,8 +33,8 @@ public class PortfolioClientFilter implements ClientFilter
 
     public PortfolioClientFilter(List<Portfolio> portfolios, List<Account> accounts)
     {
-        this.portfolios = Objects.requireNonNull(portfolios);
-        this.accounts = Objects.requireNonNull(accounts);
+        this.portfolios = new ArrayList<>(Objects.requireNonNull(portfolios));
+        this.accounts = new ArrayList<>(Objects.requireNonNull(accounts));
     }
 
     public PortfolioClientFilter(Portfolio portfolio)

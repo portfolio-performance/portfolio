@@ -1,0 +1,105 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=[*]
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=[*]ADRESSZEILE3=[*]
+ADRESSZEILE4=[*]
+Herr ADRESSZEILE5=
+[*] ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+123 BELEGNUMMER=33647
+123 123 66023908 / 12.01.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 12.01.2021
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+Xtr.(IE)-MSCI Emerging Markets Reg. Shares 1C USD o.N. IE00BTJRMP35
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 0,1 04.01.2021 04.01.2021 EUR 0,0232
+Investmentertrag für 2020 (besitzzeitanteilig, vor Teilfreistellung) EUR [*]
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) EUR [*]
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR [*]
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR [*] [*]
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag: 04.01.2021
+Jahressteuerbescheinigung folgt
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Wertpapierrechnung Lagerland: Irland
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Manfred Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.20/DUANDEREEREIERTR/GDBERTRG/033647/130121/010747
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=[*]
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Steuerbelastung ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=[*]ADRESSZEILE3=[*]
+ADRESSZEILE4=[*]
+Herr ADRESSZEILE5=
+[*] ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+123 BELEGNUMMER=[*]
+123 123 55108371 / 12.01.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+[*]
+Steuerpflichtige Vorabpauschale Frankfurt am Main, 12.01.2021
+(§ 18 InvStG)
+Gattungsbezeichnung ISIN
+Xtr.II Gbl Infl.-Linked Bond Inhaber-Anteile 5C o.N. LU0908508814
+Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück
+STK 0,1 04.01.2021 04.01.2021 EUR 0,0114
+Investmentertrag für 2020 (besitzzeitanteilig, vor Teilfreistellung) EUR [*]
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+steuerpflichtige Vorabpauschale vor Teilfreistellung (TFQ) [*]
+steuerpflichtige Vorabpauschale nach Teilfreistellung EUR [*]
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR [*] [*]
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag: 04.01.2021
+Jahressteuerbescheinigung folgt
+Im Jahr des Erwerbs der Fondsanteile vermindert sich die Vorabpauschale um 1/12 für jeden vollen Monat, der dem Monat
+des Erwerbs vorangeht (besitzzeitanteilige Ermittlung gem. § 18 Abs. 2 InvStG). Um eine doppelte Besteuerung
+auszuschließen, werden die während der Besitzzeit angesetzten Vorabpauschalen vom Veräußerungsergebnis abgezogen.
+Dabei werden diese, ungeachtet einer möglichen Teilfreistellung, in voller Höhe berücksichtigt (§ 19 Abs. 1 Satz 3 und 4
+InvStG).
+Weitere Informationen zur Vorabpauschale sowie wichtige FAQs finden Sie auf unserer Aktionsseite 
+www.onvista-bank.de/vorabpauschale
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Manfred Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.20/DUANDEREEREIERTR/GDBERTRG/033648/130121/010747

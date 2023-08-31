@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.5
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster Seite 1 von 2
+Depotnummer
+ 6353707266
+ Kundennummer 4589247711
+ckRoFzv Zgmghf
+ Auftragsnummer 433499/69.01
+hSooQbB GNaFUy Datum 25.07.2023
+Tannholzstr. 2 Rechnungsnummer w23639-0000248822/23
+98227 nczfmSLipjagvk Umsatzsteuer-ID JN453061604   
+ 
+Wertpapier Abrechnung Verkauf 
+Mischkursabrechnung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.100 SPARTAN DELTA CORP.                CA84678A5089 (A3EHTZ)
+REGISTERED SHARES NEW O.N.         
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 25.07.2023 16:48:21 Auftraggeber vrL lpqpozts tpwYOo
+Ausführungskurs 3,015 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Kanada
+Kurswert 6.331,50 EUR
+Provision 0,1900 % vom Kurswert 12,03- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 4.791,20- EUR
+Eingebuchte Aktienverluste 4.791,20 EUR
+Ausmachender Betrag 6.319,37 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 27.07.2023 zu Gunsten des Kontos 2426631 (IBAN YF80 7206 9274 8467 2821 55),
+BLZ 02121006 (BIC GENODEF1ZUS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Der Abrechnungsmischkurs/-preis ergibt sich wie folgt:
+7700.07251725.0000950OR07
+Seite 2 von 2
+Depotnummer 6020732715
+Kundennummer 8778696133
+Auftragsnummer 433499/69.01
+Datum 25.07.2023
+Stück Kurs Zeit Stück Kurs Zeit
+1.700 3,015 16:48:02 400 3,015 16:48:21
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 17.334,43 0,00 0,00 0,00 8.274,49
+Verkauf 4.791,20 0,00 0,00 0,00 0,00
+Nachher 22.125,63 0,00 0,00 0,00 8.274,49
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Einbuchung 8047504410 28.07.2022 Stück 600,0000 3.073,77- 1.805,53 1.268,24- (D)
+Einbuchung 8047504410 02.08.2022 Stück 1.000,0000 5.216,27- 3.009,22 2.207,05- (D)
+Einbuchung 8047504410 24.08.2022 Stück 500,0000 2.820,53- 1.504,62 1.315,91- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 4.791,20-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7700.07251725.0000951OR07

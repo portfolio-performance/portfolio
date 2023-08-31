@@ -1,9 +1,21 @@
 package name.abuchen.portfolio.datatransfer.pdf.dkb;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -2244,7 +2256,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan01.txt"), errors);
 
@@ -2395,7 +2407,7 @@ public class DkbPDFExtractorTest
 
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondssparplan02.txt"), errors);
 
@@ -2481,7 +2493,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"), errors);
 
@@ -2609,7 +2621,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
 
@@ -2673,7 +2685,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"), errors);
 
@@ -2746,7 +2758,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"), errors);
 
@@ -2788,7 +2800,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"), errors);
 
@@ -3037,7 +3049,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"), errors);
 
@@ -3077,7 +3089,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
@@ -3117,7 +3129,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
@@ -3157,7 +3169,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"), errors);
 
@@ -3219,7 +3231,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug10.txt"), errors);
 
@@ -3270,7 +3282,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug11.txt"), errors);
 
@@ -3321,7 +3333,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug12.txt"), errors);
 
@@ -3383,7 +3395,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug13.txt"), errors);
 
@@ -3412,7 +3424,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug14.txt"), errors);
 
@@ -3496,7 +3508,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug15.txt"), errors);
 
@@ -3525,7 +3537,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug16.txt"), errors);
 
@@ -3554,7 +3566,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug17.txt"), errors);
 
@@ -3583,7 +3595,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug18.txt"), errors);
 
@@ -3612,7 +3624,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug19.txt"), errors);
 
@@ -3641,7 +3653,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug20.txt"), errors);
 
@@ -3663,7 +3675,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.80)));
         assertThat(transaction.getSource(), is("GiroKontoauszug20.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
-        
+
         item = iter.next();
 
         // assert transaction
@@ -3674,7 +3686,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(24.65)));
         assertThat(transaction.getSource(), is("GiroKontoauszug20.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
-        
+
         item = iter.next();
 
         // assert transaction
@@ -3692,7 +3704,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug21.txt"), errors);
 
@@ -3732,7 +3744,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug22.txt"), errors);
 
@@ -3878,11 +3890,209 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug23()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug23.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(47L));
+        assertThat(results.size(), is(47));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-06-26"), hasAmount("EUR", 500.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-07-04"), hasAmount("EUR", 500.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-05"), hasAmount("EUR", 288.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-05"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-05"), hasAmount("EUR", 12.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-06"), hasAmount("EUR", 9.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-06"), hasAmount("EUR", 26.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-07"), hasAmount("EUR", 276.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-07"), hasAmount("EUR", 4.34), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-08"), hasAmount("EUR", 7.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-08"), hasAmount("EUR", 39.90), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-08"), hasAmount("EUR", 33.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 10.55), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 9.90), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 41.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 31.63), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 93.70), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 22.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-12"), hasAmount("EUR", 30.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-13"), hasAmount("EUR", 29.58), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-14"), hasAmount("EUR", 40.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-15"), hasAmount("EUR", 51.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-15"), hasAmount("EUR", 37.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-16"), hasAmount("EUR", 69.06), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-20"), hasAmount("EUR", 9.80), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-20"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-21"), hasAmount("EUR", 46.37), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-21"), hasAmount("EUR", 41.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-21"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-22"), hasAmount("EUR", 14.83), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-22"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-23"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-26"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-27"), hasAmount("EUR", 17.42), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-27"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-28"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-06-30"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-03"), hasAmount("EUR", 1185.90), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-03"), hasAmount("EUR", 32.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-03"), hasAmount("EUR", 18.00), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-03"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-03"), hasAmount("EUR", 52.63), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-04"), hasAmount("EUR", 6.25), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-04"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-07-03"), hasAmount("EUR", 4.50), //
+                        hasSource("GiroKontoauszug23.txt"), hasNote("Entgelt für Konto ohne mtl. Eingang"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug01.txt"),
                         errors);
@@ -3978,7 +4188,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug02.txt"),
                         errors);
@@ -4085,7 +4295,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug03.txt"),
                         errors);
@@ -4159,7 +4369,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug04.txt"),
                         errors);
@@ -4200,7 +4410,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug05.txt"),
                         errors);
@@ -4230,7 +4440,7 @@ public class DkbPDFExtractorTest
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug06.txt"),
                         errors);

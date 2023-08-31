@@ -1,0 +1,44 @@
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster                                                                                                                                             Seite 1
+ 
+ 
+ 
+Mustermann
+Musterstr. 2
+00000 Musterscherben
+   
+Depotnummer         0000000000
+Kundennummer        0000000000
+Name
+Abrechnungsnr.        000000000
+Datum                 17.07.2023
+7700.07180103.000000000
+Bitte ggf. Rückseite beachten.
+ 
+Dividendengutschrift
+Nominale                                 Wertpapierbezeichnung                                                                                    ISIN                                     (WKN)
+Stück 2.100                              SPARTAN DELTA CORP.
+REGISTERED SHARES O.N.
+CA84678A1021     (A2P5PY)
+Zahlbarkeitstag                         06.07.2023
+Bestandsstichtag                        20.06.2023
+Ex-Tag                                  21.06.2023
+Devisenkurs                             EUR / CAD  1,4915
+Devisenkursdatum                        17.07.2023
+Dividende pro Stück                     6,73         CAD
+Herkunftsland                                          Kanada
+Dividendengutschrift                                   14.133,00     CAD        9.475,70+   EUR
+Umrechnung in EUR                                                               9.475,70     EUR
+Einbehaltene Quellensteuer 25 % auf 14.133,00 CAD                                                                               										 2.368,93-    EUR
+Anrechenbare Quellensteuer 15 % auf 9.475,70 EUR             1.421,36     EUR
+Kapitalertragsteuerpflichtige Dividende                      9.475,70     EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 1.421,36 EUR                          5.685,44  -  EUR
+Berechnungsgrundlage für die Kapitalertragsteuer              3.790,26     EUR
+Kapitalertragsteuer 25 % auf 3.790,26 EUR                                                                                          947,57-    EUR
+Solidaritätszuschlag 5,5 % auf 947,57 EUR                                                                                             52,11-    EUR
+Ausmachender Betrag                                                                                                                     6.107,09+   EUR
+10 % rückforderbare Quellensteuer                                         1.413,30     CAD
+Lagerstelle CBFI (601617 / 67268)
+Den Betrag buchen wir mit Wertstellung 10.07.2023 zu Gunsten des Kontos 0000000 (IBAN DE05 7206 9274 0003 0000
+55), BLZ 720 692 74 (BIC GENODEF1ZUS). 
+Keine Steuerbescheinigung.

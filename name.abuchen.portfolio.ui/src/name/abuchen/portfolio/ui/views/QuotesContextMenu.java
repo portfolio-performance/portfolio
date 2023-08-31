@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -44,6 +45,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 import name.abuchen.portfolio.ui.wizards.security.RawResponsesDialog;
 import name.abuchen.portfolio.util.QuoteFromTransactionExtractor;
 import name.abuchen.portfolio.util.TextUtil;
@@ -138,6 +140,14 @@ public class QuotesContextMenu
                 owner.notifyModelUpdated();
             }
         });
+
+        manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
+                        a -> Display.getDefault().asyncExec(() -> {
+                            FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(
+                                            Display.getDefault().getActiveShell(), owner.getClient(),
+                                            List.of(security));
+                            dialog.open();
+                        })));
 
         manager.add(new Separator());
 

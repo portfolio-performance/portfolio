@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
 import java.io.BufferedReader;
@@ -32,7 +31,6 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -55,12 +53,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return Messages.LabelYahooFinance;
     }
 
+    @SuppressWarnings("nls")
     public String rpcLatestQuote(Security security) throws IOException
     {
-        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/quote") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("lang", "en-US").addParameter("region", "US") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                        .addParameter("corsDomain", "finance.yahoo.com") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("symbols", security.getTickerSymbol()).get(); //$NON-NLS-1$
+        return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol())
+                        .addParameter("lang", "en-US").addParameter("region", "US")
+                        .addParameter("corsDomain", "finance.yahoo.com").get();
     }
 
     @Override
@@ -68,41 +66,29 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         try
         {
-            String html = this.rpcLatestQuote(security);
-
-            int startIndex = html.indexOf("quoteResponse"); //$NON-NLS-1$
-            if (startIndex < 0)
-                return Optional.empty();
+            String json = this.rpcLatestQuote(security);
 
             LatestSecurityPrice price = new LatestSecurityPrice();
 
-            Optional<String> time = extract(html, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            Optional<String> time = extract(json, 0, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (time.isPresent())
             {
                 long epoch = Long.parseLong(time.get());
                 price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
 
-            Optional<String> value = extract(html, startIndex, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            Optional<String> value = extract(json, 0, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (value.isPresent())
                 price.setValue(asPrice(value.get()));
 
-            Optional<String> high = extract(html, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (high.isPresent())
-                price.setHigh(asPrice(high.get()));
-
-            Optional<String> low = extract(html, startIndex, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (low.isPresent())
-                price.setLow(asPrice(low.get()));
-
-            Optional<String> volume = extract(html, startIndex, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (volume.isPresent())
-                price.setVolume(asNumber(volume.get()));
+            price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+            price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+            price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
             if (price.getDate() == null || price.getValue() <= 0)
             {
                 PortfolioLog.error(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1, security.getTickerSymbol(),
-                                html));
+                                json));
                 return Optional.empty();
             }
             else
@@ -313,15 +299,24 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         // portfolio-report.net, but for now the list of exchanges is only
         // available for Yahoo search provider.
 
-        List<SecurityProperty> markets = subject.getProperties()
-                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).toList();
+        var markets = PortfolioReportQuoteFeed.getMarkets(subject);
 
-        markets.stream().map(p -> {
-            Exchange exchange = new Exchange(p.getValue(), MarketIdentifierCodes.getLabel(p.getName()));
-            if ("XFRA".equals(p.getName())) //$NON-NLS-1$
-                exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
+        markets.stream().map(market -> {
+            Exchange exchange = new Exchange(market.getSymbol(),
+                            MarketIdentifierCodes.getLabel(market.getMarketCode()));
+
+            // symbol might be null because it was added only later to
+            // MarketInfo, when deserializing from JSON, it might not be set
+            if (market.getSymbol() != null)
+            {
+                if ("XFRA".equals(market.getMarketCode())) //$NON-NLS-1$
+                    exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
+                if ("XETR".equals(market.getMarketCode())) //$NON-NLS-1$
+                    exchange.setId(exchange.getId() + ".DE"); //$NON-NLS-1$
+            }
+
             return exchange;
-        }).forEach(answer::add);
+        }).filter(e -> e.getId() != null).forEach(answer::add);
 
         Set<String> candidates = new HashSet<>();
         answer.forEach(e -> candidates.add(e.getId()));

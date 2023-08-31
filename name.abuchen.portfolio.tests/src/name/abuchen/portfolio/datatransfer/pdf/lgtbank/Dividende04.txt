@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.5
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+____________________
+P.P. Post CH AG
+____
+C
+________
+H__-_8_0_2_7_ _Z_ü_r_ich  PF 1909 -PRIORITY___________________________A__________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz 1 / 1
+Zürich, 3. April 2023
+ 
+Barausschüttung Portfolio: 1234567.000
+Auftragsnummer: 303105603 Kontonummer: 1234567.031
+Kunde: Liberty Freizügigkeitsstiftung XX - 1.1234.4777-01 IBAN: CH63 0833 5002 1234 5123 1 
+ 
+Stand Ihres Depots am 30. März 2023:
+12 SGS Ltd
+ Namen-Aktien
+ ISIN: CH0002497458, Valoren-Nr.: 249745
+Wir rechnen folgende Erträgnisse unter Eingangsvorbehalt ab:
+Ausschüttung CHF 80.00
+Ex-Datum 30. März 2023
+Ausschüttungsart Ordentliche Dividende
+Betrag CHF 960.00
+Verrechnungssteuer 35 % CHF -336.00
+Netto CHF 624.00
+Zu Ihren Gunsten CHF 624.00
+Valuta 3. April 2023
+2026457 00A T ZH I SEA0107 39509429 12:33 03.04.2023 %Media:XML-A4H
+____
+____

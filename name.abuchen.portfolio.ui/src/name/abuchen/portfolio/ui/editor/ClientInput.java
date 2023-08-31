@@ -692,6 +692,11 @@ public class ClientInput
 
         loadPreferences();
 
+        if (client.shouldDoFilterMigration())
+        {
+            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
+        }
+
         scheduleOnlineUpdateJobs();
 
         scheduleAutoSaveJob();
@@ -711,4 +716,5 @@ public class ClientInput
     {
         this.listeners.forEach(consumer::accept);
     }
+
 }

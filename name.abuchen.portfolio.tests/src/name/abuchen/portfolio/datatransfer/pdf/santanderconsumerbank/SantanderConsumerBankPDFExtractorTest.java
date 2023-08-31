@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -77,7 +78,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T16:53:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf01.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is("Limit billigst"));
+        assertThat(entry.getPortfolioTransaction().getNote(), is("Auftragsnummer 000000/00.00 | Limit billigst"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(325.86))));
@@ -121,7 +122,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T16:38:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf02.txt"));
-        assertThat(entry.getPortfolioTransaction().getNote(), is("Limit billigst"));
+        assertThat(entry.getPortfolioTransaction().getNote(), is("Auftragsnummer 000000/00.00 | Limit billigst"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(430.80))));
@@ -164,7 +165,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.07))));
@@ -207,7 +208,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.07))));
@@ -256,7 +257,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 0000000000"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(19.20))));
@@ -280,10 +281,10 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
-        
+
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2023-05-31"), hasAmount("EUR", 1.66), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
@@ -291,6 +292,11 @@ public class SantanderConsumerBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-05-31"), hasAmount("EUR", 6.63), //
                         hasSource("Kontoauszug01.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-05-20"), hasAmount("EUR", 1), //
+                        hasSource("Kontoauszug01.txt"),
+                        hasNote("auf Konto IBAN AT123456789012345678"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-05-19"), hasAmount("EUR", 34), //

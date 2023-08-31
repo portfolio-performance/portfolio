@@ -16,6 +16,7 @@ import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -56,6 +57,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                             : ValidationStatus.error(Messages.MsgPortfolioMustBeDifferent);
         }
     }
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private Client client;
 
@@ -157,6 +161,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         startingWith(shares.value).thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(securities.value.getControl()).right(amount.value).label(lblNote);
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int widest = widest(securities.label, source.label, target.label, dateTime.label, shares.label, lblNote);
         startingWith(securities.label).width(widest);

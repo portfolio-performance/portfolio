@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -50,7 +51,8 @@ public class NewDomainElements implements ElementProvider
         @Override
         public void execute()
         {
-            CommandAction.forCommand(context, label, commandId, parameters).run();
+            // execute asynchronously to allow the command palette to close
+            Display.getDefault().asyncExec(() -> CommandAction.forCommand(context, label, commandId, parameters).run());
         }
     }
 
