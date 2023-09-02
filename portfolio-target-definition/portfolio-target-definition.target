@@ -32,6 +32,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt_BR.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
