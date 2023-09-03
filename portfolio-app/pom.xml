@@ -80,9 +80,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
 				<configuration>
-					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
 					<executionEnvironment>JavaSE-17</executionEnvironment>
 					<exclusions>
@@ -126,7 +124,7 @@
 						</environment>
 					</environments>
 					<filters>
-						<filter>
+						<filter>	
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
 							<removeAll />
@@ -427,29 +425,18 @@
 					<version>3.1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>3.0.5</version>
-					<configuration>
-						<findbugsXmlOutput>true</findbugsXmlOutput>
-						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-						<xmlOutput>true</xmlOutput>
-					</configuration>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>3.3.0</version>
 					<executions>
 						<execution>
 							<id>validate</id>
-							<phase>validate</phase>
+							<phase>verify</phase>
 							<configuration>
 								<configLocation>portfolioCheckstyle.xml</configLocation>
-								<encoding>UTF-8</encoding>
+								<inputEncoding>UTF-8</inputEncoding>
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
-								<linkXRef>false</linkXRef>
 								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
 							</configuration>
 							<goals>
