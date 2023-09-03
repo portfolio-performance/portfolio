@@ -39,6 +39,26 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+		<release version="0.65.2" date="2023-09-03">
+			<description>
+				<ul>
+					<li>New Translations: Traditional Chinese and Brazilian Portuguese</li>
+					<li>Improvement of PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li>Improvement: New option to skip extracting notes from PDF documents</li>
+					<li>Improvement: Alternative symbols for benchmarks in the yield/volatility chart</li>
+					<li>Fix: Fixes truncated labels in dialogs when a larger font size is selected</li>
+					<li>Fix: Fixes an issue where the crosshair was not correctly placed in the saved chart</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Neue Übersetzungen: Traditionelles Chinesisch und Brasilianisches Portugiesisch</li>
+					<li>Verbesserung der PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li>Verbesserung: Neue Option um Notizen nicht aus PDF Dokumenten einzulesen</li>
+					<li>Verbesserung: Alternative Symbole für Benchmarks im Rendite/Volatilitäts-Diagramm</li>
+					<li>Fix: Behebt abgeschnittene Beschriftungen in Dialogen wenn eine grössere Schrift eingestellt ist</li>
+					<li>Fix: Behebt ein Problem bei dem das Crosshair in dem gespeicherten Diagramm nicht an der richtigen Stelle eingezeichnet wurde</li>
+				</ul>
+			</description>			
+		</release>
 		<release version="0.65.1" date="2023-08-14">
 			<description>
 				<ul>
