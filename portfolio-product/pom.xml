@@ -258,6 +258,7 @@
 									<executable>create-dmg</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
+										<argument>--identity=${applesigner.codesign_id}	</argument>
 										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
@@ -306,6 +307,7 @@
 									<executable>create-dmg</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
+										<argument>--identity=${applesigner.codesign_id}</argument>
 										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
