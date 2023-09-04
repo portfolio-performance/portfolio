@@ -727,6 +727,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 policy.getViewer().setComparator(null);
 
             viewerColumn.dispose();
+
+            if (store != null)
+                store.updateActive(serialize());
         }
         finally
         {
