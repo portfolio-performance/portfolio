@@ -984,7 +984,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     @Override
     public void onConfigurationPicked(String data)
     {
-        if (data == null)
+        if (data == null || data.isEmpty())
             doResetColumns();
         else
             createFromColumnConfig(data);

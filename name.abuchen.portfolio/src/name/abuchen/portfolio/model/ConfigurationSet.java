@@ -53,7 +53,7 @@ public class ConfigurationSet
 
         /* protobuf only */ Configuration(String uuid)
         {
-            this.uuid = uuid;
+            this.uuid = Objects.requireNonNull(uuid);
         }
 
         public Configuration(String name, String data)
@@ -63,9 +63,9 @@ public class ConfigurationSet
 
         public Configuration(String uuid, String name, String data)
         {
-            this.uuid = uuid;
-            this.name = name;
-            this.data = data;
+            this.uuid = Objects.requireNonNull(uuid);
+            this.name = Objects.requireNonNull(name);
+            this.data = Objects.requireNonNull(data);
         }
 
         public String getUUID()

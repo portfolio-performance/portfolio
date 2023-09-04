@@ -167,7 +167,7 @@ public class ConfigurationStore
 
         listeners.forEach(ConfigurationStoreOwner::beforeConfigurationPicked);
 
-        active = new Configuration(name, template != null ? template.getData() : null);
+        active = new Configuration(name, template != null ? template.getData() : ""); //$NON-NLS-1$
 
         configSet.add(active);
         client.touch();
