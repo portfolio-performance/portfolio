@@ -1200,9 +1200,13 @@ import name.abuchen.portfolio.money.Money;
                 {
                     PConfigurationSet.Builder newConfigurationSet = PConfigurationSet.newBuilder();
                     newConfigurationSet.setKey(entry.getKey());
-                    newConfigurationSet.setUuid(config.getUUID());
-                    newConfigurationSet.setName(config.getName());
-                    newConfigurationSet.setData(config.getData());
+                    if (config.getUUID() != null)
+                        newConfigurationSet.setUuid(config.getUUID());
+                    if (config.getName() != null)
+                        newConfigurationSet.setName(config.getName());
+                    if (config.getData() != null)
+                        newConfigurationSet.setData(config.getData());
+
                     newSettings.addConfigurationSets(newConfigurationSet);
                 }
 

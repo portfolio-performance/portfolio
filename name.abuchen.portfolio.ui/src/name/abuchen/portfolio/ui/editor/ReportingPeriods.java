@@ -107,7 +107,8 @@ public class ReportingPeriods
             return new ArrayList<>();
 
         return (ArrayList<ReportingPeriod>) Arrays.stream(string.split(";")) //$NON-NLS-1$
-                        .map(c -> reportingPeriodStringToReportingPeriod(c)).filter(java.util.Optional::isPresent) //
+                        .map(c -> reportingPeriodStringToReportingPeriod(c)) //
+                        .filter(java.util.Optional::isPresent) //
                         .map(java.util.Optional::get).collect(toMutableList());
     }
 
@@ -116,7 +117,7 @@ public class ReportingPeriods
         var set = clientInput.getClient().getSettings()
                         .getConfigurationSet(WellKnownConfigurationSets.REPORTING_PERIODS);
         set.clear();
-        periods.forEach(rp -> set.add(new Configuration(null, null, rp.getCode())));
+        periods.forEach(rp -> set.add(new Configuration("", "", rp.getCode()))); //$NON-NLS-1$ //$NON-NLS-2$
         clientInput.touch();
     }
 }
