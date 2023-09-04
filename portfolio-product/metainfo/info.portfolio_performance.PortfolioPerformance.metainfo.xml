@@ -39,6 +39,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+		<release version="0.65.3" date="2023-09-04">
+			<description>
+				<ul>
+					<li>Fix: Fixes a problem when saving the file with reporting periods configuration embedded in the file</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Fix: Behebt ein Problem beim Speichern der Datei wenn Berichtszeiträume in der Datei gespeichert werden</li>
+				</ul>
+			</description>
+		</release>
 		<release version="0.65.2" date="2023-09-03">
 			<description>
 				<ul>
