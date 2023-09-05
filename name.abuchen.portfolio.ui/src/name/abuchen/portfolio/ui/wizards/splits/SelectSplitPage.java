@@ -20,6 +20,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -41,10 +42,11 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class SelectSplitPage extends AbstractWizardPage
 {
+    private IStylingEngine stylingEngine;
     private StockSplitModel model;
     private BindingHelper bindings;
 
-    public SelectSplitPage(StockSplitModel model)
+    public SelectSplitPage(IStylingEngine stylingEngine, StockSplitModel model)
     {
         super("select-stock-split"); //$NON-NLS-1$
 
@@ -52,6 +54,7 @@ public class SelectSplitPage extends AbstractWizardPage
         setDescription(Messages.SplitWizardDefinitionDescription);
 
         this.model = model;
+        this.stylingEngine = stylingEngine;
 
         bindings = new BindingHelper(model)
         {
@@ -108,6 +111,9 @@ public class SelectSplitPage extends AbstractWizardPage
         Text oldShares = new Text(container, SWT.BORDER | SWT.RIGHT);
 
         // form layout data
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(container);
 
         int amountWidth = amountWidth(oldShares);
         int labelWidth = widest(labelSecurity, labelExDate, labelSplit);

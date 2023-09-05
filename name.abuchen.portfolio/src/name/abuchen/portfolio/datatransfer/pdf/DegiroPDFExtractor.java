@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -760,7 +761,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                     // pick the first unit and make it fit;
                                     // see discussion
-                                    // https://github.com/buchen/portfolio/pull/1198
+                                    // https://github.com/portfolio-performance/portfolio/pull/1198
                                     Optional<Unit> candidate = t.getUnits()
                                                     .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                                                     .filter(u -> u.getExchangeRate() != null).findFirst();

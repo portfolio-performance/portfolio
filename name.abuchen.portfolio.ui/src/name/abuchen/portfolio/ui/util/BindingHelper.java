@@ -521,9 +521,9 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final Text bindISINInput(Composite editArea, final String label, String property)
+    public final Text bindISINInput(Composite editArea, final String label, String property, int lenghtInCharacters)
     {
-        Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
+        Text txtValue = createTextInput(editArea, label, SWT.NONE, lenghtInCharacters);
         txtValue.setTextLimit(12);
 
         IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(txtValue);

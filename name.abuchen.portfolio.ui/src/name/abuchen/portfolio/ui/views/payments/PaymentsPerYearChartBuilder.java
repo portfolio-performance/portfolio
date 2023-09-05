@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -41,61 +42,59 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         {
             PaymentsViewModel model = (PaymentsViewModel) getChart().getData(PaymentsViewModel.class.getSimpleName());
 
-            TabularDataSource source = new TabularDataSource(Messages.LabelPaymentsPerYear,
-                            builder -> buildTabularData(model, builder));
+            int year = (Integer) getFocusedObject();
+
+            TabularDataSource source = new TabularDataSource(
+                            Messages.LabelPaymentsPerYear + " - " + (model.getStartYear() + year), //$NON-NLS-1$
+                            builder -> buildTabularData(model, year, builder));
 
             source.createPlainComposite(parent);
 
             selectionListener.accept(source);
         }
 
-        private void buildTabularData(PaymentsViewModel model, TabularDataSource.Builder builder)
+        private void buildTabularData(PaymentsViewModel model, int year, TabularDataSource.Builder builder)
         {
             int totalNoOfMonths = model.getNoOfMonths();
-            int totalNoOfYears = LocalDate.now().getYear() - model.getStartYear() + 1;
 
-            builder.addColumns(new Column(Messages.ColumnSecurity, SWT.LEFT, 220).withLogo());
-            for (int year = 0; year < totalNoOfYears; year++)
-            {
-                builder.addColumns(new Column(String.valueOf(model.getStartYear() + year))
-                                .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
-                                .withFormatter(cell -> Values.Amount.format((long) cell)));
-            }
-
-            model.getLines().stream()
+            List<Line> lines = model.getLines().stream() //
+                            .filter(line -> {
+                                for (int index = year * 12; index < (year + 1) * 12
+                                                && index < totalNoOfMonths; index += 1)
+                                    if (line.getValue(index) != 0L)
+                                        return true;
+                                return false;
+                            })
                             .sorted((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
-                            .forEach(line -> {
-                                Object[] row = new Object[totalNoOfYears + 1];
-                                row[0] = line.getVehicle();
-                                fillInRow(totalNoOfYears, totalNoOfMonths, line, row);
-                                builder.addRow(row);
+                            .toList();
 
-                            });
+            builder.addColumns( //
+                            new Column(Messages.ColumnSecurity, SWT.LEFT, 220).withLogo(),
+                            new Column(String.valueOf(model.getStartYear() + year))
+                                            .withBackgroundColor(PaymentsColors.getColor(model.getStartYear() + year))
+                                            .withFormatter(cell -> Values.Amount.format((long) cell)));
+
+            lines.forEach(line -> {
+                long value = 0;
+                for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
+                    value += line.getValue(m);
+
+                builder.addRow(line.getVehicle(), value);
+            });
 
             if (model.usesConsolidateRetired())
             {
-                Object[] row = new Object[totalNoOfYears + 1];
-                row[0] = Messages.LabelPaymentsConsolidateRetired;
-                fillInRow(totalNoOfYears, totalNoOfMonths, model.getSumRetired(), row);
-                builder.addRow(row);
-            }
-
-            Object[] sum = new Object[totalNoOfYears + 1];
-            sum[0] = Messages.ColumnSum;
-            fillInRow(totalNoOfYears, totalNoOfMonths, model.getSum(), sum);
-            builder.setFooter(sum);
-        }
-
-        private void fillInRow(int totalNoOfYears, int totalNoOfMonths, Line line, Object[] row)
-        {
-            for (int year = 0; year < totalNoOfYears; year++)
-            {
                 long value = 0;
-                for (int month = year * 12; month < (year + 1) * 12 && month < totalNoOfMonths; month += 1)
-                    value += line.getValue(month);
+                for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
+                    value += model.getSumRetired().getValue(m);
 
-                row[year + 1] = value;
+                builder.addRow(Messages.LabelPaymentsConsolidateRetired, value);
             }
+
+            long value = 0;
+            for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
+                value += model.getSum().getValue(m);
+            builder.setFooter(Messages.ColumnSum, value);
         }
     }
 

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -40,17 +41,40 @@ public class MoneyTrailDataSource
         heading.setText(trail.getLabel());
         GridDataFactory.fillDefaults().span(depth + 3, 1).applyTo(heading);
 
-        addRow(composite, trail.getRecord(), depth - 1, depth);
+        // if the trail contains too many items, it becomes very slow and anyway
+        // can only show part of the calculation. With this variable, we limit
+        // the number of rows to be created and rendered
+        int[] rowsToCreate = new int[] { 50 };
+
+        addRow(rowsToCreate, composite, trail.getRecord(), depth - 1, depth);
+
+        if (rowsToCreate[0] < 0)
+        {
+            Label info = new Label(composite, SWT.NONE);
+            info.setBackground(composite.getBackground());
+            info.setText("..."); //$NON-NLS-1$
+            GridDataFactory.fillDefaults().span(depth + 3, 1).applyTo(info);
+        }
 
         return composite;
     }
 
-    private Label addRow(Composite composite, TrailRecord trail, int level, int depth)
+    private Optional<Label> addRow(int[] rowsToCreate, Composite composite, TrailRecord trail, int level, int depth)
     {
         List<Label> inputs = new ArrayList<>();
 
         for (TrailRecord child : trail.getInputs())
-            inputs.add(addRow(composite, child, level - 1, depth));
+            addRow(rowsToCreate, composite, child, level - 1, depth).ifPresent(inputs::add);
+
+        if (rowsToCreate[0] <= 0)
+        {
+            // in order to show a message that rows are missing, we need to know
+            // that trail did not just accidentally fit into the limit
+            rowsToCreate[0] = -10;
+            return Optional.empty();
+        }
+
+        rowsToCreate[0]--;
 
         Label date = new Label(composite, SWT.NONE);
         date.setBackground(composite.getBackground());
@@ -85,7 +109,7 @@ public class MoneyTrailDataSource
             }
         }
 
-        return answer;
+        return Optional.of(answer);
     }
 
     private void highlight(List<Label> outputs, List<Label> inputs)

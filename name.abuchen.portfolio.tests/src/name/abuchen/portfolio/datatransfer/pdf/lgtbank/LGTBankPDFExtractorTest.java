@@ -150,6 +150,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
@@ -179,6 +180,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
@@ -208,6 +210,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
@@ -280,6 +283,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -309,6 +313,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -338,6 +343,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -367,6 +373,7 @@ public class LGTBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));

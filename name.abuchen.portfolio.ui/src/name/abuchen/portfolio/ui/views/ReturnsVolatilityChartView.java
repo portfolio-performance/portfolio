@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
+import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
@@ -292,6 +293,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);
             lineSeries.setSymbolColor(color);
+            lineSeries.setSymbolType(series.isBenchmark() ? PlotSymbolType.DIAMOND : PlotSymbolType.CIRCLE);
             lineSeries.enableArea(series.isShowArea());
             lineSeries.setLineStyle(series.getLineStyle());
         });

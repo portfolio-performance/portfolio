@@ -6,7 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -43,6 +45,9 @@ import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
+import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.MarketInfo;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
@@ -53,6 +58,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -110,12 +116,40 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                         continue;
                     }
 
-                    // search for ISIN first
-                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty() && searchByIsin(item))
+                    // skip exchange rates and indices and well-known provider
+                    var wellKnown = Set.of(EurostatHICPQuoteFeed.ID, CoinGeckoQuoteFeed.ID);
+                    if (item.security.isExchangeRate() //
+                                    || item.security.getCurrencyCode() == null //
+                                    || (item.security.getFeed() != null && wellKnown.contains(item.security.getFeed())))
                     {
                         monitor.worked(1);
                         continue;
                     }
+
+                    // search for ISIN
+                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty()
+                                    && searchByIdentifier(item, item.security.getIsin(), ResultItem::getIsin))
+                    {
+                        monitor.worked(1);
+                        continue;
+                    }
+
+                    // search by WKN
+                    if (item.security.getWkn() != null && !item.security.getWkn().isEmpty()
+                                    && searchByIdentifier(item, item.security.getWkn(), ResultItem::getWkn))
+                    {
+                        monitor.worked(1);
+                        continue;
+                    }
+
+                    // search by ticker symbol
+                    if (item.security.getTickerSymbol() != null && !item.security.getTickerSymbol().isEmpty()
+                                    && searchByTickerSymbol(item))
+                    {
+                        monitor.worked(1);
+                        continue;
+                    }
+
                 }
                 catch (IOException e)
                 {
@@ -135,38 +169,25 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             monitor.done();
         }
 
-        private boolean searchByIsin(SecurityItem item) throws IOException
+        private boolean searchByIdentifier(SecurityItem item, String identifier, Function<ResultItem, String> property)
+                        throws IOException
         {
-            var results = new PortfolioReportNet().search(item.security.getIsin(), SecuritySearchProvider.Type.ALL);
+            var results = new PortfolioReportNet().search(identifier, SecuritySearchProvider.Type.ALL);
 
-            // searching by ISIN must be a direct match
+            // searching by WKN must be a direct match
             if (results.size() != 1)
                 return false;
 
-            if (!item.security.getIsin().equals(results.get(0).getIsin()))
+            if (!identifier.equals(property.apply(results.get(0))))
                 return false;
 
             var onlineItem = (OnlineItem) results.get(0);
+
+            addSecurityInfoAction(item, onlineItem);
+
             for (MarketInfo market : onlineItem.getMarkets())
             {
-                var label = MessageFormat.format("{0}, {1}, {2}, {3} - {4}", //$NON-NLS-1$
-                                new PortfolioReportQuoteFeed().getName(), //
-                                market.getMarketCode(), //
-                                market.getCurrencyCode(),
-                                market.getFirstPriceDate() != null ? Values.Date.format(market.getFirstPriceDate())
-                                                : Messages.LabelNotAvailable,
-                                market.getLastPriceDate() != null ? Values.Date.format(market.getLastPriceDate())
-                                                : Messages.LabelNotAvailable);
-
-                Action action = new SimpleAction(label, a -> {
-                    item.security.setOnlineId(onlineItem.getOnlineId());
-                    item.security.setFeed(PortfolioReportQuoteFeed.ID);
-                    item.security.setPropertyValue(Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                    market.getMarketCode());
-                    PortfolioReportNet.updateWith(item.security, onlineItem);
-                });
-
-                item.actions.add(action);
+                var action = addAction(item, onlineItem, market);
 
                 if (item.selectedAction == null && item.security.getCurrencyCode().equals(market.getCurrencyCode()))
                 {
@@ -185,6 +206,85 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
             listener.accept(item);
             return true;
+        }
+
+        private boolean searchByTickerSymbol(SecurityItem item) throws IOException
+        {
+            // search without the market identifier
+
+            final String symbol = item.security.getTickerSymbolWithoutStockMarket();
+            var results = new PortfolioReportNet().search(symbol, SecuritySearchProvider.Type.ALL);
+
+            for (ResultItem resultItem : results)
+            {
+                OnlineItem onlineItem = (OnlineItem) resultItem;
+
+                addSecurityInfoAction(item, onlineItem);
+
+                // check if the symbol matches one of the market symbols
+
+                for (MarketInfo market : onlineItem.getMarkets())
+                {
+                    var action = addAction(item, onlineItem, market);
+
+                    // let's be conservative for now: if the symbol matches
+                    // exactly, only then we propose to use it
+
+                    if (item.selectedAction == null //
+                                    && item.security.getTickerSymbol().equals(market.getSymbol())
+                                    && item.security.getCurrencyCode().equals(market.getCurrencyCode()))
+                    {
+                        item.selectedAction = action;
+                    }
+                }
+
+                // otherwise
+
+                Action action = new SimpleAction(Messages.LabelOnlyLinkToPortfolioReport, a -> {
+                    item.security.setOnlineId(onlineItem.getOnlineId());
+                    PortfolioReportNet.updateWith(item.security, onlineItem);
+                });
+
+                item.actions.add(action);
+            }
+
+            listener.accept(item);
+            return true;
+        }
+
+        private void addSecurityInfoAction(SecurityItem item, OnlineItem onlineItem)
+        {
+            var label = MessageFormat.format("{0} * {1} * {2} * {3}", //$NON-NLS-1$
+                            onlineItem.getName(), //
+                            onlineItem.getIsin() != null ? onlineItem.getIsin() : "", //$NON-NLS-1$
+                            onlineItem.getWkn() != null ? onlineItem.getWkn() : "", //$NON-NLS-1$
+                            onlineItem.getSymbol() != null ? onlineItem.getSymbol() : ""); //$NON-NLS-1$
+
+            item.actions.add(new LabelOnly(label));
+        }
+
+        private Action addAction(SecurityItem item, OnlineItem onlineItem, MarketInfo market)
+        {
+            var label = MessageFormat.format("{0}, {1}, {2}, {3} - {4}", //$NON-NLS-1$
+                            new PortfolioReportQuoteFeed().getName(), //
+                            market.getMarketCode(), //
+                            market.getCurrencyCode(),
+                            market.getFirstPriceDate() != null ? Values.Date.format(market.getFirstPriceDate())
+                                            : Messages.LabelNotAvailable,
+                            market.getLastPriceDate() != null ? Values.Date.format(market.getLastPriceDate())
+                                            : Messages.LabelNotAvailable);
+
+            Action action = new SimpleAction(label, a -> {
+                item.security.setOnlineId(onlineItem.getOnlineId());
+                item.security.setFeed(PortfolioReportQuoteFeed.ID);
+                item.security.setPropertyValue(Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                                market.getMarketCode());
+                PortfolioReportNet.updateWith(item.security, onlineItem);
+            });
+
+            item.actions.add(action);
+
+            return action;
         }
 
     }
@@ -350,7 +450,12 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             @Override
             public String getText(Object e)
             {
-                return ((SecurityItem) e).selectedAction != null ? ((SecurityItem) e).selectedAction.getText() : ""; //$NON-NLS-1$
+                var selectedAction = ((SecurityItem) e).selectedAction;
+
+                return selectedAction != null ? selectedAction.getText()
+                                : MessageFormat.format("{0,choice,0#|1#1 candidate|1<{0} candidates}", //$NON-NLS-1$
+                                                ((SecurityItem) e).actions.stream().filter(a -> !a.isEnabled())
+                                                                .count());
             }
 
             @Override
@@ -386,6 +491,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                         tableViewer.refresh(item);
                     });
                     menuItem.setChecked(action == item.selectedAction);
+                    menuItem.setEnabled(action.isEnabled());
                     menuManager.add(menuItem);
                 }
             }

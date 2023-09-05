@@ -25,6 +25,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.chrono.IsoChronology;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -303,6 +306,33 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
+            // for now, the list of supported data pattern is fixed. Therefore
+            // we cannot easily select the locale-specific pattern. Instead, we
+            // normalize the pattern and check if the pattern happens to exist
+
+            String dateFormatPattern = getNormalizedLocalizedPattern();
+
+            for (FieldFormat f : FORMATS)
+            {
+                if (dateFormatPattern.equals(f.getCode()))
+                {
+                    if (value == null)
+                        return f;
+
+                    // check if the first value matches
+                    try
+                    {
+                        // try to parse the value and return it on success
+                        f.format.parseObject(value);
+                        return f;
+                    }
+                    catch (ParseException e)
+                    {
+                        // ignore, try next pattern
+                    }
+                }
+            }
+
             if (value != null)
             {
                 for (FieldFormat f : FORMATS)
@@ -321,6 +351,36 @@ public final class CSVImporter
             }
             // fallback
             return FORMATS.get(0);
+        }
+
+        private String getNormalizedLocalizedPattern()
+        {
+            String dateFormatPattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
+                            IsoChronology.INSTANCE, Locale.getDefault());
+
+            // make sure d (day) and M (month) are at least two characters to
+            // better match the predefined pattern
+
+            dateFormatPattern = duplicateChar(dateFormatPattern, 'd');
+            dateFormatPattern = duplicateChar(dateFormatPattern, 'M');
+            return dateFormatPattern;
+        }
+
+        private String duplicateChar(String pattern, char character)
+        {
+            int count = 0;
+            int position = -1;
+
+            for (int i = 0; i < pattern.length(); i++)
+            {
+                if (pattern.charAt(i) == character)
+                {
+                    count++;
+                    position = i;
+                }
+            }
+
+            return count == 1 ? pattern.substring(0, position) + character + pattern.substring(position) : pattern;
         }
 
         @Override

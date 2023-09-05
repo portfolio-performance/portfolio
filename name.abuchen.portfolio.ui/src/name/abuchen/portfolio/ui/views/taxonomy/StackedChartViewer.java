@@ -35,11 +35,12 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.util.Interval;
 
-public class StackedChartViewer extends AbstractChartPage
+public class StackedChartViewer extends AbstractChartPage implements ReportingPeriodListener
 {
     private static class VehicleBuilder
     {
@@ -117,29 +118,13 @@ public class StackedChartViewer extends AbstractChartPage
     private boolean isVisible = false;
     private boolean isDirty = true;
 
-    private List<LocalDate> dates;
+    private PortfolioPart part;
 
     @Inject
     public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
-
-        Interval interval = part.getSelectedPeriod().toInterval(LocalDate.now());
-
-        Period weekly = Aggregation.Period.WEEKLY;
-
-        final LocalDate start = interval.getStart();
-        final LocalDate now = LocalDate.now();
-        final LocalDate end = interval.getEnd().isAfter(now) ? now : interval.getEnd();
-        LocalDate current = weekly.getStartDateFor(start);
-
-        dates = new ArrayList<>();
-        while (current.isBefore(end))
-        {
-            dates.add(current);
-            current = current.plus(weekly.getPeriod());
-        }
-        dates.add(end);
+        this.part = part;
     }
 
     @Override
@@ -149,7 +134,7 @@ public class StackedChartViewer extends AbstractChartPage
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         composite.setLayout(new FillLayout());
 
-        chart = new StackedTimelineChart(composite, dates);
+        chart = new StackedTimelineChart(composite, getDates());
         chart.getTitle().setVisible(false);
 
         chart.getLegend().setPosition(SWT.BOTTOM);
@@ -196,6 +181,27 @@ public class StackedChartViewer extends AbstractChartPage
         isVisible = false;
     }
 
+    private List<LocalDate> getDates()
+    {
+        Interval interval = part.getSelectedPeriod().toInterval(LocalDate.now());
+
+        Period weekly = Aggregation.Period.WEEKLY;
+
+        final LocalDate start = interval.getStart();
+        final LocalDate now = LocalDate.now();
+        final LocalDate end = interval.getEnd().isAfter(now) ? now : interval.getEnd();
+        LocalDate current = weekly.getStartDateFor(start);
+
+        List<LocalDate> dates = new ArrayList<>();
+        while (current.isBefore(end))
+        {
+            dates.add(current);
+            current = current.plus(weekly.getPeriod());
+        }
+        dates.add(end);
+        return dates;
+    }
+
     private void asyncUpdateChart()
     {
         new Job(Messages.JobLabelUpdateStackedLineChart)
@@ -215,6 +221,7 @@ public class StackedChartViewer extends AbstractChartPage
     {
         final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<>();
         final Map<TaxonomyNode, SeriesBuilder> node2series = new LinkedHashMap<>();
+        final List<LocalDate> dates = getDates();
 
         getModel().visitAll(node -> {
             if (node.isClassification())
@@ -313,5 +320,12 @@ public class StackedChartViewer extends AbstractChartPage
         }
 
         isDirty = false;
+    }
+
+    @Override
+    public void reportingPeriodUpdated()
+    {
+        chart.setDates(getDates());
+        updateChart();
     }
 }

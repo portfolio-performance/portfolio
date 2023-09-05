@@ -1,9 +1,31 @@
 package name.abuchen.portfolio.datatransfer.pdf.quirinbankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -622,6 +644,74 @@ public class QuirinPrivatbankAGPDFExtractorTest
         account.setCurrencyCode(CurrencyUnit.EUR);
         Status s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81G20"), hasWkn("A0RGER"), hasTicker(null), //
+                        hasName("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-07-26T00:00"), hasShares(1.9983), //
+                        hasSource("Dividende04.txt"), hasNote("Referenz-Nr 12345858"), //
+                        hasAmount("EUR", 1.41), hasGrossValue("EUR", 1.41), hasForexGrossValue("USD", 1.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf27WithSecurityInEUR()
+    {
+        Security security = new Security("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        security.setIsin("IE00B3F81G20");
+        security.setWkn("A0RGER");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check check buy sell transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-07-26T00:00"), hasShares(1.9983), //
+                        hasSource("Dividende04.txt"), hasNote("Referenz-Nr 12345858"), //
+                        hasAmount("EUR", 1.41), hasGrossValue("EUR", 1.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test

@@ -1,0 +1,29 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+VoeapbAgL Zgaze SEITE 1 von 1
+UzFDuHrEU Str. 39 DATUM 16.05.2023
+92540 Berlin AUSFÜHRUNG K7Y2-2e37
+SPARPLAN y646-a753
+CRYPTO- BitGo Deutschland 
+WALLET GmbH
+DEPOT 7711975235
+ABRECHNUNG CRYPTO SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 16.05.2023 im außerbörslichen Handel Bankhaus Scheich.
+Der Kontrahent der Transaktion ist Bankhaus Scheich Wertpapierspezialist AG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+Bitcoin (BTC) 0,000983 Stk. 25.424,22 EUR 24,99 EUR
+GESAMT 24,99 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE00111122223333444455 16.05.2023 -24,99 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin USt-ID DE307510626 Gernot Mittendorfer
+
+```

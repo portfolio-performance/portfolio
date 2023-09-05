@@ -3819,6 +3819,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExStockDividende01.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(2L));
@@ -4006,6 +4007,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf02.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4424,6 +4426,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende05.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4460,6 +4463,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende05.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4490,6 +4494,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende06.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4526,6 +4531,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende06.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4556,6 +4562,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende07.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4592,6 +4599,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende07.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
@@ -4611,6 +4619,66 @@ public class FinTechGroupBankPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende08()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT    DL-,00000625"), //
+                        hasCurrencyCode("USD"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-03-22T00:00"), hasShares(96.00), //
+                        hasSource("FlatExDegiroDividende08.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
+                        hasAmount("USD", 244.72), hasGrossValue("USD", 244.72), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende09()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT    DL-,00000625"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-06-25T00:00"), hasShares(117.82), //
+                        hasSource("FlatExDegiroDividende09.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
+                        hasAmount("CHF", 188.93), hasGrossValue("CHF", 231.71), //
+                        hasTaxes("CHF", 42.78), hasFees("CHF", 0.00))));
     }
 
     @Test

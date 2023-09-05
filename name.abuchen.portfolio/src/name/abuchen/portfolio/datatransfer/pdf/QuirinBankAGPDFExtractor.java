@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -63,10 +64,12 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // @formatter:off
                 // Wertpapierbezeichnung db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N.
                 // ISIN LU0690964092
                 // WKN DBX0MF
                 // Kurs EUR 214,899
+                // @formatter:on
                 .section("name", "isin", "wkn", "currency")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
@@ -74,16 +77,21 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // Nominal / Stück 140,0000 ST
+                // @formatter:on
                 .section("shares")
                 .match("^Nominal \\/ St.ck (?<shares>[\\.,\\d]+) ST$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
                 // Handelstag / Zeit 30.12.2016 12:46:28
                 .section("date", "time").optional()
                 .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
                 .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
+                // @formatter:off
                 // Ausmachender Betrag EUR - 30.090,76
+                // @formatter:on
                 .section("currency", "amount")
                 .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (\\- )?(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
@@ -91,16 +99,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // @formatter:off
                 // Referenz-Nr 28522373
+                // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>Referenz-Nr .*)$")
+                .match("^(?<note>Referenz\\-Nr .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                        return new BuySellEntryItem(t);
-                    return null;
-                });
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -131,6 +137,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         t.setType(PortfolioTransaction.Type.SELL);
                 })
 
+                // @formatter:off
                 // Nominal/Stück Bayer.Hypo- und Vereinsbank AG DAX Indexzert(2006/unlim.)
                 // ST 22 ISIN DE0007873200
                 // Abrechnungskonditionen: Abrechnungswerte:
@@ -139,32 +146,41 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 // Nominal/Stück Hewlett-Packard Co. Registered Shares DL -,01
                 // ST 150 ISIN US4282361033
                 // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR
+                // @formatter:on
                 .section("name", "isin", "currency")
                 .match("^Nominal\\/St.ck (?<name>.*)$")
                 .match("^ST [\\.,\\d]+ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^Kurs ([\\s])?[\\.,\\d]+ (?<currency>[\\w]{3}) .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // ST 22 ISIN DE0007873200
+                // @formatter:on
                 .section("shares")
                 .match("^ST (?<shares>[\\.,\\d]+) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                 .oneOf(
+                                // @formatter:off
                                 // Ursprüngl. Handelstag 20.08.2010   15:46:50
+                                // @formatter:on
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^Urspr.ngl\\. Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
+                                // @formatter:off
                                 // Handelstag/-zeit 23.11.2009   11:00:15 Bank-Provision  0,00 EUR
                                 // Handelstag/-zeit 20.08.2010 15:46:50 Bank-Provision  0,00 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("date", "time")
                                         .match("^Handelstag\\/\\-zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$")
                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
                                 ,
+                                // @formatter:off
                                 // Handelstag/-zeit 23.11.2009 Bank-Provision  0,00 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("date")
                                         .match("^Handelstag\\/\\-zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
@@ -172,7 +188,9 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         )
 
                 .oneOf(
+                                // @formatter:off
                                 // Keine Steuerbescheinigung! Ausmachender Betrag  vor Steuern  1.261,61 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
                                         .match("^.* Ausmachender Betrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -181,7 +199,9 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                         })
                                 ,
+                                // @formatter:off
                                 // Den Gesamtbetrag werden wir mit Valuta 12.02.2010 auf Ihrem Ausmachender Betrag -3.997,09 EUR
+                                // @formatter:on
                                 section -> section
                                         .attributes("currency", "amount")
                                         .match("^.* Ausmachender Betrag \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
@@ -191,34 +211,31 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
+                // @formatter:off
                 // Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR
                 // Devisenkurs  1,267300
-                .section("fxGross", "fxCurrency", "gross", "currency", "exchangeRate").optional()
-                .match("^.* Kurswert ([\\-\\s])?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) ([\\-\\s])?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                // @formatter:on
+                .section("fxGross", "termCurrency", "gross", "baseCurrency", "exchangeRate").optional()
+                .match("^.* Kurswert ([\\-\\s])?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) ([\\-\\s])?(?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}).*$")
                 .match("^Devisenkurs ([\\s])?(?<exchangeRate>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
+                // @formatter:off
                 // Referenz O:000409887:1
+                // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Referenz .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> {
-                    if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                        return new BuySellEntryItem(t);
-                    return null;
-                });
+                .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -229,7 +246,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Ertr.gnisabrechnung");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^F.r aus Ihrem Depot f.llig gewordene Ertr.gnisse .*$");
+        Block block = new Block("^Ertr.gnisabrechnung$", "^Der Abrechnungsbetrag wird mit Valuta.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -238,61 +255,84 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // @formatter:off
                 // Wertpapierbezeichnung iShare.EURO STOXX UCITS ETF DE Inhaber-Anteile
                 // ISIN DE000A0D8Q07
                 // WKN A0D8Q0
                 // Ausschüttung EUR 0,60174 pro Anteil
-                .section("name", "isin", "wkn", "currency").optional()
+                // @formatter:on
+                .section("name", "isin", "wkn", "currency")
                 .match("^Wertpapierbezeichnung (?<name>.*)$")
                 .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^WKN (?<wkn>[A-Z0-9]{6})$")
                 .match("^Aussch.ttung (?<currency>[\\w]{3}) [\\.,\\d]+ .*$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // Nominal/Stück 700 ST
-                .section("shares").optional()
+                // @formatter:on
+                .section("shares")
                 .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) ST$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Zahlungstag 16.09.2019
+                // @formatter:on
                 .section("date")
                 .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // Ausmachender Betrag EUR 343,46
-                .section("currency", "amount")
-                .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // @formatter:off
+                                // Ausmachender Betrag USD 1,57
+                                // Devisenkurs EUR/USD 1,110890
+                                // Ausmachender Betrag EUR 1,41
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Ausmachender Betrag [\\w]{3} [\\.,\\d]+$")
+                                        .match("^Devisenkurs [\\w]{3}\\/[\\w]{3} [\\.,\\d]+$")
+                                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Ausmachender Betrag EUR 343,46
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                        )
 
-                // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
-                // Devisenkurs  1,309900
-                .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
-                .match("^(Bruttobetrag|Gross Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .match("^(Bruttobetrag|Gross Amount) (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    ExtrExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                        // @formatter:off
+                        // Betrag USD 1,57
+                        // Devisenkurs EUR/USD 1,110890
+                        // @formatter:on
+                        .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional()
+                        .match("^Betrag [\\w]{3} (?<fxGross>[\\.,\\d]+)$")
+                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                })
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
 
                 // Referenz-Nr 28522373
                 .section("note").optional()
-                .match("^(?<note>Referenz-Nr .*)$")
+                .match("^(?<note>Referenz\\-Nr .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -314,35 +354,43 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         });
 
         pdfTransaction
+                // @formatter:off
                 // Nominal/Stück Siemens AG Namens-Aktien o.N.
                 // ST 52 ISIN DE0007236101
                 // Dividenden pro Stück  1,60000 EUR
+                // @formatter:on
                 .section("name", "isin", "currency")
                 .match("^Nominal\\/St.ck (?<name>.*)$")
                 .match("^ST [\\.,\\d]+ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .match("^Dividenden pro St.ck ([\\s])?[\\.,\\d]+ (?<currency>[\\w]{3})$")
                 .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                // @formatter:off
                 // ST 52 ISIN DE0007236101
+                // @formatter:on
                 .section("shares")
                 .match("^ST (?<shares>[\\.,\\d]+) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                // @formatter:off
                 // Zahlungstag 27.01.2010
+                // @formatter:on
                 .section("date")
                 .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // formatter:off
+                // @formatter:off
                 // For dividend transactions, the gross amount is
                 // calculated.
                 //
                 // The net amount is determined on the taxes and
                 // withholding taxes.
-                // formatter:on
+                // @formatter:on
 
+                // @formatter:off
                 // Dividenden für 01.10.2008-30.09.2009 Bruttobetrag  83,20 EUR
                 // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
+                // @formatter:on
                 .section("amount", "currency")
                 .match("^.* Bruttobetrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -350,7 +398,9 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(v.get("amount")));
                 })
 
+                // @formatter:off
                 // Verrechnungstopf Sonstige 0,  00 EUR Steuerbetrag -9,07 USD -6,93 EUR
+                // @formatter:on
                 .section("tax", "currency").optional()
                 .match("^.* Steuerbetrag .*\\-([\\s])?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> {
@@ -359,7 +409,9 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                 })
 
+                // @formatter:off
                 // Ausl. Quellensteuer -32,62 USD -24,90 EUR
+                // @formatter:on
                 .section("tax", "currency").optional()
                 .match("^Ausl\\. Quellensteuer .*\\-([\\s])?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> {
@@ -368,36 +420,33 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                 })
 
+                // @formatter:off
                 // Dividenden für 01.01.2009-31.12.2009 Bruttobetrag  163,08 USD  124,50 EUR
                 // Devisenkurs  1,267300
-                .section("fxGross", "fxCurrency", "gross", "currency", "exchangeRate").optional()
-                .match("^.* Bruttobetrag ([\\s])?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) ([\\s])?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                // @formatter:on
+                .section("fxGross", "termCurrency", "gross", "baseCurrency", "exchangeRate").optional()
+                .match("^.* Bruttobetrag ([\\s])?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) ([\\s])?(?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}).*$")
                 .match("^Devisenkurs ([\\s])?(?<exchangeRate>[\\.,\\d]+).*$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                .conclude(ExtractorUtils.fixGrossValueA())
-
+                // @formatter:off
                 // Referenz DZ:255990
+                // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Referenz .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                .conclude(ExtractorUtils.fixGrossValueA())
+
+                .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -453,7 +502,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // Rücküberweisung Inland 23.12.2019 19.12.2019 -5.002,84 EUR
         // @formatter:on
-        Block removalBlock = new Block("^R.cküberweisung Inland .* \\-[\\.,\\d]+([\\s])?[\\w]{3}.*$");
+        Block removalBlock = new Block("^R.ck.berweisung Inland .* \\-[\\.,\\d]+([\\s])?[\\w]{3}.*$");
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(5);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -465,7 +514,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("note1", "note2", "date", "amount")
-                .match("^(?<note1>R.cküberweisung Inland) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                .match("^(?<note1>R.ck.berweisung Inland) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                 + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) "
                                 + "\\-(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$")
                 .match("^(?<note2>Ref\\.: .*)$")
@@ -692,31 +741,41 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Ausl. Quellensteuer -32,62 USD -24,90 EUR
+                // @formatter:on
                 .section("withHoldingTax", "currency").optional()
                 .match("^Ausl\\. Quellensteuer .*\\-([\\s])?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
+                // @formatter:off
                 // Kapitalertragsteuer EUR - 752,05
                 // Kapitalertragsteuer EUR -73,71
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // @formatter:off
                 // Solidaritätszuschlag EUR - 41,36
                 // Solidaritätszuschlag EUR -4,05
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // @formatter:off
                 // Kirchensteuer EUR - 1,00
                 // Kirchensteuer EUR -1,00
+                // @formatter:on
                 .section("currency", "tax").optional()
                 .match("^Kirchensteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$")
                 .assign((t, v) -> processTaxEntries(t, v, type))
 
+                // @formatter:off
                 // Verrechnungstopf Sonstige  0,00 EUR Steuerbetrag -144,33 EUR
                 // Verrechnungstopf Sonstige 0,  00 EUR Steuerbetrag -9,07 USD -6,93 EUR
+                // @formatter:on
                 .section("tax", "currency").optional()
                 .match("^.* Steuerbetrag .*\\-([\\s])?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processTaxEntries(t, v, type));
@@ -725,50 +784,68 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
+                // @formatter:off
                 // Abwicklungsgebühren * EUR - 4,90
+                // @formatter:on
                 .section("currency", "fee").optional()
-                .match("^Abwicklungsgebühren \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
+                .match("^Abwicklungsgeb.hren \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Courtage * EUR 0,00
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Courtage \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Spesen * EUR 0,00
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Spesen \\* (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Bank-Provision EUR 0,00
+                // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Bank\\-Provision (?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Verwahrart Girosammel-Verwahrung Spesen * -0,69 EUR
                 // Verwahrart Wertpapierrechnung / Drittverw. Spesen * -6,50 EUR
+                // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Verwahrart .* Spesen \\* .*\\-([\\s])?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Lagerland CBL-Deutschland Abwickl.Gebühr * -0,04 EUR
+                // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Lagerland .* Abwickl\\.Geb.hr \\* .*\\-([\\s])?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Lagerland USA Aktien/Renten Spesen * -20,00 USD -15,78 EUR
+                // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Lagerland .* Spesen \\* .*\\-([\\s])?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Ausführungsplatz Xetra Courtage * -0,08 EUR
                 // Ausführungsplatz Fondshandel außerbörslich(FFF) Courtage *  0,00 EUR
                 // Ausführungsplatz Stuttgart Courtage * -3,39 EUR
+                // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^.* .* Courtage \\* .*\\-([\\s])?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
+                // @formatter:off
                 // Handelstag/-zeit 10.02.2010   17:08:23 Bank-Provision -0,02 EUR
+                // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^.* Bank\\-Provision .*\\-([\\s])?(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));

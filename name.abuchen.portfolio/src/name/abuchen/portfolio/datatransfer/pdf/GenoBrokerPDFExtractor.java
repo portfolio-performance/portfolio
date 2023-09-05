@@ -4,6 +4,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -25,6 +30,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDeliveryInOutBoundTransaction();
     }
 
     @Override
@@ -58,22 +64,44 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // Nominale Wertpapierbezeichnung ISIN (WKN)
-                        // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
-                        // 1Ausführungskurs 30,88 EUR Auftraggeber Mustermann
-                        // @formatter:on
-                        .section("name", "isin", "wkn", "name1", "currency") //
-                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("^(?<name1>.*)$") //
-                        .match("^.*Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> { //
-                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                        .oneOf(
+                                        // @formatter:off
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
+                                        // 1Ausführungskurs 30,88 EUR Auftraggeber Mustermann
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
+                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^.*Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .assign((t, v) -> { //
+                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz")) //
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        })
+                                        ,
+                                        // @formatter:off
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 2.100 LOGAN ENERGY CORP.                 CA5408991019 (A3EMQR)
+                                        // REGISTERED SHARES O.N.
+                                        // Abrech.-Preis 0,35 CAD
+                                        // @formatter:on
+                                        section -> section //
+                                                .attributes("name", "isin", "wkn", "name1", "currency")
+                                                .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                .match("^(?<name1>.*)$") //
+                                                .match("^Abrech\\.\\-Preis [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                .assign((t, v) -> { //
+                                                    if (!v.get("name1").startsWith("Handels-/Ausführungsplatz")) //
+                                                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
+
+                                                    t.setSecurity(getOrCreateSecurity(v));
+                                                })
+                                )
 
                         // @formatter:off
                         // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
@@ -91,32 +119,50 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Ausmachender Betrag 967,47 EUR
+                        // Ausmachender Betrag 4.714,55- EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> { //
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
+                        // @formatter:off
+                        // Devisenkurs (EUR/CAD) 1,4508 vom 01.08.2023
+                        // Kurswert 506,62- EUR
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional()
+                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
+                        .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$")
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
                         .optionalOneOf(
                                         // @formatter:off
-                                        // Auftragsnummer: 210796978 Kundenportfolio
-                                        // STK 16,000 EUR 120,4000
+                                        //  Auftragsnummer
+                                        // Mustermann 00000000     Datum
                                         // @formatter:on
                                         section -> section //
                                                 .attributes("note1", "note2") //
                                                 .match("^.*(?<note1>Auftragsnummer).*$") //
-                                                .match(".* (?<note2>[\\d]+) .* Datum.*$") //
+                                                .match(".* (?<note2>[\\d]+\\/[\\.\\d]+) .* Datum.*$") //
                                                 .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
                                         ,
                                         // @formatter:off
                                         //  Auftragsnummer 433499/69.01
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("note") //
-                                                .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+).*$") //
-                                                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                                .attributes("note1", "note2") //
+                                                .match("^.*(?<note1>Auftragsnummer) (?<note2>[\\d]+\\/[\\.\\d]+).*$") //
+                                                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
                                 )
 
                         // @formatter:off
@@ -221,6 +267,84 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
 
         block.set(pdfTransaction);
+    }
+
+    private void addDeliveryInOutBoundTransaction()
+    {
+        DocumentType type = new DocumentType("Fusion", (context, lines) -> {
+            Pattern pDate = Pattern.compile("^Ex\\-Tag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+
+            for (String line : lines)
+            {
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                {
+                    context.put("date", mDate.group("date"));
+                    break;
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            PortfolioTransaction entry = new PortfolioTransaction();
+            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+            return entry;
+        });
+
+        Block firstRelevantLine = new Block("^(Einbuchung|Ausbuchung).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction
+                        // @formatter:off
+                        // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Einbuchung|Ausbuchung).*$") //
+                        .assign((t, v) -> { //
+                            if (v.get("type").contains("Ausbuchung"))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        // @formatter:off
+                        // Gattungsbezeichnung ISIN
+                        // Stück 50- PDC ENERGY INC. US69327R1014 (A1JZ02)
+                        // REGISTERED SHARES DL -,01
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "nameContinued") //
+                        .find("(Einbuchung|Ausbuchung).*") //
+                        .match("^St.ck [\\.,\\d]+(\\-)? (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .assign((t, v) -> { //
+                            Map<String, String> context = type.getCurrentContext();
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDateTime(asDate(context.get("date")));
+
+                            // No amount available
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            t.setCurrencyCode("EUR");
+                            t.setAmount(0);
+                        })
+
+                        // @formatter:off
+                        // Stück 50- PDC ENERGY INC.                    US69327R1014 (A1JZ02)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+)(\\-)? .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

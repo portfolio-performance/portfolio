@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -82,6 +83,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Wertpapierabrechnung "
                         + "(Kauf|"
+                        + "Kauf Einmalanlage|"
                         + "Kauf aus Sparplan|"
                         + "Kauf aus Wiederanlage Fondsaussch.ttung|"
                         + "Bezug|"
@@ -96,6 +98,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
                 .match("^(Wertpapierabrechnung )?(?<type>(Kauf|"
+                                + "Kauf Einmalanlage|"
                                 + "Kauf aus Sparplan|"
                                 + "Bezug|"
                                 + "Verkauf|"
@@ -197,41 +200,68 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
                 // Endbetrag zu Ihren Lasten EUR 1.335,07
                 // @formatter:on
-                .section("fxCurrency", "fxGross", "currency", "baseCurrency", "gross", "termCurrency", "exchangeRate").optional()
-                .match("^Zwischensumme (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$")
-                .match("^.* Devisenkurs (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
-                .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) [\\.,\\d]+$")
+                .section("fxGross", "gross", "termCurrency", "exchangeRate", "baseCurrency").optional()
+                .match("^Zwischensumme [\\w]{3} (?<fxGross>[\\.,\\d]+)$")
+                .match("^.* Devisenkurs [\\w]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$")
+                .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$")
                 .assign((t, v) -> {
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
                 // @formatter:off
-                // Diese Order wurde mit folgendem Limit / -typ erteilt: 38,10 EUR
-                // Diese Order wurde mit folgendem Limit / -typ erteilt: 57,00 EUR / Dynamisches Stop / Abstand 6,661 EUR
-                // @formatter:on
-                .section("note1", "note2").optional()
-                .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$")
-                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
-
-                // @formatter:off
-                // Rückzahlung
+                // Ordernummer 12345678.001
                 // @formatter:on
                 .section("note").optional()
-                .match("^(?<note>R.ckzahlung)$")
+                .match("^(?<note>Ordernummer .*)$")
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                // @formatter:off
-                // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
-                // @formatter:on
-                .section("note").optional()
-                .match("^(?<note>St.ckzinsen .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                .optionalOneOf(
+                                // @formatter:off
+                                // Diese Order wurde mit folgendem Limit / -typ erteilt: 38,10 EUR
+                                // Diese Order wurde mit folgendem Limit / -typ erteilt: 57,00 EUR / Dynamisches Stop / Abstand 6,661 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note1", "note2")
+                                        .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + v.get("note1") + ": " + v.get("note2"));
+                                            else
+                                                t.setNote(v.get("note1") + ": " + v.get("note2"));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Rückzahlung
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(?<note>R.ckzahlung)$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + v.get("note"));
+                                            else
+                                                t.setNote(v.get("note"));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
+                                // @formatter:on
+                                section -> section
+                                        .attributes("note")
+                                        .match("^(?<note>St.ckzinsen .*)$")
+                                        .assign((t, v) -> {
+                                            if (t.getNote() != null)
+                                                t.setNote(t.getNote() + " | " + v.get("note"));
+                                            else
+                                                t.setNote(v.get("note"));
+                                        })
+                        )
 
                 .wrap(BuySellEntryItem::new);
 
@@ -353,18 +383,15 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                 // Brutto USD - 54,00
                 // Umg. z. Dev.-Kurs (1,084805) EUR - 37,33
                 // @formatter:on
-                .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional()
-                .match("^Brutto (?<fxCurrency>[\\w]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$")
-                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<currency>[\\w]{3}) (\\- )?[\\.,\\d]+$")
+                .section("termCurrency", "fxGross", "exchangeRate", "baseCurrency").optional()
+                .match("^Brutto (?<termCurrency>[\\w]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$")
+                .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<baseCurrency>[\\w]{3}) (\\- )?[\\.,\\d]+$")
                 .assign((t, v) -> {
-                    v.put("baseCurrency", asCurrencyCode(type.getCurrentContext().get("currency")));
-                    v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                    Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                    Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })

@@ -86,7 +86,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         WebAccess webaccess = new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
                         .addParameter("format", "JSON") //
                         .addParameter("coicop", "CP00") //
-                        .addParameter("geo", security.getTickerSymbol().toUpperCase()).addParameter("unit", "I15") //
+                        .addParameter("geo", security.getTickerSymbol().toUpperCase()) //
                         .addParameter("unit", "I15");
 
         String text = webaccess.get();

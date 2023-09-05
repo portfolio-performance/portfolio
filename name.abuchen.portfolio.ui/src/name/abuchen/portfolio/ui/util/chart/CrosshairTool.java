@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -14,11 +12,12 @@ import org.swtchart.IAxis;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.ChartToolsManager.ChartTool;
+import name.abuchen.portfolio.ui.util.chart.ChartToolsManager.Spot;
 
 class CrosshairTool implements ChartTool
 {
     private final TimelineChart chart;
-    private Point p1;
+    private Spot spot;
     private Color color;
 
     CrosshairTool(TimelineChart chart, Color color)
@@ -32,7 +31,7 @@ class CrosshairTool implements ChartTool
     {
         if (e.button != 1)
             return;
-        p1 = new Point(e.x, e.y);
+        spot = Spot.from(e, chart);
 
         chart.redraw();
     }
@@ -52,21 +51,15 @@ class CrosshairTool implements ChartTool
     @Override
     public void paintControl(PaintEvent e)
     {
-        if (p1 == null)
+        if (spot == null)
             return;
 
-        drawCrosshair(e, p1);
+        drawCrosshair(e, spot);
     }
 
-    private LocalDate getDateTime(Point p)
+    private void drawCrosshairDateTextbox(PaintEvent e, Spot spot, Point p)
     {
-        return Instant.ofEpochMilli((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(p.x))
-                        .atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-    private void drawCrosshairDateTextbox(PaintEvent e, Point p)
-    {
-        LocalDate date = getDateTime(p);
+        LocalDate date = spot.date();
         String xText = Values.Date.format(date);
 
         // Add margin to text
@@ -97,10 +90,9 @@ class CrosshairTool implements ChartTool
         e.gc.drawText(xText, textPoint.x, textPoint.y, true);
     }
 
-    private void drawCrosshairValueTextbox(PaintEvent e, Point p)
+    private void drawCrosshairValueTextbox(PaintEvent e, Spot spot, Point p)
     {
-        var axis = chart.getAxisSet().getYAxis(0);
-        String yText = chart.getToolTip().getDefaultValueFormat().format(axis.getDataCoordinate(p.y));
+        String yText = chart.getToolTip().getDefaultValueFormat().format(spot.value());
 
         // Add margin to text
         Point txtYExtend = e.gc.textExtent(yText);
@@ -130,7 +122,7 @@ class CrosshairTool implements ChartTool
         e.gc.drawText(yText, textPoint.x, textPoint.y, true);
     }
 
-    private void drawCrosshairValueSecondAxisTextbox(PaintEvent e, Point p)
+    private void drawCrosshairValueSecondAxisTextbox(PaintEvent e, Spot spot, Point p)
     {
         IAxis axis = chart.getAxisSet().getYAxis(2);
         if (!axis.getTick().isVisible())
@@ -140,7 +132,7 @@ class CrosshairTool implements ChartTool
         String yText = ""; //$NON-NLS-1$
         if (axisFormat != null)
         {
-            yText = axisFormat.format(axis.getDataCoordinate(p.y));
+            yText = axisFormat.format(spot.value());
         }
 
         // Add margin to text
@@ -171,7 +163,7 @@ class CrosshairTool implements ChartTool
         e.gc.drawText(yText, textPoint.x, textPoint.y, true);
     }
 
-    private void drawCrosshair(PaintEvent e, Point p)
+    private void drawCrosshair(PaintEvent e, Spot spot)
     {
         e.gc.setLineWidth(1);
         e.gc.setLineStyle(SWT.LINE_SOLID);
@@ -179,9 +171,11 @@ class CrosshairTool implements ChartTool
         e.gc.setBackground(color);
         e.gc.setAntialias(SWT.ON);
 
+        Point point = spot.toPoint(chart);
+
         // draw crosshair
-        e.gc.drawLine(p.x, 0, p.x, e.height);
-        e.gc.drawLine(0, p.y, e.width, p.y);
+        e.gc.drawLine(point.x, 0, point.x, e.height);
+        e.gc.drawLine(0, point.y, e.width, point.y);
 
         // set textbox style
         e.gc.setForeground(Colors.theme().defaultForeground());
@@ -189,10 +183,10 @@ class CrosshairTool implements ChartTool
         e.gc.setAlpha(220);
 
         // value for horizontal axis
-        drawCrosshairDateTextbox(e, p);
+        drawCrosshairDateTextbox(e, spot, point);
 
-        drawCrosshairValueTextbox(e, p);
-        drawCrosshairValueSecondAxisTextbox(e, p);
+        drawCrosshairValueTextbox(e, spot, point);
+        drawCrosshairValueSecondAxisTextbox(e, spot, point);
     }
 
 }

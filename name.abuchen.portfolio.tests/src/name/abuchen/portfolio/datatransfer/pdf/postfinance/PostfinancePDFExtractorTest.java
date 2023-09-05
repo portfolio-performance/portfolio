@@ -352,6 +352,7 @@ public class PostfinancePDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
+        assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));

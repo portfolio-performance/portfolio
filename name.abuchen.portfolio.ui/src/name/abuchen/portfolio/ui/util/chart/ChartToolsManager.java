@@ -13,6 +13,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 
@@ -182,6 +183,8 @@ public class ChartToolsManager
                             updateButtonImages(this.activeTool);
 
                             chart.getToolTip().setActive(this.activeTool == ChartTools.NONE);
+                            chart.setCursor(this.activeTool == ChartTools.NONE ? null
+                                            : new Cursor(this.chart.getDisplay(), SWT.CURSOR_CROSS));
                             chart.redraw();
                         });
 

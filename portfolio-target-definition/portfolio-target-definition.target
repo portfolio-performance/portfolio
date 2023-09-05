@@ -32,11 +32,13 @@
 		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.22.0.v20211218020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt_BR.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_cs.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.22.0.v20211218020001"/>
+    <unit id="org.eclipse.babel.nls_eclipse_zh_TW.feature.group" version="4.22.0.v20211218020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_da.feature.group" version="4.22.0.v20211218020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">

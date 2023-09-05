@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -207,7 +209,7 @@ public final class SecuritiesTable implements ModificationListener
         addQuoteDeltaColumn();
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
         support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
-                        new ArrayList<>(view.getPart().getReportingPeriods())));
+                        view.getPart().getReportingPeriods().stream().collect(toMutableList())));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {
@@ -556,7 +558,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         // create a modifiable copy as all menus share the same list of
         // reporting periods
-        List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
+        List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
 
         BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
 
@@ -1059,7 +1061,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                StockSplitWizard wizard = new StockSplitWizard(view.getStylingEngine(), getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });
@@ -1069,7 +1071,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                CustomEventWizard wizard = new CustomEventWizard(getClient(), security);
+                CustomEventWizard wizard = new CustomEventWizard(view.getStylingEngine(), getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });

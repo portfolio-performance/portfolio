@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -571,7 +573,7 @@ public class StatementOfAssetsViewer
 
         // create a modifiable copy as all menus share the same list of
         // reporting periods
-        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().getReportingPeriods());
+        List<ReportingPeriod> options = owner.getPart().getReportingPeriods().stream().collect(toMutableList());
 
         addPerformanceColumns(options);
         addDividendColumns(options);

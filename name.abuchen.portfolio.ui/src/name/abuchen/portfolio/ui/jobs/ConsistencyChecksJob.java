@@ -242,7 +242,10 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 public Image getImage(Object element)
                 {
                     ReportedIssue issue = (ReportedIssue) element;
-                    return issue.isFixed() ? Images.CHECK.image() : Images.QUICKFIX.image();
+                    if (issue.isFixed())
+                        return Images.CHECK.image();
+
+                    return issue.getAvailableFixes().isEmpty() ? null : Images.QUICKFIX.image();
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(100));

@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -42,6 +43,9 @@ import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @Inject
     private Client client;
 
@@ -199,6 +203,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         //
         // form layout
         //
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int width = amountWidth(grossValue.value);
         int currencyWidth = currencyWidth(grossValue.currency);

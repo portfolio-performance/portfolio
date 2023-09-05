@@ -147,7 +147,7 @@
           <parameters xmi:id="_wzFSYJPVEe2-04kloZOp3A" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://poeditor.com/join/project?hash=4lYKLpEWOY"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_gRoQ8N6BEe2oS_58VcEPsg" elementId="name.abuchen.portfolio.ui.menu.help.github" label="%command.openbrowser.gitHub.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/github.com-logo.png" tooltip="%command.openbrowser.gitHub.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
-          <parameters xmi:id="_gRoQ8d6BEe2oS_58VcEPsg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio"/>
+          <parameters xmi:id="_gRoQ8d6BEe2oS_58VcEPsg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/portfolio-performance/portfolio"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_a9IwYJ54EeafbcEa_s_MDw" elementId="name.abuchen.portfolio.ui.menu.help.how-to" label="How-Tos" tooltip="%command.openbrowser.how-tos.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
           <parameters xmi:id="_a9JXcJ54EeafbcEa_s_MDw" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/c/how-to"/>

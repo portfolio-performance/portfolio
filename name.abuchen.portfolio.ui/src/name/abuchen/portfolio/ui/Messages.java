@@ -522,6 +522,7 @@ public class Messages extends NLS
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
+    public static String LabelEarningsByTaxonomy;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartScaling;
@@ -718,6 +719,7 @@ public class Messages extends NLS
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
     public static String LabelRemoveLogo;
+    public static String LabelImportNotesFromSource;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;
     public static String LabelReportingDialogFrom;
@@ -754,6 +756,7 @@ public class Messages extends NLS
     public static String LabelSecurityTransfer;
     public static String LabelSecurityCalendar;
     public static String LabelSecurityCalendarToolTip;
+    public static String LabelUseExistingSecurity;
     public static String LabelSelectedTransactions;
     public static String LabelSelectYear;
     public static String LabelSelectYearSince;
@@ -1020,6 +1023,8 @@ public class Messages extends NLS
     public static String MsgUpdateRunning32BitOn64BitOS;
     public static String MsgUpdatingDashboardData;
     public static String MsgUpdatingExchangeRates;
+    public static String MsgWarningPieChartNoValues;
+    public static String MsgWarningPieChartWithNegativeValues;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;
     public static String NewFileWizardAddAll;

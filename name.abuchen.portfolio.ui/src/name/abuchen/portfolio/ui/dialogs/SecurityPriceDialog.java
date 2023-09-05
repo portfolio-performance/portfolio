@@ -70,4 +70,9 @@ public class SecurityPriceDialog extends AbstractDialog
         bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
         bindings().bindMandatoryQuoteInput(editArea, Messages.ColumnQuote, "price"); //$NON-NLS-1$
     }
+
+    public void setDate(LocalDate date)
+    {
+        ((SecurityPriceModel) getModel()).setDate(date);
+    }
 }

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -264,6 +265,25 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         pdfTransaction
                 .oneOf(
                                 // @formatter:off
+                                // Titel: AT0000A1TW21 RAIFF.-EMERGINGMARKETS-AKTIEN RZ(A)
+                                // MITEIGENTUMSANTEILE - Ausschüttung
+                                // Ertrag: 1,19 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("isin", "name", "name1", "currency")
+                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$")
+                                        .match("^(?<name1>.*) \\- Aussch.ttung$")
+                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            if (!v.get("name1").startsWith("Dividende:")
+                                                            || !v.get("name1").startsWith("Ertrag:")
+                                                            || !v.get("name1").startsWith("Fondsgesellschaft:"))
+                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                        })
+                                ,
+                                // @formatter:off
                                 // Titel: DE000BAY0017 Bayer AG
                                 // Namens-Aktien o.N.
                                 // Dividende: 2 EUR
@@ -360,7 +380,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         .attributes("amount", "currency")
                                         .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                                         .assign((t, v) -> {
-                                            // If the amount is negative, then it is taxes (.
+                                            // If the amount is negative, then it is taxes.
                                             t.setType(AccountTransaction.Type.TAXES);
 
                                             t.setAmount(asAmount(v.get("amount")));
@@ -374,15 +394,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Dividendengutschrift 68,00 USD 59,86+ EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross")
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -392,18 +412,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 // Devisenkurs: 1,0856 (13.01.2023) 109,37 EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^Bruttoertrag: (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$")
-                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
+                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency")
+                                        .match("^Bruttoertrag: (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
+                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$")
                                         .assign((t, v) -> {
-                                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -434,7 +451,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Gesch.ftsart: (Einbuchung|Ausbuchung)");
+        DocumentType type = new DocumentType("Gesch.ftsart: (Einbuchung|Ausbuchung|Freier Erhalt)");
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -444,16 +461,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Abrechnungsnummer\\/\\-datum: .*$");
+        Block firstRelevantLine = new Block("^(Abrechnungsnummer\\/\\-datum:|Gesch.ftsart: Freier Erhalt).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                 // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
                 .section("type").optional()
-                .match("^Gesch.ftsart: (?<type>(Einbuchung|Ausbuchung))$")
+                .match("^Gesch.ftsart: (?<type>(Einbuchung|Ausbuchung|Freier Erhalt))$")
                 .assign((t, v) -> {
-                    if ("Einbuchung".equals(v.get("type")))
+                    if ("Einbuchung".equals(v.get("type")) || "Freier Erhalt".equals(v.get("type")))
                         t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                 })
 
@@ -469,27 +486,53 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // @formatter:off
                 // Abgang: 433 Stk
                 // Zugang: 433 Stk
+                // Menge: 550 Stk
                 // @formatter:on
                 .section("shares")
-                .match("^(Abgang|Zugang): (?<shares>[\\.,\\d]+) .*$")
+                .match("^(Abgang|Zugang|Menge): (?<shares>[\\.,\\d]+) .*$")
                 .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // @formatter:off
-                // Valuta 10.03.2023
-                // @formatter:on
-                .section("date")
-                .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .oneOf(
+                                // @formatter:off
+                                // Valuta 10.03.2023
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                ,
+                                // @formatter:off
+                                // Schlusstag: 18.03.2022
+                                // @formatter:on
+                                section -> section
+                                        .attributes("date")
+                                        .match("^Schlusstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
 
-                // @formatter:off
-                // Zu Gunsten IBAN AT44 3400 0000 0123 4567 0,00 EUR
-                // @formatter:on
-                .section("amount", "currency")
-                .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                .oneOf(
+                                // @formatter:off
+                                // Zu Gunsten IBAN AT44 3400 0000 0123 4567 0,00 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                                ,
+                                // @formatter:off
+                                // Verrechnung: IBAN Do07 0286 0000 5451 0810 EUR
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency")
+                                        .match("^Verrechnung: IBAN .* (?<currency>[\\w]{3})$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(0L);
+                                        })
+                        )
 
                 // @formatter:off
                 // Abrechnungsnummer/-datum: 45664992 - 16.03.2023
@@ -998,6 +1041,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("fee", "currency").optional()
                 .match("^Inkassogeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Zahlungsverkehr-Transaktionsgebühr: -3,00 EUR
+                // @formatter:on
+                .section("fee", "currency").optional()
+                .match("^Zahlungsverkehr\\-Transaktionsgeb.hr: \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off

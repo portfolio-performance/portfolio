@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -19,7 +20,9 @@ public class ConfigurationSet
          */
         CLIENT_FILTER_DEFINITIONS("client-filter-definitions"), //$NON-NLS-1$
         /** selected client filter in views; view name is key */
-        CLIENT_FILTER_SELECTION("client-filter-selection"); //$NON-NLS-1$
+        CLIENT_FILTER_SELECTION("client-filter-selection"), //$NON-NLS-1$
+        /** list of configured custom reporting periods */
+        REPORTING_PERIODS("reporting-periods"); //$NON-NLS-1$
 
         private WellKnownConfigurationSets(String key)
         {
@@ -50,7 +53,7 @@ public class ConfigurationSet
 
         /* protobuf only */ Configuration(String uuid)
         {
-            this.uuid = uuid;
+            this.uuid = Objects.requireNonNull(uuid);
         }
 
         public Configuration(String name, String data)
@@ -60,9 +63,9 @@ public class ConfigurationSet
 
         public Configuration(String uuid, String name, String data)
         {
-            this.uuid = uuid;
-            this.name = name;
-            this.data = data;
+            this.uuid = Objects.requireNonNull(uuid);
+            this.name = Objects.requireNonNull(name);
+            this.data = Objects.requireNonNull(data);
         }
 
         public String getUUID()
@@ -122,6 +125,7 @@ public class ConfigurationSet
      */
     public void add(Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(configuration);
     }
 
@@ -130,6 +134,7 @@ public class ConfigurationSet
      */
     public void add(int index, Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(index, configuration);
     }
 

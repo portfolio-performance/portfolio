@@ -9,6 +9,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>EPL-1.0</project_license>
   <description>
+    <p>An open source tool to calculate the overall performance of an investment portfolio - across all accounts - using True-Time Weighted Return or Internal Rate of Return.</p>
     <ul>
       <li>Record the full history of your transactions: purchases, sales, taxes, fees, ...</li>
       <li>Calculate performance indicators such as the True-Time Weighted Rate of Return or the Internal Rate of Return (IRR) for your holdings.</li>
@@ -17,6 +18,7 @@
       <li>Rebalance your investment portfolio based on a freely defined Asset Allocation.</li>
       <li>Keep foreign currency accounts using the exchange rates published by the European Central Bank (ECB).</li>
     </ul>
+    <p xml:lang="de">Ein Open Source Programm zur Berechnung der Performance eines Gesamtportfolios - über verschiedene Depots und Konten hinweg - anhand von True-Time Weighted Rate of Return und internem Zinsfuß.</p>
     <ul xml:lang="de">
       <li>Die vollständige Historie aller Buchungen kann erfasst werden: Käufe, Verkäufe, Steuern, Gebühren, ...</li>
       <li>Performance-Kennzahlen wie der True-Time Weighted Rate of Return oder der interne Zinsfuß (Internal Rate of Return) werden errechnet.</li>
@@ -37,6 +39,74 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+		<release version="0.65.3" date="2023-09-04">
+			<description>
+				<ul>
+					<li>Fix: Fixes a problem when saving the file with reporting periods configuration embedded in the file</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Fix: Behebt ein Problem beim Speichern der Datei wenn Berichtszeiträume in der Datei gespeichert werden</li>
+				</ul>
+			</description>
+		</release>
+		<release version="0.65.2" date="2023-09-03">
+			<description>
+				<ul>
+					<li>New Translations: Traditional Chinese and Brazilian Portuguese</li>
+					<li>Improvement of PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li>Improvement: New option to skip extracting notes from PDF documents</li>
+					<li>Improvement: Alternative symbols for benchmarks in the yield/volatility chart</li>
+					<li>Fix: Fixes truncated labels in dialogs when a larger font size is selected</li>
+					<li>Fix: Fixes an issue where the crosshair was not correctly placed in the saved chart</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Neue Übersetzungen: Traditionelles Chinesisch und Brasilianisches Portugiesisch</li>
+					<li>Verbesserung der PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li>Verbesserung: Neue Option um Notizen nicht aus PDF Dokumenten einzulesen</li>
+					<li>Verbesserung: Alternative Symbole für Benchmarks im Rendite/Volatilitäts-Diagramm</li>
+					<li>Fix: Behebt abgeschnittene Beschriftungen in Dialogen wenn eine grössere Schrift eingestellt ist</li>
+					<li>Fix: Behebt ein Problem bei dem das Crosshair in dem gespeicherten Diagramm nicht an der richtigen Stelle eingezeichnet wurde</li>
+				</ul>
+			</description>			
+		</release>
+		<release version="0.65.1" date="2023-08-14">
+			<description>
+				<ul>
+					<li>Fix: Fixes the calculation of partial assignments in earnings by taxonomy chart</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Fix: Behebt ein Problem bei der Berechnung von anteiligen Erträgen im Chart 'Erträge nach Klassifikationen'</li>
+				</ul>
+			</description>
+		</release>
+		<release version="0.65.0" date="2023-08-14">
+			<description>
+				<ul>
+					<li>New: Suggestions of providers for historical prices for freshly imported securities from PDF or CSV files</li>
+					<li>New: Newly recognized securities can be assigned to existing securities during PDF import</li>
+					<li>New: Pie chart of earnings (dividends, interest) by taxonomy</li>
+					<li>New: Added support for PDF bank documents from Sberbank Europe and BISON</li>
+					<li>New: Introducing a new "crosshair" tool available in the price charts</li>
+					<li>Improvement: Date format is now automatically pre-filled during CSV import based on the current language setting</li>
+					<li>Improvement: CSV import now supports scientific notation for numbers</li>
+					<li>PDF Importer Enhancement: Expanded support for Raiffeisenbank, eBase, FlatEx, Quirion, Geno Broker, LGT Bank, and PostFinance</li>
+					<li>Fix: Tooltip for calculating price gains is now limited to 50 rows</li>
+					<li>Fix: Filter options are now properly applied when opening the list of all transactions</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Neu: Vorschläge zur Kursversorgung von frisch importierte Wertpapiere aus PDF- oder CSV-Dateien</li>
+					<li>Neu: Neu erkannte Wertpapiere können beim PDF Import bestehenden Wertpapieren zugeordnet werden</li>
+					<li>Neu: Kuchendiagramm der Erträge (Dividenden, Zinsen) nach Klassifikation</li>
+					<li>Neu: Unterstützung für PDF-Bankdokumente von Sberbank Europe und BISON hinzugefügt</li>
+					<li>Neu: Neues Werkzeug "Fadenkreuz" in den Kursdiagrammen verfügbar</li>
+					<li>Verbesserung: Das Datumsformat wird beim CSV-Import automatisch gemäß der aktuellen Spracheinstellung vorausgefüllt</li>
+					<li>Verbesserung: Der CSV-Import unterstützt nun auch wissenschaftliche Schreibweisen für Zahlen</li>
+					<li>Verbesserung der PDF Importer: Raiffeisenbank, eBase, FlatEx, Quirion, Geno Broker, LGT Bank und PostFinance</li>
+					<li>Fix: Tooltip zur Berechnung der Kursgewinne auf 50 Zeilen limitiert</li>
+					<li>Fix: Filteroptionen werden nun ordnungsgemäß beim Öffnen der Liste aller Buchungen angewendet</li>
+				</ul>
+			</description>
+		</release>
     <release version="0.64.5" date="2023-07-23">
       <description>
         <ul>
