@@ -75,7 +75,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             .assign((t, v) -> {
                 v.put("currency", "USD");
                 t.setDateTime(asDate(v.get("date")));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
+                t.setAmount(asAmount(v.get("amount")));
             })
             .oneOf(
                 // CASH DIV ON 200 SHS WH 8.73
@@ -83,9 +83,9 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 .attributes("tax", "shares")
                 .match("CASH[\\s]+DIV[\\s]+ON[\\s]+(?<shares>[\\.,\\d]+)[\\s]+SHS[\\s]+WH[\\s]+(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares"), "en", "US"));
+                    t.setShares(asShares(v.get("shares")));
                     v.put("currency", "USD");
-                    Money tax = Money.of("USD", asAmount(v.get("tax"), "en", "US"));
+                    Money tax = Money.of("USD", asAmount(v.get("tax")));
                     ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                 }),
@@ -97,8 +97,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 .match("[\\s\\w\\d]+WH[\\s]+(?<tax>[\\.,\\d]+)")
                 .match("CASH[\\s]+DIV[\\s]+ON[\\s]+(?<shares>[\\.,\\d]+)[\\s]+SHS$")
                 .assign((t, v) -> {
-                    t.setShares(asShares(v.get("shares"), "en", "US"));
-                    Money tax = Money.of("USD", asAmount(v.get("tax"), "en", "US"));
+                    t.setShares(asShares(v.get("shares")));
+                    Money tax = Money.of("USD", asAmount(v.get("tax")));
                     ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                 })
@@ -156,11 +156,11 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 v.put("wkn", v.get("cusip"));
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setDate(asDate(v.get("tradedate")));
-                t.setShares(asShares(v.get("shares"), "en", "US"));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
-                Money fee = Money.of("USD", asAmount(v.get("commfee"), "en", "US")
-                                + asAmount(v.get("tranfee"), "en", "US")
-                                + asAmount(v.get("addlfee"), "en", "US"));
+                t.setShares(asShares(v.get("shares")));
+                t.setAmount(asAmount(v.get("amount")));
+                Money fee = Money.of("USD", asAmount(v.get("commfee"))
+                                + asAmount(v.get("tranfee"))
+                                + asAmount(v.get("addlfee")));
                 checkAndSetFee(fee, t, type.getCurrentContext());
             })
 
@@ -189,11 +189,11 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 if (v.get("type").equals("S"))
                     t.setType(PortfolioTransaction.Type.SELL);
                 t.setDate(asDate(v.get("tradedate")));
-                t.setShares(asShares(v.get("shares"), "en", "US") * 100);
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
-                Money fee = Money.of("USD", asAmount(v.get("commfee"), "en", "US")
-                                + asAmount(v.get("tranfee"), "en", "US")
-                                + asAmount(v.get("addlfee"), "en", "US"));
+                t.setShares(asShares(v.get("shares")) * 100);
+                t.setAmount(asAmount(v.get("amount")));
+                Money fee = Money.of("USD", asAmount(v.get("commfee"))
+                                + asAmount(v.get("tranfee"))
+                                + asAmount(v.get("addlfee")));
                 checkAndSetFee(fee, t, type.getCurrentContext());
             })
 
@@ -273,8 +273,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 v.put("shares", v.get("shares") + "00");
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setDate(asDate(v.get("tradedate")));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
-                t.setShares(asShares(v.get("shares"), "en", "US"));
+                t.setAmount(asAmount(v.get("amount")));
+                t.setShares(asShares(v.get("shares")));
                 checkAndSetFee(calculateFee(v), t, type.getCurrentContext());
                 // save to determine type of expiration (BTC or STC), if applicable.
                 m_optionTradesInImport.add(t);
@@ -301,7 +301,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 v.put("amount", "0.0");
                 v.put("wkn", v.get("cusip"));
                 v.put("currency", "USD");
-                t.setShares(asShares(v.get("shares"), "en", "US"));
+                t.setShares(asShares(v.get("shares")));
                 t.setSecurity(getOrCreateSecurity(v));
                 if (v.get("type").equals("SOLD"))
                     t.setType(PortfolioTransaction.Type.SELL);
@@ -333,8 +333,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 v.put("currency", "USD");
                 t.setSecurity(getOrCreateSecurity(v));
                 t.setDate(asDate(v.get("tradedate")));
-                t.setShares(asShares(v.get("shares"), "en", "US"));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
+                t.setShares(asShares(v.get("shares")));
+                t.setAmount(asAmount(v.get("amount")));
                 checkAndSetFee(calculateFee(v), t, type.getCurrentContext());
             }))
 
@@ -366,7 +366,8 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             .match("^(?<description>.*).*$")
             .match("(^OPTION EXPIRATION.*$|^.*[\\s]+[A-Z0-9]+[\\s]+[\\d]+[\\s]+ASSIGNED.*)")
             .match("Security Number:[\\s]+(?<cusip>[A-Z0-9]+)")
-            .assign((t, v) -> {                v.put("currency", "USD");
+            .assign((t, v) -> {
+                v.put("currency", "USD");
                 v.put("wkn", v.get("cusip"));
                 t.setDate(asDate(v.get("date")));
                 OccOsiSymbology o = new OccOsiSymbology(v.get("underlaying"),
@@ -374,13 +375,26 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                 Double.parseDouble(v.get("strike").toString()));
                 v.put("tickerSymbol", o.getOccKey());
                 v.put("name", o.getName());
-                t.setShares(asShares(v.get("quantity").replace("-", ""), "en", "US") * 100);
+//                t.setShares(asShares(v.get("quantity").replace("-", "")) * 100);
+                
+                BigDecimal shares = asBigDecimal(v.get("quantity"));
+                t.setShares(Values.Share.factorize(shares.doubleValue() * 100));
                 t.setSecurity(getOrCreateSecurity(v));
+                // Expiration means it can be a long or short position that expired OTM
                 if (v.get("type").equals("EXPIRED")) {
-                    setTypeAndExpirationNote(t, v); // TODO
-                } else {
+                    BigDecimal quantity = ExtractorUtils.convertToNumberBigDecimal(v.get("quantity"), Values.Amount, "en", "US");
+                    if (quantity.signum() == 1) {
+                        t.setType(PortfolioTransaction.Type.BUY);
+                        t.setNote("Expired: Buy To Close");
+                    }
+                    else if (quantity.signum() == -1) {
+                        t.setType(PortfolioTransaction.Type.SELL);
+                        t.setNote("Expired: Sell To Close");
+                    }
+                // Assignment means this was a short position
+                } else if (v.get("type").equals("ASG")) {
                     t.setNote("Assigned: Buy To Close");
-                    t.setType(PortfolioTransaction.Type.BUY); // Assignment means this was a short position
+                    t.setType(PortfolioTransaction.Type.BUY);
                 }
             })
             
@@ -436,7 +450,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             .match("(?<sen>SEN.*)")
             .assign((t, v) -> {
                 t.setDateTime(asDate(v.get("date")));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
+                t.setAmount(asAmount(v.get("amount")));
                 t.setNote(v.get("description") + " " + v.get("fedref") + " " + v.get("sen"));
             })
             
@@ -465,7 +479,7 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 else if (v.get("type").equals("to"))
                     t.setType(AccountTransaction.Type.REMOVAL); 
                 t.setDateTime(asDate(v.get("date")));
-                t.setAmount(asAmount(v.get("amount"), "en", "US"));
+                t.setAmount(asAmount(v.get("amount")));
                 t.setNote("Journal " + v.get("type") + " account " + v.get("account") + " " + v.get("sen"));
             })
             
@@ -475,11 +489,11 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
     private Money calculateFee(final ParsedData v)
     {
       BigDecimal amount = ExtractorUtils.convertToNumberBigDecimal(v.get("amount"), Values.Amount, "en", "US");
-      BigDecimal shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Amount, "en", "US");
+      BigDecimal shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en", "US");
       BigDecimal price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Amount, "en", "US");
       BigDecimal gross = price.multiply(shares);
       BigDecimal fee = v.get("type").equals("SOLD") ? gross.subtract(amount) : amount.subtract(gross);
-      return Money.of("USD", asAmount(fee.toString(), "en", "US"));
+      return Money.of("USD", asAmount(fee.toString()));
     }
     
     private <T extends Transaction<?>> void addInterestsSectionTransaction(T transaction, DocumentType type)
@@ -490,40 +504,20 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             .match("^(?<details>.*$)")
             .assign((t, v) -> {
                 ((name.abuchen.portfolio.model.Transaction) t).setDateTime(asDate(v.get("date")));
-                ((name.abuchen.portfolio.model.Transaction) t).setMonetaryAmount(Money.of("USD", asAmount(v.get("amount"), "en", "US")));
+                ((name.abuchen.portfolio.model.Transaction) t).setMonetaryAmount(Money.of("USD", asAmount(v.get("amount"))));
                 ((name.abuchen.portfolio.model.Transaction) t).setNote(v.get("description") + " " + v.get("details"));
             });
     }
-    
-    private void setTypeAndExpirationNote(BuySellEntry t, ParsedData v)
-    {        BigDecimal quantity = ExtractorUtils.convertToNumberBigDecimal(v.get("quantity"), Values.Amount, "en", "US");
 
-        if (quantity.signum() == 1)
-        {
-            t.setType(PortfolioTransaction.Type.BUY);
-            t.setNote("Expired: Buy To Close");
-        }
-        else if (quantity.signum() == -1)
-        {
-            t.setType(PortfolioTransaction.Type.SELL);
-            t.setNote("Expired: Sell To Close");
-        }
-        else
-        {
-            throw new IllegalArgumentException(quantity.toString());
-        }
+    @Override
+    protected long asAmount(String value)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 
-    /**
-     * Convert date using US locale.
-     * 
-     * @param dateString
-     *            date with pattern M/d/yy
-     * @return converted date
-     */
-    private LocalDateTime asDate(String dateString)
+    @Override
+    protected long asShares(String value)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy").withLocale(Locale.US);
-        return LocalDate.parse(dateString, formatter).atStartOfDay();
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
     }
 }
