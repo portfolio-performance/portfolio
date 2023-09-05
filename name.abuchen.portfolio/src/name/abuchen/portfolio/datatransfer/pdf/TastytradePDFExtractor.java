@@ -84,7 +84,6 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 .match("CASH[\\s]+DIV[\\s]+ON[\\s]+(?<shares>[\\.,\\d]+)[\\s]+SHS[\\s]+WH[\\s]+(?<tax>[\\.,\\d]+)")
                 .assign((t, v) -> {
                     t.setShares(asShares(v.get("shares")));
-                    v.put("currency", "USD");
                     Money tax = Money.of("USD", asAmount(v.get("tax")));
                     ExtractorUtils.checkAndSetTax(tax, t, type.getCurrentContext());
                     t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -375,8 +374,6 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                                 Double.parseDouble(v.get("strike").toString()));
                 v.put("tickerSymbol", o.getOccKey());
                 v.put("name", o.getName());
-//                t.setShares(asShares(v.get("quantity").replace("-", "")) * 100);
-                
                 BigDecimal shares = asBigDecimal(v.get("quantity"));
                 t.setShares(Values.Share.factorize(shares.doubleValue() * 100));
                 t.setSecurity(getOrCreateSecurity(v));
@@ -485,27 +482,31 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
             
             .wrap(TransactionItem::new));
     }
-    
+
     private Money calculateFee(final ParsedData v)
     {
-      BigDecimal amount = ExtractorUtils.convertToNumberBigDecimal(v.get("amount"), Values.Amount, "en", "US");
-      BigDecimal shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en", "US");
-      BigDecimal price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Amount, "en", "US");
-      BigDecimal gross = price.multiply(shares);
-      BigDecimal fee = v.get("type").equals("SOLD") ? gross.subtract(amount) : amount.subtract(gross);
-      return Money.of("USD", asAmount(fee.toString()));
+        BigDecimal amount = ExtractorUtils.convertToNumberBigDecimal(v.get("amount"), Values.Amount, "en", "US");
+        BigDecimal shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en", "US");
+        BigDecimal price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Amount, "en", "US");
+        BigDecimal gross = price.multiply(shares);
+        BigDecimal fee = v.get("type").equals("SOLD") ? gross.subtract(amount) : amount.subtract(gross);
+        return Money.of("USD", asAmount(fee.toString()));
     }
     
     private <T extends Transaction<?>> void addInterestsSectionTransaction(T transaction, DocumentType type)
     {
         transaction
             .section("date", "amount", "description", "details")
-            .match("^INTEREST[\\s]+(?<date>[\\d]{2}/[\\d]{2}/[\\d]{2})[\\s]+[A-Z][\\s]+(?<description>.*)[\\s]+(\\$)?(?<amount>[\\.,\\d]+).*$")
+            .match("^INTEREST[\\s]+(?<date>[\\d]{2}/[\\d]{2}/[\\d]{2})[\\s]+[A-Z][\\s]"
+                            + "+(?<description>.*)[\\s]+(\\$)?(?<amount>[\\.,\\d]+).*$")
             .match("^(?<details>.*$)")
             .assign((t, v) -> {
-                ((name.abuchen.portfolio.model.Transaction) t).setDateTime(asDate(v.get("date")));
-                ((name.abuchen.portfolio.model.Transaction) t).setMonetaryAmount(Money.of("USD", asAmount(v.get("amount"))));
-                ((name.abuchen.portfolio.model.Transaction) t).setNote(v.get("description") + " " + v.get("details"));
+                ((name.abuchen.portfolio.model.Transaction) t)
+                    .setDateTime(asDate(v.get("date")));
+                ((name.abuchen.portfolio.model.Transaction) t)
+                    .setMonetaryAmount(Money.of("USD", asAmount(v.get("amount"))));
+                ((name.abuchen.portfolio.model.Transaction) t)
+                    .setNote(v.get("description") + " " + v.get("details"));
             });
     }
 
