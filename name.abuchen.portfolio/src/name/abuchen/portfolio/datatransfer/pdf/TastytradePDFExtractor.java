@@ -371,19 +371,26 @@ public class TastytradePDFExtractor extends AbstractPDFExtractor
                 BigDecimal shares = asBigDecimal(v.get("quantity"));
                 t.setShares(Values.Share.factorize(shares.doubleValue() * 100));
                 t.setSecurity(getOrCreateSecurity(v));
-                // Expiration means it can be a long or short position that expired OTM
-                if (v.get("type").equals("EXPIRED")) {
-                    BigDecimal quantity = ExtractorUtils.convertToNumberBigDecimal(v.get("quantity"), Values.Amount, "en", "US");
-                    if (quantity.signum() == 1) {
+                // Expiration means it can be a long or short
+                // position that expired OTM
+                if (v.get("type").equals("EXPIRED"))
+                {
+                    BigDecimal quantity = ExtractorUtils.convertToNumberBigDecimal(v.get("quantity"),
+                                    Values.Amount, "en", "US");
+                    if (quantity.signum() == 1)
+                    {
                         t.setType(PortfolioTransaction.Type.BUY);
                         t.setNote("Expired: Buy To Close");
                     }
-                    else if (quantity.signum() == -1) {
+                    else if (quantity.signum() == -1)
+                    {
                         t.setType(PortfolioTransaction.Type.SELL);
                         t.setNote("Expired: Sell To Close");
                     }
+                }
                 // Assignment means this was a short position
-                } else if (v.get("type").equals("ASG")) {
+                else if (v.get("type").equals("ASG"))
+                {
                     t.setNote("Assigned: Buy To Close");
                     t.setType(PortfolioTransaction.Type.BUY);
                 }
