@@ -385,6 +385,37 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende07()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006501554"), hasWkn("650155"), hasTicker(null), //
+                        hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-05T00:00"), hasShares(60.00), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
+                        hasTaxes("EUR", 88.02 + 4.84 + 7.92), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierKauf01()
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
@@ -409,7 +440,8 @@ public class DeutscheBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2015-04-02T09:04"), hasShares(19), //
-                        hasSource("Kauf01.txt"), hasNote(null), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 675.50), hasGrossValue("EUR", 665.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
@@ -446,7 +478,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3524.98))));
@@ -490,7 +522,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5791)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1694278628 / 24281"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
@@ -534,7 +566,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-20T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4353)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1111111111 / 1111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.95))));
@@ -666,7 +698,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2074.71))));
@@ -703,7 +735,8 @@ public class DeutscheBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2015-01-28T09:00"), hasShares(8), //
-                        hasSource("Verkauf02.txt"), hasNote(null), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 453.66), hasGrossValue("EUR", 464.16), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
@@ -740,7 +773,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-02-16T15:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1202359588 / 831475"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4753.16))));
