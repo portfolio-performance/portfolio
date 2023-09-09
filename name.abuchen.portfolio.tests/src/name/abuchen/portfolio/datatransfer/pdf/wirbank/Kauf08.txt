@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+www.viac.ch
+Vertrag 1.234.567.890
+Portfolio 1.234.567.890.01
+Herr
+Hans Mustermann
+Teststrasse 1
+1234 Testhausen
+Basel, 31.08.2023
+Börsenabrechnung - Kauf CSIF Europe ex CH
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Kauf
+0.025 Anteile CSIF Europe ex CH
+ISIN: CH0037606552
+Kurs: EUR 915.14
+Betrag EUR 22.53
+Umrechnungskurs CHF/EUR 0.96175 CHF 21.67
+Verrechneter Betrag: Valuta 31.08.2023 CHF 21.67
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
