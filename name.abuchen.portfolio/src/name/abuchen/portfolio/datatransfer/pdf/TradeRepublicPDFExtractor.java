@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -58,17 +58,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|Sparplanausf.hrung"
                         + "|SAVINGS PLAN"
                         + "|Ex.cution de l.investissement programm.) .*"
-                        + "|REINVESTIERUNG)", 
+                        + "|REINVESTIERUNG)",
                         "(ABRECHNUNG CRYPTOGESCH.FT"
                         + "|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("(((Limit|Stop\\-Market|Market)\\-Order )?"
                         + "(Kauf"
@@ -81,7 +76,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    BuySellEntry portfolioTransaction = new BuySellEntry();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                    return portfolioTransaction;
+                })
+
                 // Is type --> "Verkauf" change from BUY to SELL
                 .section("type").optional()
                 .match("^((Limit|Stop\\-Market|Market)\\-Order )?"
@@ -354,17 +356,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    BuySellEntry portfolioTransaction = new BuySellEntry();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                    return portfolioTransaction;
+                })
+
                 // @formatter:off
                 // Ethereum (ETH) 0,0878 Stk. 3.415,35 EUR 299,87 EUR
                 // @formatter:on
@@ -469,17 +473,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^TILGUNG$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    BuySellEntry portfolioTransaction = new BuySellEntry();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
+                    return portfolioTransaction;
+                })
+
                 // @formatter:off
                 // 1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
                 // TurboC O.End Linde
@@ -527,19 +533,31 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG|STORNO DIVIDENDE)");
+        DocumentType type = new DocumentType("(AUSSCH.TTUNG"
+                        + "|DIVIDENDE"
+                        + "|REINVESTIERUNG"
+                        + "|STORNO DIVIDENDE"
+                        + "|DIVIDENDO)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(AUSSCH.TTUNG|DIVIDENDE|REINVESTIERUNG|STORNO DIVIDENDE)$");
-        type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
 
-        pdfTransaction
+        Block firstRelevantLine = new Block("^(AUSSCH.TTUNG"
+                        + "|DIVIDENDE"
+                        + "|REINVESTIERUNG"
+                        + "|STORNO DIVIDENDE"
+                        + "|DIVIDENDO)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // Storno der Dividende mit dem Ex-Tag 29.11.2019.
                 // @formatter:on
@@ -553,10 +571,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                                 // Registered Shares USD o.N.
                                 // IE00B652H904
+                                //
+                                // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
+                                // Registered Shares o.N.
+                                // ISIN: CA29250N1050
                                 // @formatter:on
                                 section -> section
                                         .attributes("name", "currency", "isin", "nameContinued")
-                                        .match("^(?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
                                         .match("^(?<nameContinued>.*)$")
                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -580,10 +602,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                                 // @formatter:off
                                 // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
+                                // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
                                 // @formatter:on
                                 section -> section
                                         .attributes("shares")
-                                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                                 ,
                                 // @formatter:off
@@ -624,12 +647,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:off
                                 // GESAMT 3,83 EUR
                                 // GESAMT 2,83 EUR
+                                //
+                                // GESAMT 45,40 USD
                                 // GESAMT -30,17 EUR
+                                //
+                                // TOTALE 18,61 CAD
+                                // TOTALE 9,56 EUR
                                 // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^GESAMT [\\.,\\d]+ [\\w]{3}$")
-                                        .match("^GESAMT (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^(GESAMT|TOTALE) [\\.,\\d]+ [\\w]{3}$")
+                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -637,10 +665,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 ,
                                 // @formatter:off
                                 // GESAMT 1,630 EUR
+                                // TOTALE 9,56 EUR
                                 // @formatter:on
                                 section -> section
                                         .attributes("amount", "currency")
-                                        .match("^GESAMT (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -651,11 +680,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                 // @formatter:off
                                 // GESAMT 5,63 USD
                                 // Zwischensumme 1,102 EUR/USD 5,11 EUR
+                                //
+                                // Subtotale 13,96 CAD
+                                // Subtotale 1,46055 EUR/CAD 9,56 EUR
                                 // @formatter:on
                                 section -> section
                                         .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency")
-                                        .match("^GESAMT (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
-                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                                        .match("^(GESAMT|TOTALE) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
+                                        .match("^(Zwischensumme|Subtotale) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
@@ -705,8 +737,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     private void addCaptialReductionTransaction()
@@ -714,16 +744,20 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("KAPITALREDUKTION");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^KAPITALREDUKTION$");
-        type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
 
-        pdfTransaction
+        Block firstRelevantLine = new Block("^KAPITALREDUKTION$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // 1 Kapitalmaßnahme Barrick Gold Corp. 8,4226 Stk.
                 // Registered Shares o.N.
@@ -781,8 +815,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     private void addDeliveryInOutBoundTransaction()
@@ -801,29 +833,24 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher m = pDate.matcher(line);
-                if (m.matches())
-                    context.put("date", m.group("date"));
+                Matcher mDate = pDate.matcher(line);
+                if (mDate.matches())
+                    context.put("date", mDate.group("date"));
 
                 // If we have a "ABRECHNUNG", then this is not a
                 // delivery in/outbond.
-                m = pSkipTransaction.matcher(line);
-                if (m.matches())
+                Matcher mSkipTransaction = pSkipTransaction.matcher(line);
+                if (mSkipTransaction.matches())
                     context.putBoolean("skipTransaction", true);
 
-                m = pTransactionPosition.matcher(line);
-                if (m.matches() && context.getBoolean("skipTransaction"))
-                    context.put("transactionPosition", m.group("transactionPosition"));
+                Matcher mTransactionPosition = pTransactionPosition.matcher(line);
+                if (mTransactionPosition.matches() && context.getBoolean("skipTransaction"))
+                    context.put("transactionPosition", mTransactionPosition.group("transactionPosition"));
             }
         });
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction1 = new Transaction<>();
-        pdfTransaction1.subject(() -> {
-            PortfolioTransaction entry = new PortfolioTransaction();
-            entry.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("(^|^[\\d] )(Umtausch\\/Bezug"
                         + "|Einbuchung"
@@ -836,7 +863,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction1);
 
-        pdfTransaction1
+        pdfTransaction1 //
+
+                .subject(() -> {
+                    PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    return portfolioTransaction;
+                })
+
                 // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
                 .section("type").optional()
                 .match("(^|^[\\d] )(?<type>"
@@ -907,17 +941,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         // If we have a "ABRECHNUNG".
         Transaction<BuySellEntry> pdfTransaction2 = new Transaction<>();
-        pdfTransaction2.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
-        Block buySellBlock = new Block("^ABRECHNUNG$");
-        type.addBlock(buySellBlock);
-        buySellBlock.set(pdfTransaction2);
+        firstRelevantLine = new Block("^ABRECHNUNG$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction2);
 
-        pdfTransaction2
+        pdfTransaction2 //
+
+                .subject(() -> {
+                    BuySellEntry portfolioTransaction = new BuySellEntry();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                    return portfolioTransaction;
+                })
+
                 // Is type --> "Barausgleich" change from BUY to SELL
                 .section("type").optional()
                 .match("^[\\d] (?<type>Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$")
@@ -965,13 +1001,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
-            Pattern currency = Pattern.compile("BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>[\\w]{3})");
+            Pattern pCurrency = Pattern.compile("BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>[\\w]{3})");
 
             for (String line : lines)
             {
-                Matcher m = currency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                Matcher mCurrency = pCurrency.matcher(line);
+                if (mCurrency.matches())
+                    context.put("currency", mCurrency.group("currency"));
             }
         });
         this.addDocumentTyp(type);
@@ -981,9 +1017,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            return t;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
                         .section("date", "amount")
@@ -1001,9 +1037,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         taxRefundBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.TAX_REFUND);
-                            return t;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
                         })
 
                         .section("date", "amount")
@@ -1023,17 +1059,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAX_REFUND);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^STEUERABRECHNUNG$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // Kapitalertragsteuer Optimierung 3,75 EUR
                 // @formatter:on
@@ -1056,17 +1094,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.INTEREST);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^ABRECHNUNG ZINSEN$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // zum 31.01.2023
                 // @formatter:on
@@ -1095,17 +1135,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAXES);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^VORABPAUSCHALE$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.TAXES);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
                 // Registered Shares o.N.
@@ -1144,14 +1186,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .*$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^((Limit|Stop\\-Market|Market)\\-Order )?(Kauf|Verkauf) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
 
                 .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.TAX_REFUND);
-                    return t;
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                    return accountTransaction;
                 })
 
                 // @formatter:off
@@ -1219,19 +1265,23 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
                     return null;
-                }));
+                });
     }
 
     private void addLiquidationTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^TILGUNG$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^TILGUNG$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
 
                 .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.TAX_REFUND);
-                    return t;
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                    return accountTransaction;
                 })
 
                 // @formatter:off
@@ -1296,7 +1346,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
                         return new TransactionItem(t);
                     return null;
-                }));
+                });
     }
 
     private void addSellWithNegativeAmountTransaction()
@@ -1304,16 +1354,20 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(.*\\-Order )?Verkauf.*$");
-        type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.FEES);
-            return t;
-        });
 
-        pdfTransaction
+        Block firstRelevantLine = new Block("^(.*\\-Order )?Verkauf.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.FEES);
+                    return accountTransaction;
+                })
+
                 // @formatter:off
                 // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                 // Registered Shares o.N.
@@ -1384,8 +1438,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         return new TransactionItem(t);
                     return null;
                 });
-
-        block.set(pdfTransaction);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -1396,6 +1448,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("withHoldingTax", "currency").optional()
                 .match("^([\\d] )?Quellensteuer .* (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                // @formatter:off
+                // Ritenuta alla fonte -4,65 CAD
+                // @formatter:on
+                .section("withHoldingTax", "currency").optional()
+                .match("^Ritenuta alla fonte (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                 // @formatter:off
