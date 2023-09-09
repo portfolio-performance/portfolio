@@ -37,10 +37,15 @@ public class ExtractorUtils
                     DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
 
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
+                    DateTimeFormatter.ofPattern("dd LLLL yyyy", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLLL yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("yyyyMMdd", Locale.US) }; //$NON-NLS-1$
@@ -52,7 +57,10 @@ public class ExtractorUtils
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.CANADA_FRENCH) }; //$NON-NLS-1$
 
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
+                    DateTimeFormatter.ofPattern("dd LLLL yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLLL yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLL yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("L/d/yyyy", Locale.UK), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
@@ -67,6 +75,10 @@ public class ExtractorUtils
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
