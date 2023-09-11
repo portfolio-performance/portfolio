@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Images;
@@ -143,6 +144,9 @@ public class TradesTableViewer
                                 new TabularDataSource.Column(Messages.ColumnTransactionType, SWT.LEFT), //
                                 new TabularDataSource.Column(Messages.ColumnShares) //
                                                 .withFormatter(o -> Values.Share.formatNonZero((Long) o)), //
+                                new TabularDataSource.Column(Messages.ColumnQuote) //
+                                                .withFormatter(o -> Values.CalculatedQuote.format((Quote) o, //
+                                                                view.getClient().getBaseCurrency())), //
                                 new TabularDataSource.Column(Messages.ColumnAmount) //
                                                 .withFormatter(o -> Values.Money.formatNonZero((Money) o,
                                                                 view.getClient().getBaseCurrency())), //
@@ -160,16 +164,17 @@ public class TradesTableViewer
 
                 trade.getTransactions().stream().forEach(pair -> {
 
-                    Object[] row = new Object[8];
+                    Object[] row = new Object[9];
                     row[0] = pair;
                     pair.withAccountTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
                     pair.withPortfolioTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
                     row[2] = pair.getTransaction().getShares();
-                    row[3] = pair.getTransaction().getGrossValue();
-                    row[4] = pair.getTransaction().getUnitSum(Unit.Type.FEE);
-                    row[5] = pair.getTransaction().getUnitSum(Unit.Type.TAX);
-                    row[6] = pair.getTransaction().getMonetaryAmount();
-                    row[7] = pair.getOwner();
+                    row[3] = pair.getTransaction().getGrossPricePerShare();
+                    row[4] = pair.getTransaction().getGrossValue();
+                    row[5] = pair.getTransaction().getUnitSum(Unit.Type.FEE);
+                    row[6] = pair.getTransaction().getUnitSum(Unit.Type.TAX);
+                    row[7] = pair.getTransaction().getMonetaryAmount();
+                    row[8] = pair.getOwner();
 
                     builder.addRow(row);
                 });
