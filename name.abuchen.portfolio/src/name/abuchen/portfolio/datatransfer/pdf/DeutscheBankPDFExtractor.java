@@ -335,8 +335,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug vom", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("[\\d]{3} [\\d]+ [\\d]{2} (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+");
-            Pattern pYear = Pattern.compile("Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+            Pattern pCurrency = Pattern.compile(
+                            "^.* [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{2} .*(?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+$");
+            Pattern pYear = Pattern.compile(
+                            "^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
 
             for (String line : lines)
             {
