@@ -335,14 +335,21 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug vom", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("[\\d]{3} [\\d]+ [\\d]{2} (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+");
-            Pattern pYear = Pattern.compile("Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+            Pattern pCurrency = Pattern.compile(".* (?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+$");
+            Pattern pYear = Pattern.compile(
+                            "Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
 
-            for (String line : lines)
+            for (int lineNo = 0; lineNo < lines.length; lineNo++)
             {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
+                String line = lines[lineNo];
+
+                // check for currency
+                if (line.startsWith("Auszug Seite") && lineNo + 1 < lines.length)
+                {
+                    Matcher mCurrency = pCurrency.matcher(lines[lineNo + 1]);
+                    if (mCurrency.matches())
+                        context.put("currency", mCurrency.group("currency"));
+                }
 
                 Matcher mYear = pYear.matcher(line);
                 if (mYear.matches())

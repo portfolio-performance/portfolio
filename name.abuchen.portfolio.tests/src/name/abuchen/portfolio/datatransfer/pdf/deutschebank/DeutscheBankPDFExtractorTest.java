@@ -2299,4 +2299,38 @@ public class DeutscheBankPDFExtractorTest
                         "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug05.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
+    
+    @Test
+    public void testGiroKontoauszug06()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // check dividends transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2023-08-14"), hasShares(0), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote("Überweisung an 2023 2023 Max Mustermann"), //
+                        hasAmount("EUR", 1000), hasGrossValue("EUR", 1000), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2023-08-16"), hasShares(0), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote(""), //
+                        hasAmount("EUR", 33.23), hasGrossValue("EUR", 33.23), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2023-08-31"), hasShares(0), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote(""), //
+                        hasAmount("EUR", 74.49), hasGrossValue("EUR", 74.49), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+
+    }
+
 }
