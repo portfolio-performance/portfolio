@@ -348,6 +348,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                 if (mYear.matches())
                     context.put("year", mYear.group("year"));
             }
+
+            if (!context.containsKey("year"))
+                throw new IllegalArgumentException("No statement year found.");
+
+            if (!context.containsKey("currency"))
+                throw new IllegalArgumentException("No account currency found.");
         });
         this.addDocumentTyp(type);
 
