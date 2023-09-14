@@ -136,7 +136,8 @@ public class SearchSecurityWizardPage extends WizardPage
 
         resultTable.addSelectionChangedListener(event -> {
             item = (ResultItem) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            setPageComplete(item != null && !existingSymbols.contains(item.getSymbol()));
+            setPageComplete(item != null && (item.getSymbol() == null || item.getSymbol().isEmpty()
+                            || !existingSymbols.contains(item.getSymbol())));
         });
 
         setControl(container);
