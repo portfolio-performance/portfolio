@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +32,17 @@ import name.abuchen.portfolio.model.TypedMap;
         private List<Block> blocks = new ArrayList<>();
         private DocumentContext context = new DocumentContext();
         private BiConsumer<DocumentContext, String[]> contextProvider;
+        private Consumer<Transaction<DocumentContext>> contextBuilder;
 
         public DocumentType(String mustInclude)
         {
             this.mustInclude.add(Pattern.compile(mustInclude));
+        }
+
+        public DocumentType(String mustInclude, Consumer<Transaction<DocumentContext>> contextBuilder)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
+            this.contextBuilder = contextBuilder;
         }
 
         public DocumentType(String mustInclude, String mustNotInclude)
@@ -102,7 +110,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
             // reset context and parse it from this file
             context.clear();
-            parseContext(context, lines);
+            parseContext(filename, context, lines);
 
             for (Block block : blocks)
                 block.parse(filename, context, items, lines);
@@ -116,13 +124,21 @@ import name.abuchen.portfolio.model.TypedMap;
          * @param lines
          *            content lines of the file
          */
-        private void parseContext(DocumentContext context, String[] lines)
+        private void parseContext(String filename, DocumentContext context, String[] lines)
         {
             // if a context provider is given call it, else parse the current
             // context in a subclass
             if (contextProvider != null)
             {
                 contextProvider.accept(context, lines);
+            }
+
+            if (contextBuilder != null)
+            {
+                var builder = new Transaction<DocumentContext>() //
+                                .subject(() -> context).wrap(ctx -> null);
+                contextBuilder.accept(builder);
+                builder.parse(filename, context, Collections.emptyList(), lines, 0, lines.length - 1);
             }
         }
     }
