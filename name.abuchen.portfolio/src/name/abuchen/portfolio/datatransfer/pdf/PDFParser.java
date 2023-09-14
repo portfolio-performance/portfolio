@@ -598,7 +598,7 @@ import name.abuchen.portfolio.model.TypedMap;
             }
 
             if (patternNo < pattern.size() && !sectionFoundAtLeastOnce && !isOptional)
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
+                throw new IllegalArgumentException(Arrays.toString(attributes) + MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
                                 patternNo, pattern.size(), pattern.toString(), filename, lineNo + 1, lineNoEnd + 1));
         }
 

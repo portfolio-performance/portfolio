@@ -1,9 +1,9 @@
-﻿PDF Author 'HAVI Solutions GmbH & Co. KG, phg' 
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
 -----------------------------------------
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
+           
 25449 Quickborn
-
                                                                                                     
                                                   
                                                                       
@@ -12,40 +12,49 @@
                    
                         
        
-                       
-Depotnr.    XXXXXXXXXXX 
-XXXXX XXX BLZ        200 411 11      
-Herrn                              
-                             
-Steffen XXXXXXXX
-                             
-                             
+11857 010 Depo tnummer:    1111111 11     
+Herrn                                                           
+kWnfwq xzQZ                                               
                                    
-XXXXXX 3                                                           
                              
-88XXX XXXXXX
-19.10.2017
+Musterstr. 26                                                        
+                             
+93219 whGYMuICMp                                                
+17.08.2006
 G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
-Dividendengutschrift                                                               
-Depotbestand                          Wertpapier-Bezeichnung               WKNISIN
-p e r   2 7.  09 .  20 1 7                         P  r os p e c t  C  ap i t a l   C o r p.                  A 0  B7  4 6
- ST K              1  7 5 ,0  00                 Re g i s t e r e d  S h a r e s  D  L -  , 00 1        U  S 74  3 48  T 1 02 5 
-                                      Emissionsland VEREINIGTE STAATEN            
-USD 0,06       Dividende pro Stück für Geschäftsjahr        01.01.17 bis 31.12.17  
-zahlbar ab 19.10.2017                 monatl. Dividende                            
-                         Abrechnung Dividendengutschrift                           
-Bruttobetrag                     USD              10,50                           
-15,000 % Quellensteuer            USD               1,58 -                         
-Ausmachender Betrag               USD               8,92                           
-    zum Devisenkurs EURUSD      1,185400                 EUR               7,52  
-Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
-DE09 2004 1111 XXXX XXXX XX   EUR       23.10.2017         EUR               7,52  
-Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
-Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
-(Referenz-Nr. 1HIC9YINXXXXXXXX).                                                   
+Ertragsgutschrift bei Freistellungsauftrag                                         
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+ pe r   3 1. 0  7.  20 0  6                         F i de l  it y   Fd  s-  Te l e c  o mm u  ni  c.   Fd .           92  1 8 01 
+ S T K             1  51 , 0 0 0                 Re g  .S h  ar e s   A  (G  l o b . Ce  r t.  )  o . N.    L U  0 0 9 9 5 7 5 2 9 1
+                                      Emissionsland: LUXEMBURG                     
+EUR 0,02       Ausschüttung pro Stück für Geschäftsjahr     01.05.05 bis 30.04.06  
+zahlbar ab 15.08.2006                                                              
+    EUR         0,0003694   Zinsabschlagpflichtiger Anteil                         
+                         Ermittlung der Steuerbasisbeträge                         
+Bruttobetrag:                                              EUR               3,02  
+zinsabschlagpflichtiger Anteil / Gesamtbetrag              EUR               0,06  
+Zwischensumme zur Disposition des Freistellungsbetrags     EUR               0,06  
+- berücksichtigter Freibetrag                              EUR               0,06 -
+zinsabschlagpflichtig                                      EUR               0,00  
+                                        gesamt         vergütet      bescheinigt   
+Zinsabschlag        30,000 % EUR             0,02             0,02             0,00
+Solidaritätszuschlag         EUR             0,00             0,00             0,00
+                         Abrechnung Ertragsgutschrift                              
+Bruttobetrag:                                              EUR               3,02  
+Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+6577381 16     EUR                      15.08.2006         EUR               3,02  
+anrechenbare Quellensteuer Privatvermögen/Betriebsvermögen EUR               1,94  
+Wegen der Besteuerung im Einzelfall verweisen wir auf den Rechenschaftsbericht     
+der Gesellschaft bzw. auf eine evtl. Veröffentlichung des Bundesfinanzministeriums.
+Aufgrund des Freistellungsauftrages werden Kapitalerträge - bis zur Höhe des       
+beantragten Freibetrages - vom KEST-Abzug freigestellt.                            
 comdirect bank                                                                     
 Aktiengesellschaft                                                                 
                                                                                    
-Diese Abrechnung wird von der Bank nicht unterschrieben                           
-DD7621109
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+                                                                                   
+                             Keine Steuerbescheinigung                             
+Kapitalerträge sind einkommensteuerpflichtig
+D762S0/11/2001
 
+```

@@ -9,6 +9,7 @@ import com.google.protobuf.NullValue;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.model.proto.v1.PKeyValue;
 import name.abuchen.portfolio.model.proto.v1.PMap;
+import name.abuchen.portfolio.money.Money;
 
 public class TypedMap extends HashMap<String, Object>
 {
@@ -41,6 +42,8 @@ public class TypedMap extends HashMap<String, Object>
         if (value instanceof Boolean)
             return;
         if (value instanceof String)
+            return;
+        if (value instanceof Money)
             return;
 
         throw new IllegalArgumentException(value.getClass().getName());
