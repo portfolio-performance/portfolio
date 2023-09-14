@@ -663,12 +663,13 @@ public class WirBankPDFExtractorTest
                         hasDate("2023-08-31T00:00"), hasShares(0.025), //
                         hasSource("Kauf08.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 21.67), hasGrossValue("CHF", 21.67), hasForexGrossValue("EUR", 22.53), //
+                        hasAmount("CHF", 21.67), hasGrossValue("CHF", 21.67), //
+                        hasForexGrossValue("EUR", 22.53), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
-    public void testWertpapierKauf27WithSecurityInCHF()
+    public void testWertpapierKauf08WithSecurityInCHF()
     {
         Security security = new Security("CSIF Europe ex CH", "CHF");
         security.setIsin("CH0037606552");
@@ -701,6 +702,37 @@ public class WirBankPDFExtractorTest
                             Status s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testWertpapierKauf09()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0031419960"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIMF Money Market CHF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-06T00:00"), hasShares(0.001), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 0.44), hasGrossValue("CHF",0.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test

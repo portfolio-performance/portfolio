@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+www.viac.ch
+Vertrag 3.172.491.798
+Portfolio 3.172.491.798.01
+Herr
+Vorname Nachname
+Strasse 1
+PLZ Ort
+Basel, 06.09.2023
+Börsenabrechnung - Kauf CSIMF Money Market CHF
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Kauf
+0.001 Anteile CSIMF Money Market CHF
+ISIN: CH0031419960
+Kurs: CHF 847.52
+Betrag CHF 0.44
+Verrechneter Betrag: Valuta 06.09.2023 CHF 0.44
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
