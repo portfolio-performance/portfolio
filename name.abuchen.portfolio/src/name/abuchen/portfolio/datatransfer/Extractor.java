@@ -52,11 +52,7 @@ public interface Extractor
 
     public abstract static class Item
     {
-        /**
-         * Store arbitrary data with the extracted item. Currently to pass the
-         * JSON structure of the transaction to the test cases
-         */
-        private Object data;
+        private Map<String, Object> data = new HashMap<>();
 
         private Account accountPrimary;
 
@@ -114,14 +110,14 @@ public interface Extractor
 
         public abstract Status apply(ImportAction action, Context context);
 
-        public Object getData()
+        public Object getData(String key)
         {
-            return data;
+            return this.data.get(key);
         }
 
-        public void setData(Object data)
+        public void setData(String key, Object value)
         {
-            this.data = data;
+            this.data.put(key, value);
         }
 
         public Account getAccountPrimary()

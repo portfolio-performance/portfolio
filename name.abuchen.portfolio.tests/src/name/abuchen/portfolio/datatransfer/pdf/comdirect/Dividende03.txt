@@ -1,7 +1,8 @@
-PDF author: 'HAVI Solutions GmbH & Co. KG, phg' 
-PDFBox Version: 1.8.13
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
 -----------------------------------------
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+           
 25449 Quickborn
                                                                                                     
                                                   
@@ -12,39 +13,43 @@ PDFBox Version: 1.8.13
                         
        
                        
-Depotnr.:    111111111 
-33333 333 BLZ:        222 222 22      
+Depotnr.:    682580015 
+     39687 010 BLZ:        200 411 11 
 Herrn                              
                              
-Max Mustermann             
+jtnMPK tSFj                  
                              
                              
                                    
-Musterstr. 123                                                        
+Musterstr. 93                                                        
                              
-66666 Musterstadt                                               
-03.11.2017
+53628 lhSOFhnQqd                                                
+26.04.2013
 G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
 Dividendengutschrift                                                               
 Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
-p e r   2 0.  10 .  20 1 7                         C V  S  He a  lt h  C  or  p .                        8 5 90  3 4
-S T  K               32 ,  00 0                R  e gi s t  er e  d S  h a r e s  DL  -,  0 1         U  S1 2  6 6 50 1 0 0 6 
-                                      Emissionsland: VEREINIGTE STAATEN            
-USD 0,50       Dividende pro Stück für Geschäftsjahr        01.01.17 bis 31.12.17  
-zahlbar ab 03.11.2017                 Quartalsdividende                            
+ pe  r 2 4  .1  2.  20  12                         S  am  su n  g  El e  ct r  on i  c s  Co .   Lt  d.             88  18  2 3
+ ST  K               4  , 0 0 0                R. S h  s ( N V ) Pf  d(  GD  R 14  4 A) 1  / 2 S W5  0 0 0   U  S7  9 6 0 5 02 0 1  8
+                                      Emissionsland: REPUBLIK KOREA                
+USD 3,33923    Dividende pro Stück für Geschäftsjahr        01.01.12 bis 31.12.12  
+zahlbar ab 22.04.2013                 Zwischendividende                            
                          Abrechnung Dividendengutschrift                           
-Bruttobetrag:                     USD              16,00                           
-15,000 % Quellensteuer            USD               2,40 -                         
-Ausmachender Betrag               USD              13,60                           
-    zum Devisenkurs: EUR/USD      1,167800                 EUR              11,65  
-Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
-DE33 3333 3333 3333 3333 33   EUR       07.11.2017         EUR              11,65  
+Bruttobetrag:                     USD              13,36                           
+22,000 % Quellensteuer            USD               2,94 -                         
+fremde Spesen                     USD               0,08 -                         
+Ausmachender Betrag               USD              10,34                           
+    zum Devisenkurs: EUR/USD      1,306600                 EUR               7,91  
+Verrechnung über Konto    BLZ           Valuta       Zu Ihren Gunsten vor Steuern  
+221141047  EUR            11242936      24.04.2013         EUR               7,91  
+Auf Antrag kann Quellensteuer in Höhe von maximal USD               0,94           
+erstattet werden.                                                                  
 Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
 Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
-(Referenz-Nr. 1BICAY8QGZE0000U).                                                   
+(Referenz-Nr. 0SI6UK467PE001G6).                                                   
 comdirect bank                                                                     
 Aktiengesellschaft                                                                 
                                                                                    
 *Diese Abrechnung wird von der Bank nicht unterschrieben                           
 DD762/11/09
 
+```
