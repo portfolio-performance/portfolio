@@ -387,6 +387,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "sign", "amount", "note1") //
+                        .documentContext("currency", "year")
                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                         + "(SEPA )?" //
                                         + "(?<note>(Dauerauftrag" //
@@ -399,7 +400,6 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         + "(?<sign>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
                         .match("^(?<note1>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
                             // Is sign --> "-" change from DEPOSIT to REMOVAL
                             if ("-".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
@@ -414,8 +414,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             if (v.get("note").startsWith("Verwendungszweck"))
                                 v.put("note", "");
 
-                            t.setDateTime(asDate(v.get("date") + context.get("year")));
-                            t.setCurrencyCode(context.get("currency"));
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
 
@@ -447,7 +447,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                            if (Boolean.valueOf(type.getCurrentContext().getBoolean("skipTransaction")))
+                            if (type.getCurrentContext().getBoolean("skipTransaction"))
                                 return null;
 
                             // If we have multiple entries in the document,

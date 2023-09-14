@@ -105,7 +105,7 @@ import name.abuchen.portfolio.model.TypedMap;
             parseContext(context, lines);
 
             for (Block block : blocks)
-                block.parse(filename, items, lines);
+                block.parse(filename, context, items, lines);
         }
 
         /**
@@ -160,7 +160,7 @@ import name.abuchen.portfolio.model.TypedMap;
             this.transaction = transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines)
+        public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines)
         {
             List<Integer> blocks = new ArrayList<>();
 
@@ -193,7 +193,7 @@ import name.abuchen.portfolio.model.TypedMap;
                     endLine = Math.min(endLine, startLine + maxSize - 1);
                 }
 
-                transaction.parse(filename, items, lines, startLine, endLine);
+                transaction.parse(filename, documentContext, items, lines, startLine, endLine);
             }
         }
 
@@ -268,7 +268,8 @@ import name.abuchen.portfolio.model.TypedMap;
             sections.add(new Section<T>(this, null)
             {
                 @Override
-                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, TypedMap ctx, T target)
+                public void parse(String filename, DocumentContext documentContext, String[] lines, int lineNo,
+                                int lineNoEnd, TypedMap ctx, T target)
                 {
                     List<String> errors = new ArrayList<>();
 
@@ -276,7 +277,7 @@ import name.abuchen.portfolio.model.TypedMap;
                     {
                         try
                         {
-                            section.parse(filename, lines, lineNo, lineNoEnd, ctx, target);
+                            section.parse(filename, documentContext, lines, lineNo, lineNoEnd, ctx, target);
 
                             // if parsing was successful, then return
                             return;
@@ -315,14 +316,15 @@ import name.abuchen.portfolio.model.TypedMap;
             return this;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
+        public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines,
+                        int lineNoStart, int lineNoEnd)
         {
             TypedMap txContext = new TypedMap();
 
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(filename, lines, lineNoStart, lineNoEnd, txContext, target);
+                section.parse(filename, documentContext, lines, lineNoStart, lineNoEnd, txContext, target);
 
             for (Consumer<T> conclude : concludes)
                 conclude.accept(target);
@@ -457,7 +459,11 @@ import name.abuchen.portfolio.model.TypedMap;
         private boolean isOptional = false;
         private boolean isMultipleTimes = false;
         private Transaction<T> transaction;
+        /** attributes extracted from regular pattern */
         private String[] attributes;
+        /** attributes mixed in from the document context */
+        private String[] documentAttributes;
+
         private List<Pattern> pattern = new ArrayList<>();
         private BiConsumer<T, ParsedData> assignment;
 
@@ -470,6 +476,12 @@ import name.abuchen.portfolio.model.TypedMap;
         public Section<T> attributes(String... attributes)
         {
             this.attributes = attributes;
+            return this;
+        }
+
+        public Section<T> documentContext(String... documentAttributes)
+        {
+            this.documentAttributes = documentAttributes;
             return this;
         }
 
@@ -503,7 +515,8 @@ import name.abuchen.portfolio.model.TypedMap;
             return transaction;
         }
 
-        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, TypedMap txContext, T target)
+        public void parse(String filename, DocumentContext documentContext, String[] lines, int lineNo, int lineNoEnd,
+                        TypedMap txContext, T target)
         {
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
@@ -532,6 +545,22 @@ import name.abuchen.portfolio.model.TypedMap;
                             throw new IllegalArgumentException(MessageFormat.format(
                                             Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
                                             Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
+
+                        // enrich extracted values with context values
+                        if (documentAttributes != null)
+                        {
+                            for (String attribute : documentAttributes)
+                            {
+                                if (!documentContext.containsKey(attribute))
+                                {
+                                    throw new IllegalArgumentException(MessageFormat.format(
+                                                    Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
+                                                    attribute, filename, lineNo + 1, lineNoEnd + 1));
+                                }
+
+                                values.put(attribute, documentContext.get(attribute));
+                            }
+                        }
 
                         assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
 
