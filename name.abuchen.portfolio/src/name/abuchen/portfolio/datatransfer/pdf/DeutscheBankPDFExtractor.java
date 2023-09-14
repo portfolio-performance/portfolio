@@ -419,22 +419,25 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
 
-                        // @formatter:off
-                        // If we have fees, then we skip the transaction
-                        //
-                        // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
-                        // Saldo der Abschlussposten
-                        // @formatter:on
-                            if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                type.getCurrentContext().putBoolean("skipTransaction", true);
-
-                        // @formatter:off
-                        // If we have security transaction, then we skip the transaction
-                        //
-                        // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
-                        // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
-                        // @formatter:on
-                            if (v.get("note1").contains("WERTPAPIER"))
+                            // @formatter:off
+                            // If we have fees, then we skip the transaction
+                            //
+                            // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+                            // Saldo der Abschlussposten
+                            // @formatter:on
+                                if ("Saldo der Abschlussposten".equals(v.get("note1")))
+                                    type.getCurrentContext().putBoolean("skipTransaction", true);
+    
+                            // @formatter:off
+                            // If we have security transaction, then we skip the transaction
+                            //
+                            // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
+                            // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
+                            //
+                            // 16.08. 16.08. Verwendungszweck/ Kundenreferenz + 33,23
+                            // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
+                            // @formatter:on
+                            if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:"))
                                 type.getCurrentContext().putBoolean("skipTransaction", true);
                         })
 
@@ -444,15 +447,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
+                            if (Boolean.valueOf(type.getCurrentContext().getBoolean("skipTransaction")))
+                                return null;
+
                             // If we have multiple entries in the document,
                             // then the "skipTransaction" flag must be removed.
-                            boolean skipTransaction = type.getCurrentContext().getBoolean("skipTransaction");
                             type.getCurrentContext().remove("skipTransaction");
 
-                            if (!skipTransaction)
-                                return item;
-
-                            return null;
+                            return item;
                         }));
 
         // @formatter:off
