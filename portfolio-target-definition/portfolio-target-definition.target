@@ -47,12 +47,12 @@
 		<unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.14.0.202301260747"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.28/R-4.28-202306050440/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.28.0.v20230525-0648"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.28.0.v20230525-0648"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.2100.v20230415-0944"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2100.v20230415-0944"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.28.0.v20230605-0440"/>
+		<repository location="https://download.eclipse.org/eclipse/updates/4.29/R-4.29-202309031000/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.29.0.v20230825-1346"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.29.0.v20230825-1346"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.2200.v20230717-2134"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2200.v20230717-2134"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.29.0.v20230903-1000"/>
 	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
 		<dependencies>
