@@ -156,7 +156,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     {
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        boldFont = resources.createFont(FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD));
+        boldFont = resources.create(FontDescriptor.createFrom(parent.getFont()).setStyle(SWT.BOLD));
 
         scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
         setControl(scrolledComposite);

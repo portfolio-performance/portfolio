@@ -238,7 +238,7 @@ public class PerformanceView extends AbstractHistoricView
         stylingEngine.style(calculation.getTree());
 
         final Font boldFont = JFaceResources.getResources()
-                        .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
+                        .create(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
