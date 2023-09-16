@@ -438,9 +438,11 @@ public class AllTransactionsView extends AbstractFinanceView
                 if (clientFilter == null)
                     return true;
                 TransactionPair<?> tx = (TransactionPair<?>) element;
+                // check owner and cross owner
                 return clientFilter.hasElement(tx.getOwner())
-                                || (tx.getTransaction().getCrossEntry() != null && clientFilter.hasElement(
-                                                tx.getTransaction().getCrossEntry().getOwner(tx.getTransaction())));
+                                || (tx.getTransaction().getCrossEntry() != null && clientFilter.hasElement(tx
+                                                .getTransaction().getCrossEntry() //
+                                                .getCrossOwner(tx.getTransaction())));
             }
         });
 
