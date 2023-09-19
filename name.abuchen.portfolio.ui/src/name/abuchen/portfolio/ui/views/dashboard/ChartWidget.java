@@ -67,7 +67,7 @@ public class ChartWidget extends WidgetDelegate<Object>
             configSet = delegate.getClient().getSettings().getConfigurationSet(configName);
             String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CONFIG_UUID.name());
             config = configSet.lookup(uuid).orElseGet(() -> configSet.getConfigurations().findFirst()
-                            .orElseGet(() -> new ConfigurationSet.Configuration(Messages.LabelNoName, null)));
+                            .orElseGet(() -> new ConfigurationSet.Configuration(Messages.LabelNoName, ""))); //$NON-NLS-1$
 
             addConfig(new ChartShowYAxisConfig(delegate, false));
         }
