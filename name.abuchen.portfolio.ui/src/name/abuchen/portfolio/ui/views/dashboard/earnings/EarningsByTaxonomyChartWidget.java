@@ -90,7 +90,8 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
 
             Label label = new Label(data, SWT.NONE);
             label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-            label.setText(get(TaxonomyConfig.class).getTaxonomy().getName());
+            var taxonomy = get(TaxonomyConfig.class).getTaxonomy();
+            label.setText(taxonomy != null ? taxonomy.getName() : ""); //$NON-NLS-1$
 
             @SuppressWarnings("unchecked")
             List<Item> skipped = (List<Item>) getChart().getData();
@@ -184,6 +185,8 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
     protected void createCircularSeries(Map<InvestmentVehicle, Item> vehicle2money)
     {
         Taxonomy taxonomy = get(TaxonomyConfig.class).getTaxonomy();
+        if (taxonomy == null)
+            return;
 
         // pie charts cannot have negative pie slides --> remember the removed
         // items in order to display them in the tool tip
