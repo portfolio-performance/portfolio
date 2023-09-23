@@ -77,21 +77,22 @@ public class ChartToolsManager
         }
     }
 
-    record Spot(int time, LocalDate date, double xCoordinate, double value)
+    record Spot(int time, LocalDate date, double xCoordinate, double valueYLeftAxis, double valueYRightAxis)
     {
         public static Spot from(Event e, TimelineChart chart)
         {
             double xCoordinate = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
             LocalDate date = Instant.ofEpochMilli((long) xCoordinate).atZone(ZoneId.systemDefault()).toLocalDate();
-            double value = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
+            double valueYLeftAxis = chart.getAxisSet().getYAxis(2).getDataCoordinate(e.y);
+            double valueYRightAxis = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
 
-            return new Spot(e.time, date, xCoordinate, value);
+            return new Spot(e.time, date, xCoordinate, valueYLeftAxis, valueYRightAxis);
         }
 
         public Point toPoint(TimelineChart chart)
         {
             return new Point(chart.getAxisSet().getXAxis(0).getPixelCoordinate(xCoordinate),
-                            chart.getAxisSet().getYAxis(0).getPixelCoordinate(value));
+                            chart.getAxisSet().getYAxis(0).getPixelCoordinate(valueYRightAxis));
         }
     }
 
