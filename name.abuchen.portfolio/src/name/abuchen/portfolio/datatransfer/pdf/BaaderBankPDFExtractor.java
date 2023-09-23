@@ -1,13 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -560,16 +556,19 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[\\w]{3})(\\-Konto| Account)");
+        final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug" //
+                        + "|Tageskontoauszug" //
+                        + "|Periodic Account Statement)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Perioden-Kontoauszug: EUR-Konto KOPIE
+                                        // Tageskontoauszug: EUR-Konto
+                                        // Periodic Account Statement: EUR Account
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(Perioden\\-Kontoauszug|Tageskontoauszug|Periodic Account Statement): (?<currency>[\\w]{3})(\\-Konto| Account).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -580,23 +579,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 2022-02-02 Credit SEPA 2022-02-02 1,000.00
@@ -606,23 +605,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositEnglishBlock);
         depositEnglishBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>(Credit SEPA|Direct Debit)) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>(Credit SEPA|Direct Debit)) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
@@ -632,23 +631,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 06.07.2018 Transaktionskostenpauschale o. MwSt. 10.07.2018 2,56 -
@@ -657,23 +656,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.FEES);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Transaktionskostenpauschale o\\. MwSt\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Transaktionskostenpauschale o\\. MwSt\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 2022-05-03 Ordergebühr 2022-05-03 0.99 -
@@ -682,23 +681,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesEnglishBlock);
         feesEnglishBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.FEES);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<note>Ordergeb.hr) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
     }
 
     private void addFeesAssetManagerTransaction()

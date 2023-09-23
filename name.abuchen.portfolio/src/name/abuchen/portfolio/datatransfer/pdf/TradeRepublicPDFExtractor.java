@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -1000,16 +999,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>[\\w]{3})");
+        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>[\\w]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Block depositBlock = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (Accepted PayIn|Einzahlung akzeptiert).*$");
@@ -1022,12 +1020,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount")
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\.,\\d]+)")
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (Accepted PayIn|Einzahlung akzeptiert):.* (to|auf).* (?<amount>[\\.,\\d]+)") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1042,12 +1041,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount")
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)")
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));

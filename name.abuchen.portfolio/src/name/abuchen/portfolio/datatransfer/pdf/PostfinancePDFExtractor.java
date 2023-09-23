@@ -1,14 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -22,19 +18,22 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Postfinance offers three accounts with different currencies (CHF, EUR, USD).
+ *           There are two possibilities to buy shares of foreign currencies:
+ *
+ *           - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
+ *           - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken)
+ *
+ * @implSpec User manual:
+ *           https://isotest.postfinance.ch/corporates/help/PostFinance_Testplattform_BenHB.pdf
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class PostfinancePDFExtractor extends AbstractPDFExtractor
 {
-    /***
-     * Postfinance offers three accounts with different currencies (CHF,
-     * EUR, USD) There are two possibilities to buy shares of foreign
-     * currencies:
-     * - Transfer money from CHF account to EUR/USD account and buy it in foreign currency
-     * - Buy EUR/USD shares from CHF account directly (actual exchange rate will be taken)
-     *
-     * User manual:
-     * https://isotest.postfinance.ch/corporates/help/PostFinance_Testplattform_BenHB.pdf
-     */
     public PostfinancePDFExtractor(Client client)
     {
         super(client);
@@ -436,79 +435,82 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addInterestTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
-            Pattern pYear = Pattern.compile("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*$");
+        final DocumentType type = new DocumentType("Zinsabschluss", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // IBAN CH64 0900 0000 1111 2222 1 CHF
+                                        // Kontonummer 11-22222-0 CHF
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                                        // @formatter:off
+                                        // 31.12.2019 Kontostand nach Zinsabschluss 10 004.59
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) Kontostand nach Zinsabschluss .*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
-                m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.INTEREST);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) (\\-|\\–) ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{6}) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                .oneOf(
-                            section -> section
-                                    .attributes("note", "date", "amount")
-                                    .match("^(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) "
-                                                    + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) "
-                                                    + "[\\.,'\\d\\s]+(%| %) "
-                                                    + "(?<amount>[\\.,'\\d\\s]+)"
-                                                    + ".*$")
-                                    .assign((t, v) -> {
-                                        Map<String, String> context = type.getCurrentContext();
+        pdfTransaction //
 
-                                        t.setDateTime(asDate(v.get("date")));
-                                        t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                        t.setNote(v.get("note"));
-                                    }),
-                            section -> section
-                                    .attributes("date1", "date2", "amount")
-                                    .match("^(?<date1>[\\d]{6}) (\\-|\\–) "
-                                                    + "(?<date2>[\\d]{6}) [\\.,'\\d\\s]+(%| %) "
-                                                    + "(?<amount>[\\.,'\\d\\s]+).*$")
-                                    .assign((t, v) -> {
-                                        Map<String, String> context = type.getCurrentContext();
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
 
-                                        // Split date1 and date2
-                                        // 010117 - 311217 4.00 % 400.00
-                                        String day1 = v.get("date1").substring(0, 2);
-                                        String month1 = v.get("date1").substring(2, 4);
-                                        String date1 = day1 + "." + month1 + "." + context.get("year");
-                                        String day2 = v.get("date2").substring(0, 2);
-                                        String month2 = v.get("date2").substring(2, 4);
-                                        String date2 = day2 + "." + month2 + "." + context.get("year");
+                        .oneOf( //
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency", "year") //
+                                                        .match("^(?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
+                                                                        + "[\\.,'\\d\\s]+(%| %) " //
+                                                                        + "(?<amount>[\\.,'\\d\\s]+)" //
+                                                                        + ".*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        section -> section //
+                                                        .attributes("date1", "date2", "amount") //
+                                                        .documentContext("currency", "year") //
+                                                        .match("^(?<date1>[\\d]{6}) (\\-|\\–) " //
+                                                                        + "(?<date2>[\\d]{6}) [\\.,'\\d\\s]+(%| %) " //
+                                                                        + "(?<amount>[\\.,'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            // Split date1 and date2
+                                                            // 010117 - 311217 4.00 % 400.00
+                                                            String day1 = v.get("date1").substring(0, 2);
+                                                            String month1 = v.get("date1").substring(2, 4);
+                                                            String date1 = day1 + "." + month1 + "." + v.get("year");
 
-                                        t.setDateTime(asDate(date2));
-                                        t.setAmount(asAmount(v.get("amount")));
-                                        t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                        t.setNote(date1 + " - " + date2);
-                                    }))
+                                                            String day2 = v.get("date2").substring(0, 2);
+                                                            String month2 = v.get("date2").substring(2, 4);
+                                                            String date2 = day2 + "." + month2 + "." + v.get("year");
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                                                            t.setDateTime(asDate(date2));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(date1 + " - " + date2);
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private void addFeesTransaction()
@@ -556,465 +558,448 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsabschluss", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$");
-            Pattern pNote = Pattern.compile("^Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$");
+        final DocumentType type = new DocumentType("Zinsabschluss", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // IBAN CH64 0900 0000 1111 2222 1 CHF
+                                        // Kontonummer 11-22222-0 CHF
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(Kontonummer|IBAN) .* (?<currency>[A-Z]{3}).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                                        // @formatter:off
+                                        // Zinsabschluss 01.01.2019 - 31.12.2019 Datum: 01.01.2020
+                                        // @formatter:on
+                                        .section("note") //
+                                        .match("^Zinsabschluss (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                        .assign((ctx, v) -> ctx.put("note", v.get("note"))));
 
-                m = pNote.matcher(line);
-                if (m.matches())
-                    context.put("note", m.group("note"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAXES);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) [\\.,'\\d\\s]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // @formatter:off
-                // Verrechnungssteuer 35.00% 40.83
-                // 31.12.2019 Kontostand nach Zinsabschluss 10 075.83
-                // @formatter:on
-                .section("amount", "date")
-                .match("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+).*$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontostand nach Zinsabschluss .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+        pdfTransaction //
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote("Verrechnungssteuer " + context.get("note"));
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                        // @formatter:off
+                        // Verrechnungssteuer 35.00% 40.83
+                        // 31.12.2019 Kontostand nach Zinsabschluss 10 075.83
+                        // @formatter:on
+                        .section("amount", "date") //
+                        .documentContext("currency", "note") //
+                        .match("^(?i:Verrechnungssteuer) [\\.,'\\d\\s]+(%| %) (?<amount>[\\.,'\\d\\s]+).*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontostand nach Zinsabschluss .*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote("Verrechnungssteuer " + v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^(Kontonummer|IBAN){1} (.*) (?<currency>[A-Z]{3}).*$");
-            Pattern pYear = Pattern.compile("^Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*$");
+        final DocumentType type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // IBAN CH64 0900 0000 1111 2222 1 CHF
+                                        // Kontonummer 11-22222-0 CHF
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(Kontonummer|IBAN) (.*) (?<currency>[A-Z]{3}).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group("currency"));
-                    break;
-                }
+                                        // @formatter:off
+                                        // Kontoauszug 01.04.2018 - 30.04.2018 Datum: 01.05.2018
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Kontoauszug [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) .*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
-                m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
-            }
-
-        });
         this.addDocumentTyp(type);
 
         Block removalBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.REMOVAL);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
 
-                .section("note", "amount", "date").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "(?<note>.BERTRAG) "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
-                .match("^AUF KONTO .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "amount", "date").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>.BERTRAG) " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .match("^AUF KONTO .*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            // Formatting some notes
+                            v.put("note", trim(v.get("note")));
 
-                    // Formatting some notes
-                    v.put("note", trim(v.get("note")));
+                            if ("ÜBERTRAG".equals(v.get("note")))
+                                v.put("note", "Übertrag auf Konto");
 
-                    if ("ÜBERTRAG".equals(v.get("note")))
-                        v.put("note", "Übertrag auf Konto");
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "amount", "date").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>(AUFTRAG .*LASTSCHRIFT" //
+                                        + "|LASTSCHRIFT" //
+                                        + "|ESR" //
+                                        + "|KAUF\\/DIENSTLEISTUNG(.*\\.[\\d]{4})?" //
+                                        + "|.BERTRAG (AUF|A UF) .*NTO" //
+                                        + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
+                                        + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
+                                        + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
+                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)" //
+                                        + "|E\\-FINANCE .*\\-[\\d]+" //
+                                        + "|AUFTRAG DEBIT DIRECT" //
+                                        + "|.BERWEISUNG AUF KONTO)) " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                .section("note", "amount", "date").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "(?<note>"
-                                + "(AUFTRAG .*LASTSCHRIFT"
-                                + "|LASTSCHRIFT"
-                                + "|ESR"
-                                + "|KAUF\\/DIENSTLEISTUNG(.*\\.[\\d]{4})?"
-                                + "|.BERTRAG (AUF|A UF) .*NTO"
-                                + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?"
-                                + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?"
-                                + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?"
-                                + "|TWINT .*(ENDEN|DIENSTLEISTUNG)"
-                                + "|E\\-FINANCE .*\\-[\\d]+"
-                                + "|AUFTRAG DEBIT DIRECT"
-                                + "|.BERWEISUNG AUF KONTO)"
-                                + ") "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                            // Formatting some notes
+                            v.put("note", trim(v.get("note")));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            if (v.get("note").contains("AUFTRAG") && v.get("note").contains("LASTSCHRIFT"))
+                            {
+                                String splitNote = v.get("note");
+                                String[] parts = splitNote.split("AUFTRAG");
+                                v.put("note", "Auftrag " + stripBlanks(parts[1]).replace("BASISLASTSCHRIFT",
+                                                "Basislastschrift"));
+                            }
 
-                    // Formatting some notes
-                    v.put("note", trim(v.get("note")));
+                            if ("LASTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "Lastschrift");
 
-                    if (v.get("note").contains("AUFTRAG") && v.get("note").contains("LASTSCHRIFT"))
-                    {
-                        String splitNote = v.get("note");
-                        String[] parts = splitNote.split("AUFTRAG");
-                        v.put("note", "Auftrag " + stripBlanks(parts[1]).replace("BASISLASTSCHRIFT", "Basislastschrift"));
-                    }
+                            if ("ÜBERWEISUNG AUF KONTO".equals(v.get("note")))
+                                v.put("note", "Überweisung");
 
-                    if ("LASTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "Lastschrift");
+                            if ("AUFTRAG DEBIT DIRECT".equals(v.get("note")))
+                                v.put("note", "Auftrag DEBIT DIRECT");
 
-                    if ("ÜBERWEISUNG AUF KONTO".equals(v.get("note")))
-                        v.put("note", "Überweisung");
+                            if ("ONLINE-SHOPPING".equals(v.get("note")))
+                                v.put("note", "Online-Shopping");
 
-                    if ("AUFTRAG DEBIT DIRECT".equals(v.get("note")))
-                        v.put("note", "Auftrag DEBIT DIRECT");
+                            if ("ESR".equals(v.get("note")))
+                                v.put("note", "Oranger Einzahlungsschein");
 
-                    if ("ONLINE-SHOPPING".equals(v.get("note")))
-                        v.put("note", "Online-Shopping");
+                            if (v.get("note").contains("ÜBERTRAG") && v.get("note").matches("^.*NTO$"))
+                                v.put("note", "Übertrag auf Konto");
 
-                    if ("ESR".equals(v.get("note")))
-                        v.put("note", "Oranger Einzahlungsschein");
+                            if (v.get("note").contains("GIRO"))
+                            {
+                                if (v.get("note").matches("^.* \\(SEPA\\)$"))
+                                    v.put("note", "Giro Internation (SEPA)");
+                                else if (v.get("note").matches("^.*OST$"))
+                                    v.put("note", "Giro Post");
+                                else if (v.get("note").matches("^.*ANK$"))
+                                    v.put("note", "Giro Bank");
+                                else
+                                    v.put("note", "");
+                            }
 
-                    if (v.get("note").contains("ÜBERTRAG") && v.get("note").matches("^.*NTO$"))
-                        v.put("note", "Übertrag auf Konto");
+                            if (v.get("note").contains("KAUF/ONLINE"))
+                            {
+                                if (v.get("note").matches("^.*\\.[\\d]{4}$"))
+                                {
+                                    String splitNote = v.get("note");
+                                    String[] parts = splitNote.split("OM");
+                                    v.put("note", "Kauf/Online Shopping vom " + stripBlanks(parts[1]));
+                                }
+                                else
+                                {
+                                    v.put("note", "Kauf/Online Shopping");
+                                }
+                            }
 
-                    if (v.get("note").contains("GIRO"))
-                    {
-                        if (v.get("note").matches("^.* \\(SEPA\\)$"))
-                            v.put("note", "Giro Internation (SEPA)");
-                        else if (v.get("note").matches("^.*OST$"))
-                            v.put("note", "Giro Post");
-                        else if (v.get("note").matches("^.*ANK$"))
-                            v.put("note", "Giro Bank");
-                        else
-                            v.put("note", "");
-                    }
+                            if (v.get("note").contains("BARGELDBEZUG"))
+                            {
+                                if (v.get("note").matches("^.*\\.[\\d]{4}$"))
+                                {
+                                    String splitNote = v.get("note");
+                                    String[] parts = splitNote.split("OM");
+                                    v.put("note", "Bargeldbezug vom " + stripBlanks(parts[1]));
+                                }
+                                else
+                                {
+                                    v.put("note", "Bargeldbezug");
+                                }
+                            }
 
-                    if (v.get("note").contains("KAUF/ONLINE"))
-                    {
-                        if (v.get("note").matches("^.*\\.[\\d]{4}$"))
-                        {
-                            String splitNote = v.get("note");
-                            String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Online Shopping vom " + stripBlanks(parts[1]));
-                        }
-                        else
-                        {
-                            v.put("note", "Kauf/Online Shopping");
-                        }
-                    }
+                            if (v.get("note").contains("TWINT"))
+                            {
+                                if (v.get("note").matches("^.*ENDEN$"))
+                                    v.put("note", "TWINT Geld senden");
+                                else
+                                    v.put("note", "TWINT Kauf/Dienstleistung");
+                            }
 
-                    if (v.get("note").contains("BARGELDBEZUG"))
-                    {
-                        if (v.get("note").matches("^.*\\.[\\d]{4}$"))
-                        {
-                            String splitNote = v.get("note");
-                            String[] parts = splitNote.split("OM");
-                            v.put("note", "Bargeldbezug vom " + stripBlanks(parts[1]));
-                        }
-                        else
-                        {
-                            v.put("note", "Bargeldbezug");
-                        }
-                    }
+                            if (v.get("note").contains("KAUF/DIENSTLEISTUNG"))
+                            {
+                                if (v.get("note").matches("^.*\\.[\\d]{4}$"))
+                                {
+                                    String splitNote = v.get("note");
+                                    String[] parts = splitNote.split("OM");
+                                    v.put("note", "Kauf/Dienstleistung vom " + stripBlanks(parts[1]));
+                                }
+                                else
+                                {
+                                    v.put("note", "Kauf/Dienstleistung");
+                                }
+                            }
 
-                    if (v.get("note").contains("TWINT"))
-                    {
-                        if (v.get("note").matches("^.*ENDEN$"))
-                            v.put("note", "TWINT Geld senden");
-                        else
-                            v.put("note", "TWINT Kauf/Dienstleistung");
-                    }
+                            t.setNote(v.get("note"));
+                        })
 
-                    if (v.get("note").contains("KAUF/DIENSTLEISTUNG"))
-                    {
-                        if (v.get("note").matches("^.*\\.[\\d]{4}$"))
-                        {
-                            String splitNote = v.get("note");
-                            String[] parts = splitNote.split("OM");
-                            v.put("note", "Kauf/Dienstleistung vom " + stripBlanks(parts[1]));
-                        }
-                        else
-                        {
-                            v.put("note", "Kauf/Dienstleistung");
-                        }
-                    }
-
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         Block depositBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .section("note", "amount", "date").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "(?<note>.BERTRAG) "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
-                .match("^AUS KONTO .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "amount", "date").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>.BERTRAG) " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .match("^AUS KONTO .*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            // Formatting some notes
+                            v.put("note", trim(v.get("note")));
 
-                    // Formatting some notes
-                    v.put("note", trim(v.get("note")));
+                            if ("ÜBERTRAG".equals(v.get("note")))
+                                v.put("note", "Übertrag aus Konto");
 
-                    if ("ÜBERTRAG".equals(v.get("note")))
-                        v.put("note", "Übertrag aus Konto");
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "amount", "date").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>(TWINT .*EMPFANGEN" //
+                                        + "|GIRO (AUSLAND|AUS ONLINE-SIC [\\-\\d]+|AUS KONTO)" //
+                                        + "|GUTSCHRIFT VON FREMDBANK [\\-\\d]+" //
+                                        + "|GUTSCHRIFT( .*(BANK|PING))?" //
+                                        + "|.* EINZAHLUNGSSCHEIN\\/QR\\-ZAHLTEIL" //
+                                        + "|.BERTRAG (AUS|A US) .*NTO)) " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                .section("note", "amount", "date").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "(?<note>"
-                                + "(TWINT .*EMPFANGEN"
-                                + "|GIRO (AUSLAND|AUS ONLINE-SIC [\\-\\d]+|AUS KONTO)"
-                                + "|GUTSCHRIFT VON FREMDBANK [\\-\\d]+"
-                                + "|GUTSCHRIFT( .*(BANK|PING))?"
-                                + "|.* EINZAHLUNGSSCHEIN\\/QR\\-ZAHLTEIL"
-                                + "|.BERTRAG (AUS|A US) .*NTO)"
-                                + ") "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                            // Formatting some notes
+                            v.put("note", trim(v.get("note")));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            if (v.get("note").contains("TWINT"))
+                                v.put("note", "TWINT Geld empfangen");
 
-                    // Formatting some notes
-                    v.put("note", trim(v.get("note")));
+                            if (v.get("note").contains("GIRO"))
+                            {
+                                if (v.get("note").matches("^.* AUSLAND$"))
+                                    v.put("note", "Giro Ausland");
+                                else if (v.get("note").matches("^.* AUS ONLINE-SIC .*$"))
+                                    v.put("note", "Giro aus Online-SIC");
+                                else if (v.get("note").matches("^.* AUS KONTO$"))
+                                    v.put("note", "Giro aus Konto");
+                                else
+                                    v.put("note", "");
+                            }
 
-                    if (v.get("note").contains("TWINT"))
-                        v.put("note", "TWINT Geld empfangen");
+                            if (v.get("note").contains("GUTSCHRIFT"))
+                            {
+                                if (v.get("note").matches("^.*BANK( [\\-\\d]+)?$"))
+                                    v.put("note", "Gutschrift von Fremdbank");
+                                else if (v.get("note").matches("^.*PING$"))
+                                    v.put("note", "Gutschrift Online Shopping");
+                                else
+                                    v.put("note", "Gutschrift");
+                            }
 
-                    if (v.get("note").contains("GIRO"))
-                    {
-                        if (v.get("note").matches("^.* AUSLAND$"))
-                            v.put("note", "Giro Ausland");
-                        else if (v.get("note").matches("^.* AUS ONLINE-SIC .*$"))
-                            v.put("note", "Giro aus Online-SIC");
-                        else if (v.get("note").matches("^.* AUS KONTO$"))
-                            v.put("note", "Giro aus Konto");
-                        else
-                            v.put("note", "");
-                    }
+                            if (v.get("note").contains("EINZAHLUNGSSCHEIN"))
+                                v.put("note", "Einzahlschein/QR-Zahlteil");
 
-                    if (v.get("note").contains("GUTSCHRIFT"))
-                    {
-                        if (v.get("note").matches("^.*BANK( [\\-\\d]+)?$"))
-                            v.put("note", "Gutschrift von Fremdbank");
-                        else if (v.get("note").matches("^.*PING$"))
-                            v.put("note", "Gutschrift Online Shopping");
-                        else
-                            v.put("note", "Gutschrift");
-                    }
+                            if (v.get("note").contains("ÜBERTRAG") && v.get("note").matches("^.*NTO$"))
+                                v.put("note", "Übertrag aus Konto");
 
-                    if (v.get("note").contains("EINZAHLUNGSSCHEIN"))
-                        v.put("note", "Einzahlschein/QR-Zahlteil");
+                            t.setNote(v.get("note"));
+                        })
 
-                    if (v.get("note").contains("ÜBERTRAG") && v.get("note").matches("^.*NTO$"))
-                        v.put("note", "Übertrag aus Konto");
-
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         Block feesBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.FEES);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                .section("note", "amount", "date").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "(?<note>"
-                                + "(PREIS F.*"
-                                + "|F.R DIE KONTOF.HRUNG"
-                                + "|F.R GIRO INTERNATIONAL \\(SEPA\\)"
-                                + "|GUTHABENGEB.HR F.R [\\d]{2}\\.[\\d]{4}"
-                                + "|JAHRESPREIS LOGIN"
-                                + "|.* KONTOAUSZUG PAPIER)"
-                                + ")([\\s]+)? "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "amount", "date").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>(PREIS F.*" //
+                                        + "|F.R DIE KONTOF.HRUNG" //
+                                        + "|F.R GIRO INTERNATIONAL \\(SEPA\\)" //
+                                        + "|GUTHABENGEB.HR F.R [\\d]{2}\\.[\\d]{4}" //
+                                        + "|JAHRESPREIS LOGIN" //
+                                        + "|.* KONTOAUSZUG PAPIER))" //
+                                        + "([\\s]+)? " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            // Formatting some notes
+                            v.put("note", trim(v.get("note")));
 
-                    // Formatting some notes
-                    v.put("note", trim(v.get("note")));
+                            if ("JAHRESPREIS LOGIN".equals(v.get("note")))
+                                v.put("note", "Jahrespreis Login");
 
-                    if ("JAHRESPREIS LOGIN".equals(v.get("note")))
-                        v.put("note", "Jahrespreis Login");
+                            if ("FÜR GIRO INTERNATIONAL (SEPA)".equals(v.get("note")))
+                                v.put("note", "Überweisungsgebühr (SEPA)");
 
-                    if ("FÜR GIRO INTERNATIONAL (SEPA)".equals(v.get("note")))
-                        v.put("note", "Überweisungsgebühr (SEPA)");
+                            if (v.get("note").contains("KONTOAUSZUG PAPIER"))
+                                v.put("note", "Kontoführungsgebühr (Papier)");
 
-                    if (v.get("note").contains("KONTOAUSZUG PAPIER"))
-                        v.put("note", "Kontoführungsgebühr (Papier)");
+                            if (v.get("note").contains("PREIS"))
+                            {
+                                if (v.get("note").matches("^.*HRUNG$"))
+                                    v.put("note", "Kontoführungsgebühr");
+                                else if (v.get("note").matches("^.*SCHALTER$"))
+                                    v.put("note", "Einzahlungen am Schalter");
+                                else
+                                    v.put("note", "");
+                            }
 
-                    if (v.get("note").contains("PREIS"))
-                    {
-                        if (v.get("note").matches("^.*HRUNG$"))
-                            v.put("note", "Kontoführungsgebühr");
-                        else if (v.get("note").matches("^.*SCHALTER$"))
-                            v.put("note", "Einzahlungen am Schalter");
-                        else
-                            v.put("note", "");
-                    }
+                            if (v.get("note").contains("KONTOFÜHRUNG"))
+                                v.put("note", "Kontoführungsgebühr");
 
-                    if (v.get("note").contains("KONTOFÜHRUNG"))
-                        v.put("note", "Kontoführungsgebühr");
+                            if (v.get("note").contains("GUTHABENGEBÜHR"))
+                            {
+                                String splitNote = v.get("note");
+                                String[] parts = splitNote.split("FÜR");
+                                v.put("note", "Guthabengebühr für " + stripBlanks(parts[1]));
+                            }
 
-                    if (v.get("note").contains("GUTHABENGEBÜHR"))
-                    {
-                        String splitNote = v.get("note");
-                        String[] parts = splitNote.split("FÜR");
-                        v.put("note", "Guthabengebühr für " + stripBlanks(parts[1]));
-                    }
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         Block interestBlock = new Block("^.* [\\.,'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.INTEREST);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "ZINSABSCHLUSS (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})"
-                                + ")([\\s]+)? "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "date", "amount").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "ZINSABSCHLUSS (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-|\\–) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))([\\s]+)? " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(context.get("currency"));
+                            // Formatting some notes
+                            t.setNote("Zinsabschluss " + trim(v.get("note")));
+                        })
 
-                    // Formatting some notes
-                    t.setNote("Zinsabschluss " + trim(v.get("note")));
-                })
+                        .section("date1", "date2", "amount").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "ZINSABSCHLUSS (?<date1>[\\d]{6}) (\\-|\\–) (?<date2>[\\d]{6})" //
+                                        + "([\\s]+)? " //
+                                        + "(?<amount>[\\.,'\\d\\s]+) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$") //
+                        .assign((t, v) -> {
+                            // Split date1 and date2
+                            String day1 = v.get("date1").substring(0, 2);
+                            String month1 = v.get("date1").substring(2, 4);
+                            String date1 = day1 + "." + month1 + "." + v.get("year");
+                            String day2 = v.get("date2").substring(0, 2);
+                            String month2 = v.get("date2").substring(2, 4);
+                            String date2 = day2 + "." + month2 + "." + v.get("year");
 
-                .section("date1", "date2", "amount").optional()
-                .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?"
-                                + "ZINSABSCHLUSS (?<date1>[\\d]{6}) (\\-|\\–) (?<date2>[\\d]{6})"
-                                + "([\\s]+)? "
-                                + "(?<amount>[\\.,'\\d\\s]+) "
-                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                            t.setDateTime(asDate(date2));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    // Split date1 and date2
-                    String day1 = v.get("date1").substring(0, 2);
-                    String month1 = v.get("date1").substring(2, 4);
-                    String date1 = day1 + "." + month1 + "." + context.get("year");
-                    String day2 = v.get("date2").substring(0, 2);
-                    String month2 = v.get("date2").substring(2, 4);
-                    String date2 = day2 + "." + month2 + "." + context.get("year");
+                            // Formatting some notes
+                            t.setNote("Zinsabschluss " + date1 + " - " + date2);
+                        })
 
-                    t.setDateTime(asDate(date2));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-
-                    // Formatting some notes
-                    t.setNote("Zinsabschluss " + date1 + " - " + date2);
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

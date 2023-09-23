@@ -4,10 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -213,19 +209,15 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            final Pattern pCurrency = Pattern.compile("^(?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ .*$");
+        final DocumentType type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // € 0,00 € 37,98 € 40,64 € 2,66 € 6,63 € 1,66
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ .*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                {
-                    context.put("currency", mCurrency.group("currency"));
-                    break;
-                }
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -236,19 +228,18 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         taxesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.TAXES);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
                         })
 
                         .section("date", "amount") //
+                        .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Kapitalertragsteuer.*$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -261,19 +252,18 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.INTEREST);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
                         })
 
                         .section("date", "amount", "note") //
+                        .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+ Zinsgutschrift (?<note>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
                         })
 
@@ -287,19 +277,18 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DEPOSIT);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
                         .section("date", "amount", "note") //
+                        .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+ Einzahlung (?<note>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
                         })
 
@@ -308,25 +297,23 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 20.05.2023 20.05.2023 -1,00 33,01 Auszahlung auf ...
         // @formatter:on
-        Block removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\.,\\d]+ Auszahlung .*$");
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+ [\\.,\\d]+ Auszahlung .*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.REMOVAL);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Auszahlung (?<note>.*)$")
+                        .section("date", "amount", "note") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Auszahlung (?<note>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
                         })
 
