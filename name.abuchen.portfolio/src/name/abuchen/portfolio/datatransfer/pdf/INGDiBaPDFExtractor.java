@@ -2,13 +2,10 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
@@ -31,7 +28,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
+        Pattern pJointAccount = Pattern.compile("KapSt anteilig [\\d]{2},[\\d]{2} %.*");
 
         for (String line : lines)
         {
@@ -485,16 +482,15 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug .*[\\d]{4}", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$");
+        final DocumentType type = new DocumentType("Kontoauszug .*[\\d]{4}", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Buchung Buchung / Verwendungszweck Betrag (EUR)
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -502,10 +498,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Ueberweisung"
-                        + "|Dauerauftrag\\/Terminueberw\\."
-                        + "|Lastschrift) "
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Ueberweisung" //
+                        + "|Dauerauftrag\\/Terminueberw\\." //
+                        + "|Lastschrift) " //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -516,18 +512,17 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "note", "amount")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                        + "(?<note>Ueberweisung"
-                                        + "|Dauerauftrag\\/Terminueberw\\."
-                                        + "|Lastschrift) "
-                                        + ".* \\-(?<amount>[\\.,\\d]+)$")
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>Ueberweisung" //
+                                        + "|Dauerauftrag\\/Terminueberw\\." //
+                                        + "|Lastschrift) " //
+                                        + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
                             if ("Ueberweisung".equals(v.get("note")))
@@ -545,9 +540,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 27.06.2016 Gutschrift Max Mustermann 10.000,00
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Gutschrift"
-                        + "|Gutschrift\\/Dauerauftrag) "
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Gutschrift" //
+                        + "|Gutschrift\\/Dauerauftrag) " //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -558,17 +553,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "note", "amount")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                        + "(?<note>Gutschrift"
-                                        + "|Gutschrift\\/Dauerauftrag) "
-                                        + ".* (?<amount>[\\.,\\d]+)$")
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>Gutschrift" //
+                                        + "|Gutschrift\\/Dauerauftrag) " //
+                                        + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
                         })
 
@@ -588,15 +582,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("note1", "date", "note2", "amount")
-                        .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) (?<note2>[\\,\\d]+%) .* Zins (?<amount>[\\.,\\d]+)$")
+                        .section("note1", "date", "note2", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
+                                        + "(?<note2>[\\,\\d]+%) .* Zins " //
+                                        + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setNote(v.get("note1") + " (" + v.get("note2") + ")") ;
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
                         })
 
                         .wrap(TransactionItem::new));
@@ -606,8 +601,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 30.12.2016 Solidaritätszuschlag -0,07
         // 30.12.2016 Kirchensteuer -0,11
         // @formatter:on
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Kapitalertragsteuer"
-                        + "|Solidarit.tszuschlag"
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Kapitalertrags(s)?teuer" //
+                        + "|Solidarit.tszuschlag" //
                         + "|Kirchensteuer) \\-[\\.,\\d]+$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
@@ -618,18 +614,17 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date", "note", "amount")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                        + "(?<note>Kapitalertragsteuer"
-                                        + "|Solidarit.tszuschlag"
-                                        + "|Kirchensteuer) "
-                                        + "\\-(?<amount>[\\.,\\d]+)$")
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>Kapitalertrags(s)?teuer" //
+                                        + "|Solidarit.tszuschlag" //
+                                        + "|Kirchensteuer) " //
+                                        + "\\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
                         })
 

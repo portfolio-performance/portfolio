@@ -4,9 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -330,86 +327,79 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^.* (?<currency>[\\w]{3}) [\\.,\\d]+$");
-            Pattern pYear = Pattern.compile("^Alter Saldo per [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) [\\.,\\d]+$");
+        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Mustermann EUR 2.281,75
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^.* (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
+                                        // @formatter:off
+                                        // Alter Saldo per 01.06.2022 6.974,89
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Alter Saldo per [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
-                m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2} .* [\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2} (?!Ertrag).* [\\d]{2}\\.[\\d]{2} [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.DEPOSIT);
-                    return t;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // 28.06 Mustermann 28.06 2.000,00
-                // IBAN: AT12 1234 1234 1234 1234
-                // REF: 38000220627-5336530-0000561
-                .section("date", "amount", "note").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}) .* [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)$")
-                .match("^IBAN: .*$")
-                .match("^(?<note>REF: .*)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // 28.06 Mustermann 28.06 2.000,00
+                        // IBAN: AT12 1234 1234 1234 1234
+                        // REF: 38000220627-5336530-0000561
+                        // @formatter:on
+                        .section("date", "amount", "note")
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) .* [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)$") //
+                        .match("^IBAN: .*$") //
+                        .match("^(?<note>REF: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date") + "." + context.get("year")));
-
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(TransactionItem::new));
 
         Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2} Abschluss [\\d]{2}\\.[\\d]{2} [\\.,\\d]+\\-$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.FEES);
-                    return t;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                // 30.09 Abschluss 30.09 4,50-
-                // Kontoführungsgebühr                          4,50-
-                .section("date", "amount", "note").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}) Abschluss [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)\\-$")
-                .match("^(?<note>Kontof.hrungsgeb.hr) .* [\\.,\\d]+\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // 30.09 Abschluss 30.09 4,50-
+                        // Kontoführungsgebühr                          4,50-
+                        // @formatter:on
+                        .section("date", "amount", "note").optional() //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}) Abschluss [\\d]{2}\\.[\\d]{2} (?<amount>[\\.,\\d]+)\\-$") //
+                        .match("^(?<note>Kontof.hrungsgeb.hr) .* [\\.,\\d]+\\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date") + "." + context.get("year")));
-
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

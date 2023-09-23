@@ -1,12 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
@@ -29,7 +26,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^.*(?i)(Kapitalertragssteuer|KAPST) ([\\s]+)?(anteilig|ANTEILIG) 50,00.*$");
+        Pattern pJointAccount = Pattern.compile("^.*(?i)(Kapitalertragssteuer|KAPST) ([\\s]+)?(anteilig|ANTEILIG) [\\d]{2},[\\d]{2}.*$");
 
         for (String line : lines)
         {
@@ -764,139 +761,127 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Kontow.hrung (?<currency>[\\w]{3})$");
-            Pattern pYear = Pattern.compile("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .*$");
+        final DocumentType type = new DocumentType("Kontotyp Verrechnungskonto", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
+                                        // @formatter:on
+                                        .section("year", "currency") //
+                                        .match("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .* Kontow.hrung (?<currency>[\\w]{3})$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("year", v.get("year"));
+                                            ctx.put("currency", asCurrencyCode(v.get("currency")));
+                                        }));
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
-
-                m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", m.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block("^(GUTSCHRIFT|D\\-GUTSCHRIFT|EURO\\-UEBERW\\.)( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\+$");
+        Block depositBlock = new Block("^(GUTSCHRIFT" //
+                        + "|D\\-GUTSCHRIFT" //
+                        + "|EURO\\-UEBERW\\.)" //
+                        + ".* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.DEPOSIT);
-                    return t;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // GUTSCHRIFT NR.99999999992 21.08. 8401 21.08. 6.500,00+
-                // D-GUTSCHRIFT NR.99999999999 03.09. 7998 03.09. 4.900,00+
-                // EURO-UEBERW. 11.08. 8420 11.08. 1.000,00+
-                // @formatter:on
-                .section("note", "date", "amount")
-                .match("^(?<note>GUTSCHRIFT|D\\-GUTSCHRIFT|EURO\\-UEBERW\\.)( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\+$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // GUTSCHRIFT NR.99999999992 21.08. 8401 21.08. 6.500,00+
+                        // D-GUTSCHRIFT NR.99999999999 03.09. 7998 03.09. 4.900,00+
+                        // EURO-UEBERW. 11.08. 8420 11.08. 1.000,00+
+                        // @formatter:on
+                        .section("note", "date", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<note>GUTSCHRIFT|D\\-GUTSCHRIFT|EURO\\-UEBERW\\.).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
 
-                    t.setDateTime(asDate(v.get("date") + context.get("year")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
+                            // Formatting some notes
+                            if ("GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "Gutschrift");
 
-                    // Formatting some notes
-                    if ("GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "Gutschrift");
+                            if ("D-GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "D-Gutschrift");
 
-                    if ("D-GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "D-Gutschrift");
+                            if ("EURO-UEBERW.".equals(v.get("note")))
+                                v.put("note", "Euro-Überweisung");
 
-                    if ("EURO-UEBERW.".equals(v.get("note")))
-                        v.put("note", "Euro-Überweisung");
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
+                        .wrap(TransactionItem::new));
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
-
-        Block removalBlock = new Block("^(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG)( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
+        Block removalBlock = new Block("^(UEBERWEISUNG" //
+                        + "|EURO\\-UEBERW\\." //
+                        + "|DAUERAUFTRAG)" //
+                        + ".* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.REMOVAL);
-                    return t;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // UEBERWEISUNG NR.99999999991 21.08. 8401 21.08. 25.308,00-
-                // EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
-                // @formatter:on
-                .section("note", "date", "amount")
-                .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG))( .*)? [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // UEBERWEISUNG NR.99999999991 21.08. 8401 21.08. 25.308,00-
+                        // EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
+                        // @formatter:on
+                        .section("note", "date", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG)).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
 
-                    t.setDateTime(asDate(v.get("date") + context.get("year")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
+                            // Formatting some notes
+                            if ("UEBERWEISUNG".equals(v.get("note")))
+                                v.put("note", "Überweisung");
 
-                    // Formatting some notes
-                    if ("UEBERWEISUNG".equals(v.get("note")))
-                        v.put("note", "Überweisung");
+                            if ("EURO-UEBERW.".equals(v.get("note")))
+                                v.put("note", "Euro-Überweisung");
 
-                    if ("EURO-UEBERW.".equals(v.get("note")))
-                        v.put("note", "Euro-Überweisung");
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(TransactionItem::new));
 
         Block feeBlock = new Block("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.FEES);
-                    return t;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // ABSCHLUSS 31.12. 8800 31.12. 1,22-
-                // @formatter:on
-                .section("note", "date", "amount")
-                .match("^(?<note>ABSCHLUSS) [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // ABSCHLUSS 31.12. 8800 31.12. 1,22-
+                        // @formatter:on
+                        .section("note", "date", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<note>ABSCHLUSS) [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
 
-                    t.setDateTime(asDate(v.get("date") + context.get("year")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
+                            // Formatting some notes
+                            if ("ABSCHLUSS".equals(v.get("note")))
+                                v.put("note", "Abschluss");
 
-                    // Formatting some notes
-                    if ("ABSCHLUSS".equals(v.get("note")))
-                        v.put("note", "Abschluss");
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                }));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

@@ -1,12 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -288,19 +283,15 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Fusion", (context, lines) -> {
-            Pattern pDate = Pattern.compile("^Ex\\-Tag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+        final DocumentType type = new DocumentType("Fusion", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Ex-Tag: 07.08.2023
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Ex\\-Tag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
-            for (String line : lines)
-            {
-                Matcher mDate = pDate.matcher(line);
-                if (mDate.matches())
-                {
-                    context.put("date", mDate.group("date"));
-                    break;
-                }
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -333,15 +324,13 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // REGISTERED SHARES DL -,01
                         // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued") //
+                        .documentContext("date") //
                         .find("(Einbuchung|Ausbuchung).*") //
                         .match("^St.ck [\\.,\\d]+(\\-)? (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> { //
-                            Map<String, String> context = type.getCurrentContext();
-
                             t.setSecurity(getOrCreateSecurity(v));
-
-                            t.setDateTime(asDate(context.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
 
                             // No amount available
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);

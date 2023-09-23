@@ -6,8 +6,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -22,23 +20,20 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Score Priority is a US-based financial services company.
+ *           The currency is US$.
+ *
+ * @implSpec All security currencies are USD.
+ *           The CUSIP number is the WKN number.
+ *           The amount of dividends is reported in gross.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 {
-    /***
-     * Information:
-     * Score Priority is a US-based financial services company.
-     * The currency is US$.
-     *
-     * All security currencies are USD.
-     *
-     * CUSIP Number:
-     * The CUSIP number is the WKN number.
-     *
-     * Dividend transactions:
-     * The amount of dividends is reported in gross.
-     */
-
     public ScorePriorityIncPDFExtractor(Client client)
     {
         super(client);
@@ -56,16 +51,15 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
-            Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
+        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // John Doe STATEMENT PERIOD: September 1 - 30, 2021
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
-            for (String line : lines)
-            {
-                Matcher mYear = pYear.matcher(line);
-                if (mYear.matches())
-                    context.put("year", mYear.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -82,14 +76,15 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockBuySell.set(new Transaction<BuySellEntry>()
 
                         .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$")
-                        .match("(?<nameContinued>.*)")
+                        .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
+                        .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
                             if ("Sell".equals(v.get("type")))
@@ -128,52 +123,47 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockDividende.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
                         })
 
-                        .oneOf(
-                                        section -> section
-                                                .attributes("month", "day", "name", "shares", "wkn", "amount", "tax")
-                                                .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
-                                                .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
-                                                .assign((t, v) -> {
-                                                    Map<String, String> context = type.getCurrentContext();
-                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
-                                                    v.put("currency", CurrencyUnit.USD);
+                        .oneOf( //
+                                        section -> section //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
 
-                                                    t.setDateTime(asDate(v.get("date")));
-                                                    t.setShares(asShares(v.get("shares")));
-                                                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                                                    t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setSecurity(getOrCreateSecurity(v));
 
-                                                    Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
-                                                    checkAndSetTax(tax, t, type.getCurrentContext());
-                                                })
-                                        ,
-                                        section -> section
-                                                .attributes("month", "day", "name", "shares", "wkn", "amount")
-                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
-                                                .assign((t, v) -> {
-                                                    Map<String, String> context = type.getCurrentContext();
-                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
-                                                    v.put("currency", CurrencyUnit.USD);
+                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
 
-                                                    t.setDateTime(asDate(v.get("date")));
-                                                    t.setShares(asShares(v.get("shares")));
-                                                    t.setAmount(asAmount(v.get("amount")));
-                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                                                    t.setSecurity(getOrCreateSecurity(v));
-                                                })
-                                )
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        section -> section //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -189,17 +179,17 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
 
                         .subject(() -> {
-                            PortfolioTransaction entry = new PortfolioTransaction();
-                            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return entry;
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "shares", "nameContinued")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$")
-                        .match("(?<nameContinued>.*)")
+                        .section("month", "day", "name", "wkn", "shares", "nameContinued") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
+                        .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -209,11 +199,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -227,16 +213,16 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockFees.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.FEES);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$")
+                        .section("month", "day", "name", "wkn", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             // if CUSIP lenght != 9
@@ -251,13 +237,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t, ctx) -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                            {
-                                TransactionItem item = new TransactionItem(t);
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
-                                return item;
-                            }
-                            return null;
+
+                            return item;
                         }));
 
         // @formatter:off
@@ -272,17 +257,17 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockCashAllocation.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$")
-                        .match("^(?<name>.*)$")
+                        .section("month", "day", "name", "wkn", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -292,11 +277,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -309,16 +290,16 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockDeposit.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DEPOSIT);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$")
+                        .section("month", "day", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -326,11 +307,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -343,16 +320,16 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
         blockInterest.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.INTEREST);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$")
+                        .section("month", "day", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -360,11 +337,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
     }
 
     @Override

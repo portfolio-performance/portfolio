@@ -1,5 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.dkb;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -8,14 +15,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
-
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

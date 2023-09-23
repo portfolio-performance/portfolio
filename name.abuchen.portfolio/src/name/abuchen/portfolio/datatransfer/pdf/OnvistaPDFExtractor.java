@@ -1,13 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -1027,129 +1023,125 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Fusion"
+        final DocumentType type = new DocumentType("(Fusion"
                         + "|Freier Erhalt"
                         + "|Einbuchung von Rechten"
                         + "|Wertlose Ausbuchung"
                         + "|Kapitalerh.hung"
                         + "|Kapitalherabsetzung"
                         + "|Umtausch"
-                        + "|Ausbuchung der Rechte", (context, lines) -> {
-            Pattern pDate = Pattern.compile("^.*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+                        + "|Ausbuchung der Rechte)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Frankfurt am Main, 04.07.2017
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
-            for (String line : lines)
-            {
-                Matcher mDate = pDate.matcher(line);
-                if (mDate.matches())
-                {
-                    context.put("date", mDate.group("date"));
-                    break;
-                }
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            PortfolioTransaction entry = new PortfolioTransaction();
-            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Dividendengutschrift).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
-                .section("type").optional()
-                .match("^.*(?<type>(Einbuchung|Ausbuchung|Ausbuchung der Rechte)).*$")
-                .assign((t, v) -> {
-                    if ("Ausbuchung".equals(v.get("type")) || "Ausbuchung der Rechte".equals(v.get("type")))
-                        t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                })
+        pdfTransaction //
 
-                // @formatter:off
-                // Gattungsbezeichnung ISIN
-                // Gagfah S.A. Actions nom. EO 1,25 LU0269583422
-                // Nominal Ex-Tag
-                // @formatter:on
-                .section("name", "isin", "name1")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Dividendengutschrift).*")
-                .find("Gattungsbezeichnung ISIN")
-                .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .match("^(?<name1>.*)")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
 
-                    if (!v.get("name1").startsWith("Nominal"))
-                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                        // @formatter:off
+                        // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^.*(?<type>(Einbuchung|Ausbuchung|Ausbuchung der Rechte)).*$") //
+                        .assign((t, v) -> {
+                            if ("Ausbuchung".equals(v.get("type")) || "Ausbuchung der Rechte".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
 
-                    t.setSecurity(getOrCreateSecurity(v));
-                    t.setDateTime(asDate(context.get("date")));
-                    t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
-                    t.setAmount(0L);
-                })
+                        // @formatter:off
+                        // Gattungsbezeichnung ISIN
+                        // Gagfah S.A. Actions nom. EO 1,25 LU0269583422
+                        // Nominal Ex-Tag
+                        // @formatter:on
+                        .section("name", "isin", "name1") //
+                        .documentContext("date") //
+                        .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Dividendengutschrift).*") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^(?<name1>.*)") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominal"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                // @formatter:off
-                // STK 6,840
-                // STK 12,000 04.07.2017
-                // STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
-                // @formatter:on
-                .section("shares")
-                .match("^STK (?<shares>[\\.,\\d]+).*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
 
-                // @formatter:off
-                // STK 12,000 04.07.2017
-                // STK 28,000 02.12.2011 02.12.2011
-                // @formatter:on
-                .section("date").optional()
-                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // STK 6,840
+                        // STK 12,000 04.07.2017
+                        // STK 0,4298 02.01.2020 02.01.2020 EUR 0,3477
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^STK (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                .optionalOneOf(
-                                // @formatter:off
-                                // Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note")
-                                        .match("^Kapitalherabsetzung im (?<note>Verh.ltnis [\\.,\\d]+:[\\.,\\d]+)\\. .*$")
-                                        .assign((t, v) -> t.setNote(v.get("note")))
-                                ,
-                                // @formatter:off
-                                // Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note")
-                                        .match("^(?<note>Umbuchung der Teil\\- in Vollrechte.) .*$")
-                                        .assign((t, v) -> t.setNote(v.get("note")))
-                                ,
-                                // @formatter:off
-                                // Einbuchung der Rechte zur Dividende wahlweise. Bitte beachten Sie hierzu unser separates Anschreiben.
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note")
-                                        .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise\\.) .*$")
-                                        .assign((t, v) -> t.setNote(v.get("note")))
-                                ,
-                                // @formatter:off
-                                // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note")
-                                        .match("^.* (?<note>Ausbuchung der Rechte)\\..*$")
-                                        .assign((t, v) -> t.setNote(v.get("note")))
-                        )
+                        // @formatter:off
+                        // STK 12,000 04.07.2017
+                        // STK 28,000 02.12.2011 02.12.2011
+                        // @formatter:on
+                        .section("date").optional() //
+                        .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                .wrap(t -> {
-                    // If we have multiple entries in the document, with
-                    // taxes and tax refunds, then the "negative" flag
-                    // must be removed.
-                    type.getCurrentContext().remove("negative");
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^Kapitalherabsetzung im (?<note>Verh.ltnis [\\.,\\d]+:[\\.,\\d]+)\\. .*$") //
+                                                        .assign((t, v) -> t.setNote(v.get("note"))),
+                                        // @formatter:off
+                                        // Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Umbuchung der Teil\\- in Vollrechte.) .*$") //
+                                                        .assign((t, v) -> t.setNote(v.get("note"))),
+                                        // @formatter:off
+                                        // Einbuchung der Rechte zur Dividende wahlweise. Bitte beachten Sie hierzu unser separates Anschreiben.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Einbuchung der Rechte zur Dividende wahlweise\\.) .*$") //
+                                                        .assign((t, v) -> t.setNote(v.get("note"))),
+                                        // @formatter:off
+                                        // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.* (?<note>Ausbuchung der Rechte)\\..*$") //
+                                                        .assign((t, v) -> t.setNote(v.get("note"))))
 
-                    return new TransactionItem(t);
-                });
+                        .wrap(t -> {
+                            // @formatter:off
+                            // If we have multiple entries in the document,
+                            // with taxes and tax refunds, then the "negative" flag must be removed.
+                            // @formatter:on
+                            type.getCurrentContext().remove("negative");
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxReturnBlock(type);
     }
@@ -1243,49 +1235,40 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Kontoauszug|KONTOAUSZUG) Nr.", (context, lines) -> {
-            Pattern pCurrency_Format01 = Pattern.compile("^(?<currency>[\\w]{3}) - Verrechnungskonto: .*$");
-            Pattern pCurrency_Format02 = Pattern.compile("^.* Customer Cash Account ([\\s]+)?(?<currency>[\\w]{3})$");
-            Pattern pYear_Format01 = Pattern.compile("^(Kontoauszug|KONTOAUSZUG) Nr\\. (?<year>[\\d]{4}) / [\\d]+ .*$");
-            Pattern pYear_Format02 = Pattern.compile("^(Kontoauszug|KONTOAUSZUG) Nr\\. [\\d]+ per [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4})$");
+        final DocumentType type = new DocumentType("(Kontoauszug|KONTOAUSZUG) Nr\\.", //
+                        documentContext -> documentContext //
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // EUR - Verrechnungskonto: 0 111111 222
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^(?<currency>[\\w]{3}) - Verrechnungskonto: .*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        // @formatter:off
+                                                        // Ihre Kontonummer : 172306238 : Customer Cash Account  EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^.* Customer Cash Account ([\\s]+)?(?<currency>[\\w]{3})$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))))
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year") //
+                                                                        .match("^(Kontoauszug|KONTOAUSZUG) Nr\\. (?<year>[\\d]{4}) / [\\d]+ .*$") //
+                                                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))),
+                                                        // @formatter:off
+                                                        // KONTOAUSZUG Nr. 2 per 30.06.2015
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year") //
+                                                                        .match("^(Kontoauszug|KONTOAUSZUG) Nr\\. [\\d]+ per [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4})$") //
+                                                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))))
+                                        );
 
-            boolean foundCurrency = false;
-            boolean foundYear = false;
-
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency_Format01.matcher(line);
-                if (mCurrency.matches())
-                {
-                    context.put("currency", mCurrency.group("currency"));
-                    foundCurrency = true;
-                }
-
-                mCurrency = pCurrency_Format02.matcher(line);
-                if (mCurrency.matches())
-                {
-                    context.put("currency", mCurrency.group("currency"));
-                    foundCurrency = true;
-                }
-
-                Matcher mYear = pYear_Format01.matcher(line);
-                if (mYear.matches())
-                {
-                    context.put("year", mYear.group("year"));
-                    foundYear = true;
-                }
-
-                mYear = pYear_Format02.matcher(line);
-                if (mYear.matches())
-                {
-                    context.put("year", mYear.group("year"));
-                    foundYear = true;
-                }
-
-                if (foundCurrency && foundYear)
-                    break;
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -1294,94 +1277,99 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                .subject(() -> {
-                    AccountTransaction t = new AccountTransaction();
-                    t.setType(AccountTransaction.Type.DEPOSIT);
-                    return t;
-                })
+        pdfTransaction //
 
-                // @formatter:off
-                // 04.04. 04.04. REF: 000045862247 200,00+
-                // Überweisungseingang SEPA Max Mustermann
-                // @formatter:on
-                .section("date", "amount", "note", "sign").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
-                .match("^(?<note>.berweisung(seingang|ausgang) SEPA).*$")
-                .assign((t, v) -> {
-                    // Is sign is negative change to REMOVAL
-                    if ("-".equals(v.get("sign")))
-                        t.setType(AccountTransaction.Type.REMOVAL);
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        // @formatter:off
+                        // 04.04. 04.04. REF: 000045862247 200,00+
+                        // Überweisungseingang SEPA Max Mustermann
+                        // @formatter:on
+                        .section("date", "amount", "note", "sign").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<note>.berweisung(seingang|ausgang) SEPA).*$") //
+                        .assign((t, v) -> {
+                            // Is sign is negative change to REMOVAL
+                            if ("-".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                // @formatter:off
-                // 31.10. 31.10. REF: 000017304356 37,66
-                // Saldenübernahme Nordnet
-                // @formatter:on
-                .section("date", "amount", "note").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)$")
-                .match("^(?<note>Salden.bernahme).*$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                // @formatter:off
-                // 07.04. 03.04. REF: 000033640646 0,62-
-                // Portogebühren
-                // Portogebuehren 03/15
-                // 24.03. 23.03. REF: 000137060674 42,42+
-                // Erst. BGH-Urteil Sonstige
-                // @formatter:on
-                .section("date", "amount", "sign", "note1", "note2").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
-                .match("^(?<note1>(Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$")
-                .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$")
-                .assign((t, v) -> {
-                    // Is sign is positiv change to FEES_REFUND
-                    if ("-".equals(v.get("sign")))
-                        t.setType(AccountTransaction.Type.FEES);
-                    else
-                        t.setType(AccountTransaction.Type.FEES_REFUND);
+                        // @formatter:off
+                        // 31.10. 31.10. REF: 000017304356 37,66
+                        // Saldenübernahme Nordnet
+                        // @formatter:on
+                        .section("date", "amount", "note").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<note>Salden.bernahme).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note1") + " " + v.get("note2"));
-                })
+                        // @formatter:off
+                        // 07.04. 03.04. REF: 000033640646 0,62-
+                        // Portogebühren
+                        // Portogebuehren 03/15
+                        // 24.03. 23.03. REF: 000137060674 42,42+
+                        // Erst. BGH-Urteil Sonstige
+                        // @formatter:on
+                        .section("date", "amount", "sign", "note1", "note2").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<note1>(Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
+                        .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$") //
+                        .assign((t, v) -> {
+                            // Is sign is positiv change to FEES_REFUND
+                            if ("-".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.FEES);
+                            else
+                                t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                // @formatter:off
-                // 31.03. 30.03. REF: 000137802265 0,77-
-                // Überziehungszinsen
-                // @formatter:on
-                .section("date", "amount", "sign", "note").optional()
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$")
-                .match("^(?<note>.berziehungszinsen)$")
-                .assign((t, v) -> {
-                    // Is sign is positiv change to INTEREST
-                    if ("-".equals(v.get("sign")))
-                        t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                    else
-                        t.setType(AccountTransaction.Type.INTEREST);
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note1") + " " + v.get("note2"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date") + type.getCurrentContext().get("year")));
-                    t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setNote(v.get("note"));
-                })
+                        // @formatter:off
+                        // 31.03. 30.03. REF: 000137802265 0,77-
+                        // Überziehungszinsen
+                        // @formatter:on
+                        .section("date", "amount", "sign", "note").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<note>.berziehungszinsen)$") //
+                        .assign((t, v) -> {
+                            // Is sign is positiv change to INTEREST
+                            if ("-".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            else
+                                t.setType(AccountTransaction.Type.INTEREST);
 
-                .wrap(t -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private void addTaxReturnBlock(DocumentType type)
@@ -1648,114 +1636,114 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesBlockForDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Umtausch", (context, lines) -> {
-            Pattern pDate = Pattern.compile("^.*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
+        final DocumentType type = new DocumentType("Umtausch", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Frankfurt am Main, 04.07.2017
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
-            for (String line : lines)
-            {
-                Matcher mDate = pDate.matcher(line);
-                if (mDate.matches())
-                {
-                    context.put("date", mDate.group("date"));
-                    break;
-                }
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAXES);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^Ausbuchung:.*");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // @formatter:off
-                // Gattungsbezeichnung ISIN
-                // Gagfah S.A. Actions nom. EO 1,25 LU0269583422
-                // Nominal Ex-Tag
-                // STK 12,000 04.07.2017
-                // @formatter:on
-                .section("name", "isin", "name1")
-                .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*")
-                .find("Gattungsbezeichnung ISIN")
-                .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .match("^(?<name1>.*)")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+        pdfTransaction //
 
-                    if (!v.get("name1").startsWith("Nominal"))
-                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
 
-                    t.setDateTime(asDate(context.get("date")));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                        // @formatter:off
+                        // Gattungsbezeichnung ISIN
+                        // Gagfah S.A. Actions nom. EO 1,25 LU0269583422
+                        // Nominal Ex-Tag
+                        // STK 12,000 04.07.2017
+                        // @formatter:on
+                        .section("name", "isin", "name1") //
+                        .documentContext("date") //
+                        .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots).*") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^(?<name1>.*)") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominal"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                // @formatter:off
-                // STK 28,000 23.11.2015
-                // @formatter:on
-                .section("shares")
-                .match("^STK (?<shares>[\\.,\\d]+).*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
-                // @formatter:off
-                // STK 12,000 04.07.2017
-                // STK 28,000 02.12.2011 02.12.2011
-                // @formatter:on
-                .section("date").optional()
-                .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // STK 28,000 23.11.2015
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^STK (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // @formatter:off
-                // 23.11.2015 172306238 EUR 12,86
-                // zu versteuern EUR 45,92
-                // @formatter:on
-                .section("currency", "amount").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .find("zu versteuern [\\w]{3} .*$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                        // @formatter:off
+                        // STK 12,000 04.07.2017
+                        // STK 28,000 02.12.2011 02.12.2011
+                        // @formatter:on
+                        .section("date").optional() //
+                        .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // @formatter:off
-                // 22.02.2019 356238049 EUR/USD 1,13375 EUR 0,27
-                // zu versteuern EUR 1,04
-                // @formatter:on
-                .section("currency", "amount").optional()
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
-                .find("zu versteuern [\\w]{3} .*$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
 
-                // @formatter:off
-                // zu versteuern EUR 45,92
-                // Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
-                // 173458000 96911811 2 ADRESSZEILE3=Musterstr. 2
-                // @formatter:on
-                .section("note1", "note2").optional()
-                .find("zu versteuern [\\w]{3} .*$")
-                .match("^Depot\\-Nr\\. (?<note1>Abrechnungs\\-Nr\\.).*$")
-                .match("^[\\d]+ (?<note2>[\\d]+) .*$")
-                .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 23.11.2015 172306238 EUR 12,86
+                                        // zu versteuern EUR 45,92
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                                        .find("zu versteuern [\\w]{3} .*$")
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // 22.02.2019 356238049 EUR/USD 1,13375 EUR 0,27
+                                        // zu versteuern EUR 1,04
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\w]{3}\\/[\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                                        .find("zu versteuern [\\w]{3} .*$")
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
-                .wrap(t -> {
-                    // If we have multiple entries in the document, with
-                    // taxes and tax refunds, then the "negative" flag
-                    //  must be removed.
-                    type.getCurrentContext().remove("negative");
+                        // @formatter:off
+                        // zu versteuern EUR 45,92
+                        // Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+                        // 173458000 96911811 2 ADRESSZEILE3=Musterstr. 2
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .find("zu versteuern [\\w]{3} .*$") //
+                        .match("^Depot\\-Nr\\. (?<note1>Abrechnungs\\-Nr\\.).*$") //
+                        .match("^[\\d]+ (?<note2>[\\d]+) .*$") //
+                        .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
 
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                        .wrap(t -> {
+                            // If we have multiple entries in the document, with
+                            // taxes and tax refunds, then the "negative" flag
+                            // must be removed.
+                            type.getCurrentContext().remove("negative");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

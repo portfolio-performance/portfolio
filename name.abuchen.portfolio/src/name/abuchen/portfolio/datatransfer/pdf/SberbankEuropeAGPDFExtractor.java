@@ -1,9 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -30,21 +26,22 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Tagesgeld", (context, lines) -> {
-            Pattern pYear = Pattern.compile("^.* Kontoauszug Nr\\. ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})$");
-            Pattern pCurrency = Pattern.compile("^(?<currency>[\\w]{3})\\-Konto Kontonummer .*$");
+        final DocumentType type = new DocumentType("Tagesgeld", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // EUR-Konto Kontonummer 0123456789
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(?<currency>[\\w]{3})\\-Konto Kontonummer .*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-            for (String line : lines)
-            {
-                Matcher mYear = pYear.matcher(line);
-                if (mYear.matches())
-                    context.put("year", mYear.group("year"));
+                                        // @formatter:off
+                                        // Postfach 6 20, 45956 Gladbeck Kontoauszug Nr.  1/2021
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^.* Kontoauszug Nr\\. ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -64,21 +61,20 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("day", "month", "note", "amount", "sign") //
+                        .documentContext("currency", "year") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. " + "(?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. " //
                                         + "(?<note>.berweisungsgutschr\\.) " + "(?<amount>[\\.,\\d]+) " //
                                         + "(?<sign>[S|H])$")
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-
                             // Is sign --> "S" change from DEPOSIT to REMOVAL
                             if ("S".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             // create a long date from the year in the context
-                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + context.get("year")));
+                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
 
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
                             if ("Überweisungsgutschr.".equals(v.get("note")))

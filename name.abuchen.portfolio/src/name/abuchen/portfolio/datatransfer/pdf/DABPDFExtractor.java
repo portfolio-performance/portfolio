@@ -4,9 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -943,16 +940,27 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$");
+        final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus)", //
+                        documentContext -> documentContext //
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^Verrechnungskonto .* nach Buchungsdatum (?<currency>[\\w]{3})$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        // @formatter:off
+                                                        // Referenzwährung Euro
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^Referenzw.hrung (?<currency>.*)$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            if ("Euro".equals(trim(v.get("currency"))))
+                                                                                ctx.put("currency", "EUR");
+                                                                        })));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -963,25 +971,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format01);
         depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.DEPOSIT);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^(?<note>(SEPA\\-Gutschrift|SEPA\\-Lastschrift)) (?!.*Lastschrift).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note>(SEPA\\-Gutschrift|SEPA\\-Lastschrift)) (?!.*Lastschrift).* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // SEPA-Überweisung MUSTERMANN, MAX 05.07.19 15.000,00  // no minus sign!
@@ -991,25 +997,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock_Format01);
         removalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.REMOVAL);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^(?<note>(SEPA\\-.berweisung|SEPA\\-Dauerauftrag)) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note>(SEPA\\-.berweisung|SEPA\\-Dauerauftrag)) .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Belastung Porto 05.04.16 0,70  // no minus sign!
@@ -1018,25 +1022,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock_Format01);
         feesBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.FEES);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^Belastung (?<note>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^Belastung (?<note>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 23.09.2022 23.09.2022 SEPA-Überweisung Anlage 2.000,00 EUR
@@ -1045,22 +1047,22 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositBlock_Format02);
         depositBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.DEPOSIT);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 23.09.2022 23.09.2022 SEPA-Überweisung Entsparen -2.000,00 EUR
@@ -1069,22 +1071,22 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.REMOVAL);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>SEPA\\-.berweisung) .* -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 23.09.2022 23.09.2022 Sollzinsen -100,00 EUR
@@ -1093,22 +1095,22 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Sollzinsen) -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setNote(v.get("note"));
-                })
+                        .section("note", "date", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Sollzinsen) -(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
@@ -1117,25 +1119,23 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction transaction = new AccountTransaction();
-                    transaction.setType(AccountTransaction.Type.FEES);
-                    return transaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                .section("note", "date", "amount")
-                .match("^SEPA\\-Lastschrift Lastschrift (?<note>Managementgeb.hr) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^SEPA\\-Lastschrift Lastschrift (?<note>Managementgeb.hr) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
 
-                    t.setDateTime(asDate(v.get("date")));
-
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(v.get("note"));
-                })
-
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

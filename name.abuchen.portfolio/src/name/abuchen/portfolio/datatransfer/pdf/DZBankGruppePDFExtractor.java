@@ -32,7 +32,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\(50,00 %\\).*");
+        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\([\\d]{2},[\\d]{2} %\\).*");
 
         for (String line : lines)
         {

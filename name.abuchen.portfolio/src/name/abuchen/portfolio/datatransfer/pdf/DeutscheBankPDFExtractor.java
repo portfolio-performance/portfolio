@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -336,7 +335,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         builder -> builder //
                                         .section("currency") //
                                         .match("^.* [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{2} .*(?<currency>[\\w]{3}) [\\-|\\+] [\\.,\\d]+$")
-                                        .assign(Map::putAll)
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         .section("year") //
                                         .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
@@ -378,7 +377,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "sign", "amount", "note1") //
-                        .documentContext("currency", "year")
+                        .documentContext("currency", "year") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                         + "(SEPA )?" //
                                         + "(?<note>(Dauerauftrag" //
@@ -466,12 +465,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "note").optional() //
+                        .documentContext("currency", "year") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) Verwendungszweck\\/ Kundenreferenz \\- (?<amount>[\\.,\\d]+)$") //
                         .match("^(?<note>Saldo der Abschlussposten)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date") + context.get("year")));
-                            t.setCurrencyCode(context.get("currency"));
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
                         })

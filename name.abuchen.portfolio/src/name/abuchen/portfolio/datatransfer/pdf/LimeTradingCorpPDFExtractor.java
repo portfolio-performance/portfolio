@@ -1,13 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
-
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -55,24 +51,19 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
-            Pattern pAccountBillDate = Pattern.compile("^Ending Value as of (?<month>.*) (?<day>[\\d]{2}) .*$");
-            Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
+        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // AAAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
+                                        // @formatter:on
+                                        .section("month", "day", "year") //
+                                        .match("^.* STATEMENT PERIOD: (?<month>.*) [\\d]{1,2} \\- (?<day>[\\d]{2}), (?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("month", trim(v.get("month")));
+                                            ctx.put("day", v.get("day"));
+                                            ctx.put("year", v.get("year"));
+                                        }));
 
-            for (String line : lines)
-            {
-                Matcher mAccountBillDate = pAccountBillDate.matcher(line);
-                if (mAccountBillDate.matches())
-                {
-                    context.put("month", trim(mAccountBillDate.group("month")));
-                    context.put("day", mAccountBillDate.group("day"));
-                }
-
-                Matcher mYear = pYear.matcher(line);
-                if (mYear.matches())
-                    context.put("year", mYear.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -95,15 +86,15 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
                             if ("Sell".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
 
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDate(asDate(v.get("date")));
@@ -159,11 +150,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         section -> section //
                                                         .attributes("month", "day", "name", "shares", "wkn", "amount","tax") //
-                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
-                                                            Map<String, String> context = type.getCurrentContext();
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -182,11 +173,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         section -> section //
                                                         .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
-                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!(Qualified|Lmtd)).{9}) ((Qualified|Lmtd) )?(Dividend|Partner) (?<amount>[\\.,\\d]+)$") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!(Qualified|Lmtd)).{9}) ((Qualified|Lmtd) )?(Dividend|Partner) (?<amount>[\\.,\\d]+)$") //
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
-                                                            Map<String, String> context = type.getCurrentContext();
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -206,10 +197,10 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         section -> section //
                                                         .attributes("month", "day", "name", "shares", "wkn", "amount") //
-                                                        .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>.*) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            Map<String, String> context = type.getCurrentContext();
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -247,11 +238,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         section -> section //
                                                         .attributes("note", "wkn", "amount", "name") //
+                                                        .documentContext("day", "month", "year") //
                                                         .match("^[\\w]{3} [\\w]{3} (?<note>Withholding Adjustment) (?<wkn>.{9}) Journal (?<amount>[\\.,\\d]+)$") //
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> {
-                                                            Map<String, String> context = type.getCurrentContext();
-                                                            v.put("date", context.get("day") + " " + context.get("month") + " " + context.get("year"));
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -296,11 +287,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "name", "wkn", "shares", "nameContinued") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -342,10 +333,10 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "name", "wkn", "amount") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -386,11 +377,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "name", "wkn", "amount") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -431,10 +422,10 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "amount") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Wire .* (?<amount>[\\.,\\d]+)$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -461,10 +452,10 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("month", "day", "amount") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
