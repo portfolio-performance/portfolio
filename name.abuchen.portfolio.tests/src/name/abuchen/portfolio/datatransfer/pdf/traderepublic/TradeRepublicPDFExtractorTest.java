@@ -1,14 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.traderepublic;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -28,7 +19,16 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -437,6 +437,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf09()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SQ6QKU9"), hasWkn(null), hasTicker(null), //
+                        hasName("Société Générale Effekten GmbH MiniL O.End CBOE VIX 11,49"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-04-28T11:13"), hasShares(100.0), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 87.40), hasGrossValue("EUR", 86.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testCryptoKauf01()
     {
         List<Exception> errors = new ArrayList<>();
@@ -590,13 +621,11 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf15()
+    public void testCryptoVerkauf01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
-
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoVerkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -607,16 +636,18 @@ public class TradeRepublicPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("DE000SQ6QKU9"), hasWkn(null), hasTicker(null), //
-                        hasName("Société Générale Effekten GmbH MiniL O.End CBOE VIX 11,49"), //
-                        hasCurrencyCode("EUR"))));
+                        hasIsin(null), hasWkn(null), hasTicker("ETH"), //
+                        hasName("Ethereum"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ethereum"))));
 
         // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2023-04-28T11:13"), hasShares(100.0), //
-                        hasSource("Kauf09.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 87.40), hasGrossValue("EUR", 86.40), //
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-01-10T16:11"), hasShares(0.1), //
+                        hasSource("CryptoVerkauf01.txt"), //
+                        hasNote("Order: 25a4-7fba | Ausführung: dd26-52b9"), //
+                        hasAmount("EUR", 261.85), hasGrossValue("EUR", 262.85), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
     }
 

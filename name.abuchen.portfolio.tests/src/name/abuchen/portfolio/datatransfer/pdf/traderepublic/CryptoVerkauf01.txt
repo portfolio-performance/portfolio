@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 1 DATUM 10.01.2022
+01234 Musterstadt ORDER 25a4-7fba
+AUSFÜHRUNG dd26-52b9
+CRYPTO-WALLET BitGo
+DEPOT 0123456789
+ABRECHNUNG CRYPTOGESCHÄFT
+ÜBERSICHT
+Market-Order Verkauf am 10.01.2022, um 16:11 Uhr (Europe/Berlin) im außerbörslichen Handel (Bankhaus 
+Scheich).
+Der Kontrahent der Transaktion ist Bankhaus Scheich Wertpapierspezialist AG.
+POSITION ANZAHL KURS BETRAG
+Ethereum (ETH) 0,1 Stk. 2.628,45 EUR 262,85 EUR
+GESAMT 262,85 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT 261,85 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE99012345670123456789 10.01.2022 261,85 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Cryptowährungen unterfallen derzeit nicht der Abgeltungssteuer. Deshalb haben wir noch keine Steuern für 
+Dich abgeführt. Bitte prüfe aber mit Deinem Steuerberater, inwieweit Du Steuern abführen musst. Trade 
+Republic erbringt keine Steuerberatung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
