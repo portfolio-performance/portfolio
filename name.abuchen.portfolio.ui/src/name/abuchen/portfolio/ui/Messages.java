@@ -1138,6 +1138,7 @@ public class Messages extends NLS
     public static String PresetsPrefPageStartOfDay;
     public static String PresetsPrefPageTime;
     public static String PresetsPrefPageTitle;
+    public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
     public static String SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod;
