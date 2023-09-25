@@ -69,7 +69,7 @@ public class ConfigurationStore
         // make one active (and there always must be one active)
         this.active = configSet.lookup(preferences.getString(identifier + KEY_ACTIVE))
                         .orElseGet(() -> configSet.getConfigurations().findFirst().orElseGet(() -> {
-                            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, null);
+                            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, ""); //$NON-NLS-1$
                             configSet.add(defaultConfig);
                             return defaultConfig;
                         }));
@@ -167,7 +167,7 @@ public class ConfigurationStore
 
         listeners.forEach(ConfigurationStoreOwner::beforeConfigurationPicked);
 
-        active = new Configuration(name, template != null ? template.getData() : null);
+        active = new Configuration(name, template != null ? template.getData() : ""); //$NON-NLS-1$
 
         configSet.add(active);
         client.touch();
@@ -202,7 +202,7 @@ public class ConfigurationStore
 
         listeners.forEach(ConfigurationStoreOwner::beforeConfigurationPicked);
         active = configSet.getConfigurations().findAny().orElseGet(() -> {
-            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, null);
+            Configuration defaultConfig = new Configuration(Messages.ConfigurationStandard, ""); //$NON-NLS-1$
             configSet.add(defaultConfig);
             return defaultConfig;
         });

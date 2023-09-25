@@ -25,17 +25,8 @@ public final class ClientFilterDropDown extends DropDown implements IMenuListene
         this.menu = new ClientFilterMenu(client, preferences, listener);
         this.menu.addListener(filter -> setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
 
-        String selection = preferences.getString(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX);
-        if (selection != null)
-        {
-            this.menu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny().ifPresent(item -> {
-                this.menu.select(item);
-                setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF);
-            });
-        }
-
-        addDisposeListener(e -> preferences.putValue(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX,
-                        this.menu.getSelectedItem().getUUIDs()));
+        menu.trackSelectedFilterConfigurationKey(prefKey);
+        setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF);
     }
 
     @Override

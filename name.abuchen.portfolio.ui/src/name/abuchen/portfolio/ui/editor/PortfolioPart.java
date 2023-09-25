@@ -3,7 +3,6 @@ package name.abuchen.portfolio.ui.editor;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -455,7 +454,7 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getEclipsePreferences();
     }
 
-    public List<ReportingPeriod> getReportingPeriods()
+    public ReportingPeriods getReportingPeriods()
     {
         return clientInput.getReportingPeriods();
     }
@@ -488,8 +487,8 @@ public class PortfolioPart implements ClientInputListener
 
         if (selectedPeriod == null)
         {
-            List<ReportingPeriod> periods = clientInput.getReportingPeriods();
-            selectedPeriod = periods.isEmpty() ? new ReportingPeriod.LastX(1, 0) : periods.get(0);
+            selectedPeriod = clientInput.getReportingPeriods().stream().findFirst()
+                            .orElseGet(() -> new ReportingPeriod.LastX(1, 0));
         }
 
         return selectedPeriod;

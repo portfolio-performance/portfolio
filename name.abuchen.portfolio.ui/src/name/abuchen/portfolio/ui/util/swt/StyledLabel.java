@@ -181,7 +181,7 @@ public class StyledLabel extends Canvas // NOSONAR
         addListener(SWT.Dispose, this::handleDispose);
         addListener(SWT.MouseDown, this::openBrowser);
         addListener(SWT.MouseMove, this::updateCursor);
-        
+
         initAccessibility();
     }
 
@@ -206,7 +206,7 @@ public class StyledLabel extends Canvas // NOSONAR
                 if (r.fontStyle != SWT.NORMAL)
                 {
                     Font font = resourceManager
-                                    .createFont(FontDescriptor.createFrom(textLayout.getFont()).setStyle(r.fontStyle));
+                                    .create(FontDescriptor.createFrom(textLayout.getFont()).setStyle(r.fontStyle));
                     textLayout.setStyle(new TextStyle(font, r.foreground, r.background), r.start,
                                     r.start + r.length - 1);
                 }
@@ -235,7 +235,7 @@ public class StyledLabel extends Canvas // NOSONAR
         for (TextStyle style : styles)
         {
             if (style.font != null)
-                style.font = resourceManager.createFont(FontDescriptor.createFrom(textLayout.getFont())
+                style.font = resourceManager.create(FontDescriptor.createFrom(textLayout.getFont())
                                 .setStyle(style.font.getFontData()[0].getStyle()));
         }
 
@@ -290,7 +290,7 @@ public class StyledLabel extends Canvas // NOSONAR
         int offset = this.textLayout.getOffset(event.x, event.y, null);
         if (offset == -1)
             return null;
-        
+
         Point mostLeftPoint = this.textLayout.getLocation(offset, false);
         Point mostRightPoint = this.textLayout.getLocation(offset, true);
         if (event.x < mostLeftPoint.x || event.x > mostRightPoint.x)
@@ -302,7 +302,7 @@ public class StyledLabel extends Canvas // NOSONAR
 
         return String.valueOf(style.data);
     }
-    
+
     private void initAccessibility()
     {
         getAccessible().addAccessibleControlListener(new AccessibleControlAdapter()

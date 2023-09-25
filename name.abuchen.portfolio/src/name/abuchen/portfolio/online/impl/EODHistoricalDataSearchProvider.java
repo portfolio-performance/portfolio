@@ -17,7 +17,7 @@ import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
-import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
@@ -208,13 +208,11 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
         }
 
         @Override
-        public Security create(ClientSettings settings)
+        public Security create(Client client)
         {
-            var security = new Security();
-            security.setName(name);
+            var security = new Security(name, currency);
             security.setIsin(isin);
             security.setTickerSymbol(symbol);
-            security.setCurrencyCode(currency);
             if (latestSecurityPrice != null)
                 security.setLatest(latestSecurityPrice);
             security.setFeed(EODHistoricalDataQuoteFeed.ID);

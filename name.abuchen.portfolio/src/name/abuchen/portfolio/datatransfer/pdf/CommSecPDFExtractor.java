@@ -3,9 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -36,92 +33,104 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("WE HAVE (SOLD|BOUGHT)", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$");
+        final DocumentType type = new DocumentType("WE HAVE (SOLD|BOUGHT)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // CONSIDERATION (AUD): $999.97 CONTRACT COMMENTS:
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency = pCurrency.matcher(line);
-                if (mCurrency.matches())
-                    context.put("currency", mCurrency.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^WE HAVE (SOLD|BOUGHT) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // Is type --> "SOLD" change from BUY to SELL
-                .section("type").optional()
-                .match("^WE HAVE (?<type>SOLD) .*$")
-                .assign((t, v) -> {
-                    if ("SOLD".equals(v.get("type")))
-                        t.setType(PortfolioTransaction.Type.SELL);
-                })
+        pdfTransaction //
 
-                // COMPANY: QANTAS AIRWAYS LIMITED
-                // QAN
-                // CONSIDERATION (AUD): $999.00 CONTRACT COMMENTS:
-                .section("name", "tickerSymbol", "currency").optional()
-                .match("^COMPANY: (?<name>.*)$")
-                .match("^(?<tickerSymbol>[\\w]{3,4})$")
-                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
 
-                // COMPANY WISETECH GLOBAL LIMITED
-                // SECURITY ORDINARY FULLY PAID WTC
-                // CONSIDERATION (AUD): $28,060.00 PID XXXX HIN XXXXXXX
-                .section("name", "tickerSymbol", "currency").optional()
-                .match("^COMPANY (?<name>.*)$")
-                .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$")
-                .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        // Is type --> "SOLD" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^WE HAVE (?<type>SOLD) .*$") //
+                        .assign((t, v) -> {
+                            if ("SOLD".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
-                // AS AT DATE: 20/04/2020 277 3.610000
-                .section("date")
-                .match("^AS AT DATE: (?<date>[\\d]+\\/[\\d]+\\/[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        // @formmatter:off
+                        // COMPANY: QANTAS AIRWAYS LIMITED
+                        // QAN
+                        // CONSIDERATION (AUD): $999.00 CONTRACT COMMENTS:
+                        // @formmatter:on
+                        .section("name", "tickerSymbol", "currency").optional() //
+                        .match("^COMPANY: (?<name>.*)$") //
+                        .match("^(?<tickerSymbol>[\\w]{3,4})$") //
+                        .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                .oneOf(
-                                // AS AT DATE: 20/04/2020 277 3.610000
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^AS AT DATE: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$")
-                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                                ,
-                                // CONFIRMATION NO: XXXXXXX 1,000 28.060000
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^CONFIRMATION NO: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$")
-                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                        )
+                        // @formmatter:off
+                        // COMPANY WISETECH GLOBAL LIMITED
+                        // SECURITY ORDINARY FULLY PAID WTC
+                        // CONSIDERATION (AUD): $28,060.00 PID XXXX HIN XXXXXXX
+                        // @formmatter:on
+                        .section("name", "tickerSymbol", "currency").optional() //
+                        .match("^COMPANY (?<name>.*)$") //
+                        .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$") //
+                        .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // TOTAL COST: $1,092.92
-                // NET PROCEEDS: $28,031.94
-                .section("amount")
-                .match("^(TOTAL COST|NET PROCEEDS): \\p{Sc}(?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formmatter:off
+                        // AS AT DATE: 20/04/2020 277 3.610000
+                        // @formmatter:on
+                        .section("date") //
+                        .match("^AS AT DATE: (?<date>[\\d]+\\/[\\d]+\\/[\\d]{4}) .*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                    t.setCurrencyCode(context.get("currency"));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                        .oneOf( //
+                                        // @formmatter:off
+                                        // AS AT DATE: 20/04/2020 277 3.610000
+                                        // @formmatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^AS AT DATE: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formmatter:off
+                                        // CONFIRMATION NO: XXXXXXX 1,000 28.060000
+                                        // @formmatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^CONFIRMATION NO: .* (?<shares>[\\.,\\d]+) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                // ORDER NO: N118818020
-                .section("note").optional()
-                .match("^ORDER NO: (?<note>.*)$")
-                .assign((t, v) -> t.setNote("Order No: " + trim(v.get("note"))))
+                        // @formmatter:off
+                        // TOTAL COST: $1,092.92
+                        // NET PROCEEDS: $28,031.94
+                        // @formmatter:on
+                        .section("amount") //
+                        .documentContext("currency") //
+                        .match("^(TOTAL COST|NET PROCEEDS): \\p{Sc}(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
-                .wrap(BuySellEntryItem::new);
+                        // @formmatter:off
+                        // ORDER NO: N118818020
+                        // @formmatter:on
+                        .section("note").optional() //
+                        .match("^ORDER NO: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Order No: " + trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -130,49 +139,41 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // TOTAL GST: $2.72
-                .section("tax").optional()
-                .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
+                        // @formmatter:off
+                        // TOTAL GST: $2.72
+                        // @formmatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
 
-                    processTaxEntries(t, v, type);
-                })
-
-                // TOTAL GST: $2.55 105
-                .section("tax").optional()
-                .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+) .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
-
-                    processTaxEntries(t, v, type);
-                });
+                        // @formmatter:off
+                        // TOTAL GST: $2.55 105
+                        // @formmatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^TOTAL GST: \\p{Sc}(?<tax>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
-                // BROKERAGE & COSTS INCL GST: $29.95 55685147 0404181685
-                .section("fee").optional()
-                .match("^BROKERAGE & COSTS INCL GST: \\p{Sc}(?<fee>[\\.,\\d]+) .*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
+                        // @formmatter:off
+                        // BROKERAGE & COSTS INCL GST: $29.95 55685147 0404181685
+                        // @formmatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^BROKERAGE & COSTS INCL GST: \\p{Sc}(?<fee>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                    processFeeEntries(t, v, type);
-                })
-
-                // APPLICATION MONEY: $0.00
-                .section("fee").optional()
-                .match("^APPLICATION MONEY: \\p{Sc}(?<fee>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-                    v.put("currency", context.get("currency"));
-
-                    processFeeEntries(t, v, type);
-                });
+                        // @formmatter:off
+                        // APPLICATION MONEY: $0.00
+                        // @formmatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^APPLICATION MONEY: \\p{Sc}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override

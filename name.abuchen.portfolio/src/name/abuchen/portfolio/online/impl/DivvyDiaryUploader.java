@@ -30,11 +30,14 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
-import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class DivvyDiaryUploader
 {
+    public static record DDPortfolio(long id, String name)
+    {
+    }
+
     private String apiKey;
 
     public DivvyDiaryUploader(String apiKey)
@@ -42,9 +45,9 @@ public class DivvyDiaryUploader
         this.apiKey = Objects.requireNonNull(apiKey);
     }
 
-    public List<Pair<Long, String>> getPortfolios() throws IOException
+    public List<DDPortfolio> getPortfolios() throws IOException
     {
-        List<Pair<Long, String>> answer = new ArrayList<>();
+        List<DDPortfolio> answer = new ArrayList<>();
 
         String response = new WebAccess("api.divvydiary.com", "/session") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("X-API-Key", apiKey) //$NON-NLS-1$
@@ -60,7 +63,7 @@ public class DivvyDiaryUploader
             for (Object p : portfolios)
             {
                 JSONObject portfolio = (JSONObject) p;
-                answer.add(new Pair<>((Long) portfolio.get("id"), (String) portfolio.get("name"))); //$NON-NLS-1$ //$NON-NLS-2$
+                answer.add(new DDPortfolio((Long) portfolio.get("id"), (String) portfolio.get("name"))); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
@@ -68,7 +71,7 @@ public class DivvyDiaryUploader
     }
 
     @SuppressWarnings({ "unchecked", "nls" })
-    public void upload(Client client, CurrencyConverter converter, long portfolioId, boolean enableExperimentalFeatures)
+    public void upload(Client client, CurrencyConverter converter, long portfolioId, boolean includeTransactions)
                     throws IOException
     {
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
@@ -103,28 +106,28 @@ public class DivvyDiaryUploader
             });
 
             securities.add(item);
-            
-            if (enableExperimentalFeatures)
+            if (includeTransactions)
             {
                 for (TransactionPair<?> pair : security.getTransactions(client)) // NOSONAR
                 {
                     if (!(pair.getTransaction() instanceof PortfolioTransaction))
                         continue;
-                    
+
                     PortfolioTransaction tx = (PortfolioTransaction) pair.getTransaction();
                     if (tx.getType() == PortfolioTransaction.Type.TRANSFER_IN
                                     || tx.getType() == PortfolioTransaction.Type.TRANSFER_OUT)
                         continue;
-                    
+
                     JSONObject activity = new JSONObject();
                     activity.put("type", tx.getType().isPurchase() ? "BUY" : "SELL");
                     activity.put("isin", security.getIsin());
-                    
+
                     LocalDateTime datetime = tx.getDateTime();
                     if (datetime.getHour() == 0 && datetime.getMinute() == 0)
                         datetime = datetime.withHour(12);
-                    activity.put("datetime", datetime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_INSTANT));
-                    
+                    activity.put("datetime",
+                                    datetime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_INSTANT));
+
                     activity.put("quantity", tx.getShares() / Values.Share.divider());
                     activity.put("amount", tx.getGrossValue().getAmount() / Values.Amount.divider());
                     activity.put("fees", tx.getUnitSum(Unit.Type.FEE).getAmount() / Values.Amount.divider());
@@ -132,7 +135,7 @@ public class DivvyDiaryUploader
                     activity.put("currency", tx.getCurrencyCode());
                     activity.put("broker", "portfolioperformance");
                     activity.put("brokerReference", tx.getUUID());
-                    
+
                     activities.add(activity);
                 }
             }
@@ -145,12 +148,15 @@ public class DivvyDiaryUploader
         upload.addHeader("X-API-Key", apiKey); //$NON-NLS-1$
         upload.addHeader("Content-Type", "application/json"); //$NON-NLS-1$ //$NON-NLS-2$
 
+        // inform DivvyDiary that transactions are split adjusted
+        upload.addParameter("splitAdjusted", "true");
+
         JSONObject json = new JSONObject();
 
         json.put("securities", securities);
         if (!activities.isEmpty())
             json.put("activities", activities);
-        
+
         upload.post(JSONValue.toJSONString(json));
     }
 

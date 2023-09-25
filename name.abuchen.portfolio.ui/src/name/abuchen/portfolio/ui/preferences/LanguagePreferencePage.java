@@ -61,7 +61,7 @@ public class LanguagePreferencePage extends PreferencePage
         RUSSIAN("ru", "русский"), //$NON-NLS-1$ //$NON-NLS-2$
         SLOVAK("sk", "Slovenská"), //$NON-NLS-1$ //$NON-NLS-2$
         POLISH("pl", "Polskie"), //$NON-NLS-1$ //$NON-NLS-2$
-        CHINESE_SIMPLIFIED("zh", "中文 (简体)"), //$NON-NLS-1$ //$NON-NLS-2$
+        CHINESE("zh", "中文"), //$NON-NLS-1$ //$NON-NLS-2$
         DANISH("da", "Dansk"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
@@ -289,7 +289,8 @@ public class LanguagePreferencePage extends PreferencePage
 
         // Remove irrelevant variants
         regions.removeIf(l -> l.getDisplayVariant().length() > 0);
-
+        regions.removeIf(l -> l.getDisplayScript().length() > 0);
+        
         Collections.sort(regions, (l1, l2) -> l1.getDisplayCountry().compareTo(l2.getDisplayCountry()));
 
         return regions;

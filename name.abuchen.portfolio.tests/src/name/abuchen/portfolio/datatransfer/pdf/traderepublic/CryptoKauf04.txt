@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+mRbUOgn ipbuhD pwfEpqIS SEITE 1 von 1
+lWsHmSDgEg 5 DATUM 26.10.2021
+53164 ThrFrarZ ORDER c960-9918
+AUSFÜHRUNG 41b0-5376
+CRYPTO-WALLET BitGo
+DEPOT 0125809301
+ABRECHNUNG CRYPTOGESCHÄFT
+ÜBERSICHT
+Market-Order Kauf am 26.10.2021, um 14:47 Uhr (Europe/Berlin) im außerbörslichen Handel (Bankhaus 
+Scheich).
+Der Kontrahent der Transaktion ist Bankhaus Scheich Wertpapierspezialist AG.
+POSITION ANZAHL KURS BETRAG
+Bitcoin (BTC) 0,005 Stk. 54.546,26 EUR 272,73 EUR
+GESAMT 272,73 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -273,73 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE81110101008889671366 26.10.2021 -273,73 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller

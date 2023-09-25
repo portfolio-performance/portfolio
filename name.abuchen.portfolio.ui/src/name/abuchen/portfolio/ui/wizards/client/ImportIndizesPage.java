@@ -77,13 +77,13 @@ public class ImportIndizesPage extends AbstractWizardPage
             {
                 String key = index + '.' + ticker;
 
-                Security security = new Security();
+                String name = bundle.getString(key + ".name"); //$NON-NLS-1$
+                String currencyCode = "XXX".equals(safeGetString(bundle, key + ".currency")) ? null : CurrencyUnit.EUR; //$NON-NLS-1$ //$NON-NLS-2$
+
+                Security security = new Security(name, currencyCode);
                 security.setTickerSymbol(ticker);
-                security.setName(bundle.getString(key + ".name")); //$NON-NLS-1$
                 security.setIsin(safeGetString(bundle, key + ".isin")); //$NON-NLS-1$
                 security.setFeed("YAHOO"); //$NON-NLS-1$
-                security.setCurrencyCode(
-                                "XXX".equals(safeGetString(bundle, key + ".currency")) ? null : CurrencyUnit.EUR); //$NON-NLS-1$ //$NON-NLS-2$
                 proposal.securities.add(security);
             }
         }

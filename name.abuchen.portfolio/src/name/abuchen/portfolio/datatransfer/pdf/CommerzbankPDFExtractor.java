@@ -3,11 +3,9 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -18,7 +16,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -36,7 +33,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addTaxTreatmentTransaction();
-        addKontoauszugGiro();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -267,26 +264,27 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
     }
 
-    private void addKontoauszugGiro()
+    private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Kontow.hrung (?<currency>.*)$");
-            Pattern pYear = Pattern.compile("^Kontoauszug vom [\\d\\s]+\\.[\\d\\s]+\\.(?<year>[\\d\\s]+)$");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    if ("Euro".equals(m.group("currency")))
-                        context.put("currency", CurrencyUnit.EUR);
-                }
+        final DocumentType type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Kontowährung Euro
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Kontow.hrung (?<currency>.*)$") //
+                                        .assign((ctx, v) -> {
+                                            if ("Euro".equals(trim(v.get("currency"))))
+                                                ctx.put("currency", "EUR");
+                                        })
 
-                m = pYear.matcher(line);
-                if (m.matches())
-                    context.put("year", stripBlanks(m.group("year")));
-            }
-        });
+                                        // @formatter:off
+                                        // Kontoauszug vom 2 9 . 0 1 . 2 0 2 1
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Kontoauszug vom [\\d\\s]+\\.[\\d\\s]+\\.(?<year>[\\d\\s]+)$") //
+                                        .assign((ctx, v) -> ctx.put("year", stripBlanks(v.get("year")))));
+
         this.addDocumentTyp(type);
 
         Block removalblock = new Block("^((?!A l t e r Kontostand)(?!Neuer Kontostand).*) \\d \\, \\d \\d( -)$");
@@ -294,18 +292,20 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         removalblock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.REMOVAL);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
                         })
 
-                        .section("day", "month", "amount")
-                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$")
+                        .section("day", "month", "amount") //
+                        .documentContext("currency", "year") //
+                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))( \\-)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." //
+                                            + stripBlanks(v.get("month")) + "." //
+                                            + v.get("year")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
-                            t.setCurrencyCode(context.get("currency"));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -315,18 +315,20 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         depositblock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DEPOSIT);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
-                        .section("day", "month", "amount")
-                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$")
+                        .section("day", "month", "amount") //
+                        .documentContext("currency", "year") //
+                        .match("^(.*)(?<day>(0 [1-9])|([1-2] [0-9])|(3 [0-1])) \\. (?<month>((0 [1-9])|(1 [0-2])) )(?<amount>((\\. )?(\\d ){1,3})+\\, (\\d \\d))$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." + stripBlanks(v.get("month")) + "." + context.get("year")));
+                            t.setDateTime(asDate(stripBlanks(v.get("day")) + "." //
+                                            + stripBlanks(v.get("month")) + "." //
+                                            + v.get("year")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
-                            t.setCurrencyCode(context.get("currency"));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(t -> {

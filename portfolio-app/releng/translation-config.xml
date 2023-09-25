@@ -2,7 +2,7 @@
 	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
 		<language identifier="cs" poeditor="cs" />
-		<language identifier="da" poeditor="da" />>
+		<language identifier="da" poeditor="da" />
 		<language identifier="de" poeditor="de" />
 		<language identifier="es" poeditor="es" />
 		<language identifier="fr" poeditor="fr" />
@@ -10,9 +10,11 @@
 		<language identifier="nl" poeditor="nl" />
 		<language identifier="pl" poeditor="pl" />
 		<language identifier="pt" poeditor="pt" />
+		<language identifier="pt_BR" poeditor="pt-br" />
 		<language identifier="ru" poeditor="ru" />
 		<language identifier="sk" poeditor="sk" />
 		<language identifier="zh" poeditor="zh-Hans" />
+		<language identifier="zh_TW" poeditor="zh-TW" />
 	</languages>
 	<artifacts>
 		<artifact>

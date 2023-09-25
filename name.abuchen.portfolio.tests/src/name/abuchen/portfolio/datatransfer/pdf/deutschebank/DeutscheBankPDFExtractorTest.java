@@ -1,5 +1,16 @@
 package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
@@ -21,13 +32,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +41,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -69,28 +76,24 @@ public class DeutscheBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US17275R1023"), //
-                        hasWkn("878841"), //
-                        hasTicker(null), //
+                        hasIsin("US17275R1023"), hasWkn("878841"), hasTicker(null), //
                         hasName("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"), //
                         hasCurrencyCode("USD"))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), //
-                        hasShares(380), //
-                        hasSource("Dividende01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 64.88), //
-                        hasGrossValue("EUR", 87.13), //
-                        hasForexGrossValue("USD", 98.80), //
-                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), //
-                        hasFees("EUR", 0))));
+                        hasDate("2014-12-15"), hasShares(380), //
+                        hasSource("Dividende01.txt"), hasNote(null), //
+                        hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), hasForexGrossValue("USD", 98.80), //
+                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -114,14 +117,10 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), //
-                        hasShares(380), //
-                        hasSource("Dividende01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 64.88), //
-                        hasGrossValue("EUR", 87.13), //
-                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), //
-                        hasFees("EUR", 0), //
+                        hasDate("2014-12-15"), hasShares(380), //
+                        hasSource("Dividende01.txt"), hasNote(null), //
+                        hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
+                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
@@ -141,28 +140,24 @@ public class DeutscheBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2014-12-15"), //
-                        hasShares(123), //
-                        hasSource("Dividende02.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 14.95), //
-                        hasGrossValue("EUR", 20.22), //
-                        hasTaxes("EUR", 4.28 + 0.23 + 0.76), //
-                        hasFees("EUR", 0))));
+                        hasDate("2014-12-15"), hasShares(123), //
+                        hasSource("Dividende02.txt"), hasNote(null), //
+                        hasAmount("EUR", 14.95), hasGrossValue("EUR", 20.22), //
+                        hasTaxes("EUR", 4.28 + 0.23 + 0.76), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -390,6 +385,37 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende07()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006501554"), hasWkn("650155"), hasTicker(null), //
+                        hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-05T00:00"), hasShares(60.00), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
+                        hasTaxes("EUR", 88.02 + 4.84 + 7.92), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierKauf01()
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
@@ -399,28 +425,25 @@ public class DeutscheBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2015-04-02T09:04"), //
-                        hasShares(19), //
+                        hasDate("2015-04-02T09:04"), hasShares(19), //
                         hasSource("Kauf01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 675.50), //
-                        hasGrossValue("EUR", 665.00), //
-                        hasTaxes("EUR", 0), //
-                        hasFees("EUR", 7.90 + 2.00 + 0.60))));
+                        hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasAmount("EUR", 675.50), hasGrossValue("EUR", 665.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
 
     @Test
@@ -455,7 +478,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3524.98))));
@@ -499,7 +522,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5791)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1694278628 / 24281"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
@@ -543,7 +566,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-20T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4353)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1111111111 / 1111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.95))));
@@ -675,7 +698,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2074.71))));
@@ -697,28 +720,25 @@ public class DeutscheBankPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2015-01-28T09:00"), //
-                        hasShares(8), //
+                        hasDate("2015-01-28T09:00"), hasShares(8), //
                         hasSource("Verkauf02.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 453.66), //
-                        hasGrossValue("EUR", 464.16), //
-                        hasTaxes("EUR", 0), //
-                        hasFees("EUR", 7.90 + 2.00 + 0.60))));
+                        hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasAmount("EUR", 453.66), hasGrossValue("EUR", 464.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
 
     @Test
@@ -753,7 +773,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-02-16T15:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Belegnummer 1202359588 / 831475"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4753.16))));
@@ -814,9 +834,9 @@ public class DeutscheBankPDFExtractorTest
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(32));
@@ -829,7 +849,7 @@ public class DeutscheBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2020-11-02"), //
-                        hasSource("Kontoauszug01.txt"), //
+                        hasSource("GiroKontoauszug01.txt"), //
                         hasNote("Dauerauftrag an Mustermann, Max"), //
                         hasAmount("EUR", 40.00))));
 
@@ -841,7 +861,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -851,7 +871,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
 
         item = iter.next();
@@ -861,7 +881,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.40))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -871,7 +891,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(46.50))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -881,7 +901,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -891,7 +911,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.34))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -901,7 +921,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(562.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
 
         item = iter.next();
@@ -911,7 +931,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.33))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -921,7 +941,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Bargeldauszahlung GAA"));
 
         item = iter.next();
@@ -931,7 +951,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.16))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -941,7 +961,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.39))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -951,7 +971,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
 
         item = iter.next();
 
@@ -960,7 +980,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.59))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -970,7 +990,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.69))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -980,7 +1000,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.90))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -990,7 +1010,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.98))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("2104 ERNSTINGS FAM. Stadt"));
 
         item = iter.next();
@@ -1000,7 +1020,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.09))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("H+M 382 SAGT VIELEN DANK"));
 
         item = iter.next();
@@ -1010,7 +1030,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung von 2104 ERNSTINGS FAM. Stadt"));
 
         item = iter.next();
@@ -1020,7 +1040,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(69.32))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1030,7 +1050,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.61))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1040,7 +1060,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("AMAZON DIGITAL GERMANY GMBH"));
 
         item = iter.next();
@@ -1050,7 +1070,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.89))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("AMAZON DIGITAL GERMANY GMBH"));
 
         item = iter.next();
@@ -1060,7 +1080,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.39))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1070,7 +1090,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.11))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1080,7 +1100,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1090,7 +1110,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
 
         item = iter.next();
@@ -1100,13 +1120,13 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.80))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         // assert transaction
         assertThat(results, hasItem(deposit( //
                         hasDate("2020-11-30"), //
-                        hasSource("Kontoauszug01.txt"), //
+                        hasSource("GiroKontoauszug01.txt"), //
                         hasNote("Überweisung von Max Mustermann"), //
                         hasAmount("EUR", 80.00))));
 
@@ -1118,7 +1138,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.05))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1128,7 +1148,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.38))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1138,7 +1158,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.46))));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
     }
 
@@ -1147,9 +1167,9 @@ public class DeutscheBankPDFExtractorTest
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(48));
@@ -1166,7 +1186,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(293.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
 
         item = iter.next();
@@ -1176,7 +1196,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1186,7 +1206,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1196,7 +1216,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(39.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1206,7 +1226,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1216,7 +1236,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1226,7 +1246,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.57))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1236,7 +1256,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.82))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1246,7 +1266,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Bargeldauszahlung GAA"));
 
         item = iter.next();
@@ -1256,7 +1276,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(344.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Max Mustermann"));
 
         item = iter.next();
@@ -1266,7 +1286,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(39.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1276,7 +1296,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(562.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
 
         item = iter.next();
@@ -1286,7 +1306,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.12))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1296,7 +1316,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.44))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1306,7 +1326,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.01))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1316,7 +1336,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-08T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(45.26))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1326,7 +1346,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.87))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1336,7 +1356,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(38.78))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("H+M 382 SAGT VIELEN DANK"));
 
         item = iter.next();
@@ -1346,7 +1366,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.95))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1356,7 +1376,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(37.40))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1366,7 +1386,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.12))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1376,7 +1396,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.28))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1386,7 +1406,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.36))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1396,7 +1416,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1406,7 +1426,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.14))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1416,7 +1436,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(43.47))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1426,7 +1446,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.94))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1436,7 +1456,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.50))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1446,7 +1466,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1456,7 +1476,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1466,7 +1486,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1476,7 +1496,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1486,7 +1506,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
 
         item = iter.next();
@@ -1496,7 +1516,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.85))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1506,7 +1526,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.50))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
 
         item = iter.next();
@@ -1516,7 +1536,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.10))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1526,7 +1546,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(56.14))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1536,7 +1556,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-22T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.29))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1546,7 +1566,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-22T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.11))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("ROSSMANN VIELEN DANK"));
 
         item = iter.next();
@@ -1556,7 +1576,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(47.86))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1566,7 +1586,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.45))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1576,7 +1596,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.79))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
 
         item = iter.next();
@@ -1586,7 +1606,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
 
         item = iter.next();
 
@@ -1595,7 +1615,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.74))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1605,7 +1625,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.19))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1615,7 +1635,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.96))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1625,8 +1645,18 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
+
+//        item = iter.next();
+//
+//        // assert transaction
+//        transaction = (AccountTransaction) item.getSubject();
+//        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+//        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+//        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+//        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+//        assertThat(transaction.getNote(), is(""));
 
         item = iter.next();
 
@@ -1635,7 +1665,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.47))));
-        assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Saldo der Abschlussposten"));
     }
 
@@ -1644,9 +1674,9 @@ public class DeutscheBankPDFExtractorTest
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(30));
@@ -1663,7 +1693,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
 
         item = iter.next();
 
@@ -1672,7 +1702,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1682,7 +1712,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1692,7 +1722,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1702,7 +1732,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.30))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1712,7 +1742,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1722,7 +1752,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Echtzeitüberweisung von Max Mustermann"));
 
         item = iter.next();
@@ -1732,7 +1762,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(69.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -1742,7 +1772,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(438.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
 
         item = iter.next();
@@ -1752,7 +1782,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1762,7 +1792,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.49))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1772,7 +1802,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("NETFLIX INTERNATIONAL B.V."));
 
         item = iter.next();
@@ -1782,7 +1812,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.80))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -1792,7 +1822,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.46))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1802,7 +1832,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.90))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1812,7 +1842,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.61))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1822,7 +1852,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-20T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1832,7 +1862,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-20T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(39.18))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1842,7 +1872,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.79))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("ROSSMANN VIELEN DANK"));
 
         item = iter.next();
@@ -1852,7 +1882,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.85))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1862,7 +1892,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(37.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -1872,7 +1902,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.01))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1882,7 +1912,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Rundfunk ARD, ZDF, DRadio"));
 
         item = iter.next();
@@ -1892,7 +1922,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
 
         item = iter.next();
@@ -1902,7 +1932,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(118.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
 
         item = iter.next();
@@ -1912,7 +1942,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -1922,7 +1952,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
 
         item = iter.next();
@@ -1932,7 +1962,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
 
         item = iter.next();
@@ -1942,7 +1972,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Vodafone GmbH"));
 
         item = iter.next();
@@ -1952,7 +1982,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.49))));
-        assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
     }
 
@@ -1961,9 +1991,9 @@ public class DeutscheBankPDFExtractorTest
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(27));
@@ -1980,7 +2010,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
 
         item = iter.next();
 
@@ -1989,7 +2019,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -1999,7 +2029,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.94))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung an QVC Handel S.a.r.l und Co. KG"));
 
         item = iter.next();
@@ -2009,7 +2039,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -2019,7 +2049,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.55))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -2029,7 +2059,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -2039,7 +2069,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.85))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
 
         item = iter.next();
@@ -2049,7 +2079,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Max Mustermann"));
 
         item = iter.next();
@@ -2059,7 +2089,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
 
         item = iter.next();
@@ -2069,7 +2099,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(43.57))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2079,7 +2109,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.72))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2089,7 +2119,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.66))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2099,7 +2129,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-08T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
 
         item = iter.next();
@@ -2109,7 +2139,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(438.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
 
         item = iter.next();
@@ -2119,7 +2149,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.17))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2129,7 +2159,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(58.62))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2139,7 +2169,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(406.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
 
         item = iter.next();
@@ -2149,7 +2179,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.99))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("NETFLIX INTERNATIONAL B.V."));
 
         item = iter.next();
@@ -2159,7 +2189,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.98))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2169,7 +2199,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.46))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2179,7 +2209,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.90))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
 
         item = iter.next();
@@ -2189,7 +2219,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.10))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2199,7 +2229,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
 
         item = iter.next();
@@ -2209,7 +2239,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.61))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
 
         item = iter.next();
@@ -2219,7 +2249,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7665.83))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
 
         item = iter.next();
@@ -2229,7 +2259,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.49))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
 
         item = iter.next();
@@ -2239,7 +2269,60 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
+        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
     }
+
+    @Test
+    public void testGiroKontoauszug05()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"), errors);
+
+        // Check if the results list is not empty
+        assertTrue(results.isEmpty());
+
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        // Extract the first error from the list
+        Exception firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        String expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug05.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+    
+    @Test
+    public void testGiroKontoauszug06()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2023-08-14"), hasShares(0), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote("Überweisung an 2023 2023 Max Mustermann"), //
+                        hasAmount("EUR", 1000), hasGrossValue("EUR", 1000), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+
+    }
+
 }

@@ -10,24 +10,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
-import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -182,6 +184,9 @@ public final class Navigation
         void changed(Item item);
     }
 
+    @Inject
+    private IEclipseContext context;
+
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
@@ -317,23 +322,22 @@ public final class Navigation
     private void createGeneralDataSection(Client client)
     {
         Item generalData = new Item(Messages.LabelSecurities);
-        generalData.actionMenu = manager -> { // NOSONAR
-            manager.add(new SimpleAction(Messages.WatchlistNewLabel, Images.PLUS.descriptor(), a -> {
-                String name = askWatchlistName(Messages.WatchlistNewLabel);
-                if (name == null)
-                    return;
+        generalData.actionMenu = manager -> {
 
-                Watchlist watchlist = new Watchlist();
-                watchlist.setName(name);
-                client.getWatchlists().add(watchlist);
+            manager.add(CommandAction.forCommand(context, DomainElement.WATCHLIST.getPaletteLabel(),
+                            UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
+                            DomainElement.WATCHLIST.name()));
 
-                Item item = createWatchlistItem(generalData, client, watchlist);
-                generalData.add(item);
+            manager.add(new Separator());
 
-                this.listeners.forEach(l -> l.changed(item));
+            var elements = EnumSet.of(DomainElement.INVESTMENT_VEHICLE, DomainElement.CRYPTO_CURRENCY,
+                            DomainElement.CONSUMER_PRICE_INDEX, DomainElement.EXCHANGE_RATE);
 
-                client.touch();
-            }));
+            for (var element : elements)
+            {
+                manager.add(CommandAction.forCommand(context, element.getPaletteLabel(),
+                                UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE, element.name()));
+            }
         };
 
         roots.add(generalData);
@@ -344,6 +348,29 @@ public final class Navigation
         {
             generalData.add(createWatchlistItem(generalData, client, watchlist));
         }
+
+        // no need to remove the listener as the Navigation object is only a
+        // singleton and lives as long as the client (plus: no option to attach
+        // oneself here ot a dispose listener)
+        client.addPropertyChangeListener(Client.Properties.WATCHLISTS, e -> {
+            if (e.getNewValue() != null)
+            {
+                Item item = createWatchlistItem(generalData, client, (Watchlist) e.getNewValue());
+                generalData.add(item);
+
+                this.listeners.forEach(l -> l.changed(item));
+            }
+            else if (e.getOldValue() != null)
+            {
+                generalData.children.stream() //
+                                .filter(item -> item.parameter == e.getOldValue()) //
+                                .findAny() //
+                                .ifPresent(item -> {
+                                    generalData.children.remove(item);
+                                    this.listeners.forEach(l -> l.changed(item));
+                                });
+            }
+        });
     }
 
     private Item createWatchlistItem(Item section, Client client, Watchlist watchlist)
@@ -364,13 +391,7 @@ public final class Navigation
                 }
             }));
 
-            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> {
-                client.getWatchlists().remove(watchlist);
-                section.children.remove(item);
-
-                this.listeners.forEach(l -> l.changed(item));
-                client.touch();
-            }));
+            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> client.removeWatchlist(watchlist)));
 
             manager.add(new Separator());
 
@@ -385,11 +406,8 @@ public final class Navigation
             if (index > 0)
             {
                 manager.add(new SimpleAction(Messages.MenuMoveUp, a -> {
-                    List<Watchlist> watchlists = client.getWatchlists();
-                    watchlists.remove(watchlist);
-                    watchlists.add(index - 1, watchlist);
-                    section.children.remove(item);
-                    section.children.add(index - 1 + offset, item);
+                    client.swapWatchlist(watchlist, list.get(index - 1));
+                    Collections.swap(section.children, index + offset, index - 1 + offset);
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
@@ -399,11 +417,8 @@ public final class Navigation
             if (index < size - 1 && size > 1)
             {
                 manager.add(new SimpleAction(Messages.MenuMoveDown, a -> {
-                    List<Watchlist> watchlists = client.getWatchlists();
-                    watchlists.remove(watchlist);
-                    watchlists.add(index + 1, watchlist);
-                    section.children.remove(item);
-                    section.children.add(index + 1 + offset, item);
+                    client.swapWatchlist(watchlist, list.get(index + 1));
+                    Collections.swap(section.children, index + offset, index + 1 + offset);
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
@@ -418,7 +433,7 @@ public final class Navigation
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.WatchlistEditDialog,
                         Messages.WatchlistEditDialogMsg, initialValue, null);
-        if (dlg.open() != InputDialog.OK)
+        if (dlg.open() != Window.OK)
             return null;
 
         return dlg.getValue();
@@ -466,21 +481,10 @@ public final class Navigation
         roots.add(section);
 
         section.actionMenu = manager -> {
-            manager.add(new SimpleAction(Messages.LabelNewTaxonomy, Images.PLUS.descriptor(), a -> {
-                String name = askTaxonomyName(Messages.LabelNewTaxonomy);
-                if (name == null)
-                    return;
 
-                Taxonomy taxonomy = new Taxonomy(name);
-                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
-                client.addTaxonomy(taxonomy);
-
-                Item item = createTaxonomyItem(section, client, taxonomy);
-                section.add(item);
-
-                this.listeners.forEach(l -> l.changed(item));
-                client.touch();
-            }));
+            manager.add(CommandAction.forCommand(context, DomainElement.TAXONOMY.getPaletteLabel(),
+                            UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
+                            DomainElement.TAXONOMY.name()));
 
             manager.add(new Separator());
             manager.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
@@ -490,12 +494,6 @@ public final class Navigation
                 manager.add(new SimpleAction(template.getName(), a -> {
                     Taxonomy taxonomy = template.build();
                     client.addTaxonomy(taxonomy);
-
-                    Item item = createTaxonomyItem(section, client, taxonomy);
-                    section.add(item);
-
-                    this.listeners.forEach(l -> l.changed(item));
-                    client.touch();
                 }));
             }
         };
@@ -504,6 +502,29 @@ public final class Navigation
         {
             section.add(createTaxonomyItem(section, client, taxonomy));
         }
+
+        // no need to remove the listener as the Navigation object is only a
+        // singleton and lives as long as the client (plus: no option to attach
+        // oneself here ot a dispose listener)
+        client.addPropertyChangeListener(Client.Properties.TAXONOMIES, e -> {
+            if (e.getNewValue() != null)
+            {
+                Item item = createTaxonomyItem(section, client, (Taxonomy) e.getNewValue());
+                section.add(item);
+
+                this.listeners.forEach(l -> l.changed(item));
+            }
+            else if (e.getOldValue() != null)
+            {
+                section.children.stream() //
+                                .filter(item -> item.parameter == e.getOldValue()) //
+                                .findAny() //
+                                .ifPresent(item -> {
+                                    section.children.remove(item);
+                                    this.listeners.forEach(l -> l.changed(item));
+                                });
+            }
+        });
     }
 
     private Item createTaxonomyItem(Item section, Client client, Taxonomy taxonomy)
@@ -532,20 +553,12 @@ public final class Navigation
                     Taxonomy copy = taxonomy.copy();
                     copy.setName(newName);
                     client.addTaxonomy(copy);
-                    section.add(createTaxonomyItem(section, client, copy));
-
-                    this.listeners.forEach(l -> l.changed(item));
-                    client.touch();
                 }
             }));
 
             manager.add(new ConfirmAction(Messages.MenuTaxonomyDelete,
                             MessageFormat.format(Messages.MenuTaxonomyDeleteConfirm, taxonomy.getName()), a -> {
                                 client.removeTaxonomy(taxonomy);
-                                section.children.remove(item);
-
-                                this.listeners.forEach(l -> l.changed(item));
-                                client.touch();
                             }));
 
             manager.add(new Separator());
@@ -557,11 +570,8 @@ public final class Navigation
             if (index > 0)
             {
                 manager.add(new SimpleAction(Messages.MenuMoveUp, a -> {
-                    client.removeTaxonomy(taxonomy);
-                    client.addTaxonomy(index - 1, taxonomy);
-                    section.children.remove(item);
-                    section.children.add(index - 1, item);
-
+                    client.swapTaxonomy(taxonomy, list.get(index - 1));
+                    Collections.swap(section.children, index, index - 1);
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
                 }));
@@ -570,11 +580,8 @@ public final class Navigation
             if (index < size - 1 && size > 1)
             {
                 manager.add(new SimpleAction(Messages.MenuMoveDown, a -> {
-                    client.removeTaxonomy(taxonomy);
-                    client.addTaxonomy(index + 1, taxonomy);
-                    section.children.remove(item);
-                    section.children.add(index + 1, item);
-
+                    client.swapTaxonomy(taxonomy, list.get(index + 1));
+                    Collections.swap(section.children, index, index + 1);
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
                 }));
@@ -588,7 +595,7 @@ public final class Navigation
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.DialogTaxonomyNameTitle,
                         Messages.DialogTaxonomyNamePrompt, initialValue, null);
-        if (dlg.open() != InputDialog.OK)
+        if (dlg.open() != Window.OK)
             return null;
 
         return dlg.getValue();

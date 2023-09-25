@@ -38,7 +38,7 @@ public class SearchSecurityWizard extends Wizard
         if (item == null)
             return null;
 
-        return item.create(client.getSettings());
+        return item.create(client);
     }
 
     public Client getClient()

@@ -12,7 +12,7 @@ import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
-import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -113,10 +113,9 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         }
 
         @Override
-        public Security create(ClientSettings settings)
+        public Security create(Client client)
         {
-            Security security = new Security();
-            security.setName(name);
+            Security security = new Security(name, client.getBaseCurrency());
             security.setTickerSymbol(symbol);
             security.setFeed(YahooFinanceQuoteFeed.ID);
             return security;

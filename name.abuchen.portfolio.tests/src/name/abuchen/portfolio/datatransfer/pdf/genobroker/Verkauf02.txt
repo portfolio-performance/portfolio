@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster Seite 1 von 2
+Depotnummer
+ 6020732715
+ Kundennummer 8713294111
+IweLfWt kULeJP
+ Auftragsnummer 498470/51.00
+ZNTWQSt tJwVTo Datum 05.09.2023
+Tannholzstr. 2 Rechnungsnummer W07700-0000295729/23
+08186 SZUJjrtMBdroQY Umsatzsteuer-ID YZ947091285   
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 500 L&G-GERD KOMMER MUL.EQ.ETF         IE000FPWSL69 (WELT0B)
+REG.SHS ETF USD DIS.ON             
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 05.09.2023 13:10:30 Auftraggeber Uwe fiwcHSNV MSJPqZ
+Ausführungskurs 9,559 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 4.779,50 EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 38,43 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 38,43 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 38,43 EUR 9,61- EUR
+Solidaritätszuschlag 5,50% auf 9,61 EUR 0,53- EUR
+Ausmachender Betrag 4.759,31 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 07.09.2023 zu Gunsten des Kontos 5704913 (IBAN DE05 7206 9274 2782 8762 55),
+BLZ 48986302 (BIC GENODEF1ZUS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+7700.09051726.0000830OR07
+Seite 2 von 2
+Depotnummer 7175716394
+Kundennummer 7737848798
+Auftragsnummer 498470/51.00
+Datum 05.09.2023
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 30.707,77 0,00 0,00 0,00 8.817,97
+Verkauf 0,00 0,00 0,00 0,00 38,43
+Nachher 30.707,77 0,00 0,00 0,00 8.856,40
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 4225764400 19.07.2023 Stück 500,0000 4.714,55- 4.769,45 16,47- 38,43 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 38,43
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7700.09051726.0000831OR07

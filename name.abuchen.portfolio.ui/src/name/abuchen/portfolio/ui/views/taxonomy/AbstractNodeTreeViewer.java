@@ -78,6 +78,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.util.TextUtil;
 
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
@@ -505,6 +506,11 @@ import name.abuchen.portfolio.util.TextUtil;
         new StringEditingSupport(TaxonomyNode.class, "key") //$NON-NLS-1$
                         .setMandatory(false).setCanEditCheck(n -> (((TaxonomyNode) n).isClassification()))
                         .addListener(this).attachTo(column);
+        column.setSorter(null);
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new SymbolColumn();
         column.setSorter(null);
         column.setVisible(false);
         support.addColumn(column);

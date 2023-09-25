@@ -1,11 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -18,6 +16,20 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+
+/**
+ * @formatter:off
+ * @implNote Trading Corp. is a US-based financial services company.
+ *           The currency is US$.
+ *
+ *           All security currencies are USD.
+ *
+ * @implSpec The CUSIP number is the WKN number.
+ *
+ * @implSpec Dividend transactions:
+ *           The amount of dividends is reported in gross.
+ * @formatter:on
+ */
 
 @SuppressWarnings("nls")
 public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
@@ -37,31 +49,21 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         return "Lime Trading Corp.";
     }
 
-    /***
-     * Information:
-     * Lime Trading Corp. is a US-based financial services company.
-     * The currency is US$.
-     *
-     * All security currencies are USD.
-     *
-     * CUSIP Number:
-     * The CUSIP number is the WKN number.
-     *
-     * Dividend transactions:
-     * The amount of dividends is reported in gross.
-     */
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", (context, lines) -> {
-            Pattern pYear = Pattern.compile("^.* STATEMENT PERIOD: .*, (?<year>[\\d]{4})$");
+        final DocumentType type = new DocumentType("ACCOUNT STATEMENT", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // AAAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
+                                        // @formatter:on
+                                        .section("month", "day", "year") //
+                                        .match("^.* STATEMENT PERIOD: (?<month>.*) [\\d]{1,2} \\- (?<day>[\\d]{2}), (?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("month", trim(v.get("month")));
+                                            ctx.put("day", v.get("day"));
+                                            ctx.put("year", v.get("year"));
+                                        }));
 
-            for (String line : lines)
-            {
-                Matcher mYear = pYear.matcher(line);
-                if (mYear.matches())
-                    context.put("year", mYear.group("year"));
-            }
-        });
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -78,33 +80,42 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockBuySell.set(new Transaction<BuySellEntry>()
 
                         .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$")
-                        .match("(?<nameContinued>.*)")
+                        .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
+                        .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
                             if ("Sell".equals(v.get("type")))
-                            {
                                 t.setType(PortfolioTransaction.Type.SELL);
-                            }
 
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
+
+                            // if CUSIP lenght != 9
+                            if (v.get("wkn").length() != 9)
+                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getPortfolioTransaction().getDateTime() + " " + t.getPortfolioTransaction().getSecurity());
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(BuySellEntryItem::new));
+                        .wrap((t, ctx) -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+                            return item;
+                        }));
 
         // @formatter:off
         // Formatting:
@@ -120,58 +131,141 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         //
         // Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
         // Sep 15 Nra Withhold: Dividend 902494103 NRA Withhold (0.80)
+        //
+        // Aug 21 Energy Transfer            200 29273V100 Lmtd Partner 62.00
+        // Energy Transfer Operating L P
+        // Aug 21 Nra Withhold: Dividend 29273V100 NRA Withhold (22.94)
+        // Energy Transfer Operating L P
         // @formatter:on
-        Block blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} (Qualified )?Dividend [\\.,\\d]+$");
+        Block blockDividende = new Block("^[\\w]{3} [\\d]{2} .* (?!Qualified).{9} ((Qualified|Lmtd) )?(Dividend|Partner) [\\.,\\d]+$");
         type.addBlock(blockDividende);
         blockDividende.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
                         })
 
-                        .oneOf(
-                                        section -> section
-                                                .attributes("month", "day", "name", "shares", "wkn", "amount", "tax")
-                                                .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
-                                                .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$")
-                                                .assign((t, v) -> {
-                                                    Map<String, String> context = type.getCurrentContext();
-                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
-                                                    v.put("currency", CurrencyUnit.USD);
+                        .oneOf( //
+                                        section -> section //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount","tax") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
 
-                                                    t.setDateTime(asDate(v.get("date")));
-                                                    t.setShares(asShares(v.get("shares")));
-                                                    t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                                                    t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
 
-                                                    Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
-                                                    checkAndSetTax(tax, t, type.getCurrentContext());
-                                                })
-                                        ,
-                                        section -> section
-                                                .attributes("month", "day", "name", "shares", "wkn", "amount")
-                                                .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$")
-                                                .assign((t, v) -> {
-                                                    Map<String, String> context = type.getCurrentContext();
-                                                    v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
-                                                    v.put("currency", CurrencyUnit.USD);
+                                                            // if CUSIP lenght != 9
+                                                            if (v.get("wkn").length() != 9)
+                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                            else
+                                                                t.setSecurity(getOrCreateSecurity(v));
 
-                                                    t.setDateTime(asDate(v.get("date")));
-                                                    t.setShares(asShares(v.get("shares")));
-                                                    t.setAmount(asAmount(v.get("amount")));
-                                                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                                                    t.setSecurity(getOrCreateSecurity(v));
-                                                })
-                                )
+                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        section -> section //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!(Qualified|Lmtd)).{9}) ((Qualified|Lmtd) )?(Dividend|Partner) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+
+                                                            // if CUSIP lenght != 9
+                                                            if (v.get("wkn").length() != 9)
+                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                            else
+                                                                t.setSecurity(getOrCreateSecurity(v));
+
+                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        section -> section //
+                                                        .attributes("month", "day", "name", "shares", "wkn", "amount") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<month>.*) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+
+                                                            // if CUSIP lenght != 9
+                                                            if (v.get("wkn").length() != 9)
+                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                            else
+                                                                t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
                         }));
+
+        Block blockWithholdTaxForDividende = new Block("^[\\w]{3} [\\w]{3} Withholding Adjustment .{9} Journal [\\.,\\d]+$");
+        type.addBlock(blockWithholdTaxForDividende);
+        blockWithholdTaxForDividende.setMaxSize(2);
+        blockWithholdTaxForDividende.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        section -> section //
+                                                        .attributes("note", "wkn", "amount", "name") //
+                                                        .documentContext("day", "month", "year") //
+                                                        .match("^[\\w]{3} [\\w]{3} (?<note>Withholding Adjustment) (?<wkn>.{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                                                            v.put("currency", CurrencyUnit.USD);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(0L);
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+
+                                                            // if CUSIP lenght != 9
+                                                            if (v.get("wkn").length() != 9)
+                                                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                                                            else
+                                                                t.setSecurity(getOrCreateSecurity(v));
+                                                        })
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        })));
 
         // @formatter:off
         // Formatting:
@@ -187,30 +281,38 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockDeliveryInBound.set(new Transaction<PortfolioTransaction>()
 
                         .subject(() -> {
-                            PortfolioTransaction entry = new PortfolioTransaction();
-                            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return entry;
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "shares", "nameContinued")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$")
-                        .match("(?<nameContinued>.*)")
+                        .section("month", "day", "name", "wkn", "shares", "nameContinued") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
+                        .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
+
+                            // if CUSIP lenght != 9
+                            if (v.get("wkn").length() != 9)
+                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null)
-                                return new TransactionItem(t);
-                            return null;
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
                         }));
 
         // @formatter:off
@@ -225,32 +327,35 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockFees.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.FEES);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$")
+                        .section("month", "day", "name", "wkn", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
 
                             // if CUSIP lenght != 9
-                            if (v.get("wkn").length() < 9)
-                                t.setAmount(0L);
+                            if (v.get("wkn").length() != 9)
+                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> {
+                        .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
-                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
-                                item.setFailureMessage("CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
                             return item;
                         }));
 
@@ -266,30 +371,38 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockCashAllocation.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "name", "wkn", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$")
-                        .match("^(?<name>.*)$")
+                        .section("month", "day", "name", "wkn", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
-                            t.setSecurity(getOrCreateSecurity(v));
+
+                            // if CUSIP lenght != 9
+                            if (v.get("wkn").length() != 9)
+                                v.getTransactionContext().put(FAILURE, "CUSIP is maybe incorrect. " + t.getDateTime() + " " + t.getSecurity());
+                            else
+                                t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
                         }));
 
         // @formatter:off
@@ -303,16 +416,16 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockDeposit.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DEPOSIT);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Wire .* (?<amount>[\\.,\\d]+)$")
+                        .section("month", "day", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -320,11 +433,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Formatting:
@@ -337,16 +446,16 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
         blockInterest.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.INTEREST);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
                         })
 
-                        .section("month", "day", "amount")
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$")
+                        .section("month", "day", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -354,11 +463,7 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
     }
 
     @Override

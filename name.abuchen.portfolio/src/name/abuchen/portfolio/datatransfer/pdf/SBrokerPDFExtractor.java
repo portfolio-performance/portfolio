@@ -5,9 +5,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -48,7 +45,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(?<![\\d]{4} )(Wertpapier Abrechnung|Wertpapierabrechnung)");
+        DocumentType type = new DocumentType("(?<![\\d]{4} )(Wertpapier Abrechnung|Wertpapierabrechnung)", "Kontoauszug [\\d]+\\/[\\d]{4} .*");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -58,7 +55,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung )?(Ausgabe Investmentfonds|Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -171,23 +168,34 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         })
+                                ,
+                                // @formatter:off
+                                // Wert Betrag zu Ihren Lasten
+                                // 07.05.2020 EUR 460,91
+                                // @formatter:on
+                                section -> section
+                                        .attributes("currency", "amount")
+                                        .find("Wert Betrag zu Ihren (Gunsten|Lasten).*")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
                         )
 
                 // @formatter:off
-                // Ausführungskurs 146,8444 USD Auftragserteilung/ -ort Persönlich im Institut
                 // Devisenkurs (EUR/USD) 1,1762 vom 28.07.2021
                 // Kurswert 15.605,81- EUR
                 // @formatter:on
-                .section("fxCurrency", "baseCurrency", "termCurrency", "exchangeRate", "gross", "currency").optional()
-                .match("^Ausf.hrungskurs [\\.,\\d]+ (?<fxCurrency>[\\w]{3}).*$")
+                .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional()
                 .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$")
-                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$")
                 .assign((t, v) -> {
                     ExtrExchangeRate rate = asExchangeRate(v);
                     type.getCurrentContext().putType(rate);
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
@@ -254,7 +262,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(Dividendengutschrift|"
                         + "Aussch.ttung|"
-                        + "Gutschrift)");
+                        + "Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("^(Dividendengutschrift"
@@ -383,6 +391,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         })
                                 ,
                                 // @formatter:off
+                                // Wert Devisenkurs Betrag zu Ihren Gunsten
+                                // 07.09.2021 EUR/USD 1,19025 EUR 5,30
+                                // @formatter:on
+                                section -> section
+                                        .attributes("amount", "currency")
+                                        .find("Wert Devisenkurs Betrag zu Ihren (Gunsten|Lasten)")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            t.setAmount(asAmount(v.get("amount")));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        })
+                                ,
+                                // @formatter:off
                                 // Ausmachender Betrag 20,31+ EUR
                                 // @formatter:on
                                 section -> section
@@ -422,15 +443,15 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // Ausschüttung 31,32 USD 27,48+ EUR
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross")
                                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
+                                        .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$")
                                         .assign((t, v) -> {
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -440,17 +461,35 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // ausländische Dividende EUR 70,32
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
-                                        .match("^ausl.ndische Dividende (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
+                                        .match("^ausl.ndische Dividende [\\w]{3} (?<gross>[\\.,\\d]+)$")
+                                        .assign((t, v) -> {
+                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                            type.getCurrentContext().putType(rate);
+
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                        })
+                                ,
+                                // @formatter:off
+                                // 07.09.2021 EUR/USD 1,19025 EUR 5,30
+                                // ausländische Dividende EUR 70,32
+                                // @formatter:on
+                                section -> section
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
+                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$")
+                                        .match("^ausl.ndische Dividende [\\w]{3} (?<gross>[\\.,\\d]+)$")
                                         .assign((t, v) -> {
                                             v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
 
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -460,7 +499,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // ausl. Dividendenanteil (Thesaurierung) EUR 45,10
                                 // @formatter:on
                                 section -> section
-                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross")
+                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,\\d]+)$")
                                         .match("^ausl\\. Dividendenanteil \\(Thesaurierung\\) [\\w]{3} [\\.,\\d]+$")
                                         .assign((t, v) -> {
@@ -469,8 +508,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                             ExtrExchangeRate rate = asExchangeRate(v);
                                             type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = rate.convert(asCurrencyCode(v.get("fxCurrency")), gross);
+                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                         })
@@ -482,10 +521,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 // 000/0000/000 70314707
                                 // @formatter:on
                                 section -> section
-                                        .attributes("note", "note1")
-                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$")
-                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$")
-                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                                        .attributes("note1", "note2")
+                                        .match("^.* (?<note1>Abrechnungs\\-Nr\\.) .*$")
+                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note2>[\\d]+) .*$")
+                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
                                 ,
                                 // @formatter:off
                                 // Abrechnungsnr. 12345678
@@ -579,7 +618,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        Block block = new Block("^(Kauf.*|Verkauf.*|Wertpapier Abrechnung Ausgabe Investmentfonds)$");
+        Block block = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -682,21 +721,25 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pCurrency_Format01 = Pattern.compile("^Datum Erl.uterung Betrag Soll [\\w]{3} Betrag Haben (?<currency>[\\w]{3})$");
-            Pattern pCurrency_Format02 = Pattern.compile("^Buch\\.-Tag Wert Verwendungszweck\\/Erl.uterungen Umsatz \\((?<currency>[\\w]{3})\\)$");
+        final DocumentType type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+                                                        // Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^Datum( Wert)? Erl.uterung Betrag Soll [\\w]{3} Betrag Haben (?<currency>[\\w]{3})$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        // @formatter:off
+                                                        // Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^Buch\\.-Tag Wert Verwendungszweck\\/Erl.uterungen Umsatz \\((?<currency>[\\w]{3})\\)$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))));
 
-            for (String line : lines)
-            {
-                Matcher mCurrency_Format01 = pCurrency_Format01.matcher(line);
-                if (mCurrency_Format01.matches())
-                    context.put("currency", mCurrency_Format01.group("currency"));
-
-                Matcher mCurrency_Format02 = pCurrency_Format02.matcher(line);
-                if (mCurrency_Format02.matches())
-                    context.put("currency", mCurrency_Format02.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Block depositRemovalBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
@@ -704,657 +747,698 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                //              -600,00
-                // 02.11.2021 Dauerauftrag / Wert: 01.11.2021
-                //
-                //              -34,50
-                // 02.11.2021 Lastschrift
-                // @formatter:on
-                .section("type", "amount", "date", "note").optional()
-                .match("^.* (?<type>[\\-|\\+|\\s])(?<amount>[\\.,\\d]+)$")
-                .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                + "(?<note>(Lastschrift"
-                                + "|.berweisung online"
-                                + "|.berweisung"
-                                + "|Kartenzahlung"
-                                + "|EIGENE KREDITKARTENABRECHN\\."
-                                + "|Rechnung"
-                                + "|Gutschrift.berweisung"
-                                + "|SEPA GUTSCHRIFT"
-                                + "|Dauerauftrag"
-                                + "|Scheckeinzug"
-                                + "|Lohn, Gehalt, Rente"
-                                + "|Basis\\-Lastschrift"
-                                + "|Basislastschrift"
-                                + "|Zahlungseingang"
-                                + "|Bargeldeinzahlung"
-                                + "|Geldautomat"
-                                + "|Bargeldausz\\.Debitk\\.GA"
-                                + "|Barumsatz"
-                                + "|sonstige Buchung"
-                                + "|sonstige Entgelte"
-                                + "|entgeltfreie Buchung))"
-                                + ".*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        //              -600,00
+                        // 02.11.2021 Dauerauftrag / Wert: 01.11.2021
+                        //
+                        //              -34,50
+                        // 02.11.2021 Lastschrift
+                        // @formatter:on
+                        .section("type", "amount", "date", "note").optional() //
+                        .documentContext("currency") //
+                        .match("^.* (?<type>[\\-|\\+|\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|.berweisung Vordruck" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Rechnung" //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Bargeldeinzahlung SB" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung))" //
+                                        + ".*$") //
+                        .assign((t, v) -> {
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                    // Is type is "-" change from DEPOSIT to REMOVAL
-                    if ("-".equals(trim(v.get("type"))))
-                        t.setType(AccountTransaction.Type.REMOVAL);
+                            // Is note equal "sonstige Entgelte" change from
+                            // DEPOSIT to FEE
+                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                t.setType(AccountTransaction.Type.FEES);
 
-                    // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                    if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                        t.setType(AccountTransaction.Type.FEES);
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            // Formatting some notes
+                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte)");
 
-                    // Formatting some notes
-                    if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
-                        v.put("note", "Bargeldauszahlung (Debitkarte)");
+                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
-                    if ("GutschriftÜberweisung".equals(v.get("note")))
-                        v.put("note", "Gutschrift (Überweisung)");
+                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
 
-                    if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
-                        v.put("note", "Eigene Kreditkartenabrechnung");
+                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                v.put("note", "Eigene Kreditkartenabrechnung");
 
-                    if ("SEPA GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "SEPA Gutschrift");
+                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "SEPA Gutschrift");
 
-                    t.setNote(v.get("note"));
-                })
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                    if (t.getDateTime() == null && t.getNote() == null)
-                        return null;
+                            if (t.getDateTime() == null && t.getNote() == null)
+                                return null;
 
-                    return item;
-                }));
+                            return item;
+                        }));
 
-        Block depositRemovalBlock_Format02 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Lastschrift"
-                        + "|.berweisung online"
-                        + "|.berweisung"
-                        + "|Kartenzahlung"
-                        + "|EIGENE KREDITKARTENABRECHN\\."
-                        + "|Rechnung"
-                        + "|Gutschrift.berweisung"
-                        + "|SEPA GUTSCHRIFT"
-                        + "|Dauerauftrag"
-                        + "|Scheckeinzug"
-                        + "|Lohn, Gehalt, Rente"
-                        + "|Basis\\-Lastschrift"
-                        + "|Basislastschrift"
-                        + "|Zahlungseingang"
-                        + "|Bargeldeinzahlung"
-                        + "|Geldautomat"
-                        + "|Bargeldausz\\.Debitk\\.GA"
-                        + "|Barumsatz"
-                        + "|sonstige Buchung"
-                        + "|sonstige Entgelte"
-                        + "|entgeltfreie Buchung) "
-                        + ".*[\\.,\\d][\\-|\\+].*$");
+        Block depositRemovalBlock_Format02 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|.berweisung Vordruck" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Rechnung" //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Bargeldeinzahlung SB" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung) " //
+                                        + ".*[\\.,\\d][\\-|\\+].*$");
         depositRemovalBlock_Format02.setMaxSize(1);
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // 02.03.2020 02.03.2020 Lastschrift              2,00-
-                // 02.03.2020 02.03.2020 Überweisung online              1,00-
-                // 01.03.2016 01.03.2016 Basis-Lastschrift              119,00-
-                // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
-                // 06.04.2017 06.04.2017 Überweisung            3.000,00-
-                // 02.05.2018 02.05.2018 Basislastschrift              260,00-
-                // @formatter:on
-                .section("date", "note", "type", "amount")
-                .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                + "(?<note>(Lastschrift"
-                                + "|.berweisung online"
-                                + "|.berweisung"
-                                + "|Kartenzahlung"
-                                + "|EIGENE KREDITKARTENABRECHN\\."
-                                + "|Rechnung"
-                                + "|Gutschrift.berweisung"
-                                + "|SEPA GUTSCHRIFT"
-                                + "|Dauerauftrag"
-                                + "|Scheckeinzug"
-                                + "|Lohn, Gehalt, Rente"
-                                + "|Basis\\-Lastschrift"
-                                + "|Basislastschrift"
-                                + "|Zahlungseingang"
-                                + "|Bargeldeinzahlung"
-                                + "|Geldautomat"
-                                + "|Bargeldausz\\.Debitk\\.GA"
-                                + "|Barumsatz"
-                                + "|sonstige Buchung"
-                                + "|sonstige Entgelte"
-                                + "|entgeltfreie Buchung)) "
-                                + "[\\s]+"
-                                + "(?<amount>[\\.,\\d]+)"
-                                + "(?<type>[\\-|\\+]).*$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // 02.03.2020 02.03.2020 Lastschrift              2,00-
+                        // 02.03.2020 02.03.2020 Überweisung online              1,00-
+                        // 01.03.2016 01.03.2016 Basis-Lastschrift              119,00-
+                        // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
+                        // 06.04.2017 06.04.2017 Überweisung            3.000,00-
+                        // 02.05.2018 02.05.2018 Basislastschrift              260,00-
+                        // 01.04.2019 30.03.2019 Bargeldeinzahlung SB              500,00+
+                        // 13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
+                        // 22.03.2019 21.03.2019 BargAuszDebitFremdGA              500,00-
+                        // @formatter:on
+                        .section("date", "note", "type", "amount") //
+                        .documentContext("currency") //
+                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|.berweisung Vordruck" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Rechnung" //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Bargeldeinzahlung SB" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung)) " //
+                                        + "[\\s]+" //
+                                        + "(?<amount>[\\.,\\d]+)" //
+                                        + "(?<type>[\\-|\\+]).*$") //
+                        .assign((t, v) -> {
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                    // Is type is "-" change from DEPOSIT to REMOVAL
-                    if ("-".equals(v.get("type")))
-                        t.setType(AccountTransaction.Type.REMOVAL);
+                            // Is note equal "sonstige Entgelte" change from
+                            // DEPOSIT to FEE
+                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                t.setType(AccountTransaction.Type.FEES);
 
-                    // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                    if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                        t.setType(AccountTransaction.Type.FEES);
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            // Formatting some notes
+                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte)");
 
-                    // Formatting some notes
-                    if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
-                        v.put("note", "Bargeldauszahlung (Debitkarte)");
+                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
-                    if ("GutschriftÜberweisung".equals(v.get("note")))
-                        v.put("note", "Gutschrift (Überweisung)");
+                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
 
-                    if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
-                        v.put("note", "Eigene Kreditkartenabrechnung");
+                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                v.put("note", "Eigene Kreditkartenabrechnung");
 
-                    if ("SEPA GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "SEPA Gutschrift");
+                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "SEPA Gutschrift");
 
-                    t.setNote(v.get("note"));
-                })
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                    return item;
-                }));
+                            return item;
+                        }));
 
         Block depositRemovalBlock_Format03 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         depositRemovalBlock_Format03.setMaxSize(3);
         type.addBlock(depositRemovalBlock_Format03);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // 25.09.2020 25.09.2020
-                // Lastschrift
-                //                9,75-
-                // @formatter:on
-                .section("date", "note", "amount", "type").optional()
-                .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
-                .match("^(?<note>(Lastschrift"
-                                + "|.berweisung online"
-                                + "|.berweisung"
-                                + "|Kartenzahlung"
-                                + "|EIGENE KREDITKARTENABRECHN\\."
-                                + "|Rechnung"
-                                + "|Gutschrift.berweisung"
-                                + "|SEPA GUTSCHRIFT"
-                                + "|Dauerauftrag"
-                                + "|Scheckeinzug"
-                                + "|Lohn, Gehalt, Rente"
-                                + "|Basis\\-Lastschrift"
-                                + "|Basislastschrift"
-                                + "|Zahlungseingang"
-                                + "|Bargeldeinzahlung"
-                                + "|Geldautomat"
-                                + "|Bargeldausz\\.Debitk\\.GA"
-                                + "|Barumsatz"
-                                + "|sonstige Buchung"
-                                + "|sonstige Entgelte"
-                                + "|entgeltfreie Buchung))$")
-                .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // 25.09.2020 25.09.2020
+                        // Lastschrift
+                        //                9,75-
+                        // @formatter:on
+                        .section("date", "note", "amount", "type").optional() //
+                        .documentContext("currency") //
+                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^(?<note>(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|.berweisung Vordruck" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Rechnung" //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Bargeldeinzahlung SB" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung))$") //
+                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*") //
+                        .assign((t, v) -> {
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                    // Is type is "-" change from DEPOSIT to REMOVAL
-                    if ("-".equals(v.get("type")))
-                        t.setType(AccountTransaction.Type.REMOVAL);
+                            // Is note equal "sonstige Entgelte" change from
+                            // DEPOSIT to FEE
+                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                t.setType(AccountTransaction.Type.FEES);
 
-                    // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                    if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                        t.setType(AccountTransaction.Type.FEES);
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            // Formatting some notes
+                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte)");
 
-                    // Formatting some notes
-                    if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
-                        v.put("note", "Bargeldauszahlung (Debitkarte)");
+                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
-                    if ("GutschriftÜberweisung".equals(v.get("note")))
-                        v.put("note", "Gutschrift (Überweisung)");
+                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
 
-                    if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
-                        v.put("note", "Eigene Kreditkartenabrechnung");
+                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                v.put("note", "Eigene Kreditkartenabrechnung");
 
-                    if ("SEPA GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "SEPA Gutschrift");
+                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "SEPA Gutschrift");
 
-                    t.setNote(v.get("note"));
-                })
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return item;
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return item;
 
-                    return null;
-                }));
+                            return null;
+                        }));
 
-        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
-                        + "(Lastschrift"
-                        + "|.berweisung online"
-                        + "|.berweisung"
-                        + "|Kartenzahlung"
-                        + "|EIGENE KREDITKARTENABRECHN\\."
-                        + "|Rechnung"
-                        + "|Gutschrift.berweisung"
-                        + "|SEPA GUTSCHRIFT"
-                        + "|Dauerauftrag"
-                        + "|Scheckeinzug"
-                        + "|Lohn, Gehalt, Rente"
-                        + "|Basis\\-Lastschrift"
-                        + "|Basislastschrift"
-                        + "|Zahlungseingang"
-                        + "|Bargeldeinzahlung"
-                        + "|Geldautomat"
-                        + "|Bargeldausz\\.Debitk\\.GA"
-                        + "|Barumsatz"
-                        + "|sonstige Buchung"
-                        + "|sonstige Entgelte"
-                        + "|entgeltfreie Buchung) "
-                        + "(\\-)?[\\.,\\d]+$");
+        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                        + "(Lastschrift" //
+                        + "|.berweisung online" //
+                        + "|.berweisung" //
+                        + "|Kartenzahlung" //
+                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                        + "|Rechnung" //
+                        + "|Gutschrift.berweisung" //
+                        + "|SEPA GUTSCHRIFT" //
+                        + "|Dauerauftrag" //
+                        + "|Scheckeinzug" //
+                        + "|Lohn, Gehalt, Rente" //
+                        + "|Basis\\-Lastschrift" //
+                        + "|Basislastschrift" //
+                        + "|Zahlungseingang" //
+                        + "|Bargeldeinzahlung" //
+                        + "|Geldautomat" //
+                        + "|Bargeldausz\\.Debitk\\.GA" //
+                        + "|BargAuszDebitFremdGA" //
+                        + "|Barumsatz" //
+                        + "|sonstige Buchung" //
+                        + "|sonstige Entgelte" //
+                        + "|entgeltfreie Buchung) " //
+                        + "(\\-)?[\\.,\\d]+$"); //
         depositRemovalBlock_Format04.setMaxSize(1);
         type.addBlock(depositRemovalBlock_Format04);
         depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // 30.06 30.06.14 Überweisung -400,00
-                // 07.07 07.07.14 Geldautomat -500,00
-                // 01.07 01.07.14 Lastschrift -28,50
-                // 18.09 18.09.14 Basis-Lastschrift -40,00
-                // 26.09 26.09.14 Lohn, Gehalt, Rente 1.835,19
-                // 29.09 29.09.14 Zahlungseingang 435,54
-                // 22.06 22.06.15 Kartenzahlung -60,82
-                // 23.06 23.06.15 Barumsatz 500,00
-                // @formatter:on
-                .section("date", "note", "amount", "type")
-                .match("^.*[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
-                                + "(?<note>(Lastschrift"
-                                + "|.berweisung online"
-                                + "|.berweisung"
-                                + "|Kartenzahlung"
-                                + "|EIGENE KREDITKARTENABRECHN\\."
-                                + "|Rechnung"
-                                + "|Gutschrift.berweisung"
-                                + "|SEPA GUTSCHRIFT"
-                                + "|Dauerauftrag"
-                                + "|Scheckeinzug"
-                                + "|Lohn, Gehalt, Rente"
-                                + "|Basis\\-Lastschrift"
-                                + "|Basislastschrift"
-                                + "|Zahlungseingang"
-                                + "|Bargeldeinzahlung"
-                                + "|Geldautomat"
-                                + "|Bargeldausz\\.Debitk\\.GA"
-                                + "|Barumsatz"
-                                + "|sonstige Buchung"
-                                + "|sonstige Entgelte"
-                                + "|entgeltfreie Buchung))"
-                                + "(?<type>[\\s|\\-]+)(?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
+                        // @formatter:off
+                        // 30.06 30.06.14 Überweisung -400,00
+                        // 07.07 07.07.14 Geldautomat -500,00
+                        // 01.07 01.07.14 Lastschrift -28,50
+                        // 18.09 18.09.14 Basis-Lastschrift -40,00
+                        // 26.09 26.09.14 Lohn, Gehalt, Rente 1.835,19
+                        // 29.09 29.09.14 Zahlungseingang 435,54
+                        // 22.06 22.06.15 Kartenzahlung -60,82
+                        // 23.06 23.06.15 Barumsatz 500,00
+                        // @formatter:on
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("currency") //
+                        .match("^.*[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                        + "(?<note>(Lastschrift" //
+                                        + "|.berweisung online" //
+                                        + "|.berweisung" //
+                                        + "|Kartenzahlung" //
+                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                        + "|Rechnung" //
+                                        + "|Gutschrift.berweisung" //
+                                        + "|SEPA GUTSCHRIFT" //
+                                        + "|Dauerauftrag" //
+                                        + "|Scheckeinzug" //
+                                        + "|Lohn, Gehalt, Rente" //
+                                        + "|Basis\\-Lastschrift" //
+                                        + "|Basislastschrift" //
+                                        + "|Zahlungseingang" //
+                                        + "|Bargeldeinzahlung" //
+                                        + "|Geldautomat" //
+                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                        + "|BargAuszDebitFremdGA" //
+                                        + "|Barumsatz" //
+                                        + "|sonstige Buchung" //
+                                        + "|sonstige Entgelte" //
+                                        + "|entgeltfreie Buchung))" //
+                                        + "(?<type>[\\s|\\-]+)(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                    // Is type is "-" change from DEPOSIT to REMOVAL
-                    if ("-".equals(trim(v.get("type"))))
-                        t.setType(AccountTransaction.Type.REMOVAL);
+                            // Is note equal "sonstige Entgelte" change from
+                            // DEPOSIT to FEE
+                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                t.setType(AccountTransaction.Type.FEES);
 
-                    // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                    if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                        t.setType(AccountTransaction.Type.FEES);
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
 
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            // Formatting some notes
+                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte)");
 
-                    // Formatting some notes
-                    if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
-                        v.put("note", "Bargeldauszahlung (Debitkarte)");
+                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
-                    if ("GutschriftÜberweisung".equals(v.get("note")))
-                        v.put("note", "Gutschrift (Überweisung)");
+                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
 
-                    if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
-                        v.put("note", "Eigene Kreditkartenabrechnung");
+                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                v.put("note", "Eigene Kreditkartenabrechnung");
 
-                    if ("SEPA GUTSCHRIFT".equals(v.get("note")))
-                        v.put("note", "SEPA Gutschrift");
+                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "SEPA Gutschrift");
 
-                    t.setNote(v.get("note"));
-                })
+                            t.setNote(v.get("note"));
+                        })
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return item;
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return item;
 
-                    return null;
-                }));
+                            return null;
+                        }));
 
         Block feesBlock = new Block("^Entgelte vom .*$", "^Abrechnung .*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.FEES_REFUND);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
+                            return accountTransaction;
+                        })
 
-                .oneOf(
-                                // @formatter:off
-                                // Entgelte vom 29.02.2020 bis 31.03.2020                               4,70-
-                                //
-                                // Grundpreis (Kontoführung)                              2,00-
-                                // Zahlungsverkehr                                        2,70-
-                                //                                                             --------------
-                                // Abrechnung 31.03.2020                                                4,70-
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note", "date", "amount", "type")
-                                        .match("^(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])?)$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Entgelte vom 29.02.2020 bis 31.03.2020                               4,70-
+                                        //
+                                        // Grundpreis (Kontoführung)                              2,00-
+                                        // Zahlungsverkehr                                        2,70-
+                                        //                                                             --------------
+                                        // Abrechnung 31.03.2020                                                4,70-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([\\-|\\+])?)$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from FEES_REFUND to FEES
+                                                            // @formatter:on
+                                                            if ("-".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
 
-                                            // Is type is "-" change from FEES_REFUND to FEES
-                                            if ("-".equals(trim(v.get("type"))))
-                                                t.setType(AccountTransaction.Type.FEES);
+                                                            // @formatter:off
+                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
+                                                            // @formatter:on
+                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
 
-                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                                                t.setType(AccountTransaction.Type.FEES);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // Entgelte vom 01.11.2012 bis 30.11.2012                               4,30S
+                                        // Entgelte / Auslagen                                    4,30S
+                                        // abzüglich 100% Nachlass auf        1,80S               1,80H         1,80H
+                                        // --------------
+                                        // Abrechnung 30.11.2012                                                2,50S
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([S|H])?)$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from FEES_REFUND to FEES
+                                                            // @formatter:on
+                                                            if ("S".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // Entgelte vom 01.11.2012 bis 30.11.2012                               4,30S
-                                // Entgelte / Auslagen                                    4,30S
-                                // abzüglich 100% Nachlass auf        1,80S               1,80H         1,80H
-                                // --------------
-                                // Abrechnung 30.11.2012                                                2,50S
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note", "date", "amount", "type")
-                                        .match("^(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>([S|H])?)$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                                                            // @formatter:off
+                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
+                                                            // @formatter:on
+                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
 
-                                            // Is type is "-" change from FEES_REFUND to FEES
-                                            if ("S".equals(trim(v.get("type"))))
-                                                t.setType(AccountTransaction.Type.FEES);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
 
-                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
-                                                t.setType(AccountTransaction.Type.FEES);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                        )
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
-
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
-
-                    return item;
-                }));
+                            return item;
+                        }));
 
         Block interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.INTEREST);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
 
-                .oneOf(
-                                // @formatter:off
-                                // Abrechnungszeitraum vom 01.01.2020 bis 31.03.2020
-                                // Zinsen für eingeräumte Kontoüberziehung                              0,66-
-                                // 10,0500 v.H. Kred-Zins  bis 29.03.2020
-                                //
-                                //                                                             --------------
-                                // Abrechnung 31.03.2020                                                0,66-
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note", "date", "amount", "type")
-                                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Abrechnungszeitraum vom 01.01.2020 bis 31.03.2020
+                                        // Zinsen für eingeräumte Kontoüberziehung                              0,66-
+                                        // 10,0500 v.H. Kred-Zins  bis 29.03.2020
+                                        //
+                                        //                                                             --------------
+                                        // Abrechnung 31.03.2020                                                0,66-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
-                                            if ("-".equals(v.get("type")))
-                                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // Abrechnungszeitraum vom 01.07.2008 bis 30.09.2008
+                                        // Zinsen für Konto-/Kreditüberziehungen                                0,15S
+                                        // --------------
+                                        // Abrechnung 30.09.2008                                                0,15S
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>[S|H])$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                                                            // @formatter:on
+                                                            if ("S".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // Abrechnungszeitraum vom 01.07.2008 bis 30.09.2008
-                                // Zinsen für Konto-/Kreditüberziehungen                                0,15S
-                                // --------------
-                                // Abrechnung 30.09.2008                                                0,15S
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note", "date", "amount", "type")
-                                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                                        .match("^Abrechnung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<amount>[\\.,\\d]+)(?<type>[S|H])$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
 
-                                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
-                                            if ("S".equals(v.get("type")))
-                                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                        )
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                .wrap(t -> {
-                    TransactionItem item = new TransactionItem(t);
-
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
-
-                    return item;
-                }));
+                            return item;
+                        }));
     }
 
     private void addCreditcardStatementTransaction()
     {
-        DocumentType type = new DocumentType("Ihre Abrechnung vom ", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^Beleg BuchungVerwendungszweck (?<currency>[\\w]{3})$");
+        final DocumentType type = new DocumentType("Ihre Abrechnung vom ", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Beleg BuchungVerwendungszweck EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Beleg BuchungVerwendungszweck (?<currency>[\\w]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-            for (String line : lines)
-            {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                    context.put("currency", m.group("currency"));
-            }
-        });
         this.addDocumentTyp(type);
 
         Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\.,\\d]+([\\s])?([\\-|\\+])$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.DEPOSIT);
-                    return entry;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
 
-                .oneOf(
-                                // @formatter:off
-                                // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
-                                // @formatter:on
-                                section -> section
-                                        .attributes("date", "note", "amount", "type")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
-                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
-                                                        + "(?<note>.*) "
-                                                        + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
-                                                        + "(?<amount>[\\.,\\d]+)"
-                                                        + "([\\s])?(?<type>[\\-|\\+])$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
+                                        // 10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                                                        + "(?<note>.*) " //
+                                                                        + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
+                                                                        + "(?<amount>[\\.,\\d]+)" //
+                                                                        + "([\\s])?(?<type>[\\-|\\+])$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                                            // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(v.get("type")))
-                                                t.setType(AccountTransaction.Type.REMOVAL);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                                            // Formatting some notes
+                                                            if (trim(v.get("note")).endsWith(","))
+                                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
 
-                                            // Formatting some notes
-                                            if (trim(v.get("note")).endsWith(","))
-                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 02.09.22 03.09.22 Lastschrift 1.345,61+
+                                        // 14.09.22 03.09.22 PAYPAL *EBAY DE, 38888899999 20,29+
+                                        //
+                                        // 04.09.22 06.09.22 PAYPAL *ANNA.JAEGER97, 12,90 -
+                                        // 22.09.22 23.09.22 PAYPAL *BRITTAWENDLAND, 10,00 -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})" //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+)" //
+                                                                        + "([\\s])?(?<type>[\\-|\\+])$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // 02.09.22 03.09.22 Lastschrift 1.345,61+
-                                // 14.09.22 03.09.22 PAYPAL *EBAY DE, 38888899999 20,29+
-                                //
-                                // 04.09.22 06.09.22 PAYPAL *ANNA.JAEGER97, 12,90 -
-                                // 22.09.22 23.09.22 PAYPAL *BRITTAWENDLAND, 10,00 -
-                                // @formatter:on
-                                section -> section
-                                        .attributes("date", "note", "amount", "type")
-                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
-                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})"
-                                                        + "(?<note>.*) "
-                                                        + "(?<amount>[\\.,\\d]+)"
-                                                        + "([\\s])?(?<type>[\\-|\\+])$")
-                                        .assign((t, v) -> {
-                                            Map<String, String> context = type.getCurrentContext();
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                                            // Is type is "-" change from DEPOSIT to REMOVAL
-                                            if ("-".equals(v.get("type")))
-                                                t.setType(AccountTransaction.Type.REMOVAL);
+                                                            // Formatting some notes
+                                                            if (trim(v.get("note")).endsWith(","))
+                                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
 
-                                            t.setDateTime(asDate(v.get("date")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
 
-                                            // Formatting some notes
-                                            if (trim(v.get("note")).endsWith(","))
-                                                v.put("note", trim(v.get("note")).substring(0, trim(v.get("note")).length() - 1));
+                        .wrap(TransactionItem::new));
 
-                                            t.setNote(trim(v.get("note")));
-                                        })
-                        )
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
 
-                .wrap(TransactionItem::new));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
+                            return accountTransaction;
+                        })
 
-        Block feesExchangeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
-        type.addBlock(feesExchangeBlock);
-        feesExchangeBlock.set(new Transaction<AccountTransaction>()
+                        // @formatter:off
+                        // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
+                        // 2% für Währungsumrechnung 2,97 -
+                        //
+                        // 10.09.19 05.11.19 WWW.ALIEXPRESS.COM, LONDON USD 31,49 1,10279 28,55+
+                        // 1,75% für Einsatz der Karte im Ausland 0,50+
+                        // @formatter:on
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                        + ".* " //
+                                        + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
+                                        + "[\\.,\\d]+" //
+                                        + "([\\s])?[\\-|\\+]$") //
+                        .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?(?<type>[\\-|\\+])$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from FEES_REFUND to FEES
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.FEES);
 
-                .subject(() -> {
-                    AccountTransaction entry = new AccountTransaction();
-                    entry.setType(AccountTransaction.Type.FEES);
-                    return entry;
-                })
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(trim(v.get("note")));
+                        })
 
-                // @formatter:off
-                // 23.01.21 25.01.21 EVERDRIVE.ME, KRAKOW USD 181,00 1,2192 148,46 -
-                // 2% für Währungsumrechnung 2,97 -
-                // @formatter:on
-                .section("date", "note", "amount")
-                .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} "
-                                + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) "
-                                + ".* "
-                                + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ "
-                                + "[\\.,\\d]+"
-                                + "([\\s])?\\-$")
-                .match("^(?<note>[\\.,\\d]+% .*) (?<amount>[\\.,\\d]+)([\\s])?\\-$")
-                .assign((t, v) -> {
-                    Map<String, String> context = type.getCurrentContext();
-
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                    t.setNote(trim(v.get("note")));
-                })
-
-                .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -1509,9 +1593,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         transaction
                 // @formatter:off
                 // Handelszeit 09:02 Orderentgelt                EUR 10,90-
+                // Handelszeit 09:04 Orderentgelt EUR 9,97 -
                 // @formatter:on
                 .section("currency", "fee").optional()
-                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
@@ -1520,42 +1605,42 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Orderentgelt$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Börse Stuttgart Börsengebühr EUR 2,29-
                 // @formatter:on
                 .section("currency", "fee").optional()
-                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)-$")
+                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Provision 1,48- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Provision (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Transaktionsentgelt Börse 0,60- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Übertragungs-/Liefergebühr 0,12- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
                 // Provision 2,5015 % vom Kurswert 1,25- EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
@@ -1600,7 +1685,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("currency", "fee").optional()
                 .match("^Kurswert$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$")
+                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

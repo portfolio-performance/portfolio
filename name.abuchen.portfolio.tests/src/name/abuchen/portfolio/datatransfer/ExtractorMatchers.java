@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
@@ -407,6 +408,18 @@ public class ExtractorMatchers
     {
         return new PropertyMatcher<>("currencyCode", currencyCode, //$NON-NLS-1$
                         Security::getCurrencyCode);
+    }
+
+    public static Matcher<Security> hasFeed(String quoteFeed)
+    {
+        return new PropertyMatcher<>("quoteFeed", quoteFeed, //$NON-NLS-1$
+                        Security::getFeed);
+    }
+
+    public static Matcher<Security> hasFeedProperty(String name, String value)
+    {
+        return new PropertyMatcher<Security, String>("feedProperty " + name, value, //$NON-NLS-1$
+                        s -> s.getPropertyValue(SecurityProperty.Type.FEED, name).orElse(null));
     }
 
 }

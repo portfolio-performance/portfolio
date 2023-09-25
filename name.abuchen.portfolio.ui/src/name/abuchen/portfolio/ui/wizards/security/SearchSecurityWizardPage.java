@@ -136,7 +136,8 @@ public class SearchSecurityWizardPage extends WizardPage
 
         resultTable.addSelectionChangedListener(event -> {
             item = (ResultItem) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            setPageComplete(item != null && !existingSymbols.contains(item.getSymbol()));
+            setPageComplete(item != null && (item.getSymbol() == null || item.getSymbol().isEmpty()
+                            || !existingSymbols.contains(item.getSymbol())));
         });
 
         setControl(container);
@@ -247,7 +248,7 @@ public class SearchSecurityWizardPage extends WizardPage
         {
             ResultItem item = (ResultItem) element;
 
-            if (item.getSymbol() != null && symbols.contains(item.getSymbol()))
+            if (item.getSymbol() != null && !item.getSymbol().isEmpty() && symbols.contains(item.getSymbol()))
                 return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
             else
                 return null;

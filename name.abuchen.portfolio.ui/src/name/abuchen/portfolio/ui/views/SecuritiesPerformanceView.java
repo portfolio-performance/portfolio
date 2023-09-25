@@ -69,10 +69,10 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -115,7 +115,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 notifyModelUpdated();
             });
 
-            loadPreselectedClientFilter(preferenceStore);
+            clientFilterMenu.trackSelectedFilterConfigurationKey(SecuritiesPerformanceView.class.getSimpleName());
 
             clientFilter = clientFilterMenu.getSelectedFilter();
 
@@ -130,19 +130,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
-        }
-
-        private void loadPreselectedClientFilter(IPreferenceStore preferenceStore)
-        {
-            String selection = preferenceStore.getString(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
-            if (selection != null)
-                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                                .ifPresent(clientFilterMenu::select);
-
-            clientFilterMenu.addListener(filter -> preferenceStore.putValue(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
-                            clientFilterMenu.getSelectedItem().getUUIDs()));
         }
 
         @Override
@@ -258,7 +245,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         recordColumns.addListener(() -> updateTitle(getDefaultTitle()));
         recordColumns.setToolBarManager(getViewToolBarManager());
 
-        MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
+        ToolTipCustomProviderSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
         CopyPasteSupport.enableFor(records);
 
@@ -351,15 +338,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                 return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(),
                                 getClient().getBaseCurrency());
             }
-
-            @Override
-            public String getToolTipText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).explain(SecurityPerformanceRecord.Trails.FIFO_COST).isPresent()
-                                ? SecurityPerformanceRecord.Trails.FIFO_COST
-                                : null;
-            }
         });
+        column.setToolTipProvider(element -> ((SecurityPerformanceRecord) element)
+                        .explain(SecurityPerformanceRecord.Trails.FIFO_COST));
+
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
@@ -735,7 +717,9 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains(),
-                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS, getClient()));
+                        getClient()));
+        column.setToolTipProvider(element -> ((SecurityPerformanceRecord) element)
+                        .explain(SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(
                         element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
@@ -744,10 +728,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column = new Column("cgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains()
-                                        .getForexCaptialGains(),
-                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((SecurityPerformanceRecord) element)
+                        .getRealizedCapitalGains().getForexCaptialGains(), getClient()));
+        column.setToolTipProvider(element -> ((SecurityPerformanceRecord) element)
+                        .explain(SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(
                         element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
@@ -758,7 +742,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains().getCapitalGains(),
-                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS, getClient()));
+                        getClient()));
+        column.setToolTipProvider(element -> ((SecurityPerformanceRecord) element)
+                        .explain(SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS));
+
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
                         .getUnrealizedCapitalGains().getCapitalGains()));
@@ -767,10 +754,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column = new Column("ucgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains()
-                                        .getForexCaptialGains(),
-                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((SecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().getForexCaptialGains(), getClient()));
+        column.setToolTipProvider(element -> ((SecurityPerformanceRecord) element)
+                        .explain(SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX));
+
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
                         .getUnrealizedCapitalGains().getCapitalGains()));

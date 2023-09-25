@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -11,6 +12,31 @@ import java.util.stream.Stream;
  */
 public class ConfigurationSet
 {
+    public enum WellKnownConfigurationSets
+    {
+        /**
+         * custom client filter configurations; data contains comma separated
+         * list of account/portfolio UUIDs
+         */
+        CLIENT_FILTER_DEFINITIONS("client-filter-definitions"), //$NON-NLS-1$
+        /** selected client filter in views; view name is key */
+        CLIENT_FILTER_SELECTION("client-filter-selection"), //$NON-NLS-1$
+        /** list of configured custom reporting periods */
+        REPORTING_PERIODS("reporting-periods"); //$NON-NLS-1$
+
+        private WellKnownConfigurationSets(String key)
+        {
+            this.key = key;
+        }
+
+        private String key;
+
+        public String getKey()
+        {
+            return key;
+        }
+    }
+
     /**
      * A configuration has a UUID, a name given by the user, and a data string.
      */
@@ -27,14 +53,19 @@ public class ConfigurationSet
 
         /* protobuf only */ Configuration(String uuid)
         {
-            this.uuid = uuid;
+            this.uuid = Objects.requireNonNull(uuid);
         }
 
         public Configuration(String name, String data)
         {
-            this.uuid = UUID.randomUUID().toString();
-            this.name = name;
-            this.data = data;
+            this(UUID.randomUUID().toString(), name, data);
+        }
+
+        public Configuration(String uuid, String name, String data)
+        {
+            this.uuid = Objects.requireNonNull(uuid);
+            this.name = Objects.requireNonNull(name);
+            this.data = Objects.requireNonNull(data);
         }
 
         public String getUUID()
@@ -94,6 +125,7 @@ public class ConfigurationSet
      */
     public void add(Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(configuration);
     }
 
@@ -102,6 +134,7 @@ public class ConfigurationSet
      */
     public void add(int index, Configuration configuration)
     {
+        Objects.requireNonNull(configuration);
         configurations.add(index, configuration);
     }
 
@@ -111,5 +144,13 @@ public class ConfigurationSet
     public void remove(Configuration configuration)
     {
         configurations.remove(configuration);
+    }
+
+    /**
+     * Removes all configurations from the set.
+     */
+    public void clear()
+    {
+        configurations.clear();
     }
 }

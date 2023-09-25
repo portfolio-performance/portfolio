@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
@@ -43,6 +44,9 @@ import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
 {
+    @Inject
+    private IStylingEngine stylingEngine;
+
     private Client client;
 
     private final InvestmentPlan.Type planType;
@@ -197,6 +201,9 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
 
         startingWith(valueDate.getControl()).thenRight(interval.label).thenRight(interval.value.getControl());
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int widest = widest(lblName, securities != null ? securities.label : null,
                         portfolio != null ? portfolio.label : null, account.label, lblDate, interval.label,

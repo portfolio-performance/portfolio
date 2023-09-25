@@ -1,9 +1,30 @@
 package name.abuchen.portfolio.datatransfer.pdf.limetradingcorp;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,29 +51,29 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Trading Corp. is a US-based financial services company.
+ *           The currency is US$.
+ *
+ *           All security currencies are USD.
+ *
+ * @implSpec The CUSIP number is the WKN number.
+ *
+ * @implSpec Dividend transactions:
+ *           The amount of dividends is reported in gross.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class LimeTradingCorpPDFExtractorTest
 {
-    /***
-     * Information:
-     * Lime Trading Corp. is a US-based financial services company.
-     * The currency is US$.
-     * 
-     * All security currencies are USD.
-     * 
-     * CUSIP Number:
-     * The CUSIP number is the WKN number.
-     * 
-     * Dividend transactions:
-     * The amount of dividends is reported in gross.
-     */
-
     @Test
     public void testAccountStatement01()
     {
         LimeTradingCorpPDFExtractor extractor = new LimeTradingCorpPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement01.txt"), errors);
 
@@ -288,5 +309,102 @@ public class LimeTradingCorpPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.19))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
+    }
+
+    @Test
+    public void testAccountStatement02()
+    {
+        LimeTradingCorpPDFExtractor extractor = new LimeTradingCorpPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(11));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("756109104"), hasTicker(null), //
+                        hasName("Realty Income C"), //
+                        hasCurrencyCode("USD"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("29273V100"), hasTicker(null), //
+                        hasName("Energy Transfer"), //
+                        hasCurrencyCode("USD"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("12485U102"), hasTicker(null), //
+                        hasName("Cboe Oil Index-reduced Value"), //
+                        hasCurrencyCode("USD"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("922042742"), hasTicker(null), //
+                        hasName("Vanguard Intl Equity Index Fd"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-08-15T00:00"), hasShares(24.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 5.21), hasGrossValue("USD", 6.13), //
+                        hasTaxes("USD", 0.92), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-08-21T00:00"), hasShares(200.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 39.06), hasGrossValue("USD", 62.00), //
+                        hasTaxes("USD", 22.94), hasFees("USD", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-08-31T00:00"), hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Withholding Adjustment"), //
+                        hasAmount("USD", 23.43), hasGrossValue("USD", 23.43), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-08-31T00:00"), hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Withholding Adjustment"), //
+                        hasAmount("USD", 9.15), hasGrossValue("USD", 9.15), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-08-31T00:00"), hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Withholding Adjustment"), //
+                        hasAmount("USD", 1.79), hasGrossValue("USD", 1.79), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-08-31T00:00"), hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Withholding Adjustment"), //
+                        hasAmount("USD", 0.92), hasGrossValue("USD", 0.92), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-08-31T00:00"), hasShares(0.00), //
+                        hasSource("AccountStatement02.txt"), //
+                        hasNote("Withholding Adjustment"), //
+                        hasAmount("USD", 0.52), hasGrossValue("USD", 0.52), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 }

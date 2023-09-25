@@ -1,0 +1,70 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+        Frankfurt, 05.09.2023
+0202462000009999999999
+Herr Auftragsdatum      03.09.2023n
+jffvbgnhjm vvbbnn Handelstag         04.09.2023
+F ankenweg 99 Ausführungszeit    09:53 Uhrr
+99999 kjhgfdsa Valuta             06.09.2023
+Auftragsnummer     235341759/1
+Ausf.platz/-art    Frankfurt
+Wertpapierabrechnung Kauf
+Ihre Depotnummer: 9999999999
+Depotinhaber:     vvbbnn, jffvbgnhjm
+Nr.235399999/1     Kauf                        USA 20/40 (US912810SQ22/A281P1)
+Ausgeführt    :    2.000,000000 USD     Kurswert      :           1.126,29 EUR
+Kurs          :       60,690000 %       Provision     :               5,90 EUR
+Devisenkurs   :        1,077697         Eigene Spesen :               0,00 EUR
+Faktor        :       1,0000000        *Fremde Spesen :               4,71 EUR
+Verwahrart    : Wertpapierrechnung
+Lagerstelle   : Clearstream Lux.        Zinsbetrag    :               1,25 EUR
+Lagerland     : USA                     Bemessungs-
+Zinsen für    :             22 Tage     grundlage     :               0,00 EUR
+Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1.138,15 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               1,97 EUR
+                             Regulierung              :               2,67 EUR
+                             Schlussnoten             :               0,07 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    3409315621.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1001593285
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000009999999999 0113202460000102
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000009999999999 0113202460000202

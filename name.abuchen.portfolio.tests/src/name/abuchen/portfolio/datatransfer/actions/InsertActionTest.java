@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

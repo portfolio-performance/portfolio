@@ -33,13 +33,24 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class CoinGeckoQuoteFeed implements QuoteFeed
+public class CoinGeckoQuoteFeed implements QuoteFeed
 {
-    /* package */ static class Coin
+    public static class Coin
     {
         private String id;
         private String symbol;
         private String name;
+
+        private Coin()
+        {
+        }
+
+        public Coin(String id, String symbol, String name)
+        {
+            this.id = id;
+            this.symbol = symbol;
+            this.name = name;
+        }
 
         public String getId()
         {
@@ -176,7 +187,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
             // data in UTC. This avoids the bug where users in timezones later
             // than UTC see "latest quotes" one day late during the second part
             // of the day. See:
-            // https://github.com/buchen/portfolio/issues/2106#issuecomment-822023523
+            // https://github.com/portfolio-performance/portfolio/issues/2106#issuecomment-822023523
 
             date = date.withZoneSameInstant(ZoneId.systemDefault());
 
@@ -266,7 +277,7 @@ public final class CoinGeckoQuoteFeed implements QuoteFeed
      * all coins existing on the platform. In order to avoid unnecessary calls
      * the mapping will be buffered locally in a HashMap.
      */
-    /* package */ synchronized List<Coin> getCoins() throws IOException
+    public synchronized List<Coin> getCoins() throws IOException
     {
         if (coins == null)
         {

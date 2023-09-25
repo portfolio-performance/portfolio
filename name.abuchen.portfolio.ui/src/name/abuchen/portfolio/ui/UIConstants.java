@@ -79,6 +79,7 @@ public interface UIConstants
     {
         String OPEN_BROWSER = "name.abuchen.portfolio.ui.command.openBrowser"; //$NON-NLS-1$
         String OPEN_RECENT_FILE = "name.abuchen.portfolio.ui.command.openRecentFile"; //$NON-NLS-1$
+        String NEW_DOMAIN_ELEMENT = "name.abuchen.portfolio.ui.command.newDomainElement"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
     }
@@ -98,6 +99,7 @@ public interface UIConstants
         String URL = "name.abuchen.portfolio.ui.param.url"; //$NON-NLS-1$
         String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
         String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
+        String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR

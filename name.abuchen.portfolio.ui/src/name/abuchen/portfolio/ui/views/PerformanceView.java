@@ -62,6 +62,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
@@ -71,8 +72,8 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClie
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -228,7 +229,7 @@ public class PerformanceView extends AbstractHistoricView
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
         ColumnEditingSupport.prepare(calculation);
-        MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+        ToolTipCustomProviderSupport.enableFor(calculation, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(calculation);
 
         // make sure to apply the styles (including font information to the
@@ -237,7 +238,7 @@ public class PerformanceView extends AbstractHistoricView
         stylingEngine.style(calculation.getTree());
 
         final Font boldFont = JFaceResources.getResources()
-                        .createFont(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
+                        .create(FontDescriptor.createFrom(calculation.getTree().getFont()).setStyle(SWT.BOLD));
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
@@ -317,17 +318,13 @@ public class PerformanceView extends AbstractHistoricView
                     return boldFont;
                 return null;
             }
+        });
+        column.setToolTipProvider(element -> {
+            if (!(element instanceof ClientPerformanceSnapshot.Position position))
+                return null;
 
-            @Override
-            public String getToolTipText(Object element)
-            {
-                if (!(element instanceof ClientPerformanceSnapshot.Position position))
-                    return null;
-
-                return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).isPresent()
-                                ? ClientPerformanceSnapshot.Position.TRAIL_VALUE
-                                : null;
-            }
+            return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
+                            .orElseGet(() -> null);
         });
         support.addColumn(column);
 
@@ -341,18 +338,15 @@ public class PerformanceView extends AbstractHistoricView
                     return Values.Money.formatNonZero(pos.getForexGain(), getClient().getBaseCurrency());
                 return null;
             }
-
-            @Override
-            public String getToolTipText(Object element)
-            {
-                if (!(element instanceof ClientPerformanceSnapshot.Position position))
-                    return null;
-
-                return position.explain(ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN).isPresent()
-                                ? ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN
-                                : null;
-            }
         });
+        column.setToolTipProvider(element -> {
+            if (!(element instanceof ClientPerformanceSnapshot.Position position))
+                return null;
+
+            return position.explain(ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN).map(MoneyTrailDataSource::new)
+                            .orElseGet(() -> null);
+        });
+
         support.addColumn(column);
 
         support.createColumns();

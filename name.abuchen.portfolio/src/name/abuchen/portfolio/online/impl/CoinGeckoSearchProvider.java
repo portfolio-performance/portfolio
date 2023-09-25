@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
@@ -67,10 +67,9 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
         }
 
         @Override
-        public Security create(ClientSettings settings)
+        public Security create(Client client)
         {
-            Security security = new Security();
-            security.setName(coin.getName());
+            Security security = new Security(coin.getName(), client.getBaseCurrency());
             security.setTickerSymbol(coin.getSymbol().toUpperCase());
             security.setFeed(CoinGeckoQuoteFeed.ID);
             security.setPropertyValue(SecurityProperty.Type.FEED, CoinGeckoQuoteFeed.COINGECKO_COIN_ID, coin.getId());

@@ -1,0 +1,18 @@
+This product includes software developed by the
+
+[Eclipse Foundation](http://eclipse.org/)
+[Apache Software Foundation](http://apache.org/)
+[SWT Chart Project](http://www.swtchart.org/)
+[Tree Map Library](http://code.google.com/p/treemaplib/)
+[jsoup Java HTML Parser](http://jsoup.org)
+[JSON.simple](https://code.google.com/p/json-simple/)
+[Protobuf](https://github.com/protocolbuffers/protobuf)
+[Guava](https://github.com/google/guava)
+[JsonPath](https://github.com/json-path/JsonPath)
+[D3.js](http://d3js.org)
+[XStream](https://github.com/x-stream/xstream)
+[OpenJDK](http://openjdk.java.net/) JRE binaries build by [Azul Zulu](https://www.azul.com/downloads/zulu/).
+
+Icons by [iconmonstr](http://iconmonstr.com).
+
+This product is published under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html).

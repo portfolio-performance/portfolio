@@ -12,6 +12,9 @@ import java.util.List;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -75,6 +78,7 @@ public class SecurityDetailsViewer
         private Label valueName;
         private Label valueISIN;
         private Label valueTickerSymbol;
+        private Label valueWKN;
 
         @Override
         Control createViewControl(Composite parent)
@@ -86,6 +90,7 @@ public class SecurityDetailsViewer
             valueName = new Label(composite, SWT.NONE);
             valueISIN = new Label(composite, SWT.NONE);
             valueTickerSymbol = new Label(composite, SWT.NONE);
+            valueWKN = new Label(composite, SWT.NONE);
 
             // layout
 
@@ -106,6 +111,7 @@ public class SecurityDetailsViewer
 
             below(valueName, valueISIN);
             below(valueISIN, valueTickerSymbol);
+            below(valueTickerSymbol, valueWKN);
 
             return composite;
         }
@@ -115,13 +121,14 @@ public class SecurityDetailsViewer
         {
             if (security == null)
             {
-                clearLabel(valueName, valueISIN, valueTickerSymbol);
+                clearLabel(valueName, valueISIN, valueTickerSymbol, valueWKN);
             }
             else
             {
                 valueName.setText(security.getName());
                 valueISIN.setText(nonNullString(security.getIsin()));
                 valueTickerSymbol.setText(nonNullString(security.getTickerSymbol()));
+                valueWKN.setText(nonNullString(security.getWkn()));
             }
         }
     }
@@ -353,7 +360,7 @@ public class SecurityDetailsViewer
         }
     }
 
-    private Composite container;
+    private ScrolledComposite container;
 
     private List<SecurityFacet> children = new ArrayList<>();
 
@@ -364,13 +371,22 @@ public class SecurityDetailsViewer
 
     public SecurityDetailsViewer(Composite parent, int style, Client client, boolean showMasterData)
     {
-        container = new Composite(parent, style);
-        container.setBackground(Colors.WHITE);
-        container.setBackgroundMode(SWT.INHERIT_FORCE);
+        container = new ScrolledComposite(parent, SWT.V_SCROLL);
+
+        Composite container1 = new Composite(container, style);
+        container.setContent(container1);
+        container.setExpandHorizontal(true);
+        container.setExpandVertical(true);
+        // Needed to avoid artifact (at least on Linux) when scrollbar appears
+        // and covers right edge (last digits of quotes, etc.) of the content
+        // pane. With setAlwaysShowScrollBars(true) that issue doesn't happen.
+        container.setAlwaysShowScrollBars(true);
+        container1.setBackground(Colors.WHITE);
+        container1.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // facets
 
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container1);
 
         if (showMasterData)
             children.add(new MasterDataFacet());
@@ -386,7 +402,7 @@ public class SecurityDetailsViewer
         {
             try
             {
-                Control control = child.createViewControl(container);
+                Control control = child.createViewControl(container1);
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(control);
             }
             catch (Exception e)
@@ -394,6 +410,15 @@ public class SecurityDetailsViewer
                 PortfolioPlugin.log(e);
             }
         }
+
+        container.addControlListener(new ControlAdapter()
+        {
+            @Override
+            public void controlResized(ControlEvent e)
+            {
+                container.setMinSize(container1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
     }
 
     public Control getControl()

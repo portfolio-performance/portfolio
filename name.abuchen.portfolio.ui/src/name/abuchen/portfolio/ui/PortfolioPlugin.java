@@ -154,6 +154,11 @@ public class PortfolioPlugin implements BundleActivator
         Platform.getLog(FrameworkUtil.getBundle(PortfolioPlugin.class)).log(status);
     }
 
+    public static void log(String message, Throwable t)
+    {
+        log(new Status(IStatus.ERROR, PLUGIN_ID, message, t));
+    }
+
     public static void log(Throwable t)
     {
         log(new Status(IStatus.ERROR, PLUGIN_ID, t.getMessage(), t));

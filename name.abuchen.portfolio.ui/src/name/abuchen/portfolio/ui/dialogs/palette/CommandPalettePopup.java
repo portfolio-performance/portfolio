@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -45,7 +42,6 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -141,22 +137,31 @@ public class CommandPalettePopup extends PopupDialog
 
     private List<Element> elements = new ArrayList<>();
 
+    private List<Runnable> disposeListeners = new ArrayList<>();
+
     private Text filterText;
     private Table table;
 
     private TextLayout textLayout;
 
-    @Inject
-    public CommandPalettePopup(IEclipseContext context, PortfolioPart part)
+    public CommandPalettePopup(IEclipseContext context, String type)
     {
         super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);
 
         List<Class<? extends ElementProvider>> provider = new ArrayList<>();
-        provider.add(NavigationElements.class);
-        provider.add(BookmarkElements.class);
-        provider.add(TransactionElements.class);
-        provider.add(ViewElements.class);
+
+        // for now: if a parameter is given, then it must be to show only new
+        // domain element actions
+        if (type == null)
+        {
+            provider.add(NavigationElements.class);
+            provider.add(BookmarkElements.class);
+            provider.add(TransactionElements.class);
+            provider.add(ViewElements.class);
+        }
+
+        provider.add(NewDomainElements.class);
 
         for (Class<? extends ElementProvider> clazz : provider)
             elements.addAll(ContextInjectionFactory.make(clazz, context).getElements());
@@ -164,6 +169,11 @@ public class CommandPalettePopup extends PopupDialog
         Collections.sort(elements, (r, l) -> r.getTitel().compareTo(l.getTitel()));
 
         create();
+    }
+
+    public void addDisposeListener(Runnable disposeListener)
+    {
+        disposeListeners.add(disposeListener);
     }
 
     @Override
@@ -293,6 +303,9 @@ public class CommandPalettePopup extends PopupDialog
     @Override
     public boolean close()
     {
+        for (Runnable l : disposeListeners)
+            l.run();
+
         if (textLayout != null && !textLayout.isDisposed())
             textLayout.dispose();
 
@@ -378,7 +391,7 @@ public class CommandPalettePopup extends PopupDialog
     private List<Item> match(String filter)
     {
         if (filter.isEmpty())
-            return this.elements.stream().map(Item::new).collect(Collectors.toList());
+            return this.elements.stream().map(Item::new).toList();
 
         Pattern filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -391,6 +404,6 @@ public class CommandPalettePopup extends PopupDialog
         this.elements.stream().filter(e -> e.getSubtitle() != null && filterPattern.matcher(e.getSubtitle()).matches())
                         .filter(e -> !result.contains(e)).forEach(result::add);
 
-        return result.stream().map(Item::new).collect(Collectors.toList());
+        return result.stream().map(Item::new).toList();
     }
 }

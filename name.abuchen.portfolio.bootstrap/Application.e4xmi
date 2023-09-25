@@ -15,7 +15,11 @@
     </children>
     <mainMenu xmi:id="_f_xjkBfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.0">
       <children xsi:type="menu:Menu" xmi:id="_-mWZYBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file" label="%menu.file.label">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_7EZNMBfVEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.newclient" label="%command.newFile.name" tooltip="" mnemonics="%command.newFile.mnemonic" command="_LiZuIBiOEeOR1rNFCzC82A"/>
+        <children xsi:type="menu:Menu" xmi:id="_orRNgBGnEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.bootstrap.menu.commandnewfilename" label="%command.newFile.name" mnemonics="">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_7EZNMBfVEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.newclient" label="%menu.file.label" tooltip="" mnemonics="" command="_LiZuIBiOEeOR1rNFCzC82A"/>
+          <children xsi:type="menu:MenuSeparator" xmi:id="_wFEsoBGnEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.8"/>
+          <children xsi:type="menu:DynamicMenuContribution" xmi:id="_ww534BGnEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.5" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementMenuContribution"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="__5e1MBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.open" label="%command.openFile.name" tooltip="" mnemonics="%command.openFile.mnemonic" command="_3CjQwBfHEeOders_POVQHQ"/>
         <children xsi:type="menu:Menu" xmi:id="_alg1AARxEeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.bootstrap.menu.recentFiles" label="%command.openRecentFile.name">
           <children xsi:type="menu:DynamicMenuContribution" xmi:id="_g05vcARxEeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.0" label="Recent Files" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RecentFilesMenuContribution"/>
@@ -143,7 +147,7 @@
           <parameters xmi:id="_wzFSYJPVEe2-04kloZOp3A" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://poeditor.com/join/project?hash=4lYKLpEWOY"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_gRoQ8N6BEe2oS_58VcEPsg" elementId="name.abuchen.portfolio.ui.menu.help.github" label="%command.openbrowser.gitHub.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/github.com-logo.png" tooltip="%command.openbrowser.gitHub.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
-          <parameters xmi:id="_gRoQ8d6BEe2oS_58VcEPsg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio"/>
+          <parameters xmi:id="_gRoQ8d6BEe2oS_58VcEPsg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/portfolio-performance/portfolio"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_a9IwYJ54EeafbcEa_s_MDw" elementId="name.abuchen.portfolio.ui.menu.help.how-to" label="How-Tos" tooltip="%command.openbrowser.how-tos.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
           <parameters xmi:id="_a9JXcJ54EeafbcEa_s_MDw" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/c/how-to"/>
@@ -197,12 +201,15 @@
   <handlers xmi:id="_kqZZoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.handler.syncEODHistoricalData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncEODHistoricalDataHandler" command="_hlqdUDrlEeydp_NU-UFwGA"/>
   <handlers xmi:id="_epQgkO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.handler.activateDiscreetMode" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler" command="_oL7wsO8hEeyrZdV12xoNqg"/>
   <handlers xmi:id="_ytClQNoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.handler.uploadToMyDividends24" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToMyDividends24Handler" command="_61mn0NoAEe2p9IMNrIn2tQ"/>
+  <handlers xmi:id="_pXfGIBJeEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.handler.newDomainElement" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementHandler" command="_bzKa8BJdEe6zcsTRWurRkg"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
-    <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
   </bindingTables>
   <bindingTables xmi:id="_XLRuABoEEeiQOJdQgYCbNA" elementId="" bindingContext="_KwZhsBoEEeiQOJdQgYCbNA">
+    <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_xMacQIUnEemwCoP93IFEYw">
+      <parameters xmi:id="_Ki11YBl-Ee6SLZnRZcxRzQ" elementId="name.abuchen.portfolio.ui.parameter.0" name="name.abuchen.portfolio.ui.param.type" value="NewDomainElements"/>
+    </bindings>
     <bindings xmi:id="__2J6oPeCEeO4R-HvWULnnw" elementId="" keySequence="M1+S" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
     <bindings xmi:id="_B4KjMApDEeqsXLK6ns2Lug" elementId="" keySequence="M1+U K" command="_tukxoBiQEeOR1rNFCzC82A"/>
     <bindings xmi:id="_LS-jQPeDEeO4R-HvWULnnw" elementId="" keySequence="M1+U T" command="_tukxoBiQEeOR1rNFCzC82A">
@@ -280,7 +287,9 @@
   <commands xmi:id="_nzlOsGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.command.closeFile" commandName="closeFileCommand"/>
   <commands xmi:id="_aOrCgHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.command.forceClearPersistedState" commandName="forceClearPersistedStateCommand"/>
   <commands xmi:id="_3ylCUBk-EeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.ui.command.openBookmarksMenu" commandName="openBookmarksMenu"/>
-  <commands xmi:id="_xMacQIUnEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.command.openCommandPalettePopup" commandName="openCommandPalettePopup"/>
+  <commands xmi:id="_xMacQIUnEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.command.openCommandPalettePopup" commandName="openCommandPalettePopup">
+    <parameters xmi:id="_CQmSYBl-Ee6SLZnRZcxRzQ" elementId="name.abuchen.portfolio.ui.param.type" name="type"/>
+  </commands>
   <commands xmi:id="_kXGdcJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.setCurrentViewAsInitialView" commandName="setCurrentViewAsDefaultView"/>
   <commands xmi:id="_ttUJcJkCEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.openWithLastView" commandName="%command.openWithLastView.name"/>
   <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar">
@@ -293,6 +302,9 @@
   <commands xmi:id="_hlqdUDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.command.syncEODHistoricalData" commandName="syncEODHistoricalData"/>
   <commands xmi:id="_oL7wsO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.command.activateDiscreetMode" commandName="activateDiscreetMode"/>
   <commands xmi:id="_61mn0NoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.command.uploadToMyDividends24" commandName="uploadToMyDividends24"/>
+  <commands xmi:id="_bzKa8BJdEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.command.newDomainElement" commandName="newDomainElement">
+    <parameters xmi:id="_gu244BJdEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.param.type" name="type" optional="false"/>
+  </commands>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

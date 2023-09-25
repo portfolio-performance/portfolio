@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -18,14 +16,18 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
@@ -36,6 +38,7 @@ import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
@@ -68,7 +71,7 @@ public class TradesTableViewer
         trades = new TableViewer(container, SWT.FULL_SELECTION);
 
         ColumnEditingSupport.prepare(trades);
-        ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
+        ToolTipCustomProviderSupport.enableFor(trades, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(trades);
 
         support = new ShowHideColumnHelper(
@@ -130,13 +133,52 @@ public class TradesTableViewer
             {
                 return Images.INFO.image();
             }
+        });
+        column.setToolTipProvider(e -> {
+            Trade trade = (Trade) e;
 
-            @Override
-            public String getToolTipText(Object e)
-            {
-                return ((Trade) e).getTransactions().stream().map(TransactionPair::toString)
-                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
-            }
+            return new TabularDataSource(Messages.LabelTrades, builder -> {
+                builder.addColumns(new TabularDataSource.Column(Messages.ColumnDate, SWT.LEFT, 100) //
+                                .withFormatter(o -> Values.DateTime
+                                                .format(((TransactionPair<?>) o).getTransaction().getDateTime())), //
+                                new TabularDataSource.Column(Messages.ColumnTransactionType, SWT.LEFT), //
+                                new TabularDataSource.Column(Messages.ColumnShares) //
+                                                .withFormatter(o -> Values.Share.formatNonZero((Long) o)), //
+                                new TabularDataSource.Column(Messages.ColumnQuote) //
+                                                .withFormatter(o -> Values.CalculatedQuote.format((Quote) o, //
+                                                                view.getClient().getBaseCurrency())), //
+                                new TabularDataSource.Column(Messages.ColumnAmount) //
+                                                .withFormatter(o -> Values.Money.formatNonZero((Money) o,
+                                                                view.getClient().getBaseCurrency())), //
+                                new TabularDataSource.Column(Messages.ColumnFees) //
+                                                .withFormatter(o -> Values.Money.formatNonZero((Money) o,
+                                                                view.getClient().getBaseCurrency())), //
+                                new TabularDataSource.Column(Messages.ColumnTaxes) //
+                                                .withFormatter(o -> Values.Money.formatNonZero((Money) o,
+                                                                view.getClient().getBaseCurrency())), //
+                                new TabularDataSource.Column(Messages.ColumnTotal).withFormatter(o -> Values.Money
+                                                .formatNonZero((Money) o, view.getClient().getBaseCurrency())), //
+                                new TabularDataSource.Column(Messages.ColumnAccount, SWT.LEFT, 220)
+                                                .withFormatter(o -> o instanceof Named n ? n.getName() : null)
+                                                .withLogo());
+
+                trade.getTransactions().stream().forEach(pair -> {
+
+                    Object[] row = new Object[9];
+                    row[0] = pair;
+                    pair.withAccountTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
+                    pair.withPortfolioTransaction().ifPresent(t -> row[1] = t.getTransaction().getType().toString());
+                    row[2] = pair.getTransaction().getShares();
+                    row[3] = pair.getTransaction().getGrossPricePerShare();
+                    row[4] = pair.getTransaction().getGrossValue();
+                    row[5] = pair.getTransaction().getUnitSum(Unit.Type.FEE);
+                    row[6] = pair.getTransaction().getUnitSum(Unit.Type.TAX);
+                    row[7] = pair.getTransaction().getMonetaryAmount();
+                    row[8] = pair.getOwner();
+
+                    builder.addRow(row);
+                });
+            });
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getTransactions().size()));
         support.addColumn(column);

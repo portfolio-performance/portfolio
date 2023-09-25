@@ -56,6 +56,8 @@ public enum Images
     CLOUD("cloud.png"), //$NON-NLS-1$
     MEASUREMENT_ON("measurement_on.png"), //$NON-NLS-1$
     MEASUREMENT_OFF("measurement_off.png"), //$NON-NLS-1$
+    CROSSHAIR_ON("crosshair_on.png"), //$NON-NLS-1$
+    CROSSHAIR_OFF("crosshair_off.png"), //$NON-NLS-1$
 
     // views
 

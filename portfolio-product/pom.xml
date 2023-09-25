@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.64.1-SNAPSHOT</version>
+		<version>0.65.4-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -109,7 +109,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>da</string></array>]]></value>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string><string>pt</string><string>pt-BR</string><string>fr</string><string>it</string><string>cs</string><string>ru</string><string>sk</string><string>pl</string><string>zh</string><string>zh_TW</string><string>da</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -212,7 +212,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.6.0</version>
+						<version>3.1.0</version>
 						<executions>
 							<execution>
 								<id>check-p2-inf-files</id>
@@ -258,6 +258,7 @@
 									<executable>create-dmg</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
+										<argument>--identity=${applesigner.codesign_id}	</argument>
 										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
@@ -306,6 +307,7 @@
 									<executable>create-dmg</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
+										<argument>--identity=${applesigner.codesign_id}</argument>
 										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/aarch64/PortfolioPerformance.app</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
@@ -328,17 +330,83 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>notarize</id>
+								<id>notarize-aarch64</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<!-- install from https://github.com/mitchellh/gon -->
-									<executable>gon</executable>
+									<executable>xcrun</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
-										<argument>${basedir}/target/config/notarization-config.json</argument>
+										<argument>notarytool</argument>
+										<argument>submit</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
+										<argument>--apple-id</argument>
+										<argument>${env.CODESIGN_APPLEID_USER}</argument>
+										<argument>--password</argument>
+										<argument>${env.CODESIGN_APPLEID_PWD}</argument>
+										<argument>--team-id</argument>
+										<argument>${env.CODESIGN_APPLEID_TEAMID}</argument>
+										<argument>--wait</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>staple-aarch64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>stapler</argument>
+										<argument>staple</argument>
+										<argument>PortfolioPerformance-${project.version}-aarch64.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>notarize-x86_64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>notarytool</argument>
+										<argument>submit</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
+										<argument>--apple-id</argument>
+										<argument>${env.CODESIGN_APPLEID_USER}</argument>
+										<argument>--password</argument>
+										<argument>${env.CODESIGN_APPLEID_PWD}</argument>
+										<argument>--team-id</argument>
+										<argument>${env.CODESIGN_APPLEID_TEAMID}</argument>
+										<argument>--wait</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>staple-x86_64</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>xcrun</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>stapler</argument>
+										<argument>staple</argument>
+										<argument>PortfolioPerformance-${project.version}-x86_64.dmg</argument>
 									</arguments>
 									<skip>${applesigner.skip}</skip>
 								</configuration>

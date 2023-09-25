@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
 import java.math.BigDecimal;
 
@@ -45,28 +46,41 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Einzahlung|Deposit) 3a");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Einzahlung|Deposit) 3a$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.DEPOSIT);
-            return transaction;
-        })
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-                .section("date", "amount", "currency")
-                .find("(Einzahlung|Deposit) 3a")
-                .match("^(Gutschrift: Valuta|Credit: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+        Block firstRelevantLine = new Block("^(Einzahlung|Deposit) 3a$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                .section("note").optional()
-                .match("^(Zahlungseingang von|Incoming payment from): (?<note>.*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+        pdfTransaction //
 
-                .wrap(TransactionItem::new));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Einzahlung 3a
+                        // Gutschrift: Valuta 15.01.2019 CHF 2'150.00
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .find("(Einzahlung|Deposit) 3a") //
+                        .match("^(Gutschrift: Valuta|Credit: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Zahlungseingang von: Einzahlung ABCD
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(Zahlungseingang von|Incoming payment from): (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addBuySellTransaction()
@@ -75,73 +89,85 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^(B.rsenabrechnung|Exchange Settlement) \\- (Kauf|Verkauf|Buy|Sell).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // Is type --> "Verkauf" change from BUY to SELL
-                .section("type").optional()
-                .match("^(B.rsenabrechnung|Exchange Settlement) \\- (?<type>(Kauf|Verkauf|Buy|Sell)).*$")
-                .assign((t, v) -> {
-                    if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type")))
-                        t.setType(PortfolioTransaction.Type.SELL);
-                })
+        pdfTransaction //
 
-                // Order: Kauf
-                // 1.369 Ant iShares Core S&P500
-                // ISIN: IE00B5BMR087
-                // Kurs: USD 262.51
-                .section("isin", "name", "currency")
-                .find("Order: (Kauf|Verkauf|Buy|Sell)")
-                .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
-                .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .match("^(Kurs|Price): (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
 
-                // 1.369 Ant iShares Core S&P500
-                .section("shares")
-                .find("Order: (Kauf|Verkauf|Buy|Sell)")
-                .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) (?<name>.*)$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^(B.rsenabrechnung|Exchange Settlement) \\- (?<type>(Kauf|Verkauf|Buy|Sell)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
-                // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
-                .section("date")
-                .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        // @formatter:off
+                        // Order: Kauf
+                        // 1.369 Ant iShares Core S&P500
+                        // ISIN: IE00B5BMR087
+                        // Kurs: USD 262.51
+                        // @formatter:on
+                        .section("isin", "name", "currency") //
+                        .find("Order: (Kauf|Verkauf|Buy|Sell)") //
+                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile) (?<name>.*)$") //
+                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^(Kurs|Price): (?<currency>[\\w]{3}) .*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
-                .section("amount", "currency")
-                .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                        // @formatter:off
+                        // 1.369 Ant iShares Core S&P500
+                        // @formatter:on
+                        .section("shares") //
+                        .find("Order: (Kauf|Verkauf|Buy|Sell)") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile) (?<name>.*)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Betrag USD 359.27
-                // Umrechnungskurs CHF/USD 1.00195 CHF 359.98
-                .section("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross").optional()
-                .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    ExtrExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                        // @formatter:off
+                        // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
+                        // @formatter:on
+                        .section("date") //
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                        // @formatter:off
+                        // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                })
+                        // @formatter:off
+                        // Betrag USD 359.27
+                        // Umrechnungskurs CHF/USD 1.00195 CHF 359.98
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
+                        .match("^(Betrag|Amount) [\\w]{3} (?<fxGross>[\\.,'\\d]+)$") //
+                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) [\\w]{3} (?<gross>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
 
-                .conclude(ExtractorUtils.fixGrossValueBuySell())
+                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
-                .wrap(BuySellEntryItem::new);
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
+
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
@@ -151,30 +177,45 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Zins|Interest)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Zins|Interest)$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.INTEREST);
-            return transaction;
-        })
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-                .section("date", "amount", "currency")
-                .find("(Zins|Interest)")
-                .match("^(Am|On) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited your account):$")
-                .match("^(Zinsgutschrift|Interest credit): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+        Block firstRelevantLine = new Block("^(Zins|Interest)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                .section("note1", "note2").optional()
-                .match("^(?<note1>(Zinssatz|Interest rate): [\\.,\\d]+%)$")
-                .match("^(?<note2>(Zinsperiode|Interest period): .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " | " + trim(v.get("note2"))))
+        pdfTransaction //
 
-                .wrap(TransactionItem::new));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Zins
+                        // Am 31.03.2019 haben wir Ihrem Konto gutgeschrieben:
+                        // Zinsgutschrift: CHF 0.04
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .find("(Zins|Interest)") //
+                        .match("^(Am|On) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited your account):$") //
+                        .match("^(Zinsgutschrift|Interest credit): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Zinssatz: 0.11%
+                        // Zinsperiode: März
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .match("^(?<note1>(Zinssatz|Interest rate): [\\.,\\d]+%)$") //
+                        .match("^(?<note2>(Zinsperiode|Interest period): .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " | " + trim(v.get("note2"))))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addFeeTransaction()
@@ -182,152 +223,183 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Belastung|Commission)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Belastung|Commission)$");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction transaction = new AccountTransaction();
-            transaction.setType(AccountTransaction.Type.FEES);
-            return transaction;
-        })
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-                .section("date", "amount", "currency")
-                .find("(Belastung|Commission)")
-                .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) \\-(?<amount>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+        Block firstRelevantLine = new Block("^(Belastung|Commission)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                .section("note").optional()
-                .match("^(Effektive|Effective) (?<note>(VIAC Verwaltungsgeb.hr|VIAC administration fee): [\\.,\\d]+%) .*$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+        pdfTransaction //
 
-                .wrap(TransactionItem::new));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Belastung
+                        // Verrechneter Betrag: Valuta 31.01.2019 CHF -1.11
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .find("(Belastung|Commission)") //
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) \\-(?<amount>[\\.,'\\d]+)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Effektive VIAC Verwaltungsgebühr: 0.123% p.a. CHF -1.11
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(Effektive|Effective) (?<note>(VIAC Verwaltungsgeb.hr|VIAC administration fee): [\\.,\\d]+%) .*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung|"
-                        + "Dividend Payment|"
-                        + "R.ckerstattung Quellensteuer|"
+        DocumentType type = new DocumentType("(Dividendenaussch.ttung|" //
+                        + "Dividend Payment|" //
+                        + "R.ckerstattung Quellensteuer|" //
                         + "Refund withholding tax)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendenaussch.ttung|"
-                        + "Dividend Payment|"
-                        + "Cancelation Dividend Payment|"
-                        + "R.ckerstattung Quellensteuer|"
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Dividendenaussch.ttung|" //
+                        + "Dividend Payment|" //
+                        + "Cancelation Dividend Payment|" //
+                        + "R.ckerstattung Quellensteuer|" //
                         + "Refund withholding tax)$");
-        type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                .section("type").optional()
-                .match("^(Dividendenart|Type of dividend): (?<type>(R.ckerstattung Quellensteuer|Refund withholding tax))$")
-                .assign((t, v) -> {
-                    if ("Rückerstattung Quellensteuer".equals(v.get("type")) || "Refund withholding tax".equals(v.get("type")))
-                        t.setType(AccountTransaction.Type.TAX_REFUND);
-                })
+        pdfTransaction //
 
-                // Cancelation Dividend Payment
-                .section("type").optional()
-                .match("^(?<type>Cancelation Dividend Payment)$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                // 47.817 Ant UBS ETF MSCI USA SRI
-                // ISIN: LU0629460089
-                // Ausschüttung: USD 0.72
-                .section("name", "isin", "currency")
-                .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$")
-                .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .section("type").optional() //
+                        .match("^(Dividendenart|Type of dividend): (?<type>(R.ckerstattung Quellensteuer|Refund withholding tax))$") //
+                        .assign((t, v) -> {
+                            if ("Rückerstattung Quellensteuer".equals(v.get("type")) || "Refund withholding tax".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+                        })
 
-                // 47.817 Ant UBS ETF MSCI USA SRI
-                .section("shares")
-                .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        // @formatter:off
+                        // Cancelation Dividend Payment
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Cancelation Dividend Payment)$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
-                // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
-                .section("date")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // 47.817 Ant UBS ETF MSCI USA SRI
+                        // ISIN: LU0629460089
+                        // Ausschüttung: USD 0.72
+                        // @formatter:on
+                        .section("name", "isin", "currency") //
+                        .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$") //
+                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
-                .section("currency", "amount")
-                .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                        // @formatter:off
+                        // 47.817 Ant UBS ETF MSCI USA SRI
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                .optionalOneOf(
-                                // Betrag CAD 0.20
-                                // Umrechnungskurs CHF/CAD 0.7466 CHF 0.15
-                                section -> section
-                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
-                                        .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                        // @formatter:off
+                        // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
+                        // @formatter:on
+                        .section("date") //
+                        .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                        // @formatter:off
+                        // Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^(Gutgeschriebener Betrag: Valuta|Amount (credited|debited): Value date) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                                ,
-                                // Betrag USD 34.26
-                                // Umrechnungskurs CHF/USD
-                                // 0.91759 CHF 31.44
-                                section -> section
-                                        .attributes("fxCurrency", "fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency", "gross")
-                                        .match("^(Betrag|Amount) (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.,'\\d]+)$")
-                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}).*$")
-                                        .match("^(?<exchangeRate>[\\.,'\\d]+) (?<currency>[\\w]{3}) (?<gross>[\\.,'\\d]+)$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Betrag CAD 0.20
+                                        // Umrechnungskurs CHF/CAD 0.7466 CHF 0.15
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross") //
+                                                        .match("^(Betrag|Amount) [\\w]{3} (?<fxGross>[\\.,'\\d]+)$") //
+                                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,'\\d]+) [\\w]{3} (?<gross>[\\.,'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                        )
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Betrag USD 34.26
+                                        // Umrechnungskurs CHF/USD
+                                        // 0.91759 CHF 31.44
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross") //
+                                                        .match("^(Betrag|Amount) [\\w]{3} (?<fxGross>[\\.,'\\d]+)$") //
+                                                        .match("^(Umrechnungskurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}).*$") //
+                                                        .match("^(?<exchangeRate>[\\.,'\\d]+) [\\w]{3} (?<gross>[\\.,'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                // Dividendenart: Ordentliche Dividende
-                // Type of dividend: Ordinary dividend
-                .section("note").optional()
-                .match("^(Dividendenart|Type of dividend): (?<note>.*)")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
-                .wrap((t, ctx) -> {
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                    {
-                        TransactionItem item = new TransactionItem(t);
-                        item.setFailureMessage(ctx.getString(FAILURE));
-                        return item;
-                    }
-                    return null;
-                });
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
-        block.set(pdfTransaction);
+                        // @formatter:off
+                        // Dividendenart: Ordentliche Dividende
+                        // Type of dividend: Ordinary dividend
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(Dividendenart|Type of dividend): (?<note>.*)") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                .section("currency", "tax").optional()
-                .match("^(Stempelsteuer|Stamp duty) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+        transaction //
+                        // @formatter:off
+                        // Stempelsteuer CHF 1.68
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^(Stempelsteuer|Stamp duty) (?<currency>[\\w]{3}) (?<tax>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     @Override

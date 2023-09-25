@@ -232,8 +232,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Label hint = new Label(data, SWT.NONE);
         hint.setText(Messages.TooltipHintPressAlt);
-        hint.setFont(this.resourceManager.createFont(
-                        FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
+        hint.setFont(this.resourceManager
+                        .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
         GridDataFactory.fillDefaults().span(2, 1).applyTo(hint);
     }
 

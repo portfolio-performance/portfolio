@@ -73,7 +73,7 @@ public class ImportPDFHandler
             ZipEntry entry;
             while ((entry = zipin.getNextEntry()) != null)
             {
-                if (entry.isDirectory() || entry.getName() == null || !entry.getName().endsWith(".pdf")) //$NON-NLS-1$
+                if (entry.isDirectory() || entry.getName() == null || !entry.getName().toLowerCase().endsWith(".pdf")) //$NON-NLS-1$
                     continue;
 
                 Path tempFile = Paths.get(tempDir.getAbsolutePath(), entry.getName());

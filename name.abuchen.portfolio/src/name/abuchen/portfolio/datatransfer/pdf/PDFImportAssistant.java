@@ -35,6 +35,7 @@ public class PDFImportAssistant
 
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
+        extractors.add(new BisonPDFExtractor(client));
         extractors.add(new BondoraCapitalPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
@@ -56,6 +57,7 @@ public class PDFImportAssistant
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
+        extractors.add(new GenoBrokerPDFExtractor(client));
         extractors.add(new HargreavesLansdownPlcExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaPDFExtractor(client));
@@ -77,6 +79,7 @@ public class PDFImportAssistant
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new RevolutLtdPDFExtractor(client));
         extractors.add(new SantanderConsumerBankPDFExtractor(client));
+        extractors.add(new SberbankEuropeAGPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));

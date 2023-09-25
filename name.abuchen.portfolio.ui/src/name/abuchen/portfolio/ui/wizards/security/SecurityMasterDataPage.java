@@ -108,7 +108,7 @@ public class SecurityMasterDataPage extends AbstractPage
 
         if (!isExchangeRate)
         {
-            isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
+            isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin", 30); //$NON-NLS-1$
             if (isSyncedOnline)
             {
                 isin.setEditable(false);
@@ -116,11 +116,11 @@ public class SecurityMasterDataPage extends AbstractPage
             }
         }
 
-        bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
+        bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 30); //$NON-NLS-1$
 
         if (!isExchangeRate)
         {
-            wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
+            wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 30); //$NON-NLS-1$
             if (isSyncedOnline)
             {
                 wkn.setEditable(false);

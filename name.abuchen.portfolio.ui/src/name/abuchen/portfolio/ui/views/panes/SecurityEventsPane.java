@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -44,6 +45,9 @@ import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 
 public class SecurityEventsPane implements InformationPanePage
 {
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @Inject
     private Client client;
 
@@ -187,7 +191,7 @@ public class SecurityEventsPane implements InformationPanePage
             @Override
             public void run()
             {
-                CustomEventWizard wizard = new CustomEventWizard(client, security);
+                CustomEventWizard wizard = new CustomEventWizard(stylingEngine, client, security);
                 WizardDialog dialog = new WizardDialog(ActiveShell.get(), wizard);
                 if (dialog.open() == Window.OK)
                     client.markDirty();

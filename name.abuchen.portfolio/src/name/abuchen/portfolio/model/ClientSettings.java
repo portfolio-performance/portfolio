@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
+import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
 
 public class ClientSettings
 {
@@ -49,19 +50,19 @@ public class ClientSettings
         List<Bookmark> answer = new ArrayList<>();
 
         answer.add(new Bookmark("finance.yahoo.com", //$NON-NLS-1$
-                        "http://finance.yahoo.com/quote/{tickerSymbol}")); //$NON-NLS-1$
+                        "https://finance.yahoo.com/quote/{tickerSymbol}")); //$NON-NLS-1$
         answer.add(new Bookmark("onvista.de", //$NON-NLS-1$
-                        "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}")); //$NON-NLS-1$
+                        "https://www.onvista.de/suche.html?SEARCH_VALUE={isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("finanzen.net", //$NON-NLS-1$
-                        "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
+                        "https://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("ariva.de", //$NON-NLS-1$
-                        "http://www.ariva.de/{isin}")); //$NON-NLS-1$
+                        "https://www.ariva.de/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("justetf.com  (ETF)", //$NON-NLS-1$
                         "https://www.justetf.com/etf-profile.html?isin={isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("fondsweb.com", //$NON-NLS-1$
-                        "http://www.fondsweb.com/{isin}")); //$NON-NLS-1$
+                        "https://www.fondsweb.com/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("morningstar.de", //$NON-NLS-1$
-                        "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}")); //$NON-NLS-1$
+                        "https://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("extraETF.com (ETF)", //$NON-NLS-1$
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("alleaktien.de (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
@@ -213,6 +214,11 @@ public class ClientSettings
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+
+    public ConfigurationSet getConfigurationSet(WellKnownConfigurationSets wellKnown)
+    {
+        return getConfigurationSet(wellKnown.getKey());
     }
 
     public Set<Map.Entry<String, ConfigurationSet>> getConfigurationSets()

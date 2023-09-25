@@ -5,13 +5,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.64.1-SNAPSHOT</version>
+	<version>0.65.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>3.0.4</tycho-version>
+		<tycho-version>4.0.2</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -42,7 +42,7 @@
 		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>https://www.portfolio-performance.info/bundled-jre/17.0.5</url>
+			<url>http://portfolio-performance.github.io/bundled-jre/17.0.5</url>
 		</repository>
 	</repositories>
 
@@ -51,7 +51,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.1</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -80,17 +80,15 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
 				<configuration>
-					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
 					<executionEnvironment>JavaSE-17</executionEnvironment>
 					<exclusions>
- 						<exclusion>
- 							<groupId>com.google.code.findbugs</groupId>
- 							<artifactId>jsr305</artifactId>
- 						</exclusion>
- 					</exclusions>
+						<exclusion>
+							<groupId>com.google.code.findbugs</groupId>
+							<artifactId>jsr305</artifactId>
+						</exclusion>
+					</exclusions>
 					<target>
 						<artifact>
 							<groupId>name.abuchen.portfolio</groupId>
@@ -126,7 +124,7 @@
 						</environment>
 					</environments>
 					<filters>
-						<filter>
+						<filter>	
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
 							<removeAll />
@@ -149,6 +147,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_pt</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_pt_BR</id>
 							<removeAll />
 						</filter>
 						<filter>
@@ -188,6 +191,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_zh_TW</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_da</id>
 							<removeAll />
 						</filter>
@@ -209,6 +217,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_pt</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_pt_BR</id>
 							<removeAll />
 						</filter>
 						<filter>
@@ -244,6 +257,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_zh</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_zh_TW</id>
 							<removeAll />
 						</filter>
 						<filter>
@@ -407,29 +425,18 @@
 					<version>3.1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>3.0.5</version>
-					<configuration>
-						<findbugsXmlOutput>true</findbugsXmlOutput>
-						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-						<xmlOutput>true</xmlOutput>
-					</configuration>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>3.3.0</version>
 					<executions>
 						<execution>
 							<id>validate</id>
-							<phase>validate</phase>
+							<phase>verify</phase>
 							<configuration>
 								<configLocation>portfolioCheckstyle.xml</configLocation>
-								<encoding>UTF-8</encoding>
+								<inputEncoding>UTF-8</inputEncoding>
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
-								<linkXRef>false</linkXRef>
 								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
 							</configuration>
 							<goals>
@@ -441,7 +448,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.9.1.2184</version>
+					<version>3.10.0.2594</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
@@ -451,18 +458,18 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.6.0</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.8.10</version>
 				</plugin>
-	            <plugin>
-	                <groupId>com.github.os72</groupId>
-	                <artifactId>protoc-jar-maven-plugin</artifactId>
-	                <version>3.11.4</version>
-	            </plugin>
+				<plugin>
+					<groupId>com.github.os72</groupId>
+					<artifactId>protoc-jar-maven-plugin</artifactId>
+					<version>3.11.4</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

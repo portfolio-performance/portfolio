@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -221,19 +219,13 @@ public class DataSeriesSet
         // custom client filters
         ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
 
-        // quick fix: users can create duplicate client filters that end up to
-        // have the same UUID. Avoid adding both violates the precondition that
-        // every data series must have a unique id
-        Set<String> addedSeries = new HashSet<>();
         for (ClientFilterMenu.Item item : menu.getCustomItems())
         {
             DataSeries series = new DataSeries(
                             isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
                             isPreTax ? item.getLabel() + " " + Messages.LabelSuffix_PreTax : item.getLabel(), //$NON-NLS-1$
                             wheel.next());
-
-            if (addedSeries.add(series.getUUID()))
-                availableSeries.add(series);
+            availableSeries.add(series);
         }
     }
 

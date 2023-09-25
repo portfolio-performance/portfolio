@@ -28,4 +28,5 @@ git init
 git add -A
 git commit -m "Version ${PCK_VERSION}"
 git branch -m main gh-pages
-git remote add origin https://github.com/buchen/portfolio-updatesite.git
+git remote add origin https://github.com/portfolio-performance/portfolio-updatesite.git
+git config http.postBuffer 524288000

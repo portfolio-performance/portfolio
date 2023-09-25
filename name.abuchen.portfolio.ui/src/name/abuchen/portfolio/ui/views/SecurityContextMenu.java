@@ -91,7 +91,7 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
+                StockSplitWizard wizard = new StockSplitWizard(owner.getStylingEngine(), owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
                 if (dialog.open() == Window.OK)
                 {
@@ -106,7 +106,7 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                CustomEventWizard wizard = new CustomEventWizard(owner.getClient(), security);
+                CustomEventWizard wizard = new CustomEventWizard(owner.getStylingEngine(), owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
                 if (dialog.open() == Window.OK)
                 {
@@ -155,8 +155,8 @@ public class SecurityContextMenu
                 @Override
                 public void run()
                 {
-                    Dialog dialog = owner.make(EditSecurityDialog.class, security);                    
-                    
+                    Dialog dialog = owner.make(EditSecurityDialog.class, security);
+
                     if (dialog.open() == Window.OK)
                     {
                         owner.markDirty();
@@ -164,7 +164,7 @@ public class SecurityContextMenu
                     }
                 }
             });
-            
+
             manager.add(new Separator());
             manager.add(new BookmarkMenu(owner.getPart(), security));
         }

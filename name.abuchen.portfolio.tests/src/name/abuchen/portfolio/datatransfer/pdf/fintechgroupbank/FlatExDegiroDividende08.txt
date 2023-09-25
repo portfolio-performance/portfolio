@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+9999999999999999999999
+Anrede
+Vorname Nachname
+Str. 12
+12345 Stadt
+             Frankfurt, 23.03.2023
+Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+Ihre Depotnummer: 1111111111
+Depotinhaber    : Nachname, Vorname
+Nr.2222222222                MICROSOFT    DL-,00000625 (US5949181045/870747)  
+St.             :            96,00    Bruttoausschüttung
+                                      pro Stück          :       2,5492000 USD
+Extag           :       13.03.2023    Bruttoausschüttung :          244,72 USD
+Valuta          :       22.03.2023
+                                      Bemessungsgrundlage:            0,00 EUR
+Devisenkurs     :         1,074400   *Einbeh. Steuer     :            0,00 EUR
+                                      Endbetrag          :          244,72 USD
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                    Kapitalertragsteuer  :            0,00 EUR
+                                    Solidaritätszuschlag :            0,00 EUR
+                                    Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer finden
+  Sie im Steuerreport unter der Transaktion-Nr.: 2222222222.
+Die Verrechnung des Endbetrag erfolgt über Ihr Konto Nr.: 3333333333.
+Fondsinformationen:
+steuerpflichtiger Ertrag                                 :          244,72 USD
+   davon ausländische Erträge mit anrechenb. QSt         :            0,00 USD
+         ausländische Erträge mit anrechenb. fikt. QSt   :            0,00 USD
+anrechenbare ausländische Quellensteuer**                :            0,00 USD
+**  ggf. mit einbeh. Steuer verrechnet und/oder Quellensteuer-Topf zugeführt
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+4444444444444444 5555555555555555

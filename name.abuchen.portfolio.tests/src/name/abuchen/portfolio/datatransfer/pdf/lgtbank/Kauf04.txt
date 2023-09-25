@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P__.P.
+Post CH AG
+___C_H__-_8_0_2_7_ _Z_ü_r_ic_h_  PF 1909 -PRIORITY_______________________________A__________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 1
+Zürich, 9. Juni 2023
+ 
+Abrechnung Zeichnung aus Emission Portfolio: 1234567.000
+Auftragsnummer: 209174085 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung MP - 9.9779.5107-01
+Titel JPMorgan Funds SICAV - Emerging Markets Sustainable Equity 
+Fund
+Namen-Anteile -C- / Class USD
+Verwaltungsgesellschaft / AIFM JPMorgan Asset Management (Europe) S.a r.l.
+ISIN LU2051469208
+Valorennummer 50139326
+Auftragserteilung 07.06.2023 15:59:06 
+Zeichnungstag (NAV) 08.06.2023
+Ausführungsplatz OTC
+Anzahl 480 Stück
+Kurs USD 105.25
+Kurswert USD 50'520.00
+Eidg. Umsatzabgabe  USD 75.78
+Belastung USD Konto 2026457.055 USD 50'595.78
+Valuta 13.06.2023
+Wir haben die Titel in das oben genannte Depot eingebucht.
+Die Gutschrift im oben erwähnten Depot erfolgt vorbehaltlich der effektiven Lieferung.
+2026457 00A T ZH I TRD1001 39509429 2:09 09.06.2023 %Media:XML-A4H
+____
+____

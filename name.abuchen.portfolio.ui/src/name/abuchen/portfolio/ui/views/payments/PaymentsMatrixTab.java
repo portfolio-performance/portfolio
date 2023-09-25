@@ -120,7 +120,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         stylingEngine.style(tableViewer.getTable());
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        boldFont = resources.createFont(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));
+        boldFont = resources.create(FontDescriptor.createFrom(tableViewer.getTable().getFont()).setStyle(SWT.BOLD));
 
         createColumns(tableViewer, tableLayout);
         updateColumnOrder();

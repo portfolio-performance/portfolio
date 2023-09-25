@@ -1,0 +1,425 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.4
+-----------------------------------------
+Sparkasse
+S
+Schweinfurt-Haßberge
+341 00 00  81
+Herrn
+Ihr Ansprechpartner:
+Max Mustermann
+Max Mustermann
+Kundenberatung Hofheim
+Strasse. 8
+Marktplatz 7
+99999 Ebensfeld
+99999 Hofheim i.UFr.
+Telefon 09521 58-764
+Fax 09521 58-499
+Max.Mustermann@sparkasse-sw-has.de
+ 
+ 
+ 
+3. Mai 2021
+Kontoauszug 4/2021 Seite 1 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 31.03.2021, Auszug Nr.    3            6.336,99+
+01.04.2021 01.04.2021
+Dauerauftrag
+             400,00-
+Max Mustermann
+Miete Max und Max
+01.04.2021 01.04.2021
+Dauerauftrag
+             300,00-
+Mustermann Max
+Einzahlung Depot
+01.04.2021 01.04.2021
+Lastschrift
+              72,00-
+Bundeskasse in Weiden
+Kfz-Steuer fuer XXX X 999 fuer die
+Zeit vom 01.04.2021 bis zum 31.10.2
+021 Kassenzeichen K11863008086
+K11863008086/000005/21ZVS06F
+KFZFK1186300808628042020
+Gläubiger-ID: DE09ZZZ00000000001
+01.04.2021 01.04.2021
+Lastschrift
+              67,00-
+Bundeskasse in Weiden
+Kfz-Steuer fuer XXX X 999 fuer die
+Zeit vom 01.04.2021 bis zum 30.09.2
+021 Kassenzeichen K10849353068
+K10849353068/000033/21ZVS06F
+DE51793517300000999999
+Gläubiger-ID: DE09ZZZ00000000001
+01.04.2021 01.04.2021
+Lastschrift
+              41,03-
+HUK-COBURG UNTERNEHMENSGRUPPE
+HUK24 AG
+HUK24, KRAFTFAHRT-VERSICHERUNG 561/
+999999-K, XXX X 999
+210+ZKLE 30.03.21 561/999999-K F
+MF038677198
+Gläubiger-ID: DE17ZZZ00000031285
+01.04.2021 01.04.2021
+Dauerauftrag
+              25,00-
+Max Mustermann
+Taschengeld
+           5.431,96+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 4/2021 Seite 2 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99,  Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           5.431,96+
+Übertrag:
+01.04.2021 01.04.2021
+Lastschrift
+               9,99-
+AMAZON PAYMENTS EUROPE S.C.A.
+305-9999999-0744366 AMZN Mktp DE 42
+JBH07AYR8KN5DK
+42JBH07AYR8KN5DK
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+01.04.2021 01.04.2021
+GutschriftÜberweisung
+             100,00+
+Anna Max
+N64
+54010901136901464469999
+01.04.2021 01.04.2021
+GutschriftÜberweisung
+             100,00+
+MICHAEL BÜRKLE
+kauf von: rad2x, HDMI Adapter, ED64
+  
+, 32GB SD Karte + Porto
+01.04.2021 01.04.2021
+GutschriftÜberweisung
+             242,49+
+Max Mustermann
+Handyvertrag, Max Taschengeld, S
+trom und Miete
+06.04.2021 06.04.2021
+Überweisung online
+             104,99-
+Alen Potros
+Nintendo 64 Junglegreen Zahlungsref
+erenz 10-09999-83396
+DATUM 03.04.2021, 22.27 UHR
+1.TAN 952390
+1134338363-20210403222637
+06.04.2021 06.04.2021
+GutschriftÜberweisung
+              43,82+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1012977616225 PAYPAL
+06.04.2021 06.04.2021
+GutschriftÜberweisung
+              50,00+
+Andreas Mustermann
+N64 007 und Transferpak
+06.04.2021 06.04.2021
+GutschriftÜberweisung
+              78,21+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013026462045 PAYPAL
+07.04.2021 07.04.2021
+Lastschrift
+             212,90-
+AMAZON PAYMENTS EUROPE S.C.A.
+305-4246238-0574745 AMZN Mktp DE 3G
+RDQZTYW3G7V78W
+3GRDQZTYW3G7V78W
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+08.04.2021 08.04.2021
+Lastschrift
+           1.651,64-
+Spk Schweinfurt-Haßberge
+KREDITKARTENABRECHNUNG VISA-ABR. 49
+0762XXXXXX9999
+AD08-D-2021-04-07-20.16.35.710167
+           4.066,96+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 4/2021 Seite 3 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99,  Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           4.066,96+
+Übertrag:
+09.04.2021 09.04.2021
+Lastschrift
+              76,43-
+AMAZON PAYMENTS EUROPE S.C.A.
+305-0073687-2050773 AMZN Mktp DE 4P
+W8NSQ174HMJPIK
+4PW8NSQ174HMJPIK
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+09.04.2021 09.04.2021
+Lastschrift
+              57,99-
+AMAZON PAYMENTS EUROPE S.C.A.
+305-1672653-1071554 AMZN Mktp DE 3O
+V5FZY75L69Z46T
+3OV5FZY75L69Z46T
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+  
+09.04.2021 09.04.2021
+GutschriftÜberweisung
+             150,00+
+Mustermann, Stefan und Ulrike
+Nintendo 64 Paket - Danke
+09.04.2021 09.04.2021
+GutschriftÜberweisung
+           1.726,81+
+Autohaus Eberhardt GmbH
+Maerz
+CT-1-09.04.2021
+12.04.2021 12.04.2021
+Dauerauftrag
+              42,00-
+Max Mustermann
+Bausparbeitrag 999999999
+12.04.2021 12.04.2021
+GutschriftÜberweisung
+              50,70+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013098273742 PAYPAL
+12.04.2021 12.04.2021
+GutschriftÜberweisung
+             212,90+
+AMAZON PAYMENTS EUROPE S.C.A.
+305-4246238-0574745 AMZ Preiszwerg
+24 69LF9Z48JI4EUKTR
+69LF9Z48JI4EUKTR
+16.04.2021 16.04.2021
+Lastschrift
+              59,97-
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.: 6099999999, Rg-Nr.: 1975523
+615/6, Ihre Tarifrechnung
+3403264301630001975523615006RCUR
+T0010001B000006099999999
+Gläubiger-ID: DE9700000000142462
+19.04.2021 19.04.2021
+GutschriftÜberweisung
+              15,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013210418524 PAYPAL
+19.04.2021 19.04.2021
+GutschriftÜberweisung
+           6.000,00+
+Max Mustermann und Max Mustermann
+Max u. Max Mustermann
+Leihgeld
+          11.985,98+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 4/2021 Seite 4 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99,  Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+          11.985,98+
+Übertrag:
+20.04.2021 20.04.2021
+Lastschrift
+              24,00-
+BAYERISCHES ROTES KREUZ LANDESGESCH
+Bayerisches Rotes Kreuz
+FOERDERBEITRAG-SPENDE BAYERISCHES R
+OTES KREUZ VIELEN DANK
+30170878
+700013893
+Gläubiger-ID: DE14ZZZ00000006604
+20.04.2021 20.04.2021
+Lastschrift
+              15,44-
+Lotto24 by Adyen
+Lotto24 C95558853 T335087813770
+C7429185689715694C
+1316070971783437
+Gläubiger-ID: NL48ZZZ342764500000
+  
+21.04.2021 21.04.2021
+Überweisung online
+          10.668,97-
+Autohaus Eberhardt GmbH
+Leasing Sonderzahlung XXX-X 208E
+DATUM 20.04.2021, 20.04 UHR
+1.TAN 681094
+21.04.2021 21.04.2021
+GutschriftÜberweisung
+              40,00+
+Online Payments Foundation
+eBay Kleinanzeigen - Anzeigennr.: 1
+722820405
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+tra-87461d8d5281
+22.04.2021 22.04.2021
+Lastschrift
+               3,05-
+Lotto24 by Adyen
+Lotto24 C95558853 T439421707541
+C7439189496939388C
+1316070971783437
+Gläubiger-ID: NL48ZZZ342764500000
+22.04.2021 22.04.2021
+GutschriftÜberweisung
+              32,00+
+Kristin Kathrin Wießner
+Zelda
+23.04.2021 23.04.2021
+GutschriftÜberweisung
+             135,00+
+AOK-Bayern die Gesundheitskasse Zen
+AOK Bayern
+770001620865 400005175878 135,00- A
+OK BONUSTARIF 2017 01.04.2020 - 31.
+12.2020
+770001620865 X982370571
+26.04.2021 23.04.2021
+BargAuszDebitFremdGA
+              30,00-
+LIF SEUBEL//SPK.COBURG-LICHTENFELS/
+DE
+2021-04-23T17:06 Debitk.2 2022-12
+26.04.2021 26.04.2021
+GutschriftÜberweisung
+              20,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013319850485 PAYPAL
+           1.471,52+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 4/2021 Seite 5 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99,  Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           1.471,52+
+Übertrag:
+27.04.2021 27.04.2021
+Lastschrift
+              88,12-
+PayPal Europe S.a.r.l. et Cie S.C.A
+. EBAY, Ihr Einkauf bei EBAY
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+1013333378248 PAYPAL
+53MJ224VXLA3L
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+28.04.2021 28.04.2021
+Lastschrift
+              55,00-
+eprimo GmbH
+eprimo sagt danke
+Beleg 088022380885
+43716587
+  
+Gläubiger-ID: DE12ZZZ00000080651
+29.04.2021 29.04.2021
+GutschriftÜberweisung
+              39,00+
+MICHAEL BÜRKLE
+kauf von: rad2x, HDMI Adapter, ED64
+, 32GB SD Karte + Porto - letzte ra
+te.
+30.04.2021 01.05.2021
+Entgeltabrechnung
+               8,50-
+siehe Anlage Nr. 1
+30.04.2021 30.04.2021
+GutschriftÜberweisung
+             136,14+
+Silke Popp
+bekannt
+ Kontostand am 30.04.2021 um 20:05 Uhr
+           1.495,04+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen
+1
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 4/2021 Seite 6 von 6
+Giro Plus 190999999, DE78 7935 0101 9999 9999 99,  Max Mustermann
+Entgeltabschluss: Anlage     1
+Entgelte vom 01.04.2021 bis 30.04.2021                               8,50-
+Grundpreis (Kontoführung)                              8,50-
+                                                            --------------
+Abrechnung 30.04.2021                                                8,50-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20210430-BY044-00012386692
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+  
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+
+```

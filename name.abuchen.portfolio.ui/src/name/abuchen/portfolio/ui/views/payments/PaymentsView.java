@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -67,7 +68,7 @@ public class PaymentsView extends AbstractFinanceView
     public void setupModel()
     {
         if (viewInput == null)
-            viewInput = PaymentsViewInput.fromPreferences(preferences);
+            viewInput = PaymentsViewInput.fromPreferences(preferences, client);
 
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         model = new PaymentsViewModel(converter, client);
@@ -75,29 +76,13 @@ public class PaymentsView extends AbstractFinanceView
 
         // setup filter
         clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
-            Client filteredClient = filter.filter(client);
-            model.setFilteredClient(filteredClient);
-            setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+            setFilteredClientToModel(filter);
+            viewInput.setClientFilterId(clientFilterMenu.getSelectedItem().getId());
             model.recalculate();
         });
 
-        String selection = viewInput.getClientFilter();
-        if (selection != null)
-        {
-            clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                            .ifPresent(item -> {
-                                clientFilterMenu.select(item);
-                                Client filteredClient = item.getFilter().filter(client);
-                                model.setFilteredClient(filteredClient);
-                                setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-
-                                // no recalculation needed as it is done as part
-                                // of the model#configure call
-                            });
-        }
-
-        clientFilterMenu.addListener(
-                        filter -> viewInput.setClientFilter(clientFilterMenu.getSelectedItem().getUUIDs()));
+        // set initial Filter
+        loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
                         viewInput.isUseConsolidateRetired());
@@ -110,9 +95,26 @@ public class PaymentsView extends AbstractFinanceView
         });
     }
 
+    private void setFilteredClientToModel(ClientFilter filter)
+    {
+        Client filteredClient = filter.filter(client);
+        model.setFilteredClient(filteredClient);
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+    }
+
+    private void loadSavedFilterIdAndSetFilteredClientToModel()
+    {
+        viewInput.getClientFilterId()
+                        .ifPresent(clientFilterId -> clientFilterMenu.selectItemFromClientFilterId(clientFilterId)
+                                        .ifPresent(item -> setFilteredClientToModel(item.getFilter())));
+    }
+
     @Override
     public void notifyModelUpdated()
     {
+        // reload client filter, in case its data is outdated
+        loadSavedFilterIdAndSetFilteredClientToModel();
+
         model.recalculate();
     }
 
@@ -219,7 +221,7 @@ public class PaymentsView extends AbstractFinanceView
         folder.setSelection(tab);
         folder.addDisposeListener(e -> viewInput.setTab(folder.getSelectionIndex()));
 
-        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences));
+        folder.addDisposeListener(e -> viewInput.writeToPreferences(preferences, client));
 
         return folder;
     }

@@ -300,7 +300,7 @@ public final class UpdateHelper
             // by forcing a refresh of the repositories.
             // p2 never tries to reconnect if a connection timeout happened like
             // described in
-            // https://github.com/buchen/portfolio/issues/578#issuecomment-251653225
+            // https://github.com/portfolio-performance/portfolio/issues/578#issuecomment-251653225
             manager.refreshRepository(uri, monitor);
             artifactManager.refreshRepository(uri, monitor);
         }

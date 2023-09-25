@@ -1,0 +1,212 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4.qualifier
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn
+Internes Zeichen:
+tIUXdCAKr Yez
+180 41 00
+TSOZLPuck Str. 5
+ 
+42952 BndeWTs  
+ 
+ 
+ 
+ 
+ 
+ 
+5. September 2023
+ 
+Kontoauszug 9/2023 Seite 1 von 3
+Girokonto 1111111111, DE45 2535 3559 2187 1132 28, DKB-Cash
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+            9.999,99
+ Kontostand am 04.08.2023, Auszug Nr.    8   
+             -200,00
+07.08.2023 Dauerauftrag
+ZEtOaFkXV tAy FlatEx Verrechnungskonto
+             -150,00
+07.08.2023 Dauerauftrag
+oChIDduyP Jyj Sparen
+              -55,00
+07.08.2023 Kartenzahlung
+UZR.Wenzel Gastronomie/CITY//DE 2023-08-04T18:26 
+Debitk.54 2099-12 Zahl.System VISA Debit
+              -50,00
+07.08.2023 Kartenzahlung
+CAROLASCHLOESSCHEN/CITY//DE 2023-08-06T10:44 
+Debitk.54 2099-12 Zahl.System VISA Debit
+              237,44
+07.08.2023 Zahlungseingang
+JvJqfFhMyTtQ XWnnAqtAoaG FsmS /INV/42222 1 2.8.2023 
+0000714309
+              -60,00
+14.08.2023 Kartenzahlung
+HAUSBRAEU IM BALLHAUS/CITY//DE 
+2023-08-13T02:52 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+              -76,05
+17.08.2023 Kartenzahlung
+STAR CITY/CITY//DE 2023-08-15T00:22 Debitk.54 
+2099-12 Zahl.System VISA Debit
+              -29,70
+17.08.2023 Basislastschrift
+Telekom Deutschland GmbH Festnetz Vertragskonto 
+1111111111 R G 1111111111/08.08.2023 Zahlbeleg 
+111111111111111 
+DE000201100200000000000000011347412 
+Gläubiger-ID: DE93ZZZ00000078611
+              -48,00
+18.08.2023 Basislastschrift
+REWE Markt GmbH 48462008230812300514 
+PN23064802991296 48462008230812300514 
+Gläubiger-ID: DE58ZZZ00000257236
+              -35,50
+18.08.2023 Kartenzahlung
+KLETTERARENA MLTQaOV G/CITY//DE 
+2023-08-17T19:03 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 9/2023 Seite 2 von 3
+Girokonto 1111111111, DE45 4473 9092 3504 3003 28, DKB-Cash, pDmVXlLfI cCi
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+              -12,75
+18.08.2023 Kartenzahlung
+Netto Marken-Discount/CITY//DE 2023-08-17T03:11 
+Debitk.54 2099-12 Zahl.System VISA Debit
+             -100,00
+21.08.2023 Verfügung Geldautomat
+VB CITY-Bautzen eG/CITY//DE 2023-08-18T18:35 
+Debitk.54 2099-12 Zahl.System VISA Debit
+              -50,00
+22.08.2023 Kartenzahlung
+SCHWIMMSPORTKOMPLEX/CITY//DE 
+2023-08-21T07:18 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+              -50,00
+28.08.2023 Kartenzahlung
+HAUSBRAEU IM BALLHAUS/CITY//DE 
+2023-08-25T11:14 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+              -40,00
+28.08.2023 Basislastschrift
+  
+DREWAG-Stadtwerke DD GmbH VK 11111111111111 
+Abschlag 27.08. E 4 0,00 Danke fuer Ihr Vertrauen 
+1111111111111 111111111111-6383-01 Gläubiger-ID: 
+DE22ZZZ00000024308
+              -86,88
+29.08.2023 Kartenzahlung
+SUMUP .ZAHNARZTPRAXIS/CITY//DE 
+2023-08-28T06:25 Debitk.54 2099-12 Zahl.System VISA 
+Debit
+              800,00
+29.08.2023 Zahlungseingang
+IpnzZtzLZ LNh
+             -520,20
+30.08.2023 Kartenzahlung
+oLJKuxnlpkVnJ GMBH/CITY//DE 2023-08-29T19:00 
+Debitk.54 2099-12 Zahl.System VISA Debit
+               -9,99
+30.08.2023 Kartenzahlung
+toom BM CITY-Go/CITY//DE 2023-08-29T06:56 
+Debitk.54 2099-12 Zahl.System VISA Debit
+               75,00
+30.08.2023 Zahlungseingang
+DKV KRANKENVERS. AG KVL11111111-1111111 
+Leistungsabrech nung vom 28.08.2023 IN 
+3827488848132
+              -50,00
+01.09.2023 Basislastschrift
+VOLKSWOHL BUND Lebensversicherung a 11111111 
+LA01111111/ 11111111 RE NTE 50,00 
+0111111111/NVMA.G1044-1 Ta640127817 
+Gläubiger-ID: DE13ZZZ00000141064
+              -29,45
+01.09.2023 Basislastschrift
+DKV KRANKENVERS. AG cI884407786 01.09.2023 - 
+30.09.2023 29,45 009607529C202494wT440695427 
+MDEM141810964253 Gläubiger-ID: 
+DE95ZZZ00000012130
+               -5,99
+01.09.2023 Basislastschrift
+Antennen Einert e.K. 09/23-09/23 KDN 32307+5.99 
+Kabel-TV , M 1111111 11111111 Gläubiger-ID: 
+DE46ANT00000120682
+             -277,97
+04.09.2023 Überweisung
+Autodoc GmbH Auftragsnr. 1111111 Kundennr. 1111 1111 
+DATUM 01.09.2023, 21.14 UHR 11111111111
+             -100,00
+04.09.2023 Verfügung Geldautomat
+Commerzbank 00202639/CITY//DE 2023-09-02T12:47 
+Debitk.54 2099-12 Zahl.System VISA Debit
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 9/2023 Seite 3 von 3
+Girokonto 1111111111, DE45 4584 8983 3377 6861 28, DKB-Cash, vsRgOrvil weh
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+              -62,70
+04.09.2023 Kartenzahlung
+REWE Enrico Weiner/CITY//DE 2023-09-01T02:44 
+Debitk.54 2099-12 Zahl.System VISA Debit
+              9999,99
+ Kontostand am 04.09.2023 um 18:04 Uhr   
+Ihr Dispositionskredit EUR: 2.000,00
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+-82.111,11 99 81.111,11 9
+ .
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+  
+dem Informationsbogen für Einleger entnommen werden, den Sie auch unter www.dkb.de/kundenservice/einlagensicherung 
+einsehen können. Bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen 
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer Einlösung gut, so 
+geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.Gutschrift). Das gilt auch dann, wenn 
+die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank selbst zahlbar sind. Werden Schecks oder Lastschriften 
+nicht eingelöst oder geht der Bank der Gegenwert aus einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß 
+Nr. 23 dieser AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+l Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des übernächsten 
+Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren Einlösungswillen schon vorher Dritten 
+gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlöseregeln in den hierfür 
+vereinbarten besonderen Bedingungen. Über die Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn 
+sie nach deren Allgemeinen Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an 
+den Scheckvorleger eingelöst.
+l Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen 
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen und/oder sonstige 
+Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser Kontoauszug einen Rechnungsabschluss 
+darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind Zinsen und/oder sonstige Entgelte bis zum letzten 
+Zinsabschlusstermin berücksichtigt.
+l Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt, sofern Sie 
+innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungsabschlüsse müssen der 
+Deutsche Kreditbank AG, Bereich Revision, Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der 
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. 
+Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als Rechnung im 
+Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+
+```

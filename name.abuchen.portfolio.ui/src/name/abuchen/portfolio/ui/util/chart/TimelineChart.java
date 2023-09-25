@@ -8,7 +8,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
@@ -75,8 +78,9 @@ public class TimelineChart extends Chart // NOSONAR
 
     private List<MarkerLine> markerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
+    private Map<Object, IAxis> addedAxis = new HashMap<>();
 
-    private MeasurementTool measurementTool;
+    private ChartToolsManager chartTools;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
@@ -136,7 +140,7 @@ public class TimelineChart extends Chart // NOSONAR
 
         toolTip = new TimelineChartToolTip(this);
 
-        measurementTool = new MeasurementTool(this);
+        chartTools = new ChartToolsManager(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
@@ -238,9 +242,9 @@ public class TimelineChart extends Chart // NOSONAR
         return toolTip;
     }
 
-    public MeasurementTool getMeasurementTool()
+    public ChartToolsManager getChartToolsManager()
     {
-        return measurementTool;
+        return chartTools;
     }
 
     private void paintTimeGrid(PaintEvent e)
@@ -381,5 +385,10 @@ public class TimelineChart extends Chart // NOSONAR
     public boolean setFocus()
     {
         return getPlotArea().setFocus();
+    }
+
+    public IAxis getOrCreateAxis(Object key, Supplier<IAxis> axisFactory)
+    {
+        return addedAxis.computeIfAbsent(key, x -> axisFactory.get());
     }
 }

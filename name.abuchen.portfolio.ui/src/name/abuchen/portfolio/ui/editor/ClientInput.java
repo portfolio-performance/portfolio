@@ -45,7 +45,6 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -60,8 +59,6 @@ import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
 public class ClientInput
 {
-    // compatibility: the value used to be stored in the AbstractHistoricView
-    private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
     public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
 
@@ -73,7 +70,7 @@ public class ClientInput
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
-    private List<ReportingPeriod> reportingPeriods;
+    private ReportingPeriods reportingPeriods;
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
@@ -459,8 +456,6 @@ public class ClientInput
         if (clientFile == null)
             return;
 
-        storeReportingPeriods();
-
         if (!forceWrite && !preferenceStore.needsSaving())
             return;
 
@@ -529,51 +524,13 @@ public class ClientInput
         }
     }
 
-    public List<ReportingPeriod> getReportingPeriods()
+    public ReportingPeriods getReportingPeriods()
     {
         if (reportingPeriods != null)
             return reportingPeriods;
 
-        List<ReportingPeriod> answer = new ArrayList<>();
-
-        String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
-        if (config != null && config.trim().length() > 0)
-        {
-            String[] codes = config.split(";"); //$NON-NLS-1$
-            for (String c : codes)
-            {
-                try
-                {
-                    answer.add(ReportingPeriod.from(c));
-                }
-                catch (IOException | RuntimeException ignore)
-                {
-                    PortfolioPlugin.log(ignore);
-                }
-            }
-        }
-
-        if (answer.isEmpty())
-        {
-            for (int ii = 1; ii <= 3; ii++)
-                answer.add(new ReportingPeriod.LastX(ii, 0));
-        }
-
-        reportingPeriods = answer;
-
+        reportingPeriods = new ReportingPeriods(this);
         return reportingPeriods;
-    }
-
-    private void storeReportingPeriods()
-    {
-        if (reportingPeriods == null)
-            return;
-
-        StringBuilder buf = new StringBuilder();
-        for (ReportingPeriod p : reportingPeriods)
-            buf.append(p.getCode()).append(';');
-
-        getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
 
     @Inject
@@ -692,6 +649,8 @@ public class ClientInput
 
         loadPreferences();
 
+        upgradePreferences(preferenceStore, client);
+
         scheduleOnlineUpdateJobs();
 
         scheduleAutoSaveJob();
@@ -707,8 +666,17 @@ public class ClientInput
         }
     }
 
+    private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
+    {
+        if (client.shouldDoFilterMigration())
+        {
+            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
+        }
+    }
+
     /* package */ void notifyListeners(Consumer<ClientInputListener> consumer)
     {
         this.listeners.forEach(consumer::accept);
     }
+
 }

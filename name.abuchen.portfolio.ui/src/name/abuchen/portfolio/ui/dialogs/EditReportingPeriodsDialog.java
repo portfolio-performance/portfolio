@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.Dialog;
@@ -47,9 +50,9 @@ public class EditReportingPeriodsDialog extends Dialog
         super(parentShell);
     }
 
-    public void setReportingPeriods(List<ReportingPeriod> periods)
+    public void setReportingPeriods(Stream<ReportingPeriod> periods)
     {
-        this.periods = new ArrayList<>(periods);
+        this.periods = periods.collect(toMutableList());
     }
 
     public List<ReportingPeriod> getReportingPeriods()
@@ -158,6 +161,10 @@ public class EditReportingPeriodsDialog extends Dialog
                         index++;
 
                     periods.addAll(index, movedItems);
+                }
+                else
+                {
+                    periods.addAll(movedItems);
                 }
 
                 tableViewer.refresh();
