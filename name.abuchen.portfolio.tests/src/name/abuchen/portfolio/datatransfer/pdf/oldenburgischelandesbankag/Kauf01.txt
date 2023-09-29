@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Oldenburg, 19.05.2023
+Es betreut Sie:
+Ihr OLB Team
+Postfach 26 05, 26016 Oldenburg 26121 Oldenburg
+Tel.: 0441 999092-810
+bco.regional-2@olb.de
+Max Mustermann
+Musterstr. 10
+01234 Musterstadt
+Depotinhaber Max Mustermann Seite 1 von 1
+Depotnummer 50000000 Ausführung 17.05.2023
+Orderreferenz 100000
+Handelsreferenz 200000
+WERTPAPIERABRECHNUNG
+Kauf - iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
+Handels- / Ausführungsplatz - Festpreisgeschäft
+ISIN (WKN) Stück/ Nominale Kurswert Währung Bruttobetrag
+DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
+Orderentgelt: 0,01 EUR
+Ausmachender Betrag: 1,48 EUR
+Beratungsfreies Geschäft
+Verrechnungskonto Valuta
+DE0000000000000 22.05.2023
+Verwahrart
+Girosammelverwahrung
+Bitte beachten Sie folgende Hinweise:
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+FNZ
+Oldenburgische Landesbank AG | Stau 15/17 | 26122 Oldenburg
+Vorsitzender des Aufsichtsrates: Axel Bartsch | Vorstand: Stefan Barth, Vorsitzender | Marc Ampaw | Aytac Aydin | Chris Eggert | Giacomo Petrobelli | Dr. Rainer Polster
+Sitz der Gesellschaft: Oldenburg (Oldb) Registergericht: Oldenburg (Oldb) HR-Nummer: HRB 3003
+Informationen zur Nutzung Ihrer Daten erhalten Sie auf www.olb.de/dsgvo und in jeder OLB-Filiale. Auf Wunsch schicken wir die Informationen auch gerne per Post zu.
