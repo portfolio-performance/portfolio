@@ -66,6 +66,7 @@ public class PDFImportAssistant
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
+        extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
         extractors.add(new MerkurPrivatBankPDFExtractor(client));
