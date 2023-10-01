@@ -1,8 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
@@ -262,19 +261,19 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendenaussch.ttung|" //
-                        + "Dividend Payment|" //
-                        + "R.ckerstattung Quellensteuer|" //
-                        + "Refund withholding tax)");
+        DocumentType type = new DocumentType("(Dividendenaussch.ttung" //
+                        + "|Dividend Payment" //
+                        + "|R.ckerstattung Quellensteuer" //
+                        + "|Refund withholding tax)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Dividendenaussch.ttung|" //
-                        + "Dividend Payment|" //
-                        + "Cancelation Dividend Payment|" //
-                        + "R.ckerstattung Quellensteuer|" //
-                        + "Refund withholding tax)$");
+        Block firstRelevantLine = new Block("^(Dividendenaussch.ttung" //
+                        + "|Dividend Payment" //
+                        + "|Cancelation Dividend Payment" //
+                        + "|R.ckerstattung Quellensteuer" //
+                        + "|Refund withholding tax)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -306,7 +305,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Ausschüttung: USD 0.72
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .match("^[\\.,\\d]+ (Ant|Qty) (?<name>.*)$") //
+                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile) (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -315,7 +314,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // 47.817 Ant UBS ETF MSCI USA SRI
                         // @formatter:on
                         .section("shares") //
-                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty) .*$") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
