@@ -9,7 +9,9 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +29,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -35,6 +36,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Pair;
 
 /**
  * @formatter:off
@@ -66,7 +68,10 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String ATTRIBUTE_EXCHANGE_RATE = "exchange_rate";
+    private static record SaleTaxPair(Item sale, Item tax)
+    {
+    }
+
     private static final String ATTRIBUTE_GROSS_TAXES_TREATMENT = "gross_taxes_treatment";
 
     public ComdirectPDFExtractor(Client client)
@@ -303,9 +308,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setMonetaryAmount(gross);
 
-                                                            t.getPortfolioTransaction().getSecurity().getAttributes()
-                                                                            .put(new AttributeType(ATTRIBUTE_EXCHANGE_RATE), v.get("exchangeRate"));
-
                                                             checkAndSetGrossUnit(t.getPortfolioTransaction().getMonetaryAmount(), fxGross, t, type.getCurrentContext());
                                                         }),
                                         // @formatter:off
@@ -328,9 +330,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             t.setMonetaryAmount(gross);
-
-                                                            t.getPortfolioTransaction().getSecurity().getAttributes()
-                                                                            .put(new AttributeType(ATTRIBUTE_EXCHANGE_RATE), v.get("exchangeRate"));
 
                                                             checkAndSetGrossUnit(t.getPortfolioTransaction().getMonetaryAmount(), fxGross, t, type.getCurrentContext());
                                                         }),
@@ -371,9 +370,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                 Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
                                                                 Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                                                t.getPortfolioTransaction().getSecurity().getAttributes()
-                                                                                .put(new AttributeType(ATTRIBUTE_EXCHANGE_RATE), v.get("exchangeRate"));
-
                                                                 checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                             }
                                                         }),
@@ -394,9 +390,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                                 Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
                                                                 Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                                                t.getPortfolioTransaction().getSecurity().getAttributes()
-                                                                                .put(new AttributeType(ATTRIBUTE_EXCHANGE_RATE),v.get("exchangeRate"));
-
                                                                 checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                             }
                                                         }),
@@ -416,9 +409,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                                                                 Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
                                                                 Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
-
-                                                                t.getPortfolioTransaction().getSecurity().getAttributes()
-                                                                                .put(new AttributeType(ATTRIBUTE_EXCHANGE_RATE), v.get("exchangeRate"));
 
                                                                 checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                             }
@@ -1138,22 +1128,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             {
                                                                 t.setMonetaryAmount(deductedTaxes);
                                                             }
-
-                                                            if (!t.getSecurity().getCurrencyCode().equals(t.getMonetaryAmount().getCurrencyCode()) //
-                                                                            && t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)) != null)
-                                                            {
-                                                                v.put("exchangeRate", t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)).toString());
-                                                                v.put("baseCurrency", t.getMonetaryAmount().getCurrencyCode());
-                                                                v.put("termCurrency", t.getSecurity().getCurrencyCode());
-
-                                                                ExtrExchangeRate rate = asExchangeRate(v);
-                                                                type.getCurrentContext().putType(rate);
-
-                                                                Money gross = Money.of(rate.getBaseCurrency(), t.getMonetaryAmount().getAmount());
-                                                                Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-
-                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                            }
                                                         }),
                                         // @formatter:off
                                         //  Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               4,6 5
@@ -1188,22 +1162,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             {
                                                                 t.setMonetaryAmount(deductedTaxes);
                                                             }
-
-                                                            if (!t.getSecurity().getCurrencyCode().equals(t.getMonetaryAmount().getCurrencyCode()) //
-                                                                            && t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)) != null)
-                                                            {
-                                                                v.put("exchangeRate", t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)).toString());
-                                                                v.put("baseCurrency", t.getMonetaryAmount().getCurrencyCode());
-                                                                v.put("termCurrency", t.getSecurity().getCurrencyCode());
-
-                                                                ExtrExchangeRate rate = asExchangeRate(v);
-                                                                type.getCurrentContext().putType(rate);
-
-                                                                Money gross = Money.of(rate.getBaseCurrency(), t.getMonetaryAmount().getAmount());
-                                                                Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-
-                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                            }
                                                         }),
                                             // @formatter:off
                                             // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R           1.263,0 5
@@ -1224,22 +1182,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                                                                 t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyRefundedTaxes"))));
                                                                 t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
-
-                                                                if (!t.getSecurity().getCurrencyCode().equals(t.getMonetaryAmount().getCurrencyCode()) //
-                                                                                && t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)) != null)
-                                                                {
-                                                                    v.put("exchangeRate", t.getSecurity().getAttributes().get(new AttributeType(ATTRIBUTE_EXCHANGE_RATE)).toString());
-                                                                    v.put("baseCurrency", t.getMonetaryAmount().getCurrencyCode());
-                                                                    v.put("termCurrency", t.getSecurity().getCurrencyCode());
-
-                                                                    ExtrExchangeRate rate = asExchangeRate(v);
-                                                                    type.getCurrentContext().putType(rate);
-
-                                                                    Money gross = Money.of(rate.getBaseCurrency(), t.getMonetaryAmount().getAmount());
-                                                                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-
-                                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                                }
                                                             }))
 
                         // @formatter:off
@@ -1841,7 +1783,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 processFeeEntries(t, v, type);
                         });
     }
-
+    
     @Override
     public List<Item> postProcessing(List<Item> items)
     {
@@ -1853,8 +1795,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
-                        .filter(i -> AccountTransaction.Type.TAXES //
-                                        .equals((((AccountTransaction) i.getSubject()).getType()))) //
+                        .filter(i -> {
+                            var type = ((AccountTransaction) i.getSubject()).getType();
+                            return type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND;
+                        })
                         .collect(Collectors.toList());
 
         // Filter transactions by buySell transactions
@@ -1891,6 +1835,19 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         else
             dividendTaxesTransactions = Collections.emptyMap();
 
+        // create a list of sale and tax transactions that are safely matched
+        // based on date and security. If more than one sale and tax
+        // transactions exists per day and security, it is not included in the
+        // list as we cannot safely match the transactions
+        var saleTaxPairs = matchSaleAndTaxTransactions(sellTransactionList, taxesTransactionList);
+
+        // problem: the separate tax statement does only contain taxes in the
+        // account currency. However, if the security currency differs, we need
+        // to provide the currency conversion. This method retrieves the
+        // exchange rate from the sale and applies it to the tax transaction of
+        // the same sale.
+        fixMissingCurrencyConversionForTaxTransactions(saleTaxPairs);
+        
         sellTaxesTransactions.forEach((k, v) -> {
             v.forEach((security, transactions) -> {
 
@@ -2021,6 +1978,69 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         }
 
         return items;
+    }
+
+    private Collection<SaleTaxPair> matchSaleAndTaxTransactions(List<Item> sellTransactionList,
+                    List<Item> taxesTransactionList)
+    {
+        // match identified sale and tax transactions
+        Map<Pair<LocalDate, Security>, SaleTaxPair> pairs = new HashMap<>();
+        for (Item sale : sellTransactionList)
+        {
+            var key = new Pair<LocalDate, Security>(sale.getDate().toLocalDate(), sale.getSecurity());
+            // multiple sale transactions for the same security on the same day
+            // cannot be matched
+            if (pairs.containsKey(key))
+                continue;
+            pairs.put(key, new SaleTaxPair(sale, null));
+        }
+
+        for (Item tax : taxesTransactionList) // NOSONAR
+        {
+            // tax transaction must have a security
+            if (tax.getSecurity() == null)
+                continue;
+
+            var key = new Pair<LocalDate, Security>(tax.getDate().toLocalDate(), tax.getSecurity());
+            var pair = pairs.get(key);
+
+            // continue if no sale transaction is found
+            if (pair == null)
+                continue;
+            // continue if multiple tax transactions are found
+            if (pair.tax() != null)
+                continue;
+
+            pairs.put(key, new SaleTaxPair(pair.sale(), tax));
+        }
+        return pairs.values().stream().filter(p -> p.tax != null).toList();
+    }
+
+    private void fixMissingCurrencyConversionForTaxTransactions(Collection<SaleTaxPair> saleTaxPairs)
+    {
+        for (SaleTaxPair pair : saleTaxPairs) // NOSONAR
+        {
+            // check if currency conversion is needed
+            var tax = (AccountTransaction) pair.tax.getSubject();
+            if (tax.getSecurity().getCurrencyCode().equals(tax.getMonetaryAmount().getCurrencyCode()))
+                continue;
+
+            // check if we have an exchange rate available from the sale
+            var sale = (BuySellEntry) pair.sale.getSubject();
+
+            var grossValue = sale.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+            if (grossValue.isEmpty() || grossValue.get().getExchangeRate() == null)
+                continue;
+
+            // create and set the required grossUnit to the tax transaction
+            var rate = new ExtrExchangeRate(grossValue.get().getExchangeRate(),
+                            sale.getPortfolioTransaction().getSecurity().getCurrencyCode(), tax.getCurrencyCode());
+
+            String termCurrency = sale.getPortfolioTransaction().getSecurity().getCurrencyCode();
+            Money fxGross = rate.convert(termCurrency, tax.getMonetaryAmount());
+
+            tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, tax.getMonetaryAmount(), fxGross, rate.getRate()));
+        }
     }
 
     private String concat(String first, String second)

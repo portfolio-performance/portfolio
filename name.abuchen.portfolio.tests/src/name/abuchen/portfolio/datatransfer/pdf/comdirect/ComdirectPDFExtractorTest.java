@@ -460,7 +460,6 @@ public class ComdirectPDFExtractorTest
                                         hasSource("KaufMitSteuerbehandlung05.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasForexGrossValue("USD", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
@@ -594,7 +593,6 @@ public class ComdirectPDFExtractorTest
                                         hasSource("KaufMitSteuerbehandlung07.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasForexGrossValue("USD", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
@@ -686,7 +684,6 @@ public class ComdirectPDFExtractorTest
                                         hasSource("KaufMitSteuerbehandlung08.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasForexGrossValue("GBP", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
@@ -1030,7 +1027,6 @@ public class ComdirectPDFExtractorTest
                                         hasSource("KaufMitSteuerbehandlung15.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasForexGrossValue("USD", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
