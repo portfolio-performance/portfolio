@@ -218,7 +218,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 createTable(count);
                 break;
             case REDUCED:
-                createTable(5); // show first 2 and last 2 items
+                createTable(6); // show first 3 + other + last 2 items
                 break;
             case RELEVANT:
                 createTable(8);
@@ -352,7 +352,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         labels[7].setText(footer);
 
         Money totalRelevantTransactions = sumCategoryValuations(
-                        snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
+                        snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 7));
         values[7].setText(Values.Money.format(totalRelevantTransactions, getClient().getBaseCurrency()));
     }
 
