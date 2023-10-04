@@ -1809,14 +1809,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
                         .collect(Collectors.toList());
 
-        // Group sale and taxes transactions together and group by date and security
-        Map<LocalDate, Map<Security, List<Item>>> saleTaxesTransactions;
-        if (!saleTransactionList.isEmpty())
-            saleTaxesTransactions = Stream.concat(saleTransactionList.stream(), taxesTransactionList.stream())
-                            .collect(Collectors.groupingBy(item -> item.getDate().toLocalDate(), Collectors.groupingBy(Item::getSecurity)));
-        else
-            saleTaxesTransactions = Collections.emptyMap();
-
         // Group dividend and taxes transactions together and group by date and security
         Map<LocalDate, Map<Security, List<Item>>> dividendTaxesTransactions;
         if (!dividendTransactionList.isEmpty())
@@ -1827,59 +1819,33 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         var saleTaxPairs = matchSaleAndTaxTransactions(saleTransactionList, taxesTransactionList);
         fixMissingCurrencyConversionForTaxesTransactions(saleTaxPairs);
+        
+        for (SaleTaxPair pair : saleTaxPairs)
+        {
+            BuySellEntry saleTransaction = (BuySellEntry) pair.sale.getSubject();
+            AccountTransaction taxesTransaction = (AccountTransaction) pair.tax.getSubject();
 
-        saleTaxesTransactions.forEach((k, v) -> {
-            v.forEach((security, transactions) -> {
+            if (taxesTransaction.getType() != AccountTransaction.Type.TAXES)
+                continue;
 
-                if (transactions.size() == 2)
-                {
-                    BuySellEntry saleTransaction = null;
-                    AccountTransaction taxesTransaction = null;
+            // Subtract the tax from the taxes transaction from the total amount
+            saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
+                            .subtract(taxesTransaction.getMonetaryAmount()));
 
-                    // Which transaction is the taxes and which the sale?
-                    if (transactions.get(0).getSubject() instanceof BuySellEntry
-                                    && transactions.get(1).getSubject() instanceof AccountTransaction)
-                    {
-                        saleTransaction = (BuySellEntry) transactions.get(0).getSubject();
-                        taxesTransaction = (AccountTransaction) transactions.get(1).getSubject();
-                    }
-                    else if (transactions.get(1).getSubject() instanceof BuySellEntry
-                                    && transactions.get(0).getSubject() instanceof AccountTransaction)
-                    {
-                        saleTransaction = (BuySellEntry) transactions.get(1).getSubject();
-                        taxesTransaction = (AccountTransaction) transactions.get(0).getSubject();
-                    }
+            // Add taxes as tax unit
+            saleTransaction.getPortfolioTransaction()
+                            .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                    // Check if not null and there is a sale transaction and a taxes transaction
-                    if (saleTransaction != null && taxesTransaction != null
-                                    && AccountTransaction.Type.TAXES.equals(taxesTransaction.getType())
-                                    && PortfolioTransaction.Type.SELL.equals(saleTransaction.getPortfolioTransaction().getType()))
-                    {
-                        // Subtract the tax from the taxes transaction from the total amount
-                        saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
-                                        .subtract(taxesTransaction.getMonetaryAmount()));
+            // Combine at sources file (One or two files?)
+            if (!saleTransaction.getSource().equals(taxesTransaction.getSource()))
+                saleTransaction.setSource(saleTransaction.getSource() + "; " + taxesTransaction.getSource());
 
-                        // Add taxes as tax unit
-                        saleTransaction.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+            // Combine at notes
+            saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
 
-                        // Combine at sources file (One or two files?)
-                        if (!saleTransaction.getSource().equals(taxesTransaction.getSource()))
-                            saleTransaction.setSource(saleTransaction.getSource() + "; " + taxesTransaction.getSource());
-
-                        // Combine at notes
-                        saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
-
-                        // Add the taxes treatment to the hash table, which can be deleted
-                        TaxesTransactionToBeDelete.add(taxesTransaction);
-                    }
-                    else
-                    {
-                        // do nothing because no taxes transaction is present
-                    }
-                }
-            });
-        });
+            // delete the taxes treatment from the result list
+            items.remove(pair.tax());
+        }
 
         dividendTaxesTransactions.forEach((k, v) -> {
             v.forEach((security, transactions) -> {
