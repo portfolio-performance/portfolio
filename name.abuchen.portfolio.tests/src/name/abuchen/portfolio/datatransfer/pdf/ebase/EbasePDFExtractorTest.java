@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -5166,4 +5167,46 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2020-04-14"), hasAmount("EUR", 15.00), //
                         hasSource("DepotStatment02.txt"), hasNote("SEPA Lastschrift Einzug | Ref.-Nr.: 123456"))));
     }
+
+    @Test
+    public void testDepotstatement03()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(6));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0032077012"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(dividend(hasDate("2023-09-22"), hasAmount("USD", 17.05), //
+                        hasTaxes("USD", 3.86), hasSource("DepotStatement03.txt"),
+                        hasNote("Ref.-Nr.: 2210868091/45619741"))));
+
+        assertThat(results, hasItem(purchase(hasDate("2023-09-26"), hasAmount("USD", 17.05), //
+                        hasShares(0.047550), hasSource("DepotStatement03.txt"),
+                        hasNote("Ref.-Nr.: 0400010911/22092023 | Wiederanlage Fondsertrag"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYML9W36"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI S&P 500 ETF Reg.Shares Dist o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(dividend(hasDate("2023-09-22"), hasAmount("EUR", 4.96), //
+                        hasSource("DepotStatement03.txt"), hasNote("Ref.-Nr.: 0400008188/22092023"))));
+
+        assertThat(results, hasItem(purchase(hasDate("2023-09-26"), hasAmount("EUR", 4.96), //
+                        hasShares(0.130878), hasSource("DepotStatement03.txt"),
+                        hasNote("Ref.-Nr.: 0400010223/22092023 | Wiederanlage Fondsertrag"))));
+    }
+
 }
