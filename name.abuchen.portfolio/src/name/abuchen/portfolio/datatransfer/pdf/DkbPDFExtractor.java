@@ -1013,13 +1013,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Kontoauszug [\\d]{1,2}\\/[\\d]{4}", //
                         documentContext -> documentContext //
                                         // @formatter:off
-                                        // Perioden-Kontoauszug: EUR-Konto KOPIE
-                                        // Tageskontoauszug: EUR-Konto
-                                        // Periodic Account Statement: EUR Account
+                                        // Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^Gesamtumsatzsummen Summe Soll (?<currency>[\\w]{3}) Anzahl Summe Haben [\\w]{3} Anzahl$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // This is for interest charge
+                                        // 02.10.2023 Abrechnung 29.09.2023 / Wert: 01.10.2023
+                                        // @formatter:on
+                                        .section("date").optional() //
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ .*") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
         this.addDocumentTyp(type);
 
@@ -1036,8 +1042,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
-                        .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(?!Wertpapierabrechnung).*)$")
+                        .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>" //
+                                        + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))"
+                                        + ".*)$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from DEPOSIT to REMOVAL
@@ -1083,6 +1091,43 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (t.getDateTime() != null)
                                 return item;
 
+                            return null;
+                        }));
+
+        // @formatter:off
+        // Abrechnungszeitraum vom 01.07.2023 bis 30.09.2023
+        // Zinsen für eingeräumte Kontoüberziehung                              0,01-
+        // @formatter:on
+        Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(interestChargeBlock);
+        interestChargeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "type").optional() //
+                        .documentContext("currency", "date") //
+                        .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
                             return null;
                         }));
     }
