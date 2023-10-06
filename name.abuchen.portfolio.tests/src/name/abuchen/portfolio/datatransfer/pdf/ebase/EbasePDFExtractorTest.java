@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.ebase;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -16,7 +17,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -5118,13 +5118,13 @@ public class EbasePDFExtractorTest
 
 
     @Test
-    public void testDepotStatment01()
+    public void testDepotStatement01()
     {
         EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatment01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -5142,18 +5142,18 @@ public class EbasePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
-        assertThat(transaction.getSource(), is("DepotStatment01.txt"));
+        assertThat(transaction.getSource(), is("DepotStatement01.txt"));
         assertThat(transaction.getNote(), is("SEPA Lastschrift Einzug | Ref.-Nr.: 020739500"));
     }
 
     @Test
-    public void testDepotstatment02()
+    public void testDepotstatement02()
     {
         EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatment02.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5165,7 +5165,7 @@ public class EbasePDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2020-04-14"), hasAmount("EUR", 15.00), //
-                        hasSource("DepotStatment02.txt"), hasNote("SEPA Lastschrift Einzug | Ref.-Nr.: 123456"))));
+                        hasSource("DepotStatement02.txt"), hasNote("SEPA Lastschrift Einzug | Ref.-Nr.: 123456"))));
     }
 
     @Test
@@ -5209,4 +5209,48 @@ public class EbasePDFExtractorTest
                         hasNote("Ref.-Nr.: 0400010223/22092023 | Wiederanlage Fondsertrag"))));
     }
 
+    @Test
+    public void testDepotstatement04()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(4));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2023678282"), hasWkn(null), hasTicker(null), //
+                        hasName("Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-14T00:00"), hasShares(3.395511), //
+                        hasSource("DepotStatement04.txt"), //
+                        hasNote("Ref.-Nr.: 0400001111/13072023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-15T00:00"), hasShares(3.524447), //
+                        hasSource("DepotStatement04.txt"), //
+                        hasNote("Ref.-Nr.: 0400011111/14082023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-15T00:00"), hasShares(3.508340), //
+                        hasSource("DepotStatement04.txt"), //
+                        hasNote("Ref.-Nr.: 0400001111/14092023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+    }
 }

@@ -35,7 +35,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "European Bank for Financial Services GmbH";
+        return "European Bank for Financial Services / FNZ Group";
     }
 
     private void addBuySellTransaction()
