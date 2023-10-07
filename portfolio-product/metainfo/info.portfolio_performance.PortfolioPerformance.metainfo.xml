@@ -39,6 +39,30 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+		<release version="0.65.4" date="2023-10-07">
+			<description>
+				<ul>
+				  <li>Improvement: Updated the Eclipse Framework to version 4.29</li>
+				  <li>Improvement: Completely redesigned the Comdirect PDF Importer to support all known document types</li>
+				  <li>Improvement: The last chosen encoding for importing CSV files will be preselected</li>
+				  <li>Improvement: Improved feedback when trying to add securities that already exist</li>
+				  <li>Improvement: PDF Importer improvements for various banks: DKB, Vanguard, ebase, FNZ Bank, Wir Bank, Trade Republic, Oldenburgische Landesbank, Deutsche Bank, Baader Bank, DKB, Lime Trading, FlatEx, Geno</li>
+				  <li>Fix: Resolved an issue with reduced display of performance calculations on the dashboard</li>
+				  <li>Fix: Fixed a NullPointerException issue when classifications do not exist in a file (yet)</li>
+				  <li>Fix: Addressed an issue where not all contra entries for an account were displayed in the search</li>
+				</ul>
+				<ul xml:lang="de">
+					<li>Verbesserung: Update des Eclipse Framework auf Version 4.29</li>
+					<li>Verbesserung: Komplette Neuimplementierung des Comdirect PDF Importers um alle bekannten Dokumente abzudecken</li>
+					<li>Verbesserung: Die zuletzt gewählte Enkodierung von zu importierenden CSV Dateien wird vorbelegt</li>
+					<li>Verbesserung: Bessere Rückmeldung wenn man Wertpapiere hinzufügen möchte, die schon existieren</li>
+					<li>Verbesserung der PDF Importer: DKB, Vanguard, ebase, FNZ Bank, Wir Bank, Trade Republic, Oldenburgische Landesbank, Deutsche Bank, Baader Bank, DKB, Lime Trading, FlatEx, Geno</li>
+					<li>Fix: Behebt ein Problem bei der reduzierten Darstellung der Performance-Berechnung auf dem Dashboard</li>
+					<li>Fix: Behebt ein Problem mit einer NullPointerException wenn in einer Datei (noch) keine Klassifikationen existieren</li>
+					<li>Fix: Behebt ein Problem das nicht alle Gegenbuchungen für ein Konto bei der Suche angezeigt wurden</li>
+				</ul>
+			</description>
+		</release>
 		<release version="0.65.3" date="2023-09-04">
 			<description>
 				<ul>
