@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -1796,31 +1795,28 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         // Filter transactions by taxes treatment's
         List<Item> taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
-                        .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> { //
                             var type = ((AccountTransaction) i.getSubject()).getType(); //
                             return type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND; //
                         }) //
-                        .collect(Collectors.toList());
+                        .toList();
 
         // Filter transactions by buySell transactions
         List<Item> saleTransactionList = items.stream() //
                         .filter(BuySellEntryItem.class::isInstance) //
-                        .map(BuySellEntryItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
                         .filter(i -> PortfolioTransaction.Type.SELL //
                                         .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
-                        .collect(Collectors.toList());
+                        .toList();
 
         // Filter transactions by dividend transactions
         List<Item> dividendTransactionList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
-                        .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.DIVIDENDS //
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
-                        .collect(Collectors.toList());
+                        .toList();
 
         var saleTaxPairs = matchTransactionPair(saleTransactionList, taxesTreatmentList);
         var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
@@ -1853,7 +1849,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
 
-                items.removeIf(item -> item == pair.tax());
+                items.remove(pair.tax());
             }
         }
 
@@ -1888,7 +1884,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote()));
 
-                items.removeIf(item -> item == pair.tax());
+                items.remove(pair.tax());
             }
             else
             {
