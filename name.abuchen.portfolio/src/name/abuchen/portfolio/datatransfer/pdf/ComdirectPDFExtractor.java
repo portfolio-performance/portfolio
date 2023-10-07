@@ -10,17 +10,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -50,13 +47,13 @@ import name.abuchen.portfolio.util.Pair;
  *
  *           Therefore, we use the documents based on their function and merge both documents, if possible, as one transaction.
  *           {@code
- *              matchSaleAndTaxTransactions(List<Item> saleTransactionList,List<Item> taxesTransactionList)
+ *              matchTransactionPair(List<Item> transactionList,List<Item> taxesTreatmentList)
  *           }
  *
- *           The separate taxes statement does only contain taxes in the account currency.
+ *           The separate taxes treatment does only contain taxes in the account currency.
  *           However, if the security currency differs, we need to provide the currency conversion.
  *           {@code
- *              fixMissingCurrencyConversionForTaxesTransactions(Collection<SaleTaxPair>)
+ *              fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair>)
  *           }
  *
  *           Always import the securities transaction and the taxes treatment for a correct transaction.
@@ -76,7 +73,7 @@ import name.abuchen.portfolio.util.Pair;
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-    private static record SaleTaxPair(Item sale, Item tax)
+    private static record TransactionTaxesPair(Item transaction, Item tax)
     {
     }
 
@@ -1774,14 +1771,30 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
+    /**
+     * @formatter:off
+     * This method performs post-processing on a list transaction items, categorizing and
+     * modifying them based on their types and associations. It follows several steps:
+     *
+     * 1. Filters the input list to isolate taxes treatment transactions, sale transactions, and dividend transactions.
+     * 2. Matches sale transactions with their corresponding taxes treatment and dividend transactions with their corresponding taxes treatment.
+     * 3. Adjusts sale transactions by subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
+     *    and removing taxes treatment's from the list of items.
+     * 4. Adjusts dividend transactions by updating the gross amount if necessary, subtracting tax amounts, adding tax units,
+     *    combining source information, appending taxes treatment notes, and removing taxes treatment's from the list of items.
+     *
+     * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
+     * in sale and dividend transactions, making the transaction's more comprehensive and accurate.
+     *
+     * @param items The list of transaction items to be processed.
+     * @return A modified list of transaction items after post-processing.
+     * @formatter:on
+     */
     @Override
     public List<Item> postProcessing(List<Item> items)
     {
-        // Create a hash table for taxes treatments that are to be deleted.
-        Set<AccountTransaction> TaxesTransactionToBeDelete = new HashSet<>();
-
-        // Filter transactions by taxes transactions
-        List<Item> taxesTransactionList = items.stream() //
+        // Filter transactions by taxes treatment's
+        List<Item> taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
                         .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
@@ -1809,118 +1822,78 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
                         .collect(Collectors.toList());
 
-        // Group dividend and taxes transactions together and group by date and security
-        Map<LocalDate, Map<Security, List<Item>>> dividendTaxesTransactions;
-        if (!dividendTransactionList.isEmpty())
-            dividendTaxesTransactions = Stream.concat(dividendTransactionList.stream(), taxesTransactionList.stream())
-                            .collect(Collectors.groupingBy(item -> item.getDate().toLocalDate(), Collectors.groupingBy(Item::getSecurity)));
-        else
-            dividendTaxesTransactions = Collections.emptyMap();
+        var saleTaxPairs = matchTransactionPair(saleTransactionList, taxesTreatmentList);
+        var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
 
-        var saleTaxPairs = matchSaleAndTaxTransactions(saleTransactionList, taxesTransactionList);
-        fixMissingCurrencyConversionForTaxesTransactions(saleTaxPairs);
-        
-        for (SaleTaxPair pair : saleTaxPairs)
+        fixMissingCurrencyConversionForSaleTaxesTransactions(saleTaxPairs);
+
+        // @formatter:off
+        // This loop iterates through a list of sale and tax pairs and processes them.
+        //
+        // For each pair, it subtracts the tax amount from the sale transaction's total amount,
+        // adds the tax as a tax unit to the sale transaction, combines source information if needed,
+        // appends taxes treatment notes to the sale transaction, and removes the tax treatment from the 'items' list.
+        //
+        // It performs these operations when a valid tax transaction is found.
+        // @formatter:on
+        for (TransactionTaxesPair pair : saleTaxPairs)
         {
-            BuySellEntry saleTransaction = (BuySellEntry) pair.sale.getSubject();
-            AccountTransaction taxesTransaction = (AccountTransaction) pair.tax.getSubject();
+            var saleTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
 
-            if (taxesTransaction.getType() != AccountTransaction.Type.TAXES)
-                continue;
+            if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
+            {
+                saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
+                                .subtract(taxesTransaction.getMonetaryAmount()));
 
-            // Subtract the tax from the taxes transaction from the total amount
-            saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
-                            .subtract(taxesTransaction.getMonetaryAmount()));
+                saleTransaction.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-            // Add taxes as tax unit
-            saleTransaction.getPortfolioTransaction()
-                            .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+                if (!saleTransaction.getSource().equals(taxesTransaction.getSource()))
+                    saleTransaction.setSource(saleTransaction.getSource() + "; " + taxesTransaction.getSource());
 
-            // Combine at sources file (One or two files?)
-            if (!saleTransaction.getSource().equals(taxesTransaction.getSource()))
-                saleTransaction.setSource(saleTransaction.getSource() + "; " + taxesTransaction.getSource());
+                saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
 
-            // Combine at notes
-            saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
-
-            // delete the taxes treatment from the result list
-            items.remove(pair.tax());
+                items.removeIf(item -> item == pair.tax());
+            }
         }
 
-        dividendTaxesTransactions.forEach((k, v) -> {
-            v.forEach((security, transactions) -> {
-
-                if (transactions.size() == 1 && transactions.get(0).getSubject() instanceof AccountTransaction)
-                {
-                    ExtractorUtils.fixGrossValue().accept((AccountTransaction) transactions.get(0).getSubject());
-                }
-                else if (transactions.size() == 2)
-                {
-                    var dividendTransaction = (AccountTransaction) transactions.get(0).getSubject();
-                    var taxesTransaction = (AccountTransaction) transactions.get(1).getSubject();
-
-                    // Memory the Item with taxes properties
-                    Item taxesTransactionItem = transactions.get(1);
-
-                    // Which transaction is the taxes and which the dividend?
-                    if (!AccountTransaction.Type.TAXES.equals(taxesTransaction.getType()))
-                    {
-                        dividendTransaction = (AccountTransaction) transactions.get(1).getSubject();
-                        taxesTransaction = (AccountTransaction) transactions.get(0).getSubject();
-                        taxesTransactionItem = transactions.get(0);
-                    }
-
-                    // Check if there is a dividend transaction and a taxes transaction
-                    if (AccountTransaction.Type.TAXES.equals(taxesTransaction.getType())
-                                    && AccountTransaction.Type.DIVIDENDS.equals(dividendTransaction.getType()))
-                    {
-                        // @formatter:off
-                        // Set the correct gross amount if the taxes base (gross)
-                        // is greater than the calculated gross amount (withholding tax).
-                        // @formatter:on
-                        Money grossTaxesTreatment = (Money) taxesTransactionItem.getData(ATTRIBUTE_GROSS_TAXES_TREATMENT);
-
-                        if (grossTaxesTreatment != null
-                                        && grossTaxesTreatment.isGreaterThan(dividendTransaction.getGrossValue()))
-                        {
-                            dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
-
-                            ExtractorUtils.fixGrossValue().accept(dividendTransaction);
-                        }
-
-                        // Subtract the taxes from the taxes transaction from the total amount
-                        dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount()
-                                        .subtract(taxesTransaction.getMonetaryAmount()));
-
-                        // Add taxes as tax unit
-                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
-
-                        // Combine at sources file (One or two files?)
-                        if (!dividendTransaction.getSource().equals(taxesTransaction.getSource()))
-                            dividendTransaction.setSource(dividendTransaction.getSource() + "; " + taxesTransaction.getSource());
-
-                        // Combine at notes
-                        dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote()));
-
-                        // Add the taxes treatment to the hash table, which can be deleted
-                        TaxesTransactionToBeDelete.add(taxesTransaction);
-                    }
-                    else
-                    {
-                        // do nothing because no taxes transaction is present
-                    }
-                }
-            });
-        });
-
-        // Iterate list and delete all taxes treatments that are present in the
-        // hash table.
-        Iterator<Item> iter = items.iterator();
-        while (iter.hasNext())
+        // @formatter:off
+        // This loop iterates through a list of dividend and tax pairs and processes them.
+        //
+        // For each pair, it adjusts the gross amount of the dividend transaction if necessary,
+        // based on whether the taxes base (gross) is greater than the calculated gross amount (withholding tax).
+        // @formatter:on
+        for (TransactionTaxesPair pair : dividendTaxPairs)
         {
-            Object o = iter.next().getSubject();
-            if (TaxesTransactionToBeDelete.contains(o))
-                iter.remove();
+            var dividendTransaction = (AccountTransaction) pair.transaction().getSubject();
+            var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
+
+            if (taxesTransaction != null)
+            {
+                Money grossTaxesTreatment = (Money) pair.tax().getData(ATTRIBUTE_GROSS_TAXES_TREATMENT);
+
+                if (grossTaxesTreatment != null && grossTaxesTreatment.isGreaterThan(dividendTransaction.getGrossValue()))
+                {
+                    dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
+                    ExtractorUtils.fixGrossValue().accept(dividendTransaction);
+                }
+
+                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount()
+                                .subtract(taxesTransaction.getMonetaryAmount()));
+
+                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+
+                if (!dividendTransaction.getSource().equals(taxesTransaction.getSource()))
+                    dividendTransaction.setSource(dividendTransaction.getSource() + "; " + taxesTransaction.getSource());
+
+                dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote()));
+
+                items.removeIf(item -> item == pair.tax());
+            }
+            else
+            {
+                ExtractorUtils.fixGrossValue().accept(dividendTransaction);
+            }
         }
 
         return items;
@@ -1928,96 +1901,98 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     /**
      * @formatter:off
-     * Match sale and taxes transactions, ensuring unique pairs based on date and security.
+     * Matches transactions and taxes treatment's, ensuring unique pairs based on date and security.
      *
-     * This method matches sale and taxes transactions by creating a Pair consisting of the transaction's
+     * This method matches transactions and taxes treatment's by creating a Pair consisting of the transaction's
      * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
      * ensuring that the same combination of date and security is not processed multiple times.
-     * Duplicate sale transactions for the same security on the same day are avoided.
+     * Duplicate transactions for the same security on the same day are avoided.
      *
-     * @param saleTransactionList  A list of sale transactions.
-     * @param taxesTransactionList A list of taxes transactions.
-     * @return A collection of SaleTaxPair objects representing matched sale and taxes transactions.
+     * @param transactionList      A list of transactions to be matched.
+     * @param taxesTreatmentList   A list of taxes treatment's to be considered for matching.
+     * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
      * @formatter:on
      */
-    private Collection<SaleTaxPair> matchSaleAndTaxTransactions(List<Item> saleTransactionList,
-                    List<Item> taxesTransactionList)
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesTreatmentList)
     {
         // Use a Set to prevent duplicates
         Set<Pair<LocalDate, Security>> keys = new HashSet<>();
-        Map<Pair<LocalDate, Security>, SaleTaxPair> pairs = new HashMap<>();
+        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
 
-        // Match identified sale and taxes transactions
-        saleTransactionList.forEach( //
-                        sale -> {
-                            var key = new Pair<>(sale.getDate().toLocalDate(), sale.getSecurity());
+        // Match identified transactions and taxes treatment's
+        transactionList.forEach( //
+                        transaction -> {
+                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
 
                             // Prevent duplicates
                             if (keys.add(key))
-                                pairs.put(key, new SaleTaxPair(sale, null));
+                                pairs.put(key, new TransactionTaxesPair(transaction, null));
                         } //
         );
 
-        // Iterate through the list of taxes transactions to match them with sale transactions
-        taxesTransactionList.forEach( //
+        // Iterate through the list of taxes treatment's to match them with transactions
+        taxesTreatmentList.forEach( //
                         tax -> {
                             // Check if the taxes treatment has a security
                             if (tax.getSecurity() == null)
                                 return;
 
-                            // Create a key based on the taxes transaction's date and security
+                            // Create a key based on the taxes treatment date and security
                             var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
 
-                            // Retrieve the SaleTaxPair associated with this key, if it exists
+                            // Retrieve the TransactionTaxesPair associated with this key, if it exists
                             var pair = pairs.get(key);
 
-                            // Skip if no sale transaction is found or if a taxes transaction already exists
+                            // Skip if no transaction is found or if a taxes treatment already exists
                             if (pair != null && pair.tax() == null)
-                                pairs.put(key, new SaleTaxPair(pair.sale(), tax));
+                                pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
                         } //
         );
 
-        return pairs.values().stream().filter(p -> p.tax() != null).toList();
+        return pairs.values();
     }
 
     /**
      * @formatter:off
      * This method fixes missing currency conversion for taxes transactions.
      *
-     * It iterates through a collection of SaleTaxPair objects and performs the necessary currency conversions
+     * It iterates through a collection of TransactionTaxesPair objects and performs the necessary currency conversions
      * if required based on the currency codes of the involved transactions.
      *
-     * @param saleTaxPairs A collection of SaleTaxPair objects containing taxes and sale transactions.
+     * @param saleTaxPairs A collection of TransactionTaxesPair objects containing taxes and sale transactions.
      * @formatter:on
      */
-    private void fixMissingCurrencyConversionForTaxesTransactions(Collection<SaleTaxPair> saleTaxPairs)
+    private void fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair> saleTaxPairs)
     {
         saleTaxPairs.forEach( //
-                        pair -> {
-                            // Get the taxes transaction from the SaleTaxPair
-                            var tax = (AccountTransaction) pair.tax.getSubject();
-
-                            // Check if currency conversion is needed
-                            if (!tax.getSecurity().getCurrencyCode().equals(tax.getMonetaryAmount().getCurrencyCode()))
+                        pair -> { //
+                            if (pair.tax != null)
                             {
-                                // Get the sale transaction from the SaleTaxPair
-                                var sale = (BuySellEntry) pair.sale.getSubject();
+                                // Get the taxes treatment from the SaleTaxPair
+                                var tax = (AccountTransaction) pair.tax.getSubject();
 
-                                // Check if we have an exchange rate available from the sale transaction
-                                var grossValue = sale.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
-
-                                if (grossValue.isPresent() && grossValue.get().getExchangeRate() != null)
+                                // Check if currency conversion is needed
+                                if (!tax.getSecurity().getCurrencyCode().equals(tax.getMonetaryAmount().getCurrencyCode()))
                                 {
-                                    // Create and set the required grossUnit to the taxes treatment
-                                    var rate = new ExtrExchangeRate(grossValue.get().getExchangeRate(),
-                                                    sale.getPortfolioTransaction().getSecurity().getCurrencyCode(),
-                                                    tax.getCurrencyCode());
+                                    // Get the sale transaction from the SaleTaxPair
+                                    var sale = (BuySellEntry) pair.transaction.getSubject();
 
-                                    String termCurrency = sale.getPortfolioTransaction().getSecurity().getCurrencyCode();
-                                    Money fxGross = rate.convert(termCurrency, tax.getMonetaryAmount());
+                                    // Check if we have an exchange rate available from the sale transaction
+                                    var grossValue = sale.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
 
-                                    // Add the converted gross value unit to the tax transaction
-                                    tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, tax.getMonetaryAmount(), fxGross, rate.getRate()));
+                                    if (grossValue.isPresent() && grossValue.get().getExchangeRate() != null)
+                                    {
+                                        // Create and set the required grossUnit to the taxes treatment
+                                        var rate = new ExtrExchangeRate(grossValue.get().getExchangeRate(),
+                                                        sale.getPortfolioTransaction().getSecurity().getCurrencyCode(),
+                                                        tax.getCurrencyCode());
+
+                                        String termCurrency = sale.getPortfolioTransaction().getSecurity().getCurrencyCode();
+                                        Money fxGross = rate.convert(termCurrency, tax.getMonetaryAmount());
+
+                                        // Add the converted gross value unit to the taxes transaction
+                                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, tax.getMonetaryAmount(), fxGross, rate.getRate()));
+                                    }
                                 }
                             }
                         } //
