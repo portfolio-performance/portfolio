@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -102,7 +105,35 @@ public class CSVImportWizard extends Wizard
         this.client = client;
         this.preferences = preferences;
         this.importer = new CSVImporter(client, inputFile);
+
+        setupEncoding();
+
         setWindowTitle(Messages.CSVImportWizardTitle);
+    }
+
+    private void setupEncoding()
+    {
+        // It is impossible to guess the encoding of the text file. But more
+        // often than not, it is the same as last time. Therefore we remember
+        // the last encoding used and preset it the next time.
+
+        String prefKey = CSVImportWizard.class.getName() + "-encoding"; //$NON-NLS-1$
+        String encoding = preferences.getString(prefKey);
+
+        if (encoding != null)
+        {
+            try
+            {
+                importer.setEncoding(Charset.forName(encoding));
+            }
+            catch (IllegalCharsetNameException | UnsupportedCharsetException e)
+            {
+                // ignore faulty charsets from preferences
+            }
+        }
+
+        importer.addPropertyChangeListener("encoding", //$NON-NLS-1$
+                        e -> preferences.putValue(prefKey, importer.getEncoding().name()));
     }
 
     public void setTarget(Account target)
