@@ -2759,12 +2759,13 @@ public class TradeRepublicPDFExtractorTest
                         hasName("Enbridge Inc. Registered Shares o.N."), //
                         hasCurrencyCode("CAD"))));
 
-        // check dividende transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-06-01T00:00"), hasShares(20.971565), //
                         hasSource("Dividendo01.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 9.56), hasGrossValue("EUR", 12.74), hasForexGrossValue("CAD", 18.61), //
+                        hasAmount("EUR", 9.56), hasGrossValue("EUR", 12.74), //
+                        hasForexGrossValue("CAD", 18.61), //
                         hasTaxes("EUR", (4.65 / 1.46055)), hasFees("EUR", 0.00))));
     }
 
@@ -2804,6 +2805,37 @@ public class TradeRepublicPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividendo02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendo02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE001A0F8UH1"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-07-17T00:00"), hasShares(23.632607), //
+                        hasSource("Dividendo02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 16.64), hasGrossValue("EUR", 16.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3719,5 +3751,27 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-05-31"), hasAmount("EUR", 0.12), //
                         hasSource("RescontoInteressiMaturati01.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testInterestInvoice01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-09-30"), hasAmount("EUR", 1.47), //
+                        hasSource("InterestInvoice01.txt"), hasNote(null))));
     }
 }
