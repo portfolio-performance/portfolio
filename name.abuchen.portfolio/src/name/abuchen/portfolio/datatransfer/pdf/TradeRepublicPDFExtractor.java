@@ -528,207 +528,191 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCH.TTUNG"
-                        + "|DIVIDENDE"
-                        + "|REINVESTIERUNG"
-                        + "|STORNO DIVIDENDE"
-                        + "|DIVIDENDO)");
+        DocumentType type = new DocumentType("(AUSSCH.TTUNG" //
+                        + "|DIVIDENDE" //
+                        + "|REINVESTIERUNG" //
+                        + "|STORNO DIVIDENDE" //
+                        + "|DIVIDENDO" //
+                        + "|DISTRIBUZIONE)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(AUSSCH.TTUNG"
-                        + "|DIVIDENDE"
-                        + "|REINVESTIERUNG"
-                        + "|STORNO DIVIDENDE"
-                        + "|DIVIDENDO)$");
+        Block firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH .*$"); //
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // Storno der Dividende mit dem Ex-Tag 29.11.2019.
-                // @formatter:on
-                .section("type").optional()
-                .match("^(?<type>Storno) der Dividende .*$")
-                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
-                                Messages.MsgErrorOrderCancellationUnsupported))
+                        // @formatter:off
+                        // Storno der Dividende mit dem Ex-Tag 29.11.2019.
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Storno) der Dividende .*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
-                .oneOf(
-                                // @formatter:off
-                                // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
-                                // Registered Shares USD o.N.
-                                // IE00B652H904
-                                //
-                                // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
-                                // Registered Shares o.N.
-                                // ISIN: CA29250N1050
-                                // @formatter:on
-                                section -> section
-                                        .attributes("name", "currency", "isin", "nameContinued")
-                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$")
-                                        .match("^(?<nameContinued>.*)$")
-                                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                                ,
-                                // @formatter:off
-                                // 1 Reinvestierung Vodafone Group PLC 699 Stk.
-                                // Registered Shares DL 0,2095238
-                                // GB00BH4HKS39
-                                // 1 Bruttoertrag 26,80 GBP
-                                // @formatter:on
-                                section -> section
-                                        .attributes("name", "nameContinued", "isin", "currency")
-                                        .match("^[\\d] Reinvestierung (?<name>.*) [\\.,\\d]+ Stk\\.$")
-                                        .match("^(?<nameContinued>.*)$")
-                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                        .match("^[\\d] Reinvestierung .*$")
-                                        .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                        )
+                        .oneOf( //
+                                        // @formatter:off
+                                        // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
+                                        // Registered Shares USD o.N.
+                                        // IE00B652H904
+                                        //
+                                        // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
+                                        // Registered Shares o.N.
+                                        // ISIN: CA29250N1050
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "nameContinued") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 1 Reinvestierung Vodafone Group PLC 699 Stk.
+                                        // Registered Shares DL 0,2095238
+                                        // GB00BH4HKS39
+                                        // 1 Bruttoertrag 26,80 GBP
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "nameContinued", "isin", "currency") //
+                                                        .match("^[\\d] Reinvestierung (?<name>.*) [\\.,\\d]+ Stk\\.$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^[\\d] Reinvestierung .*$") //
+                                                        .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                .oneOf(
-                                // @formatter:off
-                                // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
-                                // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
-                                // @formatter:on
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$")
-                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                                ,
-                                // @formatter:off
-                                // 1 Reinvestierung Vodafone Group PLC 699 Stk.
-                                // @formatter:on
-                                section -> section
-                                        .attributes("shares")
-                                        .match("^[\\d] Reinvestierung .* (?<shares>[\\.,\\d]+) Stk\\.$")
-                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                        )
+                        .oneOf( //
+                                        // @formatter:off
+                                        // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
+                                        // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // 1 Reinvestierung Vodafone Group PLC 699 Stk.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\d] Reinvestierung .* (?<shares>[\\.,\\d]+) Stk\\.$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                // @formatter:off
-                // DExxxxxx 25.09.2019 4,18 EUR
-                // @formatter:on
-                .section("date")
-                .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (\\-)?[\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // DExxxxxx 25.09.2019 4,18 EUR
+                        // @formatter:on
+                        .section("date") //
+                        .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                .oneOf(
-                                // 1 Reinvestierung Vodafone Group PLC 699 Stk.
-                                // 1 Bruttoertrag 26,80 GBP
-                                section -> section
-                                        .attributes("amount", "currency")
-                                        .match("^[\\d] Reinvestierung .*$")
-                                        .match("^[\\d] Bruttoertrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // There might be two lines with "GESAMT"
-                                // - one for gross
-                                // - one for the net value
-                                // we pick the second
-                                // @formatter:on
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 1 Reinvestierung Vodafone Group PLC 699 Stk.
+                                        // 1 Bruttoertrag 26,80 GBP
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^[\\d] Reinvestierung .*$") //
+                                                        .match("^[\\d] Bruttoertrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // There might be two lines with "GESAMT"
+                                        // - one for gross
+                                        // - one for the net value
+                                        // we pick the second
+                                        //
+                                        // GESAMT 45,40 USD
+                                        // GESAMT -30,17 EUR
+                                        //
+                                        // TOTALE 18,61 CAD
+                                        // TOTALE 9,56 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^(GESAMT|TOTALE) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // GESAMT 1,630 EUR
+                                        // TOTALE 9,56 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                                // @formatter:off
-                                // GESAMT 3,83 EUR
-                                // GESAMT 2,83 EUR
-                                //
-                                // GESAMT 45,40 USD
-                                // GESAMT -30,17 EUR
-                                //
-                                // TOTALE 18,61 CAD
-                                // TOTALE 9,56 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("amount", "currency")
-                                        .match("^(GESAMT|TOTALE) [\\.,\\d]+ [\\w]{3}$")
-                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // GESAMT 1,630 EUR
-                                // TOTALE 9,56 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("amount", "currency")
-                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        })
-                        )
+                        .optionalOneOf(
+                                        // @formatter:off
+                                        // GESAMT 5,63 USD
+                                        // Zwischensumme 1,102 EUR/USD 5,11 EUR
+                                        //
+                                        // Subtotale 13,96 CAD
+                                        // Subtotale 1,46055 EUR/CAD 9,56 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency") //
+                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^(Zwischensumme|Subtotale) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                .optionalOneOf(
-                                // @formatter:off
-                                // GESAMT 5,63 USD
-                                // Zwischensumme 1,102 EUR/USD 5,11 EUR
-                                //
-                                // Subtotale 13,96 CAD
-                                // Subtotale 1,46055 EUR/CAD 9,56 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency")
-                                        .match("^(GESAMT|TOTALE) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
-                                        .match("^(Zwischensumme|Subtotale) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // 1 Bruttoertrag 26,80 GBP
+                                        // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
+                                        // GESAMT 0,44 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency") //
+                                                        .match("^[\\d] Bruttoertrag (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                                ,
-                                // @formatter:off
-                                // 1 Bruttoertrag 26,80 GBP
-                                // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
-                                // GESAMT 0,44 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency")
-                                        .match("^[\\d] Bruttoertrag (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$")
-                                        .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            t.setAmount(gross.getAmount());
+                                                            t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
 
-                                            t.setAmount(gross.getAmount());
-                                            t.setCurrencyCode(asCurrencyCode(gross.getCurrencyCode()));
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                        )
+                        .conclude(ExtractorUtils.fixGrossValueA())
 
-                .conclude(ExtractorUtils.fixGrossValueA())
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
 
-                .wrap((t, ctx) -> {
-                    TransactionItem item = new TransactionItem(t);
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
 
-                    if (ctx.getString(FAILURE) != null)
-                        item.setFailureMessage(ctx.getString(FAILURE));
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                    if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
-
-                    return item;
-                });
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1122,7 +1106,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addInterestStatementTransaction()
     {
-        DocumentType type = new DocumentType("(ABRECHNUNG ZINSEN|RESOCONTO INTERESSI MATURATI)");
+        DocumentType type = new DocumentType("(ABRECHNUNG ZINSEN" //
+                        + "|RESOCONTO INTERESSI MATURATI" //
+                        + "|INTEREST INVOICE)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -1142,9 +1128,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // zum 31.01.2023
                         // alla data 31.05.2023
+                        // as of 30.09.2023
                         // @formatter:on
                         .section("date") //
-                        .match("^(zum|alla data) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(zum|alla data|as of) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off

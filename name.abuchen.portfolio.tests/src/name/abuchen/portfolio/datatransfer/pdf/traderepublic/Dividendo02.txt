@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+qbqIykNK XAAxHm TrfTJ PEraGMV PAGINA 1 dal 1
+lUW vvIB wxdGLPM 529 DATA 17.07.2023
+00009 AlgChRhBR CONTO TITOLI 1810039672
+DISTRIBUZIONE
+PANORAMICA
+Distribuzione con l'ex-tag 17.08.2023.
+POSIZIONE QUANTITÀ REDDITO IMPORTO
+iSh.ST.Gl.Sel.Div.100 U.ETF DE 23,632607 Pz. 0,704284 EUR 16,64 EUR
+Inhaber-Anteile
+ISIN: DE001A0F8UH1
+TOTALE 16,64 EUR
+PRENOTAZIONE
+CONTO DI TRANSITO DATA VALUTA IMPORTO
+DE09762409007071864502 17.07.2023 16,64 EUR
+iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile in giro collection storage in Germania.
+Questo regolamento viene creato automaticamente e quindi non è firmato.
+Se non viene mostrata l'IVA, si tratta di un servizio esente da imposte sulle vendite in conformità con la 
+regolamentazione UStG § 4 n. 8.
+Trade Republic Bank GmbH www.traderepublic.com Sede centrale: Berlin Direttore Generale
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin PARTITA IVA DE307510626 Gernot Mittendorfer
+ABRE / 18.07.2023 / 68741871 / d39b-5ebf
