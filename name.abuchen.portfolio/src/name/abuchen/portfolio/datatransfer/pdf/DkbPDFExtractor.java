@@ -1043,9 +1043,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
                         .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>" //
-                                        + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))"
-                                        + ".*)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>"
+                                        + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
+                                        + "(Lohn, Gehalt, Rente" //
+                                        + "|Zahlungseingang" //
+                                        + "|Storno Gutschrift" //
+                                        + "|Bareinzahlung am GA" //
+                                        + "|sonstige Buchung" //
+                                        + "|Eingang Inst\\.Paym\\." //
+                                        + "|Eingang Echtzeit.berw" //
+                                        + "|.berweisung" //
+                                        + "|Dauerauftrag" //
+                                        + "|Basislastschrift" //
+                                        + "|Lastschrift" //
+                                        + "|Kartenzahlung.*" //
+                                        + "|Kreditkartenabr\\." //
+                                        + "|Verf.gung Geldautomat" //
+                                        + "|Verf.g\\. Geldautom\\. FW" //
+                                        + "|.berweis\\. entgeltfr\\.)).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from DEPOSIT to REMOVAL

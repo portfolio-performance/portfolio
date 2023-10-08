@@ -4265,6 +4265,14 @@ public class DkbPDFExtractorTest
                         hasSource("GiroKontoauszug26.txt"), hasNote("Lohn, Gehalt, Rente"))));
 
         // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-04"), hasAmount("EUR", 150.00), //
+                        hasSource("GiroKontoauszug26.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-10-04"), hasAmount("EUR", 150.00), //
+                        hasSource("GiroKontoauszug26.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2023-10-02"), hasAmount("EUR", 0.01), //
                         hasSource("GiroKontoauszug26.txt"), hasNote("Abrechnungszeitraum vom 01.07.2023 bis 30.09.2023"))));
     }
