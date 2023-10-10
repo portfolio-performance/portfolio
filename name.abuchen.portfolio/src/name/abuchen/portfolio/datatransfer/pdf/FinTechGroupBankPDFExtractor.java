@@ -712,278 +712,230 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsmitteilung|Zinsgutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Ertragsmitteilung|Zinsgutschrift).*$");
-        type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        pdfTransaction
-                .oneOf(
-                                // @formatter:off
-                                // Nr.716759781                   HANN.RUECK SE NA O.N.     (DE0008402215/840221)
-                                // Extag           :  08.05.2014          Bruttodividende
-                                // Zahlungstag     :  08.05.2014          pro Stück       :       3,0000 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("name", "isin", "wkn", "currency")
-                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
-                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
-                                        .match("^.* pro St.ck([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                                ,
-                                // @formatter:off
-                                // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
-                                // St.             :        248,34        Bruttothesaurierung
-                                //                                        pro Stück          :      -0,1323 USD
-                                // @formatter:on
-                                section -> section
-                                        .attributes("name", "isin", "wkn", "currency")
-                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
-                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)")
-                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                                ,
-                                // @formatter:off
-                                // Nr.111111111                   ISH.FOOBAR 12345666 x.EFT (DE1234567890/AB1234)
-                                // Zinstermin      :  28.04.2016          Zinsbetrag      :        73,75 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("name", "isin", "wkn", "currency")
-                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$")
-                                        .match("^.* Zinsbetrag([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                        )
+        Block firstRelevantLine = new Block("^(Dividendengutschrift|Ertragsmitteilung|Zinsgutschrift).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                // @formatter:off
-                // St.             :         360
-                // @formatter:on
-                .section("shares")
-                .match("^(St\\.|St\\.\\/Nominale)([:\\s]+)? (?<shares>[\\.,\\d]+).*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+        pdfTransaction //
 
-                // @formatter:off
-                // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
-                // @formatter:on
-                .section("date")
-                .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                .oneOf(
-                                // @formatter:off
-                                //                                        Endbetrag       :       795,15 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("amount", "currency")
-                                        .match("^.* Endbetrag([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        })
-                                ,
-                                // @formatter:off
-                                // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
-                                // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
-                                //                                        Endbetrag          :       -15,24 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("type", "fxGross", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
-                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            type.getCurrentContext().putBoolean("negative", true);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.716759781                   HANN.RUECK SE NA O.N.     (DE0008402215/840221)
+                                        // Extag           :  08.05.2014          Bruttodividende
+                                        // Zahlungstag     :  08.05.2014          pro Stück       :       3,0000 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                        // St.             :        248,34        Bruttothesaurierung
+                                        //                                        pro Stück          :      -0,1323 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.111111111                   ISH.FOOBAR 12345666 x.EFT (DE1234567890/AB1234)
+                                        // Zinstermin      :  28.04.2016          Zinsbetrag      :        73,75 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+([\\s]+)? (?<name>.*)([\\s]+)? \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .match("^.* Zinsbetrag([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // St.             :         360
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St\\.([:\\s]+)? (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // St./Nominale    :     10.000,00 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
-                                            // If we have a negative amount and no gross reinvestment,
-                                            // we first book the dividends received and then the tax charge
-                                            if ("Bruttothesaurierung".equals(v.get("type")))
-                                            {
-                                                t.setAmount(0L);
-                                            }
-                                            else
-                                            {
-                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                                                {
-                                                    exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                                                }
-                                                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                        // @formatter:off
+                        // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
+                                        // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
+                                        //                                        Endbetrag          :       -15,24 EUR
+                                        //
+                                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                        // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                        //                                        Endbetrag          :        -0,15 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type", "fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^.*(?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung|Zinsbetrag))([:\\s]+)? (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // If we have a negative amount and no gross reinvestment,
+                                                            // we first book the dividends received and then the tax charge.
+                                                            // @formatter:on
+                                                            type.getCurrentContext().putBoolean("negative", true);
 
-                                                Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                                Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                                                BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                                t.setMonetaryAmount(gross);
-                                            }
-                                        })
-                                ,
-                                // @formatter:off
-                                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
-                                // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
-                                //                                        Endbetrag          :        -0,15 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("type", "fxGross", "fxCurrency", "exchangeRate", "currency")
-                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
-                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            type.getCurrentContext().putBoolean("negative", true);
+                                                            if ("Bruttothesaurierung".equals(v.get("type")))
+                                                            {
+                                                                t.setAmount(0L);
+                                                            }
+                                                            else
+                                                            {
+                                                                ExtrExchangeRate rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
 
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                                Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                                Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                            // If we have a negative amount and no gross reinvestment,
-                                            // we first book the dividends received and then the tax charge
-                                            if ("Bruttothesaurierung".equals(v.get("type")))
-                                            {
-                                                t.setAmount(0L);
-                                            }
-                                            else
-                                            {
-                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
-                                                {
-                                                    exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-                                                }
-                                                type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
+                                        //                                        Endbetrag          :        -8,26 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type", "amount", "currency") //
+                                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung|Zinsbetrag))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // If we have a negative amount and no gross reinvestment,
+                                                            // we first book the dividends received and then the tax charge.
+                                                            // @formatter:on
+                                                            type.getCurrentContext().putBoolean("negative", true);
 
-                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                                Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                                                Money gross = Money.of(asCurrencyCode(v.get("currency")),
-                                                                BigDecimal.valueOf(fxGross.getAmount()).multiply(inverseRate)
-                                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+                                                            if ("Bruttothesaurierung".equals(v.get("type")))
+                                                                t.setAmount(0L);
+                                                            else
+                                                                t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //                                        Endbetrag       :       795,15 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* Endbetrag([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                                                t.setMonetaryAmount(gross);
-                                            }
-                                        })
-                                ,
-                                // @formatter:off
-                                // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
-                                //                                        Endbetrag          :        -8,26 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("type", "amount", "currency")
-                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$")
-                                        .assign((t, v) -> {
-                                            type.getCurrentContext().putBoolean("negative", true);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Extag           :      20.05.2020      Bruttodividende :           25,50 USD
+                                        //                                       *Einbeh. Steuer  :            2,37 EUR
+                                        // Devisenkurs     :        1,134800
+                                        //
+                                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                        // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
+                                        // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                        //
+                                        // Zinstermin      :    11.09.2023    Zinsbetrag         :         162,50 USD
+                                        // Valuta          :    11.09.2023   *Einbeh. Steuer     :          41,67 EUR
+                                        //                                    Devisenkurs        :       1,072400
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^.*(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung|Zinsbetrag)([:\\s]+)? (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                            // If we have a negative amount and no gross reinvestment,
-                                            // we first book the dividends received and then the tax charge
-                                            if ("Bruttothesaurierung".equals(v.get("type")))
-                                                t.setAmount(0L);
-                                            else
-                                                t.setAmount(asAmount(v.get("amount")));
-                                        })
-                        )
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :  08.08.2017          Bruttodividende :        26,25 USD
+                                        // Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^.*(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung|Zinsbetrag)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) ([\\*\\s]+)?Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                .optionalOneOf(
-                                // @formatter:off
-                                // Extag           :      20.05.2020      Bruttodividende :           25,50 USD
-                                //                                       *Einbeh. Steuer  :            2,37 EUR
-                                // Devisenkurs     :        1,134800
-                                // @formatter:on
-                                section -> section
-                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
-                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                                ,
-                                // @formatter:off
-                                // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
-                                // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
-                                // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
-                                // @formatter:on
-                                section -> section
-                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? \\-(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
-                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
 
-                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                        .wrap(t -> {
+                            // The final amount is negative. The taxes incurred
+                            // are processed in a separate transaction.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negative");
 
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                                ,
-                                // @formatter:off
-                                // Extag           :  08.08.2017          Bruttodividende :        26,25 USD
-                                // Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
-                                // @formatter:on
-                                section -> section
-                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency")
-                                        .match("^(.* )?(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$")
-                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) ([\\*\\s]+)?Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$")
-                                        .assign((t, v) -> {
-                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                            type.getCurrentContext().putType(rate);
-
-                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
-
-                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                        })
-                        )
-
-                .optionalOneOf(
-                                // @formatter:off
-                                //   unter der Transaktion-Nr.: 132465978
-                                //   unter der Transaktion-Nr. : 1111111111
-                                // Transaktionsnummer: 921414163
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note")
-                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$")
-                                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
-                                ,
-                                // @formatter:off
-                                //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
-                                // 1301138113.
-                                // @formatter:on
-                                section -> section
-                                        .attributes("note1", "note2")
-                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$")
-                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$")
-                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
-                        )
-
-                .wrap(t -> {
-                    // The final amount is negative. The taxes incurred
-                    // are processed in a separate transaction.
-                    // Finally, we remove the flag.
-                    type.getCurrentContext().remove("negative");
-
-                    if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                        return new TransactionItem(t);
-                    return null;
-                });
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     private void addDividendeWithNegativeAmountTransaction()
