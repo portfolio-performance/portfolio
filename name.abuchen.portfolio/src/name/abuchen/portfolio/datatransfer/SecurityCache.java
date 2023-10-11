@@ -32,18 +32,20 @@ public class SecurityCache
     {
         this.client = client;
 
-        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
+        this.localMaps.add(client.getSecurities().stream()
+                        .filter(s -> s.getIsin() != null && !s.getIsin().isEmpty() && !s.isRetired())
                         .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
         this.localMaps.add(client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
+                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty() && !s.isRetired())
                         .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s,
                                         (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
-        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
+        this.localMaps.add(client.getSecurities().stream()
+                        .filter(s -> s.getWkn() != null && !s.getWkn().isEmpty() && !s.isRetired())
                         .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
-
-        this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
+        this.localMaps.add(client.getSecurities().stream()
+                        .filter(s -> s.getName() != null && !s.getName().isEmpty() && !s.isRetired())
                         .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
 
     }
