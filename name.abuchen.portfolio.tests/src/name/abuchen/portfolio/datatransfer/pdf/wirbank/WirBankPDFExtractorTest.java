@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.wirbank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -19,6 +20,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -732,8 +735,76 @@ public class WirBankPDFExtractorTest
                         hasDate("2023-09-06T00:00"), hasShares(0.001), //
                         hasSource("Kauf09.txt"), //
                         hasNote(null), //
-                        hasAmount("CHF", 0.44), hasGrossValue("CHF",0.44), //
+                        hasAmount("CHF", 0.44), hasGrossValue("CHF", 0.44), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf10()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0117044831"), hasWkn(null), hasTicker(null), //
+                        hasName("Swisscanto Pacific ex Japan"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-08T00:00"), hasShares(0.027), //
+                        hasSource("Kauf10_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 3.16), hasGrossValue("CHF", 3.16), //
+                        hasForexGrossValue("USD", 3.54), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf10WithSecurityInCHF()
+    {
+        Security security = new Security("Swisscanto Pacific ex Japan", "CHF");
+        security.setIsin("CH0117044831");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-08T00:00"), hasShares(0.027), //
+                        hasSource("Kauf10_English.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 3.16), hasGrossValue("CHF", 3.16), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -850,7 +921,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuhren01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -863,7 +934,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T00:00")));
-        assertThat(transaction.getSource(), is("Gebuhren01.txt"));
+        assertThat(transaction.getSource(), is("Gebuehren01.txt"));
         assertThat(transaction.getNote(), is("VIAC Verwaltungsgebühr: 0.123%"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -885,7 +956,7 @@ public class WirBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuhren02_English.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren02_English.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -898,7 +969,7 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getSource(), is("Gebuhren02_English.txt"));
+        assertThat(transaction.getSource(), is("Gebuehren02_English.txt"));
         assertThat(transaction.getNote(), is("VIAC administration fee: 0.47%"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -909,6 +980,33 @@ public class WirBankPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testFees03()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren03_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        fee( //
+                                        hasDate("2023-07-31T00:00"), hasShares(0.00), //
+                                        hasSource("Gebuehren03_English.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
+                                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
     }
 
     @Test
@@ -1366,7 +1464,8 @@ public class WirBankPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-14T00:00"), hasShares(31.64), //
-                        hasSource("Dividende05.txt"), hasNote("Ordentliche Dividende"), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Ordentliche Dividende"), //
                         hasAmount("CHF", 15.19), hasGrossValue("CHF", 15.19), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
@@ -1900,6 +1999,37 @@ public class WirBankPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung06()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung06_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0489405321"), hasWkn(null), hasTicker(null), //
+                        hasName("Swisscanto Japan - IPF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2023-08-25T00:00"), hasShares(0.423), //
+                        hasSource("Steuerrueckerstattung06_English.txt"), //
+                        hasNote("Refund withholding tax"), //
+                        hasAmount("CHF", 0.34), hasGrossValue("CHF", 0.34), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
