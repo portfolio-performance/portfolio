@@ -117,17 +117,18 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .find("Order: (Kauf|Verkauf|Buy|Sell)") //
-                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile) (?<name>.*)$") //
+                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile|units) (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Kurs|Price): (?<currency>[\\w]{3}) .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // 1.369 Ant iShares Core S&P500
+                        // 0.027 units Swisscanto Pacific ex Japan
                         // @formatter:on
                         .section("shares") //
                         .find("Order: (Kauf|Verkauf|Buy|Sell)") //
-                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile) (?<name>.*)$") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile|units) (?<name>.*)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -242,7 +243,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Belastung|Commission)") //
-                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) \\-(?<amount>[\\.,'\\d]+)$")
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -256,7 +257,14 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(Effektive|Effective) (?<note>(VIAC Verwaltungsgeb.hr|VIAC administration fee): [\\.,\\d]+%) .*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private void addDividendTransaction()
@@ -305,7 +313,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Ausschüttung: USD 0.72
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile) (?<name>.*)$") //
+                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile|units) (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Aussch.ttung|Dividend payment): (?<currency>[\\w]{3}) .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -314,7 +322,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // 47.817 Ant UBS ETF MSCI USA SRI
                         // @formatter:on
                         .section("shares") //
-                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile) .*$") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Anteile|units) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
