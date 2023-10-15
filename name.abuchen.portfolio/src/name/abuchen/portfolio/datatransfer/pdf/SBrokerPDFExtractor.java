@@ -782,6 +782,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Bargeldeinzahlung" //
                                         + "|Bargeldeinzahlung SB" //
                                         + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
@@ -853,6 +854,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Bargeldeinzahlung" //
                                         + "|Bargeldeinzahlung SB" //
                                         + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
@@ -903,6 +905,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Bargeldeinzahlung" //
                                         + "|Bargeldeinzahlung SB" //
                                         + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
@@ -991,6 +994,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Bargeldeinzahlung" //
                                         + "|Bargeldeinzahlung SB" //
                                         + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
@@ -1060,6 +1064,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Zahlungseingang" //
                         + "|Bargeldeinzahlung" //
                         + "|Geldautomat" //
+                        + "|Bargeldauszahlung" //
                         + "|Bargeldausz\\.Debitk\\.GA" //
                         + "|BargAuszDebitFremdGA" //
                         + "|Barumsatz" //
@@ -1106,6 +1111,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Zahlungseingang" //
                                         + "|Bargeldeinzahlung" //
                                         + "|Geldautomat" //
+                                        + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
@@ -1444,249 +1450,264 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         // If we have a tax refunds, we set a flag and don't book tax below.
-        transaction
-                .section("n").optional()
-                .match("^zu versteuern \\(negativ\\) (?<n>.*)$")
-                .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
+        transaction //
+
+                        .section("n").optional() //
+                        .match("^zu versteuern \\(negativ\\) (?<n>.*)$") //
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
 
         // If we have a gross reinvestment,
         // we set a flag and don't book tax below.
-        transaction
-                .section("n").optional()
-                .match("^(?<n>Ertragsthesaurierung)$")
-                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+        transaction //
 
-        transaction
-                // @formatter:off
-                // einbehaltene Kapitalertragsteuer EUR 7,03
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^einbehaltene Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        .section("n").optional() //
+                        .match("^(?<n>Ertragsthesaurierung)$") //
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
-                // @formatter:off
-                // Kapitalertragsteuer 24,51 % auf 11,00 EUR 2,70- EUR
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Kapitalertragsteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+        transaction //
 
-                // @formatter:off
-                // Kapitalertragsteuer EUR 70,16
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // einbehaltene Kapitalertragsteuer EUR 7,03
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^einbehaltene Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // einbehaltener Solidaritätszuschlag EUR 0,38
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^einbehaltener Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Kapitalertragsteuer 24,51 % auf 11,00 EUR 2,70- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Solidaritätszuschlag EUR 3,86
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Kapitalertragsteuer EUR 70,16
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Solidaritätszuschlag 5,5 % auf 2,70 EUR 0,14- EUR
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Solidarit.tszuschlag [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // einbehaltener Solidaritätszuschlag EUR 0,38
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^einbehaltener Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // einbehaltener Kirchensteuer EUR 1,00
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Solidaritätszuschlag EUR 3,86
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Kirchensteuer EUR 1,00
-                // @formatter:on
-                .section("currency", "tax").optional()
-                .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Solidaritätszuschlag 5,5 % auf 2,70 EUR 0,14- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Kirchensteuer 8 % auf 2,70 EUR 0,21- EUR
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Kirchensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // einbehaltener Kirchensteuer EUR 1,00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Einbehaltene Quellensteuer 15 % auf 31,32 USD 4,12- EUR
-                // @formatter:on
-                .section("withHoldingTax", "currency").optional()
-                .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                })
+                        // @formatter:off
+                        // Kirchensteuer EUR 1,00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Anrechenbare Quellensteuer pro Stück 0,01879125 USD 4,70 USD
-                // @formatter:on
-                .section("creditableWithHoldingTax", "currency").optional()
-                .match("^Anrechenbare Quellensteuer .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
-                })
+                        // @formatter:off
+                        // Kirchensteuer 8 % auf 2,70 EUR 0,21- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,04
-                // @formatter:on
-                .section("creditableWithHoldingTax", "currency").optional()
-                .match("^davon anrechenbare Quellensteuer Fondseingangsseite (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
-                })
+                        // @formatter:off
+                        // Einbehaltene Quellensteuer 15 % auf 31,32 USD 4,12- EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Einbehaltene Quellensteuer .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
 
-                // @formatter:off
-                // davon anrechenbare US-Quellensteuer 15% USD 13,13
-                // @formatter:on
-                .section("currency", "creditableWithHoldingTax").optional()
-                .match("^davon anrechenbare US\\-Quellensteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("negative") && !type.getCurrentContext().getBoolean("noTax"))
-                        processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
-                });
+                        // @formatter:off
+                        // Anrechenbare Quellensteuer pro Stück 0,01879125 USD 4,70 USD
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Anrechenbare Quellensteuer .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,04
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^davon anrechenbare Quellensteuer Fondseingangsseite (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // davon anrechenbare US-Quellensteuer 15% USD 13,13
+                        // @formatter:on
+                        .section("currency", "creditableWithHoldingTax").optional() //
+                        .match("^davon anrechenbare US\\-Quellensteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative")
+                                            && !type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // @formatter:off
-                // Handelszeit 09:02 Orderentgelt                EUR 10,90-
-                // Handelszeit 09:04 Orderentgelt EUR 9,97 -
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Orderentgelt
-                // EUR 0,71-
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Orderentgelt$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Börse Stuttgart Börsengebühr EUR 2,29-
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Provision 1,48- EUR
-                // @formatter:on
-                .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Transaktionsentgelt Börse 0,60- EUR
-                // @formatter:on
-                .section("fee", "currency").optional()
-                .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Übertragungs-/Liefergebühr 0,12- EUR
-                // @formatter:on
-                .section("fee", "currency").optional()
-                .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Provision 2,5015 % vom Kurswert 1,25- EUR
-                // @formatter:on
-                .section("fee", "currency").optional()
-                .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
-
-                // @formatter:off
-                // Kurswert 509,71- EUR
-                // Kundenbonifikation 40 % vom Ausgabeaufschlag 9,71 EUR
-                // Ausgabeaufschlag pro Anteil 5,00 %
-                // @formatter:on
-                .section("amount", "currency", "discount", "discountCurrency", "percentageFee").optional()
-                .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
-                .match("^Kundenbonifikation [\\.,\\d]+ % vom Ausgabeaufschlag (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$")
-                .match("^Ausgabeaufschlag pro Anteil (?<percentageFee>[\\.,\\d]+) %$")
-                .assign((t, v) -> {
-                    BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                    BigDecimal amount = asBigDecimal(v.get("amount"));
-                    Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
-
-                    if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
-                    {
-                        // @formatter:off
-                        // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
-                        // @formatter:on
-                        BigDecimal fxFee = amount
-                                        .divide(percentageFee.divide(BigDecimal.valueOf(100))
-                                                        .add(BigDecimal.ONE), Values.MC)
-                                        .multiply(percentageFee, Values.MC);
-
-                        Money fee = Money.of(asCurrencyCode(v.get("currency")),
-                                        fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+        transaction //
 
                         // @formatter:off
-                        // fee = fee - discount
+                        // Handelszeit 09:02 Orderentgelt                EUR 10,90-
+                        // Handelszeit 09:04 Orderentgelt EUR 9,97 -
                         // @formatter:on
-                        fee = fee.subtract(discount);
+                        .section("currency", "fee").optional() //
+                        .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                        checkAndSetFee(fee, t, type.getCurrentContext());
-                    }
-                })
+                        // @formatter:off
+                        // Orderentgelt
+                        // EUR 0,71-
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Orderentgelt$") //
+                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // @formatter:off
-                // Kurswert
-                // EUR 14,40-
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Kurswert$")
-                .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$")
-                .assign((t, v) -> processFeeEntries(t, v, type));
+                        // @formatter:off
+                        // Börse Stuttgart Börsengebühr EUR 2,29-
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Provision 1,48- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Provision (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Transaktionsentgelt Börse 0,60- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Übertragungs-/Liefergebühr 0,12- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Provision 2,5015 % vom Kurswert 1,25- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kurswert 509,71- EUR
+                        // Kundenbonifikation 40 % vom Ausgabeaufschlag 9,71 EUR
+                        // Ausgabeaufschlag pro Anteil 5,00 %
+                        // @formatter:on
+                        .section("amount", "currency", "discount", "discountCurrency", "percentageFee").optional() //
+                        .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kundenbonifikation [\\.,\\d]+ % vom Ausgabeaufschlag (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$") //
+                        .match("^Ausgabeaufschlag pro Anteil (?<percentageFee>[\\.,\\d]+) %$") //
+                        .assign((t, v) -> {
+                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                            BigDecimal amount = asBigDecimal(v.get("amount"));
+                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                            if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
+                            {
+                                // @formatter:off
+                                // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                                // @formatter:on
+                                BigDecimal fxFee = amount.divide(percentageFee //
+                                                .divide(BigDecimal.valueOf(100)).add(BigDecimal.ONE), Values.MC)
+                                                .multiply(percentageFee, Values.MC);
+
+                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                                // @formatter:off
+                                // fee = fee - discount
+                                // @formatter:on
+                                fee = fee.subtract(discount);
+
+                                checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        // Kurswert
+                        // EUR 14,40-
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Kurswert$") //
+                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
 
