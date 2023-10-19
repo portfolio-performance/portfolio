@@ -54,6 +54,7 @@ public class SearchSecurityWizardPage extends WizardPage
         super(PAGE_ID);
         setTitle(Messages.SecurityMenuAddNewSecurity);
         setDescription(Messages.SecurityMenuAddNewSecurityDescription);
+        setPageComplete(false);
 
         this.client = client;
     }
@@ -161,6 +162,9 @@ public class SearchSecurityWizardPage extends WizardPage
     {
         try
         {
+            // after searching, selection required to enable finish button
+            setPageComplete(false);
+
             getContainer().run(true, false, progressMonitor -> {
                 List<SecuritySearchProvider> providers = Factory.getSearchProvider();
 
