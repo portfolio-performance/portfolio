@@ -81,6 +81,37 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         }
     }
 
+    public enum TransactionFilter
+    {
+        ALL_TRANSACTIONS(Messages.LabelAllTransactions), //
+        BUYS_ONLY(Messages.LabelPurchaseTransactionsOnly), //
+        SELLS_ONLY(Messages.LabelSaleTransactionsOnly), //
+        ALL_INBOUND(Messages.LabelAllInboundTransactions), //
+        ALL_OUTBOUND(Messages.LabelAllOutboundTransactions);
+
+        private String label;
+
+        private TransactionFilter(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class TransactionFilterConfig extends EnumBasedConfig<TransactionFilter>
+    {
+        public TransactionFilterConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelTransactionFilter, TransactionFilter.class,
+                            Dashboard.Config.TRANSACTION_FILTER, Policy.EXACTLY_ONE);
+        }
+    }
+
     public static class TimeGridPaintListener implements ICustomPaintListener
     {
         private static final int INDENT = 5;
@@ -178,6 +209,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartTypeConfig(this));
+        addConfig(new TransactionFilterConfig(this));
         addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
@@ -311,16 +343,41 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                                 .collect(Collectors.toList()).toArray(new String[0]));
             }
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+            TransactionFilter filter = get(TransactionFilterConfig.class).getValue();
+            switch (filter)
+            {
+                case ALL_TRANSACTIONS:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
-                            Colors.brighter(Colors.ICON_BLUE));
+                case ALL_INBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                case BUYS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
-                            Colors.brighter(Colors.ICON_ORANGE));
+                case ALL_OUTBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
+                case SELLS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
         finally
         {
