@@ -81,6 +81,38 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         }
     }
 
+    public enum TransactionFilter
+    {
+
+        ALL_TRANSACTIONS(Messages.LabelAllTransactions), //
+        BUYS_ONLY(Messages.LabelBuysOnly), //
+        SELLS_ONLY(Messages.LabelSellsOnly), //
+        ALL_INBOUND(Messages.LabelAllInbound), //
+        ALL_OUTBOUND(Messages.LabelAllOutbound);
+        
+        private String label;
+
+        private TransactionFilter(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class TransactionFilterConfig extends EnumBasedConfig<TransactionFilter>
+    {
+        public TransactionFilterConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelTransactionFilter, TransactionFilter.class, Dashboard.Config.TRANSACTION_FILTER,
+                            Policy.EXACTLY_ONE);
+        }
+    }
+
     public static class TimeGridPaintListener implements ICustomPaintListener
     {
         private static final int INDENT = 5;
@@ -178,6 +210,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartTypeConfig(this));
+        addConfig(new TransactionFilterConfig(this));
         addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
@@ -311,16 +344,43 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                                 .collect(Collectors.toList()).toArray(new String[0]));
             }
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+            if (this.isAllTransactions())
+            {
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
-                            Colors.brighter(Colors.ICON_BLUE));
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                Colors.brighter(Colors.ICON_BLUE));
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
-                            Colors.brighter(Colors.ICON_ORANGE));
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                Colors.brighter(Colors.ICON_ORANGE));
+            }
 
+            if (this.isAllInbound())
+            {
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                Colors.brighter(Colors.ICON_BLUE));
+            }
+
+            if (this.isAllOutbound())
+            {
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                Colors.brighter(Colors.ICON_ORANGE));
+            }
+            if (this.isBuysOnly())
+            {
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+            }
+
+            if (this.isSellsOnly())
+            {
+                createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+            }
         }
         finally
         {
@@ -403,5 +463,40 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         ChartType chartType = get(ChartTypeConfig.class).getValue();
 
         return chartType == ChartType.SUM_BY_YEAR || chartType == ChartType.COUNT_BY_YEAR;
+    }
+
+    private boolean isAllTransactions()
+    {
+        TransactionFilter transactionFilter = get(TransactionFilterConfig.class).getValue();
+
+        return transactionFilter == transactionFilter.ALL_TRANSACTIONS;
+    }
+
+    private boolean isBuysOnly()
+    {
+        TransactionFilter transactionFilter = get(TransactionFilterConfig.class).getValue();
+
+        return transactionFilter == transactionFilter.BUYS_ONLY;
+    }
+
+    private boolean isAllInbound()
+    {
+        TransactionFilter transactionFilter = get(TransactionFilterConfig.class).getValue();
+
+        return transactionFilter == transactionFilter.ALL_INBOUND;
+    }
+
+    private boolean isSellsOnly()
+    {
+        TransactionFilter transactionFilter = get(TransactionFilterConfig.class).getValue();
+
+        return transactionFilter == transactionFilter.SELLS_ONLY;
+    }
+
+    private boolean isAllOutbound()
+    {
+        TransactionFilter transactionFilter = get(TransactionFilterConfig.class).getValue();
+
+        return transactionFilter == transactionFilter.ALL_OUTBOUND;
     }
 }
