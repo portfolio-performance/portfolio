@@ -1,14 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.limetradingcorp;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -24,7 +15,15 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,20 +49,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-/**
- * @formatter:off
- * @implNote Trading Corp. is a US-based financial services company.
- *           The currency is US$.
- *
- *           All security currencies are USD.
- *
- * @implSpec The CUSIP number is the WKN number.
- *
- * @implSpec Dividend transactions:
- *           The amount of dividends is reported in gross.
- * @formatter:on
- */
 
 @SuppressWarnings("nls")
 public class LimeTradingCorpPDFExtractorTest
@@ -368,7 +353,7 @@ public class LimeTradingCorpPDFExtractorTest
                         hasTaxes("USD", 22.94), hasFees("USD", 0.00))));
 
         // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2023-08-31T00:00"), hasShares(0.00), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote("Withholding Adjustment"), //
@@ -376,7 +361,7 @@ public class LimeTradingCorpPDFExtractorTest
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2023-08-31T00:00"), hasShares(0.00), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote("Withholding Adjustment"), //
@@ -384,7 +369,7 @@ public class LimeTradingCorpPDFExtractorTest
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2023-08-31T00:00"), hasShares(0.00), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote("Withholding Adjustment"), //
@@ -392,7 +377,7 @@ public class LimeTradingCorpPDFExtractorTest
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2023-08-31T00:00"), hasShares(0.00), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote("Withholding Adjustment"), //
@@ -400,7 +385,7 @@ public class LimeTradingCorpPDFExtractorTest
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check taxes transaction
-        assertThat(results, hasItem(taxes( //
+        assertThat(results, hasItem(taxRefund( //
                         hasDate("2023-08-31T00:00"), hasShares(0.00), //
                         hasSource("AccountStatement02.txt"), //
                         hasNote("Withholding Adjustment"), //
