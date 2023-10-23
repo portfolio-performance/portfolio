@@ -193,6 +193,8 @@ public class SearchSecurityWizardPage extends WizardPage
 
                     if (!errors.isEmpty())
                         setErrorMessage(String.join(", ", errors)); //$NON-NLS-1$
+                    else
+                        setErrorMessage(null);
                 });
 
             });
