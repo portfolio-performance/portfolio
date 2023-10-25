@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.oldenburgischelandesbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -40,7 +41,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 public class OldenburgischeLandesbankAGPDFExtractorTest
 {
     @Test
-    public void testWertpapierKauf15()
+    public void testWertpapierKauf01()
     {
         OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
 
@@ -68,6 +69,68 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
                         hasNote("Ord.-Ref.: 100000"), //
                         hasAmount("EUR", 1.48), hasGrossValue("EUR", 1.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.01))));
+    }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1861134382"), hasWkn("A2JSDA"), hasTicker(null), //
+                        hasName("AIS-AM.WORLD SRI PAB Act.Nom. UCITS ETF DR (C)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-17T18:11:56"), hasShares(3.320171), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Ord.-Ref.: 0980298"), //
+                        hasAmount("EUR", 643.40), hasGrossValue("EUR", 638.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.87))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0H0785"), hasWkn("A0H078"), hasTicker(null), //
+                        hasName("iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-05-15T00:00"), hasShares(71.851808), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 7.44), hasGrossValue("EUR", 7.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

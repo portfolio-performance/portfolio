@@ -20,6 +20,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Oldenburgische Landesbank AG");
 
         addBuySellTransaction();
+        addDividendeTransaction();
         addAccountStatementTransaction();
     }
 
@@ -36,7 +37,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Depotinhaber .*$");
+        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -65,11 +66,23 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
+                        // Depotnummer 0195923225 Ausführung 17.10.2023 18:11:56
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^.* Ausf.hrung .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                        // @formatter:off
                         // Depotnummer 50000000 Ausführung 17.05.2023
                         // @formatter:on
                         .section("date") //
-                        .match("^.* Ausf.hrung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .match("^.* Ausf.hrung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
+                        })
 
                         // @formatter:off
                         // Ausmachender Betrag: 1,48 EUR
@@ -89,6 +102,63 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Ord.-Ref.: " + v.get("note")))
 
                         .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("ERTRAGSAUSSCH.TTUNG");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                .subject(() -> {
+                    AccountTransaction accountTransaction = new AccountTransaction();
+                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                    return accountTransaction;
+                })
+
+                // @formatter:off
+                // Ausschüttung – iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
+                // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
+                // @formatter:on
+                .section("name", "isin", "wkn", "currency") //
+                .match("^Aussch.ttung \\– (?<name>.*)$") //
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                // @formatter:off
+                // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
+                // @formatter:on
+                .section("shares") //
+                .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
+                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                // @formatter:off
+                // Zahlbarkeitstag 15.05.2023
+                // @formatter:on
+                .section("date") //
+                .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                // @formatter:off
+                // Ausmachender Betrag + 7,44 EUR
+                // @formatter:on
+                .section("amount", "currency") //
+                .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                .assign((t, v) -> {
+                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                    t.setAmount(asAmount(v.get("amount")));
+                })
+
+                .wrap(TransactionItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
