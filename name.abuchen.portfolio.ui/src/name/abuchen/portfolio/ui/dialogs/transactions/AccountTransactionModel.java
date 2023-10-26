@@ -31,7 +31,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, fxFees, fees, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
-        accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
+        accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus, nonCashEffective; // NOSONAR
     }
 
     public static final Security EMPTY_SECURITY = new Security("-----", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -60,6 +60,7 @@ public class AccountTransactionModel extends AbstractModel
     private long total;
 
     private String note;
+    private boolean nonCashEffective;
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
@@ -135,6 +136,7 @@ public class AccountTransactionModel extends AbstractModel
         t.setAmount(total);
         t.setType(type);
         t.setNote(note);
+        t.setNonCashEffective(nonCashEffective);
 
         t.clearUnits();
 
@@ -182,6 +184,7 @@ public class AccountTransactionModel extends AbstractModel
         setFxTaxes(0);
         setNote(null);
         setTime(PresetValues.getTime());
+        setNonCashEffective(false);
     }
 
     public boolean supportsShares()
@@ -224,6 +227,11 @@ public class AccountTransactionModel extends AbstractModel
     }
     
     public boolean supportsFees()
+    {
+        return type == AccountTransaction.Type.DIVIDENDS;
+    }
+
+    public boolean supportsnonCashEffective()
     {
         return type == AccountTransaction.Type.DIVIDENDS;
     }
@@ -285,6 +293,8 @@ public class AccountTransactionModel extends AbstractModel
         this.dividendAmount = calculateDividendAmount();
 
         this.note = transaction.getNote();
+
+        this.nonCashEffective = transaction.getNonCashEffective();
     }
 
     @Override
@@ -661,6 +671,17 @@ public class AccountTransactionModel extends AbstractModel
     public void setNote(String note)
     {
         firePropertyChange(Properties.note.name(), this.note, this.note = note);
+    }
+
+    public boolean getNonCashEffective()
+    {
+        return nonCashEffective;
+    }
+
+    public void setNonCashEffective(boolean nonCashEffective)
+    {
+        firePropertyChange(Properties.nonCashEffective.name(), this.nonCashEffective,
+                        this.nonCashEffective = nonCashEffective);
     }
 
     public String getAccountCurrencyCode()

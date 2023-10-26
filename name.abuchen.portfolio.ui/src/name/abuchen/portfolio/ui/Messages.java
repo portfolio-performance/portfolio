@@ -1305,6 +1305,10 @@ public class Messages extends NLS
     public static String OptionDateIsInTheFuture;
     public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
+    public static String LabelNonCashEffective;
+    public static String MenuNonCashEffective;
+    public static String MsgInfoNonCashEffective;
+    public static String TransactionFilterNonCashEffectiveDividend;
     static
     {
         // initialize resource bundle

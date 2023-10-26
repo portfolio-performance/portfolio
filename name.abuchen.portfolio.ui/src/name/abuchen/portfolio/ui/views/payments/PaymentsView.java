@@ -85,13 +85,14 @@ public class PaymentsView extends AbstractFinanceView
         loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
-                        viewInput.isUseConsolidateRetired());
+                        viewInput.isUseConsolidateRetired(), viewInput.isExcludeNonCashEffective());
 
         model.addUpdateListener(() -> {
             viewInput.setYear(model.getStartYear());
             viewInput.setMode(model.getMode());
             viewInput.setUseGrossValue(model.usesGrossValue());
             viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
+            viewInput.setExcludeNonCashEffective(model.excludeNonCashEffective());
         });
     }
 
@@ -189,6 +190,12 @@ public class PaymentsView extends AbstractFinanceView
             Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
                             a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
             action.setChecked(model.usesConsolidateRetired());
+            manager.add(action);
+
+            // toggle non cash-effective dividends
+            action = new SimpleAction(Messages.MenuNonCashEffective,
+                            a -> model.setExcludeNonCashEffective(!model.excludeNonCashEffective()));
+            action.setChecked(model.excludeNonCashEffective());
             manager.add(action);
 
             PaymentsTab tab = (PaymentsTab) folder.getSelection().getData();

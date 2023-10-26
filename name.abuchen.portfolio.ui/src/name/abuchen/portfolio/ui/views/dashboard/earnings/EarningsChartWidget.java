@@ -135,7 +135,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
                 part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
-                                mode, grossNetType == GrossNetType.GROSS, false));
+                                mode, grossNetType == GrossNetType.GROSS, false, true));
             }
         });
 
@@ -155,7 +155,7 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         return () -> (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
             PaymentsViewModel model = new PaymentsViewModel(converter, getClient());
             PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
-            model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false);
+            model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, true);
             model.setFilteredClient(clientFilter.filter(getClient()));
             model.recalculate();
             return model;

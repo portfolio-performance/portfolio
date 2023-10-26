@@ -150,6 +150,7 @@ public class PaymentsViewModel
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
+    private boolean excludeNonCashEffective = true;
 
     public PaymentsViewModel(CurrencyConverter converter, Client client)
     {
@@ -158,12 +159,14 @@ public class PaymentsViewModel
         this.filteredClient = client;
     }
 
-    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired)
+    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useConsolidateRetired,
+                    boolean excludeNonCashEffective)
     {
         this.startYear = startYear;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
+        this.excludeNonCashEffective = excludeNonCashEffective;
 
         recalculate();
     }
@@ -233,6 +236,17 @@ public class PaymentsViewModel
     public void setUseConsolidateRetired(boolean useConsolidateRetired)
     {
         this.useConsolidateRetired = useConsolidateRetired;
+        recalculate();
+    }
+
+    public boolean excludeNonCashEffective()
+    {
+        return excludeNonCashEffective;
+    }
+
+    public void setExcludeNonCashEffective(boolean excludeNonCashEffective)
+    {
+        this.excludeNonCashEffective = excludeNonCashEffective;
         recalculate();
     }
 
@@ -387,6 +401,9 @@ public class PaymentsViewModel
                     continue;
 
                 if (!checkIsInInterval.test(transaction))
+                    continue;
+
+                if (excludeNonCashEffective && transaction.getNonCashEffective())
                     continue;
 
                 long value = 0;

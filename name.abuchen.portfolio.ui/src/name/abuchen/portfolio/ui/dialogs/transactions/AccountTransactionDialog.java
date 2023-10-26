@@ -28,6 +28,7 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -46,12 +47,14 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
@@ -208,6 +211,25 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         total.bindCurrency(Properties.accountCurrencyCode.name());
         total.setVisible(model().supportsTaxUnits() || model().supportsFees());
 
+        // non cash-effective
+
+        Label labelnonCashEffective = new Label(editArea, SWT.LEFT);
+        labelnonCashEffective.setText(Messages.LabelNonCashEffective);
+        Button buttonnonCashEffective = new Button(editArea, SWT.CHECK);
+        IObservableValue<?> targetnonCashEffective = WidgetProperties.buttonSelection().observe(buttonnonCashEffective);
+        IObservableValue<?> modelnonCashEffective = BeanProperties.value(Properties.nonCashEffective.name())
+                        .observe(model);
+        context.bindValue(targetnonCashEffective, modelnonCashEffective);
+        buttonnonCashEffective.setVisible(model().supportsnonCashEffective());
+        labelnonCashEffective.setVisible(model().supportsnonCashEffective());
+
+        Image info = Images.INFO.image();
+        ControlDecoration deco = new ControlDecoration(buttonnonCashEffective, SWT.CENTER | SWT.LEFT);
+        deco.setDescriptionText(Messages.MsgInfoNonCashEffective);
+        deco.setImage(info);
+        deco.setMarginWidth(2);
+        deco.show();
+
         // note
 
         Label lblNote = new Label(editArea, SWT.LEFT);
@@ -244,7 +266,6 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         int currencyWidth = currencyWidth(fxGrossAmount.currency);
 
         // date
-        // shares
         forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
@@ -294,11 +315,20 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             forms = startingWith(taxes.value);
         }
 
+
         // total
         if (model().supportsFees() || model().supportsTaxUnits())
         {
             forms = forms.thenBelow(total.value).width(amountWidth).label(total.label).thenRight(total.currency)
                             .width(currencyWidth);
+        }
+
+        // cash effectiveness
+        if (model().supportsnonCashEffective())
+        {
+            forms = forms.thenBelow(buttonnonCashEffective).height(SWTHelper.lineHeight(buttonnonCashEffective) * 2)
+                            .left(accounts.value.getControl());
+            startingWith(buttonnonCashEffective).thenRight(labelnonCashEffective);
         }
 
         // note
