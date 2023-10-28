@@ -1,0 +1,66 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+25.10.2023
+Max Mustermann
+Aktienstr. 92 Max Mustermann
+12345 Musterstadt Stamm-Nr.: 1234567    Portfolio: 1
+Depot-Nr.: 1234567890
+Vorgangs-Nr.: 19658986
+Referenz-Nr.: 473980434
+Reklassifizierung
+Ex-Tag: 29.12.2022
+Nominale ISIN: US29670E1073 WKN: A2JN57 Ausschüttung
+STK 39 Essential Properties Real.Tr. USD 0,0557 p.STK
+Zahlungszeitraum: 01.01.2022 - 31.12.2022 
+Zahltag: 13.01.2023
+Umrechnungskurs: EUR/USD 1,085
+Bruttobetrag USD 2,17
+Bruttobetrag EUR 2,00
+Kapitalertragsteuer EUR 0,49 -
+Kirchensteuer EUR 0,04 -
+Solidaritätszuschlag EUR 0,02 -
+Zu Gunsten Konto 2320592005 Valuta: 13.01.2023 EUR 1,45
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Reklassifizierung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Kapitalertragsteuer EUR 57,65 EUR 0,49 EUR 58,14
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung sonstiger Fonds vor Teilfreistellung EUR 2,00 EUR 2,00
+Ausschüttung sonstiger Fonds nach Teilfreistellung EUR 2,00 EUR 2,00
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer EUR 2,00 EUR 2,00
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 0,49 - EUR 0,49 -
+Kirchensteuer 9,00 % EUR 0,04 - EUR 0,04 -
+Solidaritätszuschlag 5,50 % EUR 0,02 - EUR 0,02 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
