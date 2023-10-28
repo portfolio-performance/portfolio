@@ -270,7 +270,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Aussch.ttung aus"
                         + "|Wahldividende"
                         + "|Fund Distribution"
-                        + "|Dividende)", "(Kontoauszug|Account Statement)");
+                        + "|Dividende"
+                        + "|Reklassifizierung)", "(Kontoauszug|Account Statement)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -309,9 +310,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                 //
                 // Fondsausschüttung KOPIE
                 // STORNO
+                //
+                // Reklassifizierung
                 // @formatter:on
                 .section("type").optional()
-                .match("^((Dividendenabrechnung|Fondsaussch.ttung) )?(?<type>STORNO)$")
+                .match("^((Dividendenabrechnung|Fondsaussch.ttung) )?(?<type>(STORNO|Reklassifizierung))$")
                 .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                 // @formatter:off
