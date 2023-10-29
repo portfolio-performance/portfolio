@@ -347,17 +347,18 @@ public class SecuritiesChart
 
     private Color colorQuote;
 
-    private static final Color colorEventPurchase = Colors.getColor(26, 173, 33);
-    private static final Color colorEventSale = Colors.getColor(232, 51, 69);
-    private static final Color colorEventDividend = Colors.getColor(128, 0, 128);
+    private static final Color colorEventPurchase = Colors.getColor(26, 173, 33); // #1AAD21
+    private static final Color colorEventSale = Colors.getColor(255, 43, 48); // #FF2B30
+    private static final Color colorEventDividend = Colors.getColor(128, 99, 168); // #8063A8
 
-    private static final Color colorHigh = Colors.getColor(0, 102, 0);
-    private static final Color colorLow = Colors.getColor(128, 0, 0);
+    private static final Color colorHigh = Colors.getColor(0, 147, 15); // #00930F
+    private static final Color colorLow = Colors.getColor(168, 39, 42); // #A8272A
 
-    private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
-    private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
-    private static final Color colorBollingerBands = Colors.getColor(201, 141, 68);
+    private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121); // #E27A79
+    private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81); // #965251
+    private static final Color colorBollingerBands = Colors.getColor(201, 141, 68); // #C98D44
     private static final Color colorMACD = Colors.getColor(226, 155, 200); // #E29BC8
+
     private static final Color colorSMA1 = Colors.getColor(179, 107, 107); // #B36B6B
     private static final Color colorSMA2 = Colors.getColor(179, 167, 107); // #B3A76B
     private static final Color colorSMA3 = Colors.getColor(131, 179, 107); // #83B36B
@@ -374,10 +375,10 @@ public class SecuritiesChart
     private static final Color colorEMA6 = Colors.getColor(119, 107, 200); // #776BC8
     private static final Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BB3
 
-    private static final Color colorAreaPositive = Colors.getColor(90, 114, 226);
-    private static final Color colorAreaNegative = Colors.getColor(226, 91, 90);
+    private static final Color colorAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
+    private static final Color colorAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
 
-    private static final Color colorNonTradingDay = Colors.getColor(255, 137, 89);
+    private static final Color colorNonTradingDay = Colors.getColor(255, 137, 89); // #FF8959
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
