@@ -2,7 +2,6 @@ package name.abuchen.portfolio.model;
 
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
@@ -22,12 +21,30 @@ public final class ImageManager
     {
     }
 
+    /**
+     * Retrieves an image associated with the given Attributable and AttributeType.
+     * If not found, a default image is returned.
+     *
+     * @param target The Attributable object to retrieve the image for.
+     * @param attr   The AttributeType specifying the image.
+     * @return The retrieved image or null if not found.
+     */
     public Image getImage(Attributable target, AttributeType attr)
     {
-        int xOffset = Platform.OS_WIN32.equals(Platform.getOS()) ? 1 : 0;
-        return getImage(target, attr, xOffset, 16, 16);
+        return getImage(target, attr, 0, 16, 16);
     }
 
+    /**
+     * Retrieves an image associated with the given Attributable, AttributeType, and additional parameters.
+     * If not found, a default image is returned.
+     *
+     * @param target  The Attributable object to retrieve the image for.
+     * @param attr    The AttributeType specifying the image.
+     * @param xOffset The horizontal offset for the image.
+     * @param width   The width of the image.
+     * @param height  The height of the image.
+     * @return The retrieved image or null if not found.
+     */
     public Image getImage(Attributable target, AttributeType attr, int xOffset, int width, int height)
     {
         if (target != null && target.getAttributes().exists(attr) && attr.getConverter() instanceof ImageConverter)
