@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -28,23 +29,36 @@ public class SecurityCache
 
     private final List<Map<String, Security>> localMaps = new ArrayList<>();
 
-    public SecurityCache(Client client)
+    public SecurityCache(Client client) // NOSONAR
     {
         this.client = client;
 
+        BinaryOperator<Security> mergeFunction = (l, r) -> {
+
+            if (l == DUPLICATE_SECURITY_MARKER)
+                return r.isRetired() ? DUPLICATE_SECURITY_MARKER : r;
+
+            if (r == DUPLICATE_SECURITY_MARKER)
+                return l.isRetired() ? DUPLICATE_SECURITY_MARKER : l;
+
+            if (l.isRetired() ^ r.isRetired())
+                return !l.isRetired() ? l : r;
+
+            return DUPLICATE_SECURITY_MARKER;
+        };
+
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
-                        .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getIsin, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream()
                         .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
-                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s,
-                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
-                        .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getWkn, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
-                        .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getName, s -> s, mergeFunction)));
 
     }
 
