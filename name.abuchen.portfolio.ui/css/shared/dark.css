@@ -57,6 +57,17 @@ CustomColors {
 
 SecuritiesChart {
 	quote-color: #4DDAFF;
+	quote-area-positive-color: #23b0d7;
+	quote-area-negative-color: #ff9d4d;
+
+	purchase-event-color: #1FD127;
+	sale-event-color: #FF2B30;
+	dividend-event-color: #8063A8;
+
+	extreme-marker-high-color: #1AAD21;
+	extreme-marker-low-color: #A8272A;
+
+	non-trading-color: #542E1F;
 }
 
 * {

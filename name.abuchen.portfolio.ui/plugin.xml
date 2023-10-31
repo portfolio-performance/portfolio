@@ -122,6 +122,30 @@
          <property-name
                name="quote-color">
          </property-name>
+         <property-name
+               name="quote-area-positive-color">
+         </property-name>
+         <property-name
+               name="quote-area-negative-color">
+         </property-name>
+         <property-name
+               name="purchase-event-color">
+         </property-name>
+         <property-name
+               name="sale-event-color">
+         </property-name>
+         <property-name
+               name="dividend-event-color">
+         </property-name>
+         <property-name
+               name="extreme-marker-high-color">
+         </property-name>
+         <property-name
+               name="extreme-marker-low-color">
+         </property-name>
+         <property-name
+               name="non-trading-color">
+        </property-name>
       </handler>
    </extension>
    <extension
