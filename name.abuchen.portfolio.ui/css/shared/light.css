@@ -1,4 +1,3 @@
-
 /* Common LIGHT styles */
 
 .MPart Composite,
@@ -7,13 +6,13 @@
 }
 
 .MPart ToolBar {
-	background-color:inherit;
+	background-color: inherit;
 }
 
 .MPartStack {
 	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
-    padding: 0px;
+	padding: 0px;
 }
 
 .MPartStack.active {
@@ -22,13 +21,13 @@
 }
 
 CTabFolder {
-    swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
-    padding: 0px;
-    swt-tab-outline: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTLINE_COLOR';
-    swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
-    swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
-    swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END';
-    swt-shadow-visible: false;
+	swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
+	padding: 0px;
+	swt-tab-outline: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTLINE_COLOR';
+	swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
+	swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
+	swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END';
+	swt-shadow-visible: false;
 }
 
 CTabItem {
@@ -92,6 +91,17 @@ CustomColors {
 
 SecuritiesChart {
 	quote-color: #4D34EB;
+	quote-area-positive-color: #5A72E2;
+	quote-area-negative-color: #E25B5A;
+
+	purchase-event-color: #1AAD21;
+	sale-event-color: #FF2B30;
+	dividend-event-color: #800080;
+
+	extreme-marker-high-color: #00930F;
+	extreme-marker-low-color: #800000;
+
+	non-trading-color: #FF8959;
 }
 
 * {
