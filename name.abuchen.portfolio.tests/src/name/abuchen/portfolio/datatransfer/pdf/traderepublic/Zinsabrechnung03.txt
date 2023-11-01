@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 123 DATUM 01.11.2023
+01234 Musterstadt VERRECHNUNGSKONTO 0123456789
+STEUER-ID 01234567890
+ABRECHNUNG ZINSEN
+zum 31.10.2023
+ÜBERSICHT
+VERMÖGENSWERT EINKOMMENSART ZINSEN DATUM GESAMT
+Cash Zinsen 4,00% 01.10.2023 - 31.10.2023 152,67 EUR
+ABRECHNUNG
+POSITION BETRAG
+Besteuerungsgrundlage 152,67 EUR
+Kapitalertragssteuer -38,17 EUR
+Solidaritätszuschlag -2,10 EUR
+Gesamt 112,40 EUR
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+DE99012345670123456789 01.11.2023 112,40 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer

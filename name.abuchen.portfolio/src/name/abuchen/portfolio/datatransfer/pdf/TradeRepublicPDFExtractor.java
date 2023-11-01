@@ -1135,14 +1135,40 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
                         // DE10123456789123456789 01.02.2023 0,88 EUR
+                        //
+                        // IBAN DATA EMISSIONE TOTALE
+                        // DE93752109007837402856 01.06.2023 0,12 EUR
+                        //
+                        // IBAN BOOKING DATE TOTAL
+                        // DE27502109007011534672 02.10.2023 1,47 EUR
                         // @formatter:on
                         .section("currency", "amount") //
+                        .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE) (GUTSCHRIFT NACH STEUERN|TOTALE|TOTAL)") //
                         .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Cash Zinsen 4,00% 01.10.2023 - 31.10.2023 152,67 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.* (Zinsen|Interessi|Interest) (?<note1>[\\.,\\d]+%) (?<note2>.*[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note2")) + " (" + trim(v.get("note1")) + ")")),
+                                        // @formatter:off
+                                        // Cash Zinsen 2,00% 2,58 EUR
+                                        // Liquidità Interessi 2,00% 0,12 EUR
+                                        // Cash Interest 2,00% 1,47 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.* (Zinsen|Interessi|Interest) (?<note>[\\.,\\d]+%).*$")
+                                                        .assign((t, v) -> t.setNote(v.get("note"))))
 
                         .wrap(TransactionItem::new);
 
