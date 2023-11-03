@@ -1058,7 +1058,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf23.txt"), //
                         hasNote("Vorgangs-Nr.: 12345678"), //
                         hasAmount("EUR", 1042.04), hasGrossValue("EUR", 1041.04), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 1.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
     }
 
     @Test
@@ -1089,7 +1089,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf24.txt"), //
                         hasNote("Vorgangs-Nr.: 002052907"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1120,7 +1120,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf25.txt"), //
                         hasNote("Vorgangs-Nr.: 1801"), //
                         hasAmount("EUR", 21.45), hasGrossValue("EUR", 21.45), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1151,7 +1151,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf26.txt"), //
                         hasNote("Vorgangs-Nr.: 186694373"), //
                         hasAmount("EUR", 53.98), hasGrossValue("EUR", 53.98), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1183,6 +1183,37 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 123456"), //
                         hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), hasForexGrossValue("HKD", 775.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.12))));
+    }
+
+    @Test
+    public void testWertpapierKauf28()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf28.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6541061031"), hasWkn("866993"), hasTicker(null), //
+                        hasName("NIKE Inc. Registered Shares Class B o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-11-01T15:25:32"), hasShares(12), //
+                        hasSource("Kauf28.txt"), //
+                        hasNote("Vorgangs-Nr.: 997010271"), //
+                        hasAmount("EUR", 1151.76), hasGrossValue("EUR", 1151.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
