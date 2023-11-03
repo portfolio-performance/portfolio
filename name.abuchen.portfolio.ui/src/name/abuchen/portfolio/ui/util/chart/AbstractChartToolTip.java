@@ -193,8 +193,6 @@ public abstract class AbstractChartToolTip implements Listener
         Point pt = getPlotArea().toDisplay(x, event.y);
         // show above
         int y = pt.y - size.y - PADDING;
-        if (y < PADDING)
-            y = PADDING;
 
         return new Rectangle(pt.x, y, size.x, size.y);
     }
