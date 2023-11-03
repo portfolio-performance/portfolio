@@ -59,13 +59,6 @@ import name.abuchen.portfolio.util.Pair;
  *           Due to rounding differences, the correct gross amount is not always shown in the securities transaction.
  *
  *           In postProcessing, we always finally delete the taxes treatment.
- *
- * @implSpec If the gross amount (taxes treatment --> taxes base)
- *           is greater than the calculated gross amount, we set it and we record the correct final amount (net).
- *
- *           If the gross amount (taxes treatment --> taxes base before loss offset)
- *           is greater than the calculated gross amount and not negative, we set it and we record the correct final amount (net).
- *           Likewise, we need this regular expression because there is no taxes base.
  * @formatter:on
  */
 
@@ -1868,7 +1861,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             {
                 Money grossTaxesTreatment = (Money) pair.tax().getData(ATTRIBUTE_GROSS_TAXES_TREATMENT);
 
-                if (grossTaxesTreatment != null && grossTaxesTreatment.isGreaterThan(dividendTransaction.getGrossValue()))
+                if (grossTaxesTreatment != null)
                 {
                     dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
                     ExtractorUtils.fixGrossValue().accept(dividendTransaction);
