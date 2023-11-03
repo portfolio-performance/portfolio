@@ -287,6 +287,9 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             double risk = this.riskMetric.getRisk(index);
             double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
 
+            if (Double.isInfinite(risk) || Double.isInfinite(retrn))
+                return;
+
             ILineSeries lineSeries = chart.addScatterSeries(series.getUUID(), new double[] { risk },
                             new double[] { retrn }, series.getLabel());
 
