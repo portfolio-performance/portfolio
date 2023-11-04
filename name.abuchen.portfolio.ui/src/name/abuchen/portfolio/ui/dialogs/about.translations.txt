@@ -11,5 +11,5 @@ Russian by Alexander Alyoshin
 Slovak by [Tomáš Vančo](https://github.com/seg-on)
 Polish by Marcin Wichtowski and Arkadiusz Wojtowicz
 Chinese (simplified) by [Jiahao Li](https://github.com/TheJiahao)
-Chinsee (traditional) by Darius, yehchihtao, and others
+Chinese (traditional) by Darius, yehchihtao, and others
 Danish by Arthur Madsen
