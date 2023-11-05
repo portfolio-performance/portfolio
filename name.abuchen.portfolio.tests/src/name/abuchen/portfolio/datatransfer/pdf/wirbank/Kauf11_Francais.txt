@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+Fondation de prévoyance Terzo de la Banque WIR
+Auberg 1
+4002 Bâle
+Internet www.viac.ch
+Courrriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Suisse
+Bâle, 24.05.2022
+Opération de bourse - Achat CSIF Canada
+Nous avons exécuté l’ordre suivant:
+Ordre: Achat
+0.027 CSIF Canada
+ISIN: CH0030849613
+Cours: CAD 1'540.19
+Montant CAD 42.12
+Taux de conversion CHF/CAD 0.77983 CHF 32.84
+Montant comptabilisé: Valeur 19.05.2022 CHF 32.84
+S. E. & O.
+Meilleures salutations
+Fondation de prévoyance Terzo 
+Avis sans signature
