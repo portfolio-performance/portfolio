@@ -198,7 +198,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Zins|Interest|Int.r.ts)") //
-                        .match("^(Am|On|Nous avons crédité le) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited your account|les intérêts suivants):$") //
+                        .match("^(Am|On|Nous avons cr.dit. le) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited your account|les int.r.ts suivants):$") //
                         .match("^(Zinsgutschrift|Interest credit|Intérêts créditeurs): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
