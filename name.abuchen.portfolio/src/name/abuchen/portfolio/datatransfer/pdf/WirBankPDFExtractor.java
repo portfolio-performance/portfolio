@@ -285,7 +285,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         + "|Avis de dividende"
                         + "|R.ckerstattung Quellensteuer" //
                         + "|Refund withholding tax" //
-                        + "|Remboursement de l'impôt à la source)$");
+                        + "|Remboursement de l.imp.t . la source)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
