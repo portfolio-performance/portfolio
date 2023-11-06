@@ -174,7 +174,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addInterestTransaction()
     {
-        DocumentType type = new DocumentType("(Zins|Interest|Intérêts)");
+        DocumentType type = new DocumentType("(Zins|Interest|Int.r.ts)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
