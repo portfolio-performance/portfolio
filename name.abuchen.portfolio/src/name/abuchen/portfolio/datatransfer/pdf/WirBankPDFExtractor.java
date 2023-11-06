@@ -128,7 +128,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .find("(Order|Ordre): (Kauf|Verkauf|Buy|Sell|Achat|Vente)") //
-                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Qté|Anteile|units|parts) (?<name>.*)$") //
+                        .match("^(?<shares>[\\.,\\d]+) (Ant|Qty|Qt.|Anteile|units|parts) (?<name>.*)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
