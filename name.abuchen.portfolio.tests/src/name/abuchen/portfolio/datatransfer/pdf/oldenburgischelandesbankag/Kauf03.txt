@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+Oldenburg, 03.11.2023
+Es betreut Sie:
+Ihr OLB Team
+Postfach 26 05, 26016 Oldenburg 26121 Oldenburg
+Tel.: 0441 999092-810
+bco.regional-2@olb.de
+user name
+street 80
+zipcode city
+Depotinhaber user name Seite 1 von 1
+Depotnummer 6596058518 Ausführung 02.11.2023 05:21:03
+Orderreferenz 8774105
+Handelsreferenz 1143326
+WERTPAPIERABRECHNUNG
+Kauf: AIS-AM.WORLD SRI PAB Act.Nom. UCITS ETF DR (C)o.N.
+Produktgruppe: ETF
+Handels- / Ausführungsplatz: Festpreisgeschäft
+Beratungsfreies Geschäft
+ISIN (WKN) Stück/ Nominale Kurswert Währung Bruttobetrag
+LU1861134382 (A2JSDA) 9,727757 93,4642 EUR 982,07 EUR
+Orderentgelt: 7,41 EUR
+Ausmachender Betrag: 911,48 EUR
+Verrechnungskonto Valuta
+DE12345678901234 06.11.2023
+Verwahrart Girosammelverwahrung
+Bitte beachten Sie folgende Hinweise:
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+FNZ
+Oldenburgische Landesbank AG | Stau 15/17 | 26122 Oldenburg
+Vorsitzender des Aufsichtsrates: Axel Bartsch | Vorstand: Stefan Barth, Vorsitzender | Marc Ampaw | Aytac Aydin | Chris Eggert | Giacomo Petrobelli | Dr. Rainer Polster
+Sitz der Gesellschaft: Oldenburg (Oldb) Registergericht: Oldenburg (Oldb) HR-Nummer: HRB 3003
+Informationen zur Nutzung Ihrer Daten erhalten Sie auf www.olb.de/dsgvo und in jeder OLB-Filiale. Auf Wunsch schicken wir die Informationen auch gerne per Post zu.

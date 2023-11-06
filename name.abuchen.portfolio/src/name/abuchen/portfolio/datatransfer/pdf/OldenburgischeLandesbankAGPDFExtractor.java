@@ -52,9 +52,12 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Kauf - iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
                         // DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
+                        //
+                        // Kauf: AIS-AM.WORLD SRI PAB Act.Nom. UCITS ETF DR (C)o.N.
+                        // LU1861134382 (A2JSDA) 9,727757 93,4642 EUR 982,07 EUR
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
-                        .match("^Kauf \\- (?<name>.*)$") //
+                        .match("^Kauf( \\-|:) (?<name>.*)$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 

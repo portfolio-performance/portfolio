@@ -103,6 +103,37 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf03()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1861134382"), hasWkn("A2JSDA"), hasTicker(null), //
+                        hasName("AIS-AM.WORLD SRI PAB Act.Nom. UCITS ETF DR (C)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-11-02T05:21:03"), hasShares(9.727757), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Ord.-Ref.: 8774105"), //
+                        hasAmount("EUR", 911.48), hasGrossValue("EUR", 904.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 7.41))));
+    }
+
+    @Test
     public void testDividende01()
     {
         OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
