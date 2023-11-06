@@ -84,7 +84,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Opération de bourse) \\- (Kauf|Verkauf|Buy|Sell|Achat|Vente)");
+        DocumentType type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) \\- (Kauf|Verkauf|Buy|Sell|Achat|Vente)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
