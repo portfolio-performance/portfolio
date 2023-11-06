@@ -65,7 +65,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Einzahlung|Deposit|Versement) 3a") //
-                        .match("^(Gutschrift: Valuta|Credit: Value date|Montant crédité: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .match("^(Gutschrift: Valuta|Credit: Value date|Montant cr.dit.: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
