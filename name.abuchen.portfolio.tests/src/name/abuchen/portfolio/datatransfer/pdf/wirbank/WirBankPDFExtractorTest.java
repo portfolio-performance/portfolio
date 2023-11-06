@@ -829,7 +829,7 @@ public class WirBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CSIF Canada"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.CAD));
+        assertThat(security.getCurrencyCode(), is("CAD"));
 
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
