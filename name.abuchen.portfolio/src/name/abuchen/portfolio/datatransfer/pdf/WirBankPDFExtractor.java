@@ -179,7 +179,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Zins|Interest|Intérêts)$");
+        Block firstRelevantLine = new Block("^(Zins|Interest|Int.r.ts)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
