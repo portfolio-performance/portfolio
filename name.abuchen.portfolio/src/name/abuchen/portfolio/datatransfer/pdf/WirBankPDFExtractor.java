@@ -117,7 +117,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .find("(Order|Ordre): (Kauf|Verkauf|Buy|Sell|Achat|Vente)") //
-                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile|units|Qté|Quantité|parts|actions) (?<name>.*)$") //
+                        .match("^[\\.,\\d]+ (Ant|Qty|Anteile|units|Qt.|Quantit.|parts|actions) (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Kurs|Price|Cours): (?<currency>[\\w]{3}) .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
