@@ -89,7 +89,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(B.rsenabrechnung|Exchange Settlement|Opération de bourse) \\- (Kauf|Verkauf|Buy|Sell|Achat|Vente).*$");
+        Block firstRelevantLine = new Block("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) \\- (Kauf|Verkauf|Buy|Sell|Achat|Vente).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
