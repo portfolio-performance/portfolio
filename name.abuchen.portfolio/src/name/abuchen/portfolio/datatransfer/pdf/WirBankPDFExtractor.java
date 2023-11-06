@@ -103,7 +103,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(B.rsenabrechnung|Exchange Settlement|Opération de bourse) \\- (?<type>(Kauf|Verkauf|Buy|Sell|Achat|Vente)).*$") //
+                        .match("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) \\- (?<type>(Kauf|Verkauf|Buy|Sell|Achat|Vente)).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type")) || "Vente".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
