@@ -211,8 +211,8 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Zinsperiode: März
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(?<note1>(Zinssatz|Interest rate|Taux d'intérêt): [\\.,\\d]+%)$") //
-                        .match("^(?<note2>(Zinsperiode|Interest period|Période d'intérêt): .*)$") //
+                        .match("^(?<note1>(Zinssatz|Interest rate|Taux d.int.r.t): [\\.,\\d]+%)$") //
+                        .match("^(?<note2>(Zinsperiode|Interest period|P.riode d.int.r.t): .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " | " + trim(v.get("note2"))))
 
                         .wrap(TransactionItem::new);
