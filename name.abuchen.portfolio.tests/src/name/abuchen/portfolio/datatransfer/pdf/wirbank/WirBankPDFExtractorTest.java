@@ -985,7 +985,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-01T00:00")));
         assertThat(transaction.getSource(), is("Zins06_Francais.txt"));
-        assertThat(transaction.getNote(), is("Taux d\\'intérêt: 0.10% | Période d\\'intérêt: mai"));
+        assertThat(transaction.getNote(), is("Taux d'intérêt: 0.10% | Période d'intérêt: mai"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(0.04))));
