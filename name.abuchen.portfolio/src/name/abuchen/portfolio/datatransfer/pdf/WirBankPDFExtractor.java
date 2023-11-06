@@ -135,7 +135,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
                         // @formatter:on
                         .section("date") //
-                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant comptabilisé: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant comptabilis.: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
