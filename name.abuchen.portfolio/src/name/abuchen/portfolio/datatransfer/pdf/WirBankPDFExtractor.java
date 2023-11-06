@@ -243,7 +243,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Belastung|Commission)") //
-                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant débité: Valuta) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$")
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant d.bit.: Valuta) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
