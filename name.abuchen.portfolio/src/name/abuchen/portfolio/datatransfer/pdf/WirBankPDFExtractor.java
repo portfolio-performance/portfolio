@@ -254,7 +254,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Effektive VIAC Verwaltungsgebühr: 0.123% p.a. CHF -1.11
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(Effektive|Effective|Commission de gestion effective) (?<note>(VIAC Verwaltungsgeb.hr|VIAC administration fee|VIAC p.a.): [\\.,\\d]+%) .*$") //
+                        .match("^(Effektive|Effective|Commission de gestion effective) (?<note>(VIAC Verwaltungsgeb.hr|VIAC administration fee|VIAC p\\.a\\.): [\\.,\\d]+%) .*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap((t, ctx) -> {
