@@ -345,18 +345,18 @@ public class SecuritiesChart
         }
     }
 
-    private Color colorQuote;
-    private Color colorQuoteAreaPositive;
-    private Color colorQuoteAreaNegative;
+    private Color colorQuote = Colors.getColor(77, 52, 235); // #4D34EB
+    private Color colorQuoteAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
+    private Color colorQuoteAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
 
-    private Color colorEventPurchase;
-    private Color colorEventSale;
-    private Color colorEventDividend;
+    private Color colorEventPurchase = Colors.getColor(26, 173, 33); // #1AAD21
+    private Color colorEventSale = Colors.getColor(255, 43, 48); // #FF2B30
+    private Color colorEventDividend = Colors.getColor(128, 99, 168); // #8063A8
 
-    private Color colorExtremeMarkerHigh;
-    private Color colorExtremeMarkerLow;
+    private Color colorExtremeMarkerHigh = Colors.getColor(0, 147, 15); // #00930F
+    private Color colorExtremeMarkerLow = Colors.getColor(168, 39, 42); // #A8272A
 
-    private Color colorNonTradingDay;
+    private Color colorNonTradingDay = Colors.getColor(255, 137, 89); // #FF8959
 
     private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121); // #E27A79
     private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81); // #965251
