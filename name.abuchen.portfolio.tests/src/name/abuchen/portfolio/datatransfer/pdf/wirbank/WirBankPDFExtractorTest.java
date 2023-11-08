@@ -17,6 +17,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -1034,6 +1035,31 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testInterest05()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins05_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-10-31T00:00"), hasShares(0.00), //
+                        hasSource("Zins05_English.txt"), //
+                        hasNote("Interest rate: 0.90% | Interest period: October"), //
+                        hasAmount("CHF", 0.30), hasGrossValue("CHF", 0.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testFees01()
     {
         Client client = new Client();
@@ -1125,9 +1151,34 @@ public class WirBankPDFExtractorTest
                         fee( //
                                         hasDate("2023-07-31T00:00"), hasShares(0.00), //
                                         hasSource("Gebuehren03_English.txt"), //
-                                        hasNote(null), //
+                                        hasNote("VIAC administration fee: 0.00%"), //
                                         hasAmount("CHF", 0.00), hasGrossValue("CHF", 0.00), //
                                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00)))));
+    }
+
+    @Test
+    public void testFees04()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren04_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-10-31T00:00"), hasShares(0.00), //
+                        hasSource("Gebuehren04_English.txt"), //
+                        hasNote("VIAC administration fee: 0.24%"), //
+                        hasAmount("CHF", 5.45), hasGrossValue("CHF", 5.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
