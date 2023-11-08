@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+Terzo Pension Foundation of WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Phone 0800 80 40 40
+www.viac.ch
+Contract x.xxx.xxx.xxx
+Portfolio x.xxx.xxx.xxx.xx
+Mr
+Max Muster
+Musterstrasse 2
+0000 Zürich
+Basel, 01.11.2023
+Commission
+On 31.10.2023 we have debited your account:
+Effective VIAC administration fee p.a. (calculated at portfolio level): 0.24%
+Average pension assets: CHF xx'xxx.xx
+Less 3a account balance (liquidity): CHF xxx.xx
+Less exempt assets (fee cap): CHF x'xxx.xx
+Less allowance: CHF 8'500.00 / 8'500.00
+Effective calculation basis: Month October CHF xx'xxx.xx
+Charged amount: Valuta 31.10.2023 CHF -5.45
+S. E. & O.
+Calculation: The effective VIAC administration fee is derived from the average pension assets less cash balance and taking into 
+account the fee cap of 0.40%. Any allowances are then additionally deducted from this amount. Basis for the calculation is the VIAC 
+administration fee of 0.52% p.a., which is charged on a maximum of 76.92% of invested assets. Investments above this level are 
+managed free of charge thanks to the fee cap.
+Note: Whenever possible, our foundation bears the product costs (index funds). In the case of ETFs, product costs are charged 
+within the fund and accrue in favor of the fund provider. Product costs accrue in addition to the administration fee and amount to 
+0.00 % per year for the currently selected strategy. VIAC does not receive any kind of reimbursements (retrocessions).
+Kind regards
+Terzo Pension Foundation
+Notice without signature
