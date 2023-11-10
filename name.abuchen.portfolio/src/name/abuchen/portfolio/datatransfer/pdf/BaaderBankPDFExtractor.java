@@ -33,6 +33,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addTaxAdjustmentTransaction();
         addDepotStatementTransaction();
         addFeesAssetManagerTransaction();
+        addInterestTransaction();
         addDeliveryInOutBoundTransaction();
         addTransferOutTransaction();
     }
@@ -562,6 +563,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug" //
                         + "|Tageskontoauszug" //
                         + "|Periodic Account Statement)", //
+                        "Rechnungsabschluss:", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Perioden-Kontoauszug: EUR-Konto KOPIE
@@ -716,39 +718,97 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.FEES);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // Leistungen Beträge (EUR)
-                // Rechnungsbetrag 6,48
-                // @formatter:on
-                .section("currency", "amount")
-                .match("^Leistungen Betr.ge \\((?<currency>[\\w]{3})\\)$")
-                .match("^Rechnungsbetrag *(?<amount>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                        // @formatter:off
+                        // Leistungen Beträge (EUR)
+                        // Rechnungsbetrag 6,48
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Leistungen Betr.ge \\((?<currency>[\\w]{3})\\)$") //
+                        .match("^Rechnungsbetrag *(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
-                // @formatter:off
-                // Abbuchungsdatum: 02.08.2017
-                // @formatter:on
-                .section("date")
-                .match("^Abbuchungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // Abbuchungsdatum: 02.08.2017
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Abbuchungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // @formatter:off
-                // Abrechnungszeitraum 01.07.2017 - 31.07.2017
-                // @formatter:on
-                .section("note").optional()
-                .match("^(?<note>Abrechnungszeitraum .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        // @formatter:off
+                        // Abrechnungszeitraum 01.07.2017 - 31.07.2017
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Abrechnungszeitraum .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                .wrap(TransactionItem::new);
+                        .wrap(TransactionItem::new);
+    }
+
+    private void addInterestTransaction()
+    {
+        final DocumentType type = new DocumentType("Zinsberechnung: Betrag in [\\w]{3}", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Zinsberechnung: Betrag in EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$", "^Die Buchung erfolgt über Konto.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Zinsberechnung: Betrag in EUR
+                        // Gesamtsumme: 1,46
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
+                        .match("^Gesamtsumme: (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Abschlussbuchung vom 31.10.2023
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Abschlussbuchung vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDeliveryInOutBoundTransaction()
@@ -924,96 +984,137 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         // If we have a gross reinvestment,
         // we set a flag and don't book tax below.
-        transaction
-                .section("n").optional()
-                .match("^Ertragsthesaurierung .*$")
-                .match("Steuerliquidit.t (?<n>.*)")
-                .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+        transaction //
 
-        transaction
-                // @formatter:off
-                // Span. Finanztransaktionssteuer EUR 1,97
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        .section("n").optional() //
+                        .match("^Ertragsthesaurierung .*$") //
+                        .match("Steuerliquidit.t (?<n>.*)") //
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
 
-                // @formatter:off
-                // Kapitalertragsteuer EUR 127,73 -
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+        transaction //
 
-                // @formatter:off
-                // Kirchensteuer EUR 11,49 -
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Span. Finanztransaktionssteuer EUR 1,97
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^.* Finanztransaktionssteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Solidaritätszuschlag EUR 7,02 -
-                // @formatter:on
-                .section("tax", "currency").optional()
-                .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("noTax"))
-                        processTaxEntries(t, v, type);
-                })
+                        // @formatter:off
+                        // Kapitalertragsteuer EUR 127,73 -
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
-                // @formatter:off
-                // Quellensteuer EUR 30,21 -
-                // US-Quellensteuer EUR 0,17 -
-                // @formatter:on
-                .section("withHoldingTax", "currency").optional()
-                .match("^(US\\-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$")
-                .assign((t, v) -> {
-                    if (!type.getCurrentContext().getBoolean("noTax"))
-                        processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                });
+                        // @formatter:off
+                        // Kapitalertragsteuer EUR 127,73 -
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kapitalertrags(s)?teuer (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer EUR 11,49 -
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Kirchensteuer 0,03 -
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kirchensteuer (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 0,02 -
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 0,02 -
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Solidarit.tszuschlag (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Quellensteuer EUR 30,21 -
+                        // US-Quellensteuer EUR 0,17 -
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^(US\\-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // @formatter:off
-                // Provision EUR 0,21
-                // Provision EUR 0,08 -
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
+        transaction //
 
-                // @formatter:off
-                // Gebühren extern ADR EUR 2,00
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
+                        // @formatter:off
+                        // Provision EUR 0,21
+                        // Provision EUR 0,08 -
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Provision? (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // @formatter:off
-                // Mindermengenzuschlag Finanzen.net EUR 1,00
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Mindermengenzuschlag .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
-                .assign((t, v) -> processFeeEntries(t, v, type))
+                        // @formatter:off
+                        // Provision Baader EUR 5,21
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Provision Baader (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // @formatter:off
-                // Stamp HongKong EUR 0,12
-                // @formatter:on
-                .section("currency", "fee").optional()
-                .match("^Stamp HongKong (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$")
-                .assign((t, v) -> processFeeEntries(t, v, type));
+                        // @formatter:off
+                        // Provision Smartbroker EUR 4,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Provision Smartbroker (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Gebühren extern ADR EUR 2,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Geb.hren extern ADR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Mindermengenzuschlag Finanzen.net EUR 1,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Mindermengenzuschlag .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Stamp HongKong EUR 0,12
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Stamp HongKong (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
     @Override

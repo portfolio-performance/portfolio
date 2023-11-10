@@ -45,6 +45,14 @@ import name.abuchen.portfolio.model.TypedMap;
             this.contextBuilder = contextBuilder;
         }
 
+        public DocumentType(String mustInclude, String mustNotInclude,
+                        Consumer<Transaction<DocumentContext>> contextBuilder)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
+            this.mustNotInclude.add(Pattern.compile(mustNotInclude));
+            this.contextBuilder = contextBuilder;
+        }
+
         public DocumentType(String mustInclude, String mustNotInclude)
         {
             this.mustInclude.add(Pattern.compile(mustInclude));
@@ -597,9 +605,13 @@ import name.abuchen.portfolio.model.TypedMap;
                 }
             }
 
-            if (patternNo < pattern.size() && !sectionFoundAtLeastOnce && !isOptional)
-                throw new IllegalArgumentException(Arrays.toString(attributes) + MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
-                                patternNo, pattern.size(), pattern.toString(), filename, lineNo + 1, lineNoEnd + 1));
+            if (patternNo < pattern.size() && !sectionFoundAtLeastOnce && !isOptional) //
+                throw new IllegalArgumentException( //
+                                Arrays.toString(attributes) + MessageFormat.format( //
+                                                Messages.MsgErrorNotAllPatternMatched, //
+                                                patternNo, pattern.size(), pattern.toString(), //
+                                                filename, //
+                                                lineNo + 1, lineNoEnd + 1));
         }
 
         private void extractAttributes(Map<String, String> values, Pattern p, Matcher m)
