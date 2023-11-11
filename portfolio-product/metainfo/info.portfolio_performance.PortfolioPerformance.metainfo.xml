@@ -39,6 +39,20 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.65.6" date="2023-11-11">
+      <description>
+        <ul xml:lang="en">
+          <li>New: Display the number of shares held in the historical price chart</li>
+          <li>Improvement of the PDF importer: Baader Bank, WIR, VIAC, Oldenburgische Landesbank</li>
+          <li>Fix: Fixes an problem with IllegalArgumentException errors when displaying investements and dividends</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Im Kursdiagramm die Bestände im zeitlichen Verlauf einblenden</li>
+          <li>Verbesserung der PDF Importer: Baader Bank, WIR, VIAC, Oldenburgische Landesbank</li>
+          <li>Fix: Behebt ein Problem mit IllegalArgumentExcepion im Kursdiagramm bei der Darstellung von Markierungslinien</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.65.5" date="2023-11-04">
       <description>
         <ul>
