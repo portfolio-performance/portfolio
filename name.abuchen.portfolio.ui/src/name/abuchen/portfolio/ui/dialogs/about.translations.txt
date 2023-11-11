@@ -1,6 +1,6 @@
 Translated with the help of
 
-Spanish by [PabloReyes](https://github.com/PabloReyes), Emilio
+Spanish by [PabloReyes](https://github.com/PabloReyes), Bolzass, Emilio
 Dutch by Mi, Thomas, Dizzy, Caspar, Husch
 Portuguese by [iwalucas](https://github.com/iwalucas), Bruno, Paulo Santos, Teppss
 Brazilian Portuguese by Rafael
