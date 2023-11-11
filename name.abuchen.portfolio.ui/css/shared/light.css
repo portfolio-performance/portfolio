@@ -103,6 +103,8 @@ SecuritiesChart {
 	extreme-marker-low-color: #800000;
 
 	non-trading-color: #FF8959;
+	
+	shares-held-color: #EBC934
 }
 
 * {

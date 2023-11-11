@@ -145,7 +145,10 @@
          </property-name>
          <property-name
                name="non-trading-color">
-        </property-name>
+         </property-name>
+         <property-name
+               name="shares-held-color">
+         </property-name>
       </handler>
    </extension>
    <extension

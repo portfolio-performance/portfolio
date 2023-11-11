@@ -78,6 +78,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.views.securitychart.SharesHeldChartSeries;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -249,6 +250,7 @@ public class SecuritiesChart
         CLOSING(Messages.LabelChartDetailChartDevelopmentClosing), //
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
+        SHARES_HELD(Messages.ColumnSharesOwned),
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
         EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
@@ -358,6 +360,8 @@ public class SecuritiesChart
 
     private Color colorNonTradingDay = Colors.getColor(255, 137, 89); // #FF8959
 
+    private Color colorSharesHeld = Colors.getColor(235, 201, 52); // #EBC934
+    
     private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121); // #E27A79
     private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81); // #965251
     private static final Color colorBollingerBands = Colors.getColor(201, 141, 68); // #C98D44
@@ -487,6 +491,31 @@ public class SecuritiesChart
     public void setNonTradingColor(Color color)
     {
         this.colorNonTradingDay = color;
+    }
+    
+    public Color getSharesHeldColor()
+    {
+        return colorSharesHeld;
+    }
+    
+    public void setSharesHeldColor(Color color)
+    {
+        this.colorSharesHeld = color;
+    }
+    
+    public Client getClient()
+    {
+        return this.client;
+    }
+    
+    public Security getSecurity()
+    {
+        return this.security;
+    }
+    
+    public int getAntialias()
+    {
+        return this.swtAntialias;
     }
 
     private void setupTooltip()
@@ -692,6 +721,7 @@ public class SecuritiesChart
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.CLOSING));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
+        subMenuChartMarker.add(addMenuAction(ChartDetails.SHARES_HELD));
         subMenuChartMarker.add(addMenuAction(ChartDetails.DIVIDENDS));
         subMenuChartMarker.add(addMenuAction(ChartDetails.EVENTS));
         subMenuChartMarker.add(addMenuAction(ChartDetails.EXTREMES));
@@ -1085,6 +1115,9 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.INVESTMENT))
             addInvestmentMarkerLines(chartInterval);
+        
+        if (chartConfig.contains(ChartDetails.SHARES_HELD))
+            new SharesHeldChartSeries().configure(this, chart, chartInterval);
 
         if (chartConfig.contains(ChartDetails.DIVIDENDS))
             addDividendMarkerLines(chartInterval);

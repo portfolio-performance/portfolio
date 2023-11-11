@@ -48,6 +48,7 @@ public class SecuritiesChartCSSHandler implements ICSSPropertyHandler
                         (chart, value) -> chart.setExtremeMarkerHighColor(getColor(value)));
         propertyMap.put("extreme-marker-low-color", (chart, value) -> chart.setExtremeMarkerLowColor(getColor(value))); //$NON-NLS-1$
         propertyMap.put("non-trading-color", (chart, value) -> chart.setNonTradingColor(getColor(value))); //$NON-NLS-1$
+        propertyMap.put("shares-held-color", (chart, value) -> chart.setSharesHeldColor(getColor(value))); //$NON-NLS-1$
     }
 
     @Override
