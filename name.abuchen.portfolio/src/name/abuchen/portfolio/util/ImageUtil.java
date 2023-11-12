@@ -1,17 +1,17 @@
 package name.abuchen.portfolio.util;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
+import javax.imageio.ImageIO;
+
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
@@ -27,46 +27,76 @@ public class ImageUtil
     {
         private int logicalWidth;
         private int logicalHeight;
-        private int xOffset;
-        private ImageData fullSize;
-        private HashMap<Integer, ImageData> zoomLevels = new HashMap<Integer, ImageData>();
+        private BufferedImage fullSize;
+        private HashMap<Integer, ImageData> zoomLevels = new HashMap<>();
 
-        public ZoomingImageDataProvider(byte[] data, int xOffset, int logicalWidth, int logicalHeight)
+        public ZoomingImageDataProvider(BufferedImage fullSize, int logicalWidth, int logicalHeight)
         {
-            this.xOffset = xOffset;
             this.logicalWidth = logicalWidth;
             this.logicalHeight = logicalHeight;
-            this.fullSize = ImageUtil.toImageData(data);
+            this.fullSize = fullSize;
         }
 
         @Override
         public ImageData getImageData(int zoom)
         {
-            ImageData imageData = zoomLevels.get(zoom);
-            if (imageData != null)
+            try
+            {
+                ImageData imageData = zoomLevels.get(zoom);
+                if (imageData != null)
+                    return imageData;
+
+                int zoomedWidth = Math.round(logicalWidth * (zoom / 100f));
+                int zoomedHeight = Math.round(logicalHeight * (zoom / 100f));
+
+                var scaledBufferedImage = scaleImage(fullSize, zoomedWidth, zoomedHeight, false);
+                imageData = toImageData(encode(scaledBufferedImage));
+
+                zoomLevels.put(zoom, imageData);
+
                 return imageData;
-
-            float scaleW = 1f / fullSize.width * logicalWidth * (zoom / 100f);
-            float scaleH = 1f / fullSize.height * logicalHeight * (zoom / 100f);
-
-            imageData = ImageUtil.resize(fullSize, xOffset, (int) (fullSize.width * scaleW), (int) (fullSize.height * scaleH),
-                            false);
-
-            zoomLevels.put(zoom, imageData);
-
-            return imageData;
+            }
+            catch (IOException e)
+            {
+                PortfolioLog.error(e);
+                return null;
+            }
         }
+
+        private ImageData toImageData(byte[] value)
+        {
+            if (value == null || value.length == 0)
+                return null;
+
+            try
+            {
+                ImageLoader loader = new ImageLoader();
+                ByteArrayInputStream bis = new ByteArrayInputStream(value);
+                ImageData[] imgArr = loader.load(bis);
+                return imgArr[0];
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+    }
+
+    private ImageUtil()
+    {
     }
 
     /**
-     * 
      * @param value
-     * @param xOffset Additional transparent offset. Width of the resulting image is (xOffset + maxWidth)
+     * @param xOffset
+     *            Additional transparent offset. Width of the resulting image is
+     *            (xOffset + maxWidth)
      * @param logicalWidth
      * @param logicalHeight
      * @return
      */
-    public static Image toImage(String value, int xOffset, int logicalWidth, int logicalHeight)
+    public static Image toImage(String value, int logicalWidth, int logicalHeight)
     {
         if (value == null || value.length() == 0)
             return null;
@@ -83,7 +113,9 @@ public class ImageUtil
             if (buff == null || buff.length == 0)
                 return null;
 
-            return new Image(null, new ZoomingImageDataProvider(buff, xOffset, logicalWidth, logicalHeight));
+            BufferedImage imgData = ImageIO.read(new ByteArrayInputStream(buff));
+
+            return new Image(null, new ZoomingImageDataProvider(imgData, logicalWidth, logicalHeight));
         }
         catch (Exception ex)
         {
@@ -92,60 +124,37 @@ public class ImageUtil
         }
     }
 
-    private static ImageData toImageData(byte[] value)
+    private static byte[] encode(BufferedImage image) throws IOException
     {
-        if (value == null || value.length == 0)
-            return null;
-
-        try
-        {
-            ImageLoader loader = new ImageLoader();
-            ByteArrayInputStream bis = new ByteArrayInputStream(value);
-            ImageData[] imgArr = loader.load(bis);
-            return imgArr[0];
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
-    }
-
-    private static byte[] encode(ImageData image)
-    {
-        ImageLoader loader = new ImageLoader();
-        loader.data = new ImageData[] { image };
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        loader.save(bos, SWT.IMAGE_PNG);
-
+        ImageIO.write(image, "PNG", bos); //$NON-NLS-1$
+        bos.close();
         return bos.toByteArray();
     }
 
     public static String loadAndPrepare(String filename, int maxWidth, int maxHeight) throws IOException
     {
-        byte[] data = Files.readAllBytes(Paths.get(filename));
-        ImageData imgData = ImageUtil.toImageData(data);
-        if (imgData == null)
-            return null;
+        BufferedImage imgData = ImageIO.read(new File(filename));
 
-        if (imgData.width > maxWidth || imgData.height > maxHeight)
+        if (imgData.getWidth() > maxWidth || imgData.getHeight() > maxHeight)
         {
-            imgData = ImageUtil.resize(imgData, 0, maxWidth, maxHeight, true);
-            data = ImageUtil.encode(imgData);
+            BufferedImage scaledImage = scaleImage(imgData, maxWidth, maxHeight, true);
+            imgData = scaledImage;
         }
-        return BASE64PREFIX + Base64.getEncoder().encodeToString(data);
+        return BASE64PREFIX + Base64.getEncoder().encodeToString(ImageUtil.encode(imgData));
     }
 
-    private static ImageData resize(ImageData image, int xOffset, int maxWidth, int maxHeight, boolean preserveRatio)
+    public static BufferedImage scaleImage(BufferedImage image, int maxWidth, int maxHeight, boolean preserveRatio)
     {
-        if (image.width == maxWidth && image.height == maxHeight)
+        if (image.getWidth() == maxWidth && image.getHeight() == maxHeight)
             return image;
 
         int newHeight = maxHeight;
-        int newWidth = (image.width * newHeight) / image.height;
+        int newWidth = (image.getWidth() * newHeight) / image.getHeight();
         if (newWidth > maxWidth)
         {
             newWidth = maxWidth;
-            newHeight = (image.height * newWidth) / image.width;
+            newHeight = (image.getHeight() * newWidth) / image.getWidth();
         }
 
         int imageWidth = preserveRatio ? newWidth : maxWidth;
@@ -158,65 +167,11 @@ public class ImageUtil
         if (posY + newHeight > imageHeight)
             newWidth = imageHeight - posY;
 
-        ImageData imageData = getTransparentImage(imageWidth + xOffset, imageHeight);
-
-        Image canvas = new Image(null, imageData);
-
-        GC gc = new GC(canvas);
-        gc.setAntialias(SWT.ON);
-        gc.setInterpolation(SWT.HIGH);
-
-        Image source = new Image(null, image);
-        gc.drawImage(source, 0, 0, image.width, image.height, posX+xOffset, posY, newWidth, newHeight);
-        gc.dispose();
-        source.dispose();
-
-        ImageData answer = canvas.getImageData();
-        canvas.dispose();
-
-        return answer;
-    }
-
-    /**
-     * Creates an ImageData objects that is fully transparent.
-     */
-    private static ImageData getTransparentImage(int imageWidth, int imageHeight)
-    {
-        Image background = new Image(null, imageWidth, imageHeight);
-        ImageData imageData = background.getImageData();
-
-        String flag = System.getProperty("transparency-hack"); //$NON-NLS-1$
-        String os = Platform.getOS();
-
-        // use the hack on macOS and Linux or if explicitly configured
-
-        boolean useHack = flag != null ? Boolean.parseBoolean(flag)
-                        : (Platform.OS_MACOSX.equals(os) || Platform.OS_LINUX.equals(os));
-
-        if (!useHack)
-        {
-            imageData.transparentPixel = imageData.getPixel(0, 0);
-        }
-        else
-        {
-            // it is unclear why this works, but on macOS 10.15.6 and Ubuntu
-            // 20.04 LTS it does work to have a transparent background even
-            // though the code actually paints it white
-
-            // first, set both (usually mutually exclusive) methods of
-            // transparency (pixel and alphaData) because setting only of of the
-            // two does not work
-
-            imageData.transparentPixel = imageData.getPixel(0, 0);
-            imageData.alphaData = new byte[imageWidth * imageHeight];
-
-            // second, fill the background non-transparent with white color
-
-            Arrays.fill(imageData.alphaData, (byte) 0xFF);
-            Arrays.fill(imageData.data, (byte) 0xFF);
-        }
-
-        background.dispose();
-        return imageData;
+        BufferedImage scaledImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = scaledImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(image, posX, posY, newWidth, newHeight, null);
+        g2d.dispose();
+        return scaledImage;
     }
 }
