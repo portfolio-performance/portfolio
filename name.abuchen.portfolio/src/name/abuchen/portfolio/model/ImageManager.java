@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.util.ImageUtil;
 
-public final class ImageManager
+public final class ImageManager // NOSONAR
 {
     private HashMap<String, Image> imageCache = new HashMap<>();
     private static ImageManager instance = new ImageManager();
@@ -29,7 +29,7 @@ public final class ImageManager
      */
     public Image getImage(Attributable target, AttributeType attr)
     {
-        return getImage(target, attr, 0, 16, 16);
+        return getImage(target, attr, 16, 16);
     }
 
     /**
@@ -38,7 +38,7 @@ public final class ImageManager
      *
      * @return The retrieved image or null if not found.
      */
-    public Image getImage(Attributable target, AttributeType attr, int xOffset, int width, int height)
+    public Image getImage(Attributable target, AttributeType attr, int width, int height)
     {
         if (target != null && target.getAttributes().exists(attr) && attr.getConverter() instanceof ImageConverter)
         {
@@ -47,14 +47,14 @@ public final class ImageManager
                 return null;
 
             String imgString = String.valueOf(imgObject);
-            String imgKey = imgString + width + height + xOffset;
+            String imgKey = imgString + width + height;
             synchronized (imageCache)
             {
                 Image img = imageCache.getOrDefault(imgKey, null);
                 if (img != null)
                     return img;
 
-                img = ImageUtil.toImage(imgString, xOffset, width, height);
+                img = ImageUtil.instance().toImage(imgString, width, height);
                 if (img != null)
                 {
                     imageCache.put(imgKey, img);

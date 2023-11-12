@@ -178,7 +178,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             final String previewPlaceholderText = "..."; //$NON-NLS-1$
             preview.setText(previewPlaceholderText);
 
-            Image img = ImageUtil.toImage(conv.toString(attribute.getValue()), 0, 16, 16);
+            Image img = ImageUtil.instance().toImage(conv.toString(attribute.getValue()), 16, 16);
             if (img != null)
                 preview.setImage(img);
 
@@ -205,7 +205,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                                         return Status.OK_STATUS;
                                                     }
 
-                                                    Image img = ImageUtil.toImage(s, 0, 16, 16);
+                                                    Image img = ImageUtil.instance().toImage(s, 16, 16);
 
                                                     updatePreview(img);
                                                     return img == null ? Status.CANCEL_STATUS : Status.OK_STATUS;
@@ -229,7 +229,8 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 {
                     try
                     {
-                        String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                        String b64 = ImageUtil.instance().loadAndPrepare(filename,
+                                        ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                         ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
                         if (b64 == null)
                             MessageDialog.openError(getShell(), Messages.MsgInvalidImage,

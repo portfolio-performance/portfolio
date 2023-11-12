@@ -63,7 +63,8 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
             {
                 try
                 {
-                    String image = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                    String image = ImageUtil.instance().loadAndPrepare(filename,
+                                    ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                     ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
 
                     if (image == null)
