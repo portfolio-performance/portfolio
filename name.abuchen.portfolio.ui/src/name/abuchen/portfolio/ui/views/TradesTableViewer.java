@@ -174,7 +174,7 @@ public class TradesTableViewer
                     row[5] = pair.getTransaction().getUnitSum(Unit.Type.FEE);
                     row[6] = pair.getTransaction().getUnitSum(Unit.Type.TAX);
                     row[7] = pair.getTransaction().getMonetaryAmount();
-                    row[8] = pair.getOwner();
+                    row[8] = pair.getTransaction().getCrossEntry().getCrossOwner(pair.getTransaction());
 
                     builder.addRow(row);
                 });
