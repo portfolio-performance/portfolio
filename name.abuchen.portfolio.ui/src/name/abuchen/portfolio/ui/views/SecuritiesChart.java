@@ -833,6 +833,7 @@ public class SecuritiesChart
     private void updateChart()
     {
         chart.setRedraw(false);
+        chart.suspendUpdate(true);
 
         try
         {
@@ -1024,6 +1025,7 @@ public class SecuritiesChart
         }
         finally
         {
+            chart.suspendUpdate(false);
             chart.setRedraw(true);
             chart.redraw();
         }
