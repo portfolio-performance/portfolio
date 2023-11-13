@@ -295,6 +295,7 @@ public class Messages extends NLS
     public static String ColumnShareInPercent;
     public static String ColumnShares;
     public static String ColumnSharesOwned;
+    public static String ColumnSharesOwnedHoldingPeriod;
     public static String ColumnSource;
     public static String ColumnStartDate;
     public static String ColumnLastDate;

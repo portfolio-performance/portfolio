@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.securitychart;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class SharesHeldChartSeries
 {
+    private record Data(List<LocalDate> dates, List<Double> values)
+    {
+    }
 
     public void configure(SecuritiesChart chart, TimelineChart timelineChart, ChartInterval chartInterval)
     {
@@ -45,10 +49,11 @@ public class SharesHeldChartSeries
                         .sorted(Transaction.BY_DATE) //
                         .toList();
 
-        var dates = new ArrayList<LocalDate>();
-        var values = new ArrayList<Double>();
+        var data = collectData(chartInterval, transactions);
 
-        collectData(chartInterval, transactions, dates, values);
+        // if no shares where ever held, then do not create the axis
+        if (data.isEmpty())
+            return;
 
         // create a new axis (if necessary)
         // we use the title to identify the axis
@@ -75,33 +80,54 @@ public class SharesHeldChartSeries
             axis.getTick().setVisible(false);
             axis.getGrid().setStyle(LineStyle.NONE);
             axis.setPosition(Position.Primary);
+
+            // As we are dynamically adding the series, we have to check whether
+            // the updates on the chart are suspended. Otherwise, the layout
+            // information is not available for the axis and then #adjustRange
+            // will fail
+
+            if (timelineChart.isUpdateSuspended())
+            {
+                // resuming updates will trigger #updateLayout
+                timelineChart.suspendUpdate(false);
+                timelineChart.suspendUpdate(true);
+            }
         }
 
         // create chart series
 
-        ILineSeries series = (ILineSeries) timelineChart.getSeriesSet().createSeries(SeriesType.LINE,
-                        Messages.ColumnSharesOwned);
+        for (int index = 0; index < data.size(); index++)
+        {
+            Data d = data.get(index);
 
-        series.setSymbolType(PlotSymbolType.NONE);
-        series.setYAxisId(axis.getId());
-        series.enableStep(true);
+            var label = index == 0 ? Messages.ColumnSharesOwned
+                            : MessageFormat.format(Messages.ColumnSharesOwnedHoldingPeriod, index + 1);
 
-        series.setLineWidth(2);
-        series.setLineStyle(LineStyle.SOLID);
-        series.enableArea(false);
-        series.setAntialias(chart.getAntialias());
-        series.setXDateSeries(TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])));
-        series.setYSeries(Doubles.toArray(values));
-        series.setLineColor(chart.getSharesHeldColor());
-        series.setVisibleInLegend(true);
+            var series = (ILineSeries) timelineChart.getSeriesSet().createSeries(SeriesType.LINE, label);
+
+            series.setSymbolType(PlotSymbolType.NONE);
+            series.setYAxisId(axis.getId());
+            series.enableStep(true);
+
+            series.setLineWidth(2);
+            series.setLineStyle(LineStyle.SOLID);
+            series.enableArea(false);
+            series.setAntialias(chart.getAntialias());
+            series.setXDateSeries(TimelineChart.toJavaUtilDate(d.dates.toArray(new LocalDate[0])));
+            series.setYSeries(Doubles.toArray(d.values));
+            series.setLineColor(chart.getSharesHeldColor());
+            series.setVisibleInLegend(index == 0);
+        }
     }
 
-    private void collectData(ChartInterval chartInterval, List<PortfolioTransaction> transactions,
-                    ArrayList<LocalDate> dates, ArrayList<Double> values)
+    private List<Data> collectData(ChartInterval chartInterval, List<PortfolioTransaction> transactions)
     {
+        var result = new ArrayList<Data>();
+
         int index = 0;
 
-        // collect changes to shares *before* chart interval
+        // collect changes to shares *before* chart interval up until and
+        // including to the end of the first day = first data point
         var sharesAtStart = 0L;
         while (index < transactions.size()
                         && !transactions.get(index).getDateTime().toLocalDate().isAfter(chartInterval.getStart()))
@@ -111,46 +137,75 @@ public class SharesHeldChartSeries
             index++;
         }
 
-        dates.add(chartInterval.getStart());
-        values.add(sharesAtStart / Values.Share.divider());
+        Data current = null;
 
-        // iterate over remaining transactions
+        if (sharesAtStart != 0)
+        {
+            current = new Data(new ArrayList<>(), new ArrayList<>());
+            result.add(current);
 
-        LocalDate currentDate = null;
+            current.dates.add(chartInterval.getStart());
+            current.values.add(sharesAtStart / Values.Share.divider());
+        }
+
+        // iterate over remaining transactions (if inside the chart interval,
+        // i.e. relevant to render on the chart)
+
         long currentShares = sharesAtStart;
 
         while (index < transactions.size() && chartInterval.contains(transactions.get(index).getDateTime()))
         {
             var tx = transactions.get(index);
 
-            var changeDate = tx.getDateTime().toLocalDate();
-            var changeShares = tx.getType().isPurchase() ? tx.getShares() : -tx.getShares();
+            var currentDate = tx.getDateTime().toLocalDate();
+            currentShares += tx.getType().isPurchase() ? tx.getShares() : -tx.getShares();
 
-            if (currentDate != null && !changeDate.equals(currentDate))
+            // if the next date is identical, include the next transaction in
+            // the same data point. (there can be multiple purchase and sale
+            // transactions on the same day, but we can have only one entry
+            // in the data series)
+            if (index + 1 < transactions.size()
+                            && currentDate.equals(transactions.get(index + 1).getDateTime().toLocalDate()))
             {
-                dates.add(currentDate);
-                values.add(currentShares / Values.Share.divider());
+                index++;
+                continue;
             }
 
-            currentDate = changeDate;
-            currentShares += changeShares;
+            if (currentShares == 0)
+            {
+                if (current != null)
+                {
+                    // end of a holding period
+                    current.dates.add(currentDate);
+                    current.values.add(current.values.get(current.values.size() - 1));
+                    current = null;
+                }
+            }
+            else
+            {
+                if (current == null)
+                {
+                    // create a new holding period
+                    current = new Data(new ArrayList<>(), new ArrayList<>());
+                    result.add(current);
+                }
+
+                current.dates.add(currentDate);
+                current.values.add(currentShares / Values.Share.divider());
+            }
 
             index++;
         }
 
-        if (currentDate != null)
-        {
-            dates.add(currentDate);
-            values.add(currentShares / Values.Share.divider());
-        }
-
         // if necessary, add a data point for the last day of the interval
 
-        if (!dates.get(dates.size() - 1).equals(chartInterval.getEnd()))
+        if (current != null && !current.dates.get(current.dates.size() - 1).equals(chartInterval.getEnd()))
         {
-            dates.add(chartInterval.getEnd());
-            values.add(currentShares / Values.Share.divider());
+            current.dates.add(chartInterval.getEnd());
+            current.values.add(currentShares / Values.Share.divider());
         }
+
+        return result;
     }
 
 }
