@@ -64,8 +64,9 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
     public EarningsByTaxonomyChartWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
-
+        
         addConfigAfter(LabelConfig.class, new TaxonomyConfig(this));
+        addConfigAfter(TaxonomyConfig.class, new ReportingPeriodConfig(this));
 
         // adding in reverse
         addConfigAfter(ClientFilterConfig.class, new GrossNetTypeConfig(this));
