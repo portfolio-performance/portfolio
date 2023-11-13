@@ -248,6 +248,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
             double value;
 
+
             if (categoryEnabled)
             {
                 int line = (Integer) getFocusedObject();
@@ -257,10 +258,23 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             }
             else
             {
-                int line = Arrays.binarySearch(series.getXDateSeries(), getFocusedObject());
-                if (line < 0)
+                var dateSeries = series.getXDateSeries();
+                int line = Arrays.binarySearch(dateSeries, getFocusedObject());
+                
+                if (line >= 0)
+                {
+                    // user hit the pixel, show value
+                    value = series.getYSeries()[line];
+                }
+                else if (line == -1 || line == -dateSeries.length - 1)
+                {
+                    // pixel is before or after data series, show nothing
                     continue;
-                value = series.getYSeries()[line];
+                }
+                else
+                {
+                    value = series.getYSeries()[Math.max(0, -line - 2)];                    
+                }
             }
 
             values.add(new Pair<>(series, value));
