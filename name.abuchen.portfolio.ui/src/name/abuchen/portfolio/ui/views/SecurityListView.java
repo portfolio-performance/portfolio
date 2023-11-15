@@ -431,7 +431,7 @@ public class SecurityListView extends AbstractFinanceView
                     }
                     else
                     {
-                        filterPattern = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        filterPattern = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL); //$NON-NLS-1$ //$NON-NLS-2$
                         securities.refresh(false);
                     }
                 });
