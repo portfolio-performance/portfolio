@@ -318,6 +318,8 @@ public class PaymentsViewModel
 
                     sum.values[index] += value;
                     sum.sum += value;
+
+                    transactions.add(trade.getLastTransaction());
                 }
             }
         }
