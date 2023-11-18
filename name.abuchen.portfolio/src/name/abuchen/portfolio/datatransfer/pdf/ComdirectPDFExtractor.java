@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanksAndUnderscores;
@@ -1840,9 +1841,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 saleTransaction.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                saleTransaction.setSource(concat(saleTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                saleTransaction.setSource(concatenate(saleTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                saleTransaction.setNote(concatenate(saleTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
                 items.remove(pair.tax());
             }
@@ -1891,9 +1892,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                dividendTransaction.setSource(concat(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                dividendTransaction.setSource(concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
                 items.remove(pair.tax());
             }
@@ -2004,31 +2005,5 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             }
                         } //
         );
-    }
-
-    /**
-     * Concatenates two strings with a specified separator.
-     * If both strings are null, the result is null.
-     * If the first string is not null and the second is null, the first string is returned.
-     * If both strings are non-null and equal, only the first string is returned.
-     * Otherwise, the two strings are concatenated with the specified separator.
-     *
-     * @param first     The first string to concatenate.
-     * @param second    The second string to concatenate.
-     * @param separator The separator to use when concatenating non-null strings.
-     * @return The concatenated string or null if both input strings are null.
-     */
-    private String concat(String first, String second, String separator)
-    {
-        if (first == null && second == null)
-            return null;
-
-        if (first != null && second == null)
-            return first;
-
-        if (first != null && first.equals(second))
-            return first;
-
-        return first == null ? second : first + separator + second;
     }
 }
