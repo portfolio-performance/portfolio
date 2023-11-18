@@ -245,6 +245,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Aussch.ttung aus" //
                         + "|Wahldividende" //
                         + "|Fund Distribution" //
+                        + "|Dividend Statement" //
                         + "|Dividende" //
                         + "|Reklassifizierung)", "(Kontoauszug|Account Statement)");
         this.addDocumentTyp(type);
@@ -972,6 +973,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // German flat rate tax EUR 0.03 -
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^German flat rate tax (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
                         // Kapitalertragsteuer EUR 127,73 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
@@ -1031,6 +1042,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^(US\\-)?Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // US withholding tax EUR 0.14 -
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^US withholding tax (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
