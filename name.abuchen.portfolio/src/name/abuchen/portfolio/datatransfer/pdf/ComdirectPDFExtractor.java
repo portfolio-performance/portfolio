@@ -1139,6 +1139,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             }
                                                             else
                                                             {
+                                                                // Store in transaction context
+                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
+
                                                                 t.setMonetaryAmount(deductedTaxes);
                                                             }
                                                         }),
@@ -1837,21 +1840,24 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 saleTransaction.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                if (!saleTransaction.getSource().equals(taxesTransaction.getSource()))
-                    saleTransaction.setSource(saleTransaction.getSource() + "; " + taxesTransaction.getSource());
+                saleTransaction.setSource(concat(saleTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote()));
+                saleTransaction.setNote(concat(saleTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
                 items.remove(pair.tax());
             }
         }
 
-        // @formatter:off
-        // This loop iterates through a list of dividend and tax pairs and processes them.
-        //
-        // For each pair, it adjusts the gross amount of the dividend transaction if necessary,
-        // based on whether the taxes base (gross) is greater than the calculated gross amount (withholding tax).
-        // @formatter:on
+         // @formatter:off
+         // This loop processes a list of dividend and tax pairs, adjusting the gross amount of dividend transactions as needed.
+         //
+         // For each pair, it checks if there is a corresponding tax transaction. If present, it considers the gross taxes treatment,
+         // adjusting the gross amount of the dividend transaction if necessary. If taxes amount is zero and gross taxes treatment
+         // is less than the dividend amount, it adjusts the taxes and sets the dividend amount to the gross taxes treatment.
+         // If taxes amount is not zero, it sets the dividend amount to the gross taxes treatment and fixes the gross value.
+         //
+         // If there is no tax transaction, it simply fixes the gross value of the dividend transaction.
+         // @formatter:on
         for (TransactionTaxesPair pair : dividendTaxPairs)
         {
             var dividendTransaction = (AccountTransaction) pair.transaction().getSubject();
@@ -1863,19 +1869,31 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 if (grossTaxesTreatment != null)
                 {
-                    dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
-                    ExtractorUtils.fixGrossValue().accept(dividendTransaction);
+                    Money dividendAmount = dividendTransaction.getMonetaryAmount();
+                    Money taxesAmount = taxesTransaction.getMonetaryAmount();
+
+                    if (taxesAmount.isZero() && grossTaxesTreatment.isLessThan(dividendAmount))
+                    {
+                        Money adjustedTaxes  = dividendAmount.subtract(grossTaxesTreatment);
+                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, adjustedTaxes ));
+                        dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
+                    }
+                    else
+                    {
+                        dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
+                    }
                 }
 
-                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount()
+                ExtractorUtils.fixGrossValue().accept(dividendTransaction);
+
+                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount() //
                                 .subtract(taxesTransaction.getMonetaryAmount()));
 
                 dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                if (!dividendTransaction.getSource().equals(taxesTransaction.getSource()))
-                    dividendTransaction.setSource(dividendTransaction.getSource() + "; " + taxesTransaction.getSource());
+                dividendTransaction.setSource(concat(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote()));
+                dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
                 items.remove(pair.tax());
             }
@@ -1988,7 +2006,19 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         );
     }
 
-    private String concat(String first, String second)
+    /**
+     * Concatenates two strings with a specified separator.
+     * If both strings are null, the result is null.
+     * If the first string is not null and the second is null, the first string is returned.
+     * If both strings are non-null and equal, only the first string is returned.
+     * Otherwise, the two strings are concatenated with the specified separator.
+     *
+     * @param first     The first string to concatenate.
+     * @param second    The second string to concatenate.
+     * @param separator The separator to use when concatenating non-null strings.
+     * @return The concatenated string or null if both input strings are null.
+     */
+    private String concat(String first, String second, String separator)
     {
         if (first == null && second == null)
             return null;
@@ -1996,6 +2026,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         if (first != null && second == null)
             return first;
 
-        return first == null ? second : first + "; " + second;
+        if (first != null && first.equals(second))
+            return first;
+
+        return first == null ? second : first + separator + second;
     }
 }
