@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -3547,6 +3548,66 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.99))));
         assertThat(transaction.getSource(), is("Periodenauszug05.txt"));
         assertThat(transaction.getNote(), is("Ordergebühr"));
+    }
+
+    @Test
+    public void testPeriodenauszug06()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-12-21"), hasAmount("EUR", 100.00), //
+                        hasSource("Periodenauszug06.txt"), hasNote("Direct Debit"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-12-21"), hasAmount("EUR", 1.00), //
+                        hasSource("Periodenauszug06.txt"), hasNote("Direct Debit"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-12-21"), hasAmount("EUR", 500.00), //
+                        hasSource("Periodenauszug06.txt"), hasNote("Credit SEPA"))));
+    }
+
+    @Test
+    public void testPeriodenauszug07()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-03"), hasAmount("EUR", 200.00), //
+                        hasSource("Periodenauszug07.txt"), hasNote("Direct Debit"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-06"), hasAmount("EUR", 10000.00), //
+                        hasSource("Periodenauszug07.txt"), hasNote("Credit SEPA"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-20"), hasAmount("EUR", 100.00), //
+                        hasSource("Periodenauszug07.txt"), hasNote("Direct Debit"))));
     }
 
     @Test

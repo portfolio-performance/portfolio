@@ -1,0 +1,95 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstrasse 8e
+80538 Munich
+service@scalable.capital
+Page 1/2
+Scalable Capital GmbH Munich
+2022-01-01
+Seitzstr. 8 e
+80538 München Max Musterman
+Client ID: 1962254 Portfolio: 1
+Account No.: 1234567890
+IBAN: DE30 1234 1234 1234 1234 07
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Transaction No.: 102160194
+Reference No.: 188857143
+Periodic Account Statement: EUR Account COPY
+Account Statement No. 021001
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Account Balance in EUR on 0.00
+2021-12-21 Direct Debit 2021-12-21 100.00
+Max Musterman
+DE12341234123412347808
+PBNKDEFFXXX
+Scalable Capital Broker savings pla
+n
+End to end Referenz:
+GMKZK58WSCDO3GX1PQNXWC
+Mandatsreferenz:
+IQWAV9M8E92WRAOE2AICQ
+Mandatsdatum:
+07.12.2021
+Gläubiger-ID:
+DE63MUC00001787612
+Case No.: 908581185
+Balance: 100.00
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 •
+www.scalable.capital
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 •
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
+Periodic Account Statement: EUR Account COPY
+Account Statement No. 021001
+Continued: Page 2/2
+Account No.: 1234567890 BLZ: 700 331 00 IBAN: DE12 1234 1234 1234 1234 07 BIC: BDWBDEMM
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Balance: 100.00
+2021-12-21 Direct Debit 2021-12-21 1.00
+Max Musterman
+DE12341234123412341234
+PBNKDEFFXXX
+Scalable Capital Broker Erste Einza
+hlung
+End to end Referenz:
+BJASROYFIHUFMZH2NQXTKA
+Mandatsreferenz:
+IQWAV9M8E92WRAOE2AICQ
+Mandatsdatum:
+07.12.2021
+Gläubiger-ID:
+DE63MUC00001787612
+Case No.: 908583637
+2021-12-21 Credit SEPA 2021-12-21 500.00
+Max Musterman
+DE12341234123412341234
+PBNKDEFFXXX
+End to end Referenz:
+ZV0100324622672900000002
+Purpose Code:
+CASH
+Case No.: 908623911
+2021-12-22 Purchase 2021-12-24 99.97 -
+ISHSIII-CORE MSCI WLD DLA
+ISIN IE00B4L5Y983
+STK 1,296
+Case No.: WWUM 71179954
+Account Balance in EUR on 2021-12-31 501.03
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. DE300434774 •
+www.scalable.capital
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Amtsgericht München HRB 121537 •
+Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
