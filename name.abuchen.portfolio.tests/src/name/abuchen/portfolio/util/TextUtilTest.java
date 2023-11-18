@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -110,6 +112,16 @@ public class TextUtilTest
 
         assertThat(TextUtil.trim(" "), is(""));
         assertThat(trimParts, is(trimPartsAnswer));
+    }
+
+    @Test
+    public void testConcatenate()
+    {
+        assertNull(TextUtil.concatenate(null, null, "-"));
+        assertEquals("first", TextUtil.concatenate("first", null, "-"));
+        assertEquals("first", TextUtil.concatenate("first", "first", "-"));
+        assertEquals("second", TextUtil.concatenate(null, "second", "-"));
+        assertEquals("first-second", TextUtil.concatenate("first", "second", "-"));
     }
 
 }
