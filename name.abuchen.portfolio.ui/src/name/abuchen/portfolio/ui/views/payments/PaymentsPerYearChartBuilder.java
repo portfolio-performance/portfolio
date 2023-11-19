@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.payments;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -15,7 +17,6 @@ import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.TabularDataSource.Column;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -129,6 +130,11 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         new DividendPerYearToolTip(chart, selectionListener);
     }
 
+    /**
+     * Creates bar series in the provided chart to visualize monthly payment
+     * data for each year. The years are automatically sorted in ascending order
+     * using a TreeMap
+     */
     @Override
     public void createSeries(Chart chart, PaymentsViewModel model)
     {
@@ -138,59 +144,52 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
         int startYear = model.getStartYear();
 
-        double[] series = new double[LocalDate.now().getYear() - startYear + 1];
+        // Use a TreeMap to automatically sort the years
+        Map<Integer, IBarSeries> yearToSeries = new TreeMap<>();
 
-        boolean hasNegativeNumber = false;
-
+        // Iterate over the months in the model
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
-            int year = (index / 12);
+            int year = startYear + (index / 12);
 
             long total = 0;
 
+            // Calculate the total for the current year
             int months = Math.min(12, model.getNoOfMonths() - index);
             for (int ii = 0; ii < months; ii++)
                 total += model.getSum().getValue(index + ii);
 
-            series[year] = total / Values.Amount.divider();
+            // Create or retrieve the data series for the current year
+            IBarSeries barSeries = yearToSeries.computeIfAbsent(year, //
+                            k -> {
+                                IBarSeries series = (IBarSeries) chart.getSeriesSet() //
+                                                .createSeries(SeriesType.BAR, String.valueOf(k));
+                                series.setBarColor(PaymentsColors.getColor(k));
+                                series.setBarPadding(25);
+                                series.enableStack(true);
+                                return series;
+                            });
 
-            if (total < 0L)
-                hasNegativeNumber = true;
-        }
+            double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
+            seriesX[year - startYear] = total / Values.Amount.divider();
 
-        if (hasNegativeNumber)
-        {
-            IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-                            Messages.LabelPaymentsPerYear);
-            barSeries.setYSeries(series);
-            barSeries.setBarColor(Colors.DARK_BLUE);
-        }
-        else
-        {
-            for (int i = 0; i < series.length; i++)
-            {
-                int year = model.getStartYear() + i;
-                IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-                                String.valueOf(year));
-
-                double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
-                seriesX[i] = series[i];
-
-                barSeries.setYSeries(seriesX);
-
-                barSeries.setBarColor(PaymentsColors.getColor(year));
-                barSeries.setBarPadding(25);
-                barSeries.enableStack(true);
-            }
+            barSeries.setYSeries(seriesX);
         }
     }
 
+    /**
+     * Updates the category series on the X-axis with labels for each year.
+     */
     private void updateCategorySeries(Chart chart, PaymentsViewModel model)
     {
         int startYear = model.getStartYear();
-        String[] labels = new String[LocalDate.now().getYear() - startYear + 1];
-        for (int ii = 0; ii < labels.length; ii++)
-            labels[ii] = String.format("%02d", (startYear + ii) % 100); //$NON-NLS-1$
+        int numYears = LocalDate.now().getYear() - startYear + 1;
+
+        String[] labels = new String[numYears];
+
+        for (int i = 0; i < numYears; i++)
+            labels[i] = String.format("%02d", (startYear + i) % 100); //$NON-NLS-1$
+
         chart.getAxisSet().getXAxis(0).setCategorySeries(labels);
     }
 }

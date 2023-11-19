@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.payments;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -173,26 +175,45 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
         chart.getAxisSet().getXAxis(0).setCategorySeries(labels);
     }
 
+    /**
+     * Generates bar series in the given chart, depicting monthly payment data
+     * for each year. Utilizes a TreeMap for automatic sorting of years in
+     * ascending order.
+     */
     @Override
     public void createSeries(Chart chart, PaymentsViewModel model)
     {
         chart.setData(PaymentsViewModel.class.getSimpleName(), model);
 
+        // Use a TreeMap to automatically sort the years
+        Map<Integer, IBarSeries> yearToSeries = new TreeMap<>();
+
+        // Iterate over the months in the model
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
             int year = model.getStartYear() + (index / 12);
 
-            IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
+            // Create or retrieve the data series for the current year
+            IBarSeries barSeries = yearToSeries.computeIfAbsent(year, //
+                            k -> {
+                                IBarSeries series = (IBarSeries) chart.getSeriesSet() //
+                                                .createSeries(SeriesType.BAR, String.valueOf(k));
+                                series.setBarColor(PaymentsColors.getColor(k));
+                                series.setBarPadding(25);
+                                return series;
+                            });
 
-            double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
-            for (int ii = 0; ii < series.length; ii++)
+            int monthsToPopulate = Math.min(12, model.getNoOfMonths() - index);
+            double[] series = new double[monthsToPopulate];
+
+            // Populate the series with quarterly sum of payment values
+            for (int ii = 0; ii < monthsToPopulate; ii++)
             {
-                series[ii / 3] = series[ii / 3] + model.getSum().getValue(index + ii) / Values.Amount.divider();
+                int monthIndex = index + ii;
+                series[ii / 3] += model.getSum().getValue(monthIndex) / Values.Amount.divider();
             }
-            barSeries.setYSeries(series);
 
-            barSeries.setBarColor(PaymentsColors.getColor(year));
-            barSeries.setBarPadding(25);
+            barSeries.setYSeries(series);
         }
     }
 }
