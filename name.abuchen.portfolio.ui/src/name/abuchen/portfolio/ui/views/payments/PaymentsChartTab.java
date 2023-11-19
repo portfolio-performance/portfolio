@@ -87,9 +87,17 @@ public class PaymentsChartTab implements PaymentsTab
         xAxis.enableCategory(true);
 
         chartBuilder.configure(chart, data -> view.setInformationPaneInput(data));
-        chartBuilder.createSeries(chart, model);
 
-        chart.getAxisSet().adjustRange();
+        try
+        {
+            chart.suspendUpdate(true);
+            chartBuilder.createSeries(chart, model);
+            chart.getAxisSet().adjustRange();
+        }
+        finally
+        {
+            chart.suspendUpdate(false);
+        }
 
         // if max/min value of range is more than 1000, formatting is #.#k
         Range r = yAxis.getRange();
