@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -9,6 +11,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
@@ -122,46 +125,66 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
         pdfTransaction //
 
-                .subject(() -> {
-                    AccountTransaction accountTransaction = new AccountTransaction();
-                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                    return accountTransaction;
-                })
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                // @formatter:off
-                // Ausschüttung – iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
-                // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
-                // @formatter:on
-                .section("name", "isin", "wkn", "currency") //
-                .match("^Aussch.ttung \\– (?<name>.*)$") //
-                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        // @formatter:off
+                        // Ausschüttung – iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
+                        // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
+                        //
+                        // Dividendengutschrift – iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN
+                        // IE00B0M62Q58 (A0HGV0) 5,200029 0,169600 USD
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency") //
+                        .match("^(Aussch.ttung|Dividendengutschrift) \\– (?<name>.*)$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // @formatter:off
-                // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
-                // @formatter:on
-                .section("shares") //
-                .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        // @formatter:off
+                        // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // @formatter:off
-                // Zahlbarkeitstag 15.05.2023
-                // @formatter:on
-                .section("date") //
-                .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // Zahlbarkeitstag 15.05.2023
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // @formatter:off
-                // Ausmachender Betrag + 7,44 EUR
-                // @formatter:on
-                .section("amount", "currency") //
-                .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                        // @formatter:off
+                        // Ausmachender Betrag + 7,44 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
-                .wrap(TransactionItem::new);
+                        // @formatter:off
+                        // Devisenkurs EUR/ USD 1,05550
+                        // Umrechnung in EUR 0,88 USD 0,84 EUR
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
+                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Umrechnung in [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .wrap(TransactionItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
