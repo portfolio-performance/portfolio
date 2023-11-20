@@ -143,9 +143,12 @@ public class LifeCycleManager
             public void eventLoopException(final Throwable exception)
             {
                 boolean isAnnoyingNullPointerOnElCapitan = isAnnoyingNullPointerOnElCapitan(exception);
+                boolean isAnnoyingNoClassDefFoundErrorAccessibleObject = isAnnoyingNoClassDefFoundErrorAccessibleObject(
+                                exception);
 
                 StatusReporter statusReporter = (StatusReporter) context.get(StatusReporter.class.getName());
-                if (!isAnnoyingNullPointerOnElCapitan && statusReporter != null)
+                if (!isAnnoyingNullPointerOnElCapitan && !isAnnoyingNoClassDefFoundErrorAccessibleObject
+                                && statusReporter != null)
                 {
                     statusReporter.show(StatusReporter.ERROR, "Internal Error", exception); //$NON-NLS-1$
                 }
@@ -176,6 +179,13 @@ public class LifeCycleManager
 
                 return true;
             }
+
+            private boolean isAnnoyingNoClassDefFoundErrorAccessibleObject(Throwable exception)
+            {
+                return (exception instanceof NoClassDefFoundError
+                                && "org/eclipse/swt/accessibility/AccessibleObject".equals(exception.getMessage()));
+            }
+
         });
     }
 
