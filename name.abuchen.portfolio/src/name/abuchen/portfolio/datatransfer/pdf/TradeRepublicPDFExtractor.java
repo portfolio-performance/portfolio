@@ -532,6 +532,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDENDE" //
                         + "|REINVESTIERUNG" //
                         + "|STORNO DIVIDENDE" //
+                        + "|DIVIDEND" //
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE)");
         this.addDocumentTyp(type);
@@ -566,10 +567,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
                                         // Registered Shares o.N.
                                         // ISIN: CA29250N1050
+                                        //
+                                        // Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
+                                        // Registered Shares o.N.
+                                        // ISIN: US0378331005
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|Pz\\.|Pcs\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -592,10 +597,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // iShsV-EM Dividend UCITS ETF 10 Stk. 0,563 USD 5,63 USD
                                         // Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
+                                        // Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.|Pcs\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -639,8 +645,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^(GESAMT|TOTALE) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(GESAMT|TOTALE|TOTAL) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(GESAMT|TOTALE|TOTAL) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -648,10 +654,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // GESAMT 1,630 EUR
                                         // TOTALE 9,56 EUR
+                                        // TOTAL 0.02 EU
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(GESAMT|TOTALE|TOTAL) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -662,13 +669,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // GESAMT 5,63 USD
                                         // Zwischensumme 1,102 EUR/USD 5,11 EUR
                                         //
-                                        // Subtotale 13,96 CAD
+                                        // TOTALE 18,61 CAD
                                         // Subtotale 1,46055 EUR/CAD 9,56 EUR
+                                        //
+                                        // TOTAL 0.02 USD
+                                        // Subtotal 1.0715 EUR/USD 0.02 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency") //
-                                                        .match("^(GESAMT|TOTALE) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
-                                                        .match("^(Zwischensumme|Subtotale) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(GESAMT|TOTALE|TOTAL) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^(Zwischensumme|Subtotale|Subtotal) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -1649,6 +1659,25 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
