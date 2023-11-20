@@ -389,6 +389,22 @@ public class TimelineChart extends Chart // NOSONAR
 
     public IAxis getOrCreateAxis(Object key, Supplier<IAxis> axisFactory)
     {
-        return addedAxis.computeIfAbsent(key, x -> axisFactory.get());
+        return addedAxis.computeIfAbsent(key, x -> {
+            IAxis axis = axisFactory.get();
+
+            // As we are dynamically adding the series, we have to check whether
+            // the updates on the chart are suspended. Otherwise, the layout
+            // information is not available for the axis and then #adjustRange
+            // will fail
+
+            if (isUpdateSuspended())
+            {
+                // resuming updates will trigger #updateLayout
+                suspendUpdate(false);
+                suspendUpdate(true);
+            }
+
+            return axis;
+        });
     }
 }
