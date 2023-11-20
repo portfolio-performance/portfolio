@@ -183,7 +183,7 @@ public class LifeCycleManager
             private boolean isAnnoyingNoClassDefFoundErrorAccessibleObject(Throwable exception)
             {
                 return (exception instanceof NoClassDefFoundError
-                                && "org/eclipse/swt/accessibility/AccessibleObject".equals(exception.getMessage()));
+                                && "org/eclipse/swt/accessibility/AccessibleObject".equals(exception.getMessage())); //$NON-NLS-1$
             }
 
         });
@@ -273,13 +273,13 @@ public class LifeCycleManager
                 {
                     // Must be a Detached Window
                     MUIElement eParent = (MUIElement) ((EObject) container).eContainer();
-                    if (eParent instanceof MPerspective)
+                    if (eParent instanceof MPerspective perspective)
                     {
-                        ((MPerspective) eParent).getWindows().remove(container);
+                        perspective.getWindows().remove(container);
                     }
-                    else if (eParent instanceof MWindow)
+                    else if (eParent instanceof MWindow window)
                     {
-                        ((MWindow) eParent).getWindows().remove(container);
+                        window.getWindows().remove(container);
                     }
                 }
             }
@@ -302,7 +302,7 @@ public class LifeCycleManager
             File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
                             ModelConstants.E4XMICOPY_FILENAME);
 
-            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))) // NOSONAR
             {
                 resource.save(out, null);
             }
