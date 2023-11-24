@@ -434,12 +434,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Rechnungsnummer[\\s]{1,}: (?<note>.*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | R.-Nr.: " + trim(v.get("note")));
-                            else
-                                t.setNote("R.-Nr.: " + trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "R.-Nr.: " + trim(v.get("note")), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -629,12 +624,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Rechnungsnummer[\\s]{1,}: (?<note>.*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | R.-Nr.: " + trim(v.get("note")));
-                            else
-                                t.setNote("R.-Nr.: " + trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "R.-Nr.: " + trim(v.get("note")), " | ")))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -931,12 +921,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "|Schlussdividende" //
                                         + "|monatl\\. Dividende))" //
                                         + ".*$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                            else
-                                t.setNote(trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
@@ -1207,7 +1192,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("^.*R([\\s]+)?e([\\s]+)?f([\\s]+)?e([\\s]+)?r([\\s]+)?e([\\s]+)?n([\\s]+)?z([\\s]+)?\\-([\\s]+)?N([\\s]+)?u([\\s]+)?m([\\s]+)?m([\\s]+)?e([\\s]+)?r([\\s]+)?:[\\s]{1,}(?<note>.*)$")
                         .assign((t, v) -> {
                             if (t.getType().isCredit())
-                                t.setNote("Ref.-Nr.: " + stripBlanks(v.get("note")).substring(0, 16));
+                                t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + stripBlanks(v.get("note")).substring(0, 16), " | "));
                         })
 
                         .wrap((t, ctx) -> {

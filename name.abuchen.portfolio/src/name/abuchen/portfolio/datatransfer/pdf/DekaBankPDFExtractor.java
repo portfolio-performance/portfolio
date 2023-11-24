@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
@@ -431,12 +432,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^.*(?<note>Wiederanlage).* [\\w]{3} [\\.,\\d]+.*$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                    else
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .wrap(t -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)

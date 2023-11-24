@@ -81,7 +81,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-25T11:02:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Limit 97,50 %"));
+        assertThat(entry.getNote(), is("Auftragsnummer 495752/48.00 | Limit 97,50 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2030.66))));
@@ -389,7 +389,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-09T17:14:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
-        assertThat(entry.getNote(), is("Limit 50,00 CHF"));
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/78.90 | Limit 50,00 CHF"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1014.68))));
@@ -435,7 +435,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-09T17:14:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
-        assertThat(entry.getNote(), is("Limit 50,00 CHF"));
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/78.90 | Limit 50,00 CHF"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1014.68))));
@@ -486,7 +486,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-10-27T09:05:33")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Limit 85,00 %"));
+        assertThat(entry.getNote(), is("Auftragsnummer 495752/36.00 | Limit 85,00 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4937.19))));
@@ -550,7 +550,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-10T10:58:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertThat(entry.getNote(), is("Limit 15,05 EUR"));
+        assertThat(entry.getNote(), is("Auftragsnummer 590966/56.00 | Limit 15,05 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.00))));
@@ -594,7 +594,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-06T14:32:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/12.34"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4123.12))));
@@ -638,7 +638,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T20:56:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertThat(entry.getNote(), is("Limit 5,44 EUR"));
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/78.00 | Limit 5,44 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.00))));
@@ -790,7 +790,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.982)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 000000/00.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.69))));
@@ -834,7 +834,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-07-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getSource(), is("Verkauf08.txt"));
-        assertThat(entry.getNote(), is("Rückzahlungskurs 100 %"));
+        assertThat(entry.getNote(), is("Auftragsnummer 9892578200 | Rückzahlungskurs 100 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2974.39))));
@@ -878,7 +878,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Verkauf09.txt"));
-        assertThat(entry.getNote(), is("Rückzahlungskurs 100 %"));
+        assertThat(entry.getNote(), is("Auftragsnummer 9796635900 | Rückzahlungskurs 100 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1908.39))));
@@ -922,7 +922,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Verkauf10.txt"));
-        assertThat(entry.getNote(), is("Rückzahlungskurs 100 %"));
+        assertThat(entry.getNote(), is("Auftragsnummer 9796635950 | Rückzahlungskurs 100 %"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1908.39))));
@@ -1056,7 +1056,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 86525618110"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(144.52))));
@@ -1099,7 +1099,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 59717175720"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(97.50))));
@@ -1142,7 +1142,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(216)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 84033925310"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.93))));
@@ -1185,7 +1185,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.72))));
@@ -1229,7 +1229,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(27.72))));
@@ -1278,7 +1278,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
@@ -1321,7 +1321,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.3517)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.45))));
@@ -1365,7 +1365,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.3517)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.45))));
@@ -1414,7 +1414,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 86508012450"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(173.02))));
@@ -1457,7 +1457,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(92)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63736123456"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(105.80))));
@@ -1500,7 +1500,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 8127381273"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
@@ -1544,7 +1544,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 8127381273"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.79))));
@@ -1593,7 +1593,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
@@ -1637,7 +1637,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.09))));
@@ -1685,7 +1685,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789 | Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1729,7 +1729,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789 | Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1778,7 +1778,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
-        assertThat(transaction.getNote(), is("Schlussdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 111111111 | Schlussdividende"));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1822,7 +1822,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
-        assertThat(transaction.getNote(), is("Schlussdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 111111111 | Schlussdividende"));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1871,7 +1871,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(450)));
-        assertThat(transaction.getNote(), is("Zwischendividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901 | Zwischendividende"));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1915,7 +1915,7 @@ public class DkbPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(450)));
-        assertThat(transaction.getNote(), is("Zwischendividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901 | Zwischendividende"));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
 
         assertThat(transaction.getMonetaryAmount(),
@@ -1965,7 +1965,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.24))));
@@ -2009,7 +2009,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.24))));
@@ -2058,7 +2058,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
-        assertThat(transaction.getNote(), is("Kapitalrückzahlung"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234 | Kapitalrückzahlung"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
@@ -2102,7 +2102,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
-        assertThat(transaction.getNote(), is("Kapitalrückzahlung"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234 | Kapitalrückzahlung"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(35.12))));
@@ -2151,7 +2151,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 63310000000"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(290.00))));
@@ -2196,7 +2196,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getSource(), is("WertpapierAusgang01.txt"));
-        assertThat(entry.getNote(), is("Depotkonto-Nr. 100235452280"));
+        assertThat(entry.getNote(), is("Auftragsnummer 489130/67.00 | Depotkonto-Nr. 100235452280"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -2239,7 +2239,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(49.1102)));
         assertThat(transaction.getSource(), is("Vorabpauschale01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
@@ -2283,7 +2283,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.2394)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 531781/77.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2304,7 +2304,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.1692)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 548714/63.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2325,7 +2325,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.3253)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 567153/38.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2346,7 +2346,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.3496)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 586519/87.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2367,7 +2367,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.3678)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 605113/36.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2388,7 +2388,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.3160)));
         assertThat(entry.getSource(), is("Fondssparplan01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 626208/11.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.00))));
@@ -2434,7 +2434,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.9136)));
         assertThat(entry.getSource(), is("Fondssparplan02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 256485/46.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.49))));
@@ -2455,7 +2455,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8207)));
         assertThat(entry.getSource(), is("Fondssparplan02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 342983/71.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.49))));
@@ -2476,7 +2476,7 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.4425)));
         assertThat(entry.getSource(), is("Fondssparplan02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 414802/35.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.49))));

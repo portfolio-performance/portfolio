@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -226,12 +227,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note1", "note2")
                                         .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note1") + ": " + v.get("note2"));
-                                            else
-                                                t.setNote(v.get("note1") + ": " + v.get("note2"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + ": " + v.get("note2"), " | ")))
                                 ,
                                 // @formatter:off
                                 // Rückzahlung
@@ -239,12 +235,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>R.ckzahlung)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note"));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // @formatter:off
                                 // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
@@ -252,12 +243,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>St.ckzinsen .*)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note"));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                         )
 
                 .wrap(BuySellEntryItem::new);

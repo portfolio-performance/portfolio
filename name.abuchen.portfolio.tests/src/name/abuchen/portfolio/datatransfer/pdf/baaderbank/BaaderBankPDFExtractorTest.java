@@ -2067,7 +2067,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(112)));
         assertThat(transaction.getSource(), is("Vorabpauschale01.txt"));
-        assertThat(transaction.getNote(), is("Zahlungszeitraum: 01.01.2020 - 31.12.2020"));
+        assertThat(transaction.getNote(), is("Vorgangs-Nr.: yyyyyyy | Zahlungszeitraum: 01.01.2020 - 31.12.2020"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
@@ -3805,7 +3805,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.48))));
         assertThat(transaction.getSource(), is("Rechnung01.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum 01.07.2017 - 31.07.2017"));
+        assertThat(transaction.getNote(), is("Rechnungsnr.: 2017071234567 | Abrechnungszeitraum 01.07.2017 - 31.07.2017"));
     }
 
     @Test
@@ -3828,7 +3828,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(interest( //
                         hasDate("2023-10-31T00:00"), //
                         hasSource("Rechnungsabschluss01.txt"), //
-                        hasNote("30.09.2023 bis 31.10.2023"), //
+                        hasNote("Vorgangs-Nr.: 12345678 | 30.09.2023 bis 31.10.2023"), //
                         hasAmount("EUR", 1.46), hasGrossValue("EUR", 2.00), //
                         hasTaxes("EUR", 0.49 + 0.03 + 0.02), hasFees("EUR", 0.00))));
     }

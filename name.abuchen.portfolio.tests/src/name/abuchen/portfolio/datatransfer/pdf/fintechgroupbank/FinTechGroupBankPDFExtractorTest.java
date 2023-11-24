@@ -3798,7 +3798,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("FlatExDividende07.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069 (Bruttothesaurierung 23,19 EUR)"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069 | Bruttothesaurierung 23,19 EUR"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
@@ -4143,7 +4143,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 (Bruttothesaurierung 78,81 USD)"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
@@ -4195,7 +4195,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(168.90)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 (Bruttothesaurierung 78,81 USD)"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
@@ -4268,7 +4268,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 (Bruttoausschüttung 34,66 USD)"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
@@ -4329,7 +4329,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
-        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 (Bruttoausschüttung 34,66 USD)"));
+        assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
@@ -4510,8 +4510,10 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(248.34), //
-                        hasSource("FlatExDegiroDividende05.txt"), hasNote("Transaktion-Nr.: 0123456789 (Bruttothesaurierung 32,86 USD)"), //
-                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), hasForexGrossValue("USD", 0.17), //
+                        hasSource("FlatExDegiroDividende05.txt"), //
+                        hasNote("Transaktion-Nr.: 0123456789 | Bruttothesaurierung 32,86 USD"), //
+                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
+                        hasForexGrossValue("USD", 0.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4541,7 +4543,8 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(248.34), //
-                        hasSource("FlatExDegiroDividende05.txt"), hasNote("Transaktion-Nr.: 0123456789 (Bruttothesaurierung 32,86 USD)"), //
+                        hasSource("FlatExDegiroDividende05.txt"), //
+                        hasNote("Transaktion-Nr.: 0123456789 | Bruttothesaurierung 32,86 USD"), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
@@ -4578,8 +4581,10 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(239.96), //
-                        hasSource("FlatExDegiroDividende06.txt"), hasNote("Transaktion-Nr.: 6685264591 (Bruttothesaurierung 26,25 USD)"), //
-                        hasAmount("EUR", 0.28), hasGrossValue("EUR", 0.28), hasForexGrossValue("USD", 0.31), //
+                        hasSource("FlatExDegiroDividende06.txt"), //
+                        hasNote("Transaktion-Nr.: 6685264591 | Bruttothesaurierung 26,25 USD"), //
+                        hasAmount("EUR", 0.28), hasGrossValue("EUR", 0.28), //
+                        hasForexGrossValue("USD", 0.31), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4609,7 +4614,8 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(239.96), //
-                        hasSource("FlatExDegiroDividende06.txt"), hasNote("Transaktion-Nr.: 6685264591 (Bruttothesaurierung 26,25 USD)"), //
+                        hasSource("FlatExDegiroDividende06.txt"), //
+                        hasNote("Transaktion-Nr.: 6685264591 | Bruttothesaurierung 26,25 USD"), //
                         hasAmount("EUR", 0.28), hasGrossValue("EUR", 0.28), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
@@ -4646,8 +4652,10 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(115.00), //
-                        hasSource("FlatExDegiroDividende07.txt"), hasNote("Transaktion-Nr.: 6040257022 (Bruttothesaurierung 51,78 USD)"), //
-                        hasAmount("EUR", 10.65), hasGrossValue("EUR", 10.65), hasForexGrossValue("USD", 11.91), //
+                        hasSource("FlatExDegiroDividende07.txt"), //
+                        hasNote("Transaktion-Nr.: 6040257022 | Bruttothesaurierung 51,78 USD"), //
+                        hasAmount("EUR", 10.65), hasGrossValue("EUR", 10.65), //
+                        hasForexGrossValue("USD", 11.91), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4677,7 +4685,8 @@ public class FinTechGroupBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-14"), hasShares(115.00), //
-                        hasSource("FlatExDegiroDividende07.txt"), hasNote("Transaktion-Nr.: 6040257022 (Bruttothesaurierung 51,78 USD)"), //
+                        hasSource("FlatExDegiroDividende07.txt"), //
+                        hasNote("Transaktion-Nr.: 6040257022 | Bruttothesaurierung 51,78 USD"), //
                         hasAmount("EUR", 10.65), hasGrossValue("EUR", 10.65), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {

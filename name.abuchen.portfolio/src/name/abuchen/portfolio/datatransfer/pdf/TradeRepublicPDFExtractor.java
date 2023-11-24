@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -436,12 +437,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* ORDER (?<note>.*\\-.*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | Order: " + trim(v.get("note")));
-                            else
-                                t.setNote("Order: " + trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Order: " + trim(v.get("note")), " | ")))
 
                         // @formatter:off
                         // AUSFÜHRUNG ce15-0e37
@@ -449,12 +445,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | Ausführung: " + trim(v.get("note")));
-                            else
-                                t.setNote("Ausführung: " + trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Ausführung: " + trim(v.get("note")), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 

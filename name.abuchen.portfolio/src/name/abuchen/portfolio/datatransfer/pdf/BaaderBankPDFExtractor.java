@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -212,24 +213,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Verh.ltnis: .*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                            else
-                                t.setNote(trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         // @formatter:off
                         // Spitzenregulierung KOPIE
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Spitzenregulierung).*$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + v.get("note"));
-                            else
-                                t.setNote(v.get("note"));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -407,12 +398,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale");
+        DocumentType type = new DocumentType("Vorabpauschale", //
+                        "(Wertpapierabrechnung|Transaction Statement)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Ex\\-(Tag|Date): .*$");
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -458,11 +450,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Vorgangs-Nr.: yyyyyyy
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
                         // Zahlungszeitraum: 01.01.2020 - 31.12.2020
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Zahlungszeitraum: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -518,12 +517,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* (?<note>Steuerausgleichsrechnung) .*$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + v.get("note"));
-                            else
-                                t.setNote(v.get("note"));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -714,11 +708,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Rechnungsnr.: 2017071234567
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Rechnungsnr\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
                         // Abrechnungszeitraum 01.07.2017 - 31.07.2017
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Abrechnungszeitraum .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -770,11 +771,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Vorgangs-Nr.: 12345678
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
                         // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
                         // @formatter:on
                         .section("note").optional() //
                         .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(TransactionItem::new);
 

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -289,12 +290,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>Zwangsabfindung gem.ß Hauptversammlungsbeschluss .*) Der .bertragungsbeschluss .*$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                                            else
-                                                t.setNote(trim(v.get("note")));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // @formatter:off
                                 // Stückzinsaufwand EUR 82,55
@@ -302,12 +298,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>St.ckzinsaufwand [\\w]{3} [\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note"));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                         )
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -493,12 +484,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 .match("^(?<note>Reinvestierung) .*$")
                 .find("Gattungsbezeichnung .*")
                 .match("^.* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note") + ": " + v.get("isin"));
-                    else
-                        t.setNote(v.get("note") + ": " + v.get("isin"));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note") + ": " + v.get("isin"), " | ")))
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -859,12 +845,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>Ertrag f.r [\\d]{4}(\\/[\\d]{2,4})?).*$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note"));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // @formatter:off
                                 // Kapitalrückzahlung:
@@ -872,12 +853,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>Kapitalr.ckzahlung):.*$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + v.get("note"));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // @formatter:off
                                 // Storno unserer Dividendengutschrift Nr. 67390000 vom 15.05.2020.
@@ -885,12 +861,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>Storno unserer Dividendengutschrift Nr\\. .*)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                                            else
-                                                t.setNote(trim(v.get("note")));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                         )
 
                 .conclude(ExtractorUtils.fixGrossValueA())
@@ -1216,12 +1187,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^F.r die (?<note>Registrierung der Namens\\-Aktien) .*$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note"));
-                    else
-                        t.setNote(v.get("note"));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .wrap(t -> {
                     // If we have multiple entries in the document, with

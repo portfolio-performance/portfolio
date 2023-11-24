@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -1107,13 +1108,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note", "amount", "currency").optional()
                 .match("^.* (?<note>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " (" + trim(v.get("note")) + " " + v.get("amount") + " " + v.get("currency") + ")");
-                    else
-                        t.setNote(trim(v.get("note")) + " (" + v.get("amount") + " " + v.get("currency") + ")");
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note") + " " + v.get("amount") + " " + v.get("currency"), " | ")))
 
                 .wrap(t -> {
                     // The final amount is negative. The taxes incurred
