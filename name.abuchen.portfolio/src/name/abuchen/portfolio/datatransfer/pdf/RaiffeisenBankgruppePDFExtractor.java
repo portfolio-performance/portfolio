@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -232,12 +233,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Limit .*)$")
-                .assign((t, v) -> {
-                    if (t.getNote() == null)
-                        t.setNote(trim(v.get("note")));
-                    else
-                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .wrap(BuySellEntryItem::new);
 
@@ -542,12 +538,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^.* (?<note>Verh.ltnis: .*)$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                    else
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .wrap((t, ctx) -> {
                     TransactionItem item = new TransactionItem(t);

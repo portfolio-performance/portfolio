@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -221,12 +222,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                 // Barabfindung wegen Fusion
                 .section("note").optional()
                 .match("^(?<note>Barabfindung wegen .*)$")
-                .assign((t, v) -> {
-                    if (t.getNote() == null)
-                        t.setNote(trim(v.get("note")));
-                    else
-                        t.setNote(trim(v.get("note") + " | " + t.getNote()));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
 

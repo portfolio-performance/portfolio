@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -150,23 +151,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^Limit: (?<note>.*: .*)$")
-                                        .assign((t, v) -> {
-                                            if (t.getPortfolioTransaction().getNote() == null)
-                                                t.setNote(trim(v.get("note")));
-                                            else
-                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note")));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // Limit: 42,500000
                                 section -> section
                                         .attributes("note")
                                         .match("^(?<note>Limit: .*)$")
-                                        .assign((t, v) -> {
-                                            if (t.getPortfolioTransaction().getNote() == null)
-                                                t.setNote(trim(v.get("note")));
-                                            else
-                                                t.setNote(t.getPortfolioTransaction().getNote() + " | " + trim(v.get("note")));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                         )
 
                 .wrap(BuySellEntryItem::new);

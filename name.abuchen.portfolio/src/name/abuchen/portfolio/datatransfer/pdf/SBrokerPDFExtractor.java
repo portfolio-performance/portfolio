@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -236,12 +237,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("(?<note>Limit .*)$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                    else
-                        t.setNote(v.get("note"));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -542,12 +538,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note")
                                         .match("^.* Art der Dividende (?<note>.*)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                                            else
-                                                t.setNote(v.get("note"));
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
                                 ,
                                 // @formatter:off
                                 // Ertragsthesaurierung
@@ -557,12 +548,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         .attributes("note1", "note2", "note3", "note4")
                                         .match("^(Storno \\- )?(?<note1>Ertragsthesaurierung)$")
                                         .match("^Ertrag (?<note2>f.r [\\d]{4}(\\/[\\d]{2})?) (?<note3>[\\w]{3}) (?<note4>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")"));
-                                            else
-                                                t.setNote(v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")");
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " " + v.get("note2") + " (" + v.get("note4") + " " + v.get("note3") + ")", " | ")))
                                 ,
                                 // @formatter:off
                                 // Ertrag für 2014/15 EUR 12,70
@@ -571,12 +557,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note1", "note2", "note3")
                                         .match("^(?<note1>Ertrag f.r [\\d]{4}(\\/[\\d]{2})?) (?<note2>[\\w]{3}) (?<note3>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note1")) + " (" + v.get("note3") + " " + v.get("note2") + ")");
-                                            else
-                                                t.setNote(v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")");
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")", " | ")))
                                 ,
                                 // @formatter:off
                                 // Thesaurierung brutto EUR 0,52
@@ -584,12 +565,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 section -> section
                                         .attributes("note1", "note2", "note3")
                                         .match("^(?<note1>Thesaurierung) .* (?<note2>[\\w]{3}) (?<note3>[\\.,\\d]+)$")
-                                        .assign((t, v) -> {
-                                            if (t.getNote() != null)
-                                                t.setNote(t.getNote() + " | " + trim(v.get("note1")) + " (" + v.get("note3") + " " + v.get("note2") + ")");
-                                            else
-                                                t.setNote(v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")");
-                                        })
+                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")", " | ")))
                         )
 
                 .wrap((t, ctx) -> {

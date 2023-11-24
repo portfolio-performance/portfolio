@@ -66,7 +66,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-01T10:30:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Limit 40,99 EUR"));
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/10.00 | Limit 40,99 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(539.48))));
@@ -338,7 +338,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-01T11:11:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Limit 11,00 EUR"));
+        assertThat(entry.getNote(), is("Auftragsnummer 111/11.11111 | Limit 11,00 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.11))));
@@ -382,7 +382,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0702)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/78.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.18))));
@@ -425,7 +425,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(920)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 504xxxxxxxx"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.87))));
@@ -468,7 +468,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-01-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(920)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 504xxxxxxxx"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.87))));
@@ -517,7 +517,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(118.901)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 56838700560"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.13))));
@@ -560,7 +560,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111122"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.72))));
@@ -603,7 +603,7 @@ public class Direkt1822BankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111122"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.72))));

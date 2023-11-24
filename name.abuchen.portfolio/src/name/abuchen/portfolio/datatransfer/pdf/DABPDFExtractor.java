@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -766,12 +767,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note", "note1").optional()
                 .match("^(?<note>Steuerausgleich) f.r das Jahr (?<note1>[\\d]{4})$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + trim(v.get("note")) + " " + trim(v.get("note1")));
-                    else
-                        t.setNote(trim(v.get("note")) + " " + trim(v.get("note1")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ") + " " + trim(v.get("note1"))))
 
                 .wrap(TransactionItem::new);
     }

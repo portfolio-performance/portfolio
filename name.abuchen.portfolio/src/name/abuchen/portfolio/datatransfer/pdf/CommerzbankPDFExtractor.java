@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -117,6 +118,13 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                     t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                 })
 
+                // @formatter:off
+                // 1 0 8 0 4 3 1 3 7 2 7 0 Rechnungsnummer : 4 1 9 7 9 4 9 1 6 7 9 8 D 1 C 2
+                // @formatter:on
+                .section("note").optional() //
+                .match("^.*Rechnungsnummer[\\s]{1,}: (?<note>.*)$") //
+                .assign((t, v) -> t.setNote("R.-Nr.: " + stripBlanks(v.get("note"))))
+
                 .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -134,7 +142,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende) .*$");
+        Block firstRelevantLine = new Block("^.*Referenz\\-Nummer:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -172,6 +180,13 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                     t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                 })
+
+                // @formatter:off
+                // 01111 City Referenz-Nummer: 0W7U3RJX11111111
+                // @formatter:on
+                .section("note").optional() //
+                .match("^.*Referenz\\-Nummer: (?<note>.*)$") //
+                .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -245,6 +260,13 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
+                // @formatter:off
+                // ( R e f e r e n z - N r . 3345AO12BC3D4445E).
+                // @formatter:on
+                .section("note").optional() //
+                .match("^.*R e f e r e n z - N r \\. (?<note>.*)\\).*$") //
+                .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+
                 // USD 7 ,219127 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
                 // z a h l b a r ab 2 6 . 0 5 . 2 0 2 0 Z w i s c h e n d i v i d e n d e
                 // EUR 3 , 9 0 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 1 0 . 1 8 b i s 3 0 . 0 9 . 1 9
@@ -252,7 +274,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                 .section("note1", "note2", "note3").optional()
                 .match("^[\\w]{3} [\\.,\\d\\s]+ [\\D]+ (?<note2>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+) [\\D]+ (?<note3>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
                 .match("^(.* [\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+|Abrechnung) (?<note1>[\\D]+)$")
-                .assign((t, v) -> t.setNote(stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3"))))
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), //
+                                stripBlanks(v.get("note1")) + " " + stripBlanks(v.get("note2")) + " - " + stripBlanks(v.get("note3")), //
+                                " | ")))
 
                 .conclude(ExtractorUtils.fixGrossValueA())
 

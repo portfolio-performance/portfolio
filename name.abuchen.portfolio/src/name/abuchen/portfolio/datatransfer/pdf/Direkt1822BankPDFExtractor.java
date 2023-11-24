@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -119,10 +120,19 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
 
-                // Limit 40,99 EUR AN
-                .section("note").optional()
-                .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3})( .*)?$")
+                // @formatter:off
+                // Auftragsnummer 123456/10.00
+                // @formatter:on
+                .section("note").optional() //
+                .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+)$") //
                 .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                // @formatter:off
+                // Limit 40,99 EUR AN
+                // @formatter:on
+                .section("note").optional() //
+                .match("^(?<note>Limit [\\.,\\d]+ [\\w]{3}).*$") //
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -137,7 +147,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)$");
+        Block block = new Block("^Postfach.*$");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
@@ -193,6 +203,13 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                     checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                 })
+
+                // @formatter:off
+                // Abrechnungsnr. 504xxxxxxxx
+                // @formatter:on
+                .section("note").optional() //
+                .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
+                .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                 .wrap(TransactionItem::new);
 
