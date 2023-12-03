@@ -92,7 +92,7 @@ public final class FinnhubQuoteFeed implements QuoteFeed
         try
         {
             @SuppressWarnings("nls")
-            WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/stock/candle")
+            WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/quote")
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("resolution", "D") //
                             .addParameter("from",
@@ -117,7 +117,6 @@ public final class FinnhubQuoteFeed implements QuoteFeed
             JSONArray high = (JSONArray) json.get("h"); //$NON-NLS-1$
             JSONArray low = (JSONArray) json.get("l"); //$NON-NLS-1$
             JSONArray close = (JSONArray) json.get("c"); //$NON-NLS-1$
-            JSONArray volume = (JSONArray) json.get("v"); //$NON-NLS-1$
 
             if (timestamps == null)
             {
@@ -147,9 +146,6 @@ public final class FinnhubQuoteFeed implements QuoteFeed
 
                 Number l = (Number) low.get(index);
                 price.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
-
-                Number v = (Number) volume.get(index);
-                price.setVolume(v == null ? LatestSecurityPrice.NOT_AVAILABLE : v.longValue());
 
                 if (price.getValue() > 0)
                     data.addPrice(price);
