@@ -18,9 +18,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
     @Override
     public void createFieldEditors()
     {
-        addField(new BooleanFieldEditor(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, //
-                        Messages.PrefUpdateQuotesAfterFileOpen, getFieldEditorParent()));
-
         addField(new BooleanFieldEditor(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, //
                         Messages.PrefStoreSettingsNextToFile, getFieldEditorParent()));
 

@@ -39,6 +39,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.CALENDAR, "default"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PORTFOLIO_REPORT_API_URL, "https://api.portfolio-report.net"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.PRESET_VALUE_TIME, PresetValues.TimePreset.MIDNIGHT.name());
+        store.setDefault(UIConstants.Preferences.QUOTES_STALE_AFTER_DAYS_PATH, 7);
 
         // Backup
         store.setDefault(UIConstants.Preferences.BACKUP_MODE, BackupMode.getDefault().name());

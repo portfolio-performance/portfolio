@@ -243,6 +243,7 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+        String QUOTES_STALE_AFTER_DAYS_PATH = "QUOTES_STALE_AFTER_DAYS_PATH"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

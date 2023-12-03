@@ -756,6 +756,7 @@ public class Messages extends NLS
     public static String LabelSearch;
     public static String LabelSearchForQuoteFeeds;
     public static String LabelSecurities;
+    public static String LabelSecuritiesPriceTimeliness;
     public static String LabelSecurityLatestPrice;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
@@ -1118,6 +1119,8 @@ public class Messages extends NLS
     public static String PrefPortfolioReportAPIKey;
     public static String PrefPortfolioReportAPIURL;
     public static String PrefQuandlAPIKey;
+    public static String PrefQuotesStaleAfterDays;
+    public static String PrefQuotesStaleNote;
     public static String PrefRelativeBackupDirectoryName;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefUpdateQuotesAfterFileOpen;
@@ -1139,6 +1142,7 @@ public class Messages extends NLS
     public static String PrefTitleLeeway;
     public static String PrefTitlePortfolioReport;
     public static String PrefTitleQuandl;
+    public static String PrefTitleQuotes;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PresetsPrefPageDescription;
@@ -1269,6 +1273,7 @@ public class Messages extends NLS
     public static String TooltipQuoteAtDate;
     public static String TooltipRebalancingIndicator;
     public static String TooltipSecurityLatestPrice;
+    public static String TooltipSecurityPriceTimeliness;
     public static String TooltipSemiVolatility;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;

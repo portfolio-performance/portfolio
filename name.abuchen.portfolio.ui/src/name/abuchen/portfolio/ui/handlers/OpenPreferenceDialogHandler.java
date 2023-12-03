@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
 import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
+import name.abuchen.portfolio.ui.preferences.QuotesPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
@@ -74,6 +75,8 @@ public class OpenPreferenceDialogHandler
         pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
+
+        pm.addToRoot(new PreferenceNode("quotes", new QuotesPreferencePage()));
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
