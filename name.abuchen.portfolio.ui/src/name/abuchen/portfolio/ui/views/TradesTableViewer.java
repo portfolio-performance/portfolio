@@ -158,7 +158,7 @@ public class TradesTableViewer
                                                                 view.getClient().getBaseCurrency())), //
                                 new TabularDataSource.Column(Messages.ColumnTotal).withFormatter(o -> Values.Money
                                                 .formatNonZero((Money) o, view.getClient().getBaseCurrency())), //
-                                new TabularDataSource.Column(Messages.ColumnAccount, SWT.LEFT, 220)
+                                new TabularDataSource.Column(Messages.ColumnPortfolio, SWT.LEFT, 220)
                                                 .withFormatter(o -> o instanceof Named n ? n.getName() : null)
                                                 .withLogo());
 
