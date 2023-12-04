@@ -13,7 +13,6 @@ public class Messages extends NLS
     public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteConfirm;
-    public static String AccountMenuDeleteConfirmHint;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuImportCSV;
     public static String AccountMenuImportPDF;
@@ -1073,7 +1072,6 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PortfolioMenuDeleteConfirm;
-    public static String PortfolioMenuDeleteConfirmHint;
     public static String PortfolioReportMissingAPIKey;
     public static String PortfolioReportMissingAPIURL;
     public static String PrefAlphaVantageAPIKey;

@@ -310,17 +310,20 @@ public class AccountListView extends AbstractFinanceView implements Modification
                             resetInput();
                         }));
 
-        var label = MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName());
+        var label = Messages.AccountMenuDelete;
         if (!account.getTransactions().isEmpty())
-            label += "\n\n" + MessageFormat.format(Messages.AccountMenuDeleteConfirmHint, //$NON-NLS-1$
-                            account.getTransactions().size());
+            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) + ")";
 
-        manager.add(new ConfirmAction(Messages.AccountMenuDelete, label, //
+        Action action = new ConfirmAction(label,
+                        MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //
                         a -> {
                             getClient().removeAccount(account);
                             markDirty();
                             resetInput();
-                        }));
+                        });
+
+        action.setEnabled(account.getTransactions().isEmpty());
+        manager.add(action);
     }
 
     // //////////////////////////////////////////////////////////////
