@@ -323,8 +323,8 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         var label = Messages.PortfolioMenuDelete;
         if (!portfolio.getTransactions().isEmpty())
-            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, portfolio.getTransactions().size())
-                            + ")";
+            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, portfolio.getTransactions().size()) //$NON-NLS-1$
+                            + ")"; //$NON-NLS-1$
 
         Action action = new ConfirmAction(label,
                         MessageFormat.format(Messages.PortfolioMenuDeleteConfirm, portfolio.getName()), a -> {

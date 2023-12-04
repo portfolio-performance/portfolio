@@ -312,7 +312,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         var label = Messages.AccountMenuDelete;
         if (!account.getTransactions().isEmpty())
-            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) + ")";
+            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         Action action = new ConfirmAction(label,
                         MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //
