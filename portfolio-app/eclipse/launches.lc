@@ -61,9 +61,11 @@ abstract junit-plugin configuration TestBase {
 	plugin org.apache.felix.scr;
 	
 	plugin name.abuchen.portfolio.junit;
-	plugin org.objenesis;
-	plugin org.mockito.mockito-core;
 	plugin net.bytebuddy.byte-buddy;
+	plugin org.hamcrest.core;
+	plugin org.hamcrest.library;
+	plugin org.mockito.mockito-core;
+	plugin org.objenesis;
 
 	ignore org.eclipse.jdt.annotation;
 	ignore org.eclipse.ui;
