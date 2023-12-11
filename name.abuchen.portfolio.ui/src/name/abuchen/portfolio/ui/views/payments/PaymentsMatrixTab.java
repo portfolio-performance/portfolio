@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.ToLongFunction;
 import java.util.stream.IntStream;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;

@@ -4,8 +4,8 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;

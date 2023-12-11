@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import java.text.MessageFormat;
 import java.util.Optional;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;

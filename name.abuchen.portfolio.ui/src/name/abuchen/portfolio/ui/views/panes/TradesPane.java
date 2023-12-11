@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views.panes;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;

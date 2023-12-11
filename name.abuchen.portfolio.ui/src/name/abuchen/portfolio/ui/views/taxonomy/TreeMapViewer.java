@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.Iterator;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;

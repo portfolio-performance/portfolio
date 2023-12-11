@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.palette;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.widgets.Display;

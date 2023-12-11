@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;

@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.views;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;

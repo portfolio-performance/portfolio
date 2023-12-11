@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.views.panes;
 import java.util.Collections;
 import java.util.Iterator;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;

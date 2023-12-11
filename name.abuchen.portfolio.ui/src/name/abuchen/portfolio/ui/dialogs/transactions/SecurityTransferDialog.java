@@ -7,8 +7,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.time.LocalDateTime;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
