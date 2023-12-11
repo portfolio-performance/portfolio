@@ -16,6 +16,7 @@ import java.util.function.ToLongBiFunction;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.DuplicateHeaderMode;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
@@ -424,8 +425,8 @@ public class PerformanceIndex
     private void exportTo(File file, IntPredicate filter) throws IOException
     {
         CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
-                        .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n").setAllowDuplicateHeaderNames(true) //$NON-NLS-1$
-                        .build();
+                        .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
+                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))

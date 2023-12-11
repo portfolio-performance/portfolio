@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.DuplicateHeaderMode;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
@@ -33,7 +34,7 @@ public class CSVExporter
 {
     /* package */ static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
                     .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                    .setAllowDuplicateHeaderNames(true).build();
+                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {

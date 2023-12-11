@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.DuplicateHeaderMode;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -17,8 +18,7 @@ public abstract class AbstractCSVExporter
 {
     protected static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
                     .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                    .setAllowDuplicateHeaderNames(true)
-                    .build();
+                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
 
     protected abstract Shell getShell();
 
