@@ -143,7 +143,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             if (series.getInstance() instanceof Security security)
                 setToolTipText(TextUtil.wordwrap(security.toInfoString()));
-            if (series.getInstance() instanceof Classification classification)
+            else if (series.getInstance() instanceof Classification classification)
                 setToolTipText(classification.getPathName(true));
             else
                 setToolTipText(series.getLabel());
