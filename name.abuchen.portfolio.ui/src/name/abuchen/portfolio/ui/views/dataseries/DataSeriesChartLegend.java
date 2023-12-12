@@ -42,6 +42,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.swtchart.LineStyle;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -142,6 +143,8 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             if (series.getInstance() instanceof Security security)
                 setToolTipText(TextUtil.wordwrap(security.toInfoString()));
+            if (series.getInstance() instanceof Classification classification)
+                setToolTipText(classification.getPathName(true));
             else
                 setToolTipText(series.getLabel());
         }
