@@ -39,6 +39,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.66.1" date="2023-12-12">
+      <description>
+        <ul>
+            <li>Fix: Fixes a problem when editing an existing dividend transaction.</li>
+        </ul>
+        <ul xml:lang="de">
+            <li>Fix: Behebt ein Problem bei der Bearbeitung von Dividenden.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.66.0" date="2023-12-12">
       <description>
         <ul>
