@@ -233,7 +233,7 @@ public class AccountTransactionModel extends AbstractModel
         this.sourceAccount = account;
         this.sourceTransaction = transaction;
 
-        setSource(account, transaction);
+        presetFromSource(account, transaction);
     }
 
     public void presetFromSource(Account account, AccountTransaction transaction)
