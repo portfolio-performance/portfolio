@@ -137,6 +137,11 @@ public class AccountTransferModel extends AbstractModel
     public void setSource(AccountTransferEntry entry)
     {
         this.source = entry;
+        presetFromSource(entry);
+    }
+    
+    public void presetFromSource(AccountTransferEntry entry)
+    {
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
         this.targetAccount = (Account) entry.getOwner(entry.getTargetTransaction());
 
@@ -160,6 +165,7 @@ public class AccountTransferModel extends AbstractModel
             this.exchangeRate = BigDecimal.ONE;
         }
     }
+
 
     @Override
     public IStatus getCalculationStatus()

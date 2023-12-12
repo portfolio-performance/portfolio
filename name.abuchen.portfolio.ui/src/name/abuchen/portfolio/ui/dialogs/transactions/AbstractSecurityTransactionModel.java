@@ -72,7 +72,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public abstract boolean accepts(Type type);
 
+    /**
+     * Sets the source transaction that is being edited.
+     */
     public abstract void setSource(Object source);
+
+    /**
+     * Presets the values from the given source object, but creates a new
+     * transaction.
+     */
+    public abstract void presetFromSource(Object source);
 
     public abstract boolean hasSource();
 
@@ -271,10 +280,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateSharesAndQuote()
     {
-        // do not auto-suggest shares and quote when editing an existing transaction
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
         if (hasSource())
             return;
-        
+
         if (type == PortfolioTransaction.Type.SELL || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
         {
             boolean hasPosition = false;
@@ -315,7 +325,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             return;
         }
 
-        // do not auto-suggest exchange rate when editing an existing transaction
+        // do not auto-suggest exchange rate when editing an existing
+        // transaction
         if (hasSource())
             return;
 

@@ -495,6 +495,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             Action action = createEditAction(account, transaction);
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
+
+            manager.add(createCopyAction(account, transaction));
+
             manager.add(new Separator());
         }
 
@@ -575,6 +578,28 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         {
             return new OpenDialogAction(view, Messages.MenuEditTransaction) //
                             .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
+                            .parameters(transaction.getType());
+        }
+    }
+
+    private Action createCopyAction(Account account, AccountTransaction transaction)
+    {
+        // buy / sell
+        if (transaction.getCrossEntry() instanceof BuySellEntry entry)
+        {
+            return new OpenDialogAction(view, Messages.MenuDuplicateTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.presetBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transaction.getCrossEntry() instanceof AccountTransferEntry entry)
+        {
+            return new OpenDialogAction(view, Messages.MenuDuplicateTransaction) //
+                            .type(AccountTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else
+        {
+            return new OpenDialogAction(view, Messages.MenuDuplicateTransaction) //
+                            .type(AccountTransactionDialog.class, d -> d.presetTransaction(account, transaction)) //
                             .parameters(transaction.getType());
         }
     }

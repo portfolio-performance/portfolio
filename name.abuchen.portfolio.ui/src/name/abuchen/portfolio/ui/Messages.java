@@ -47,6 +47,7 @@ public class Messages extends NLS
     public static String MenuDashboardColumnWidthDecrease;
     public static String MenuDashboardColumnWidthIncrease;
     public static String MenuDuplicateDashboardColumn;
+    public static String MenuDuplicateTransaction;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
     public static String BookmarksListView_NewBookmark;

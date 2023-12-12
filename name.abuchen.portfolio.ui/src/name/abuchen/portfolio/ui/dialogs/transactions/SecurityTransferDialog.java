@@ -193,4 +193,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
     {
         model().setSource(entry);
     }
+
+    public void presetEntry(PortfolioTransferEntry entry)
+    {
+        model().presetFromSource(entry);
+    }
 }

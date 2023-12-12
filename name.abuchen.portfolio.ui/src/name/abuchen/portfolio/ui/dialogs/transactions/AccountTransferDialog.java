@@ -225,4 +225,9 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         model().setSource(entry);
     }
 
+    public void presetEntry(AccountTransferEntry entry)
+    {
+        model().presetFromSource(entry);
+    }
+
 }

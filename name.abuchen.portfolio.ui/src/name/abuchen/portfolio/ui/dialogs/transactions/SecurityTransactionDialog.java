@@ -339,11 +339,25 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             throw new IllegalArgumentException();
         model().setSource(entry);
     }
+    
+    public void presetBuySellEntry(BuySellEntry entry)
+    {
+        if (!model().accepts(entry.getPortfolioTransaction().getType()))
+            throw new IllegalArgumentException();
+        model().presetFromSource(entry);
+    }
 
     public void setDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
     {
         if (!model().accepts(pair.getTransaction().getType()))
             throw new IllegalArgumentException();
         model().setSource(pair);
+    }
+
+    public void presetDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
+    {
+        if (!model().accepts(pair.getTransaction().getType()))
+            throw new IllegalArgumentException();
+        model().presetFromSource(pair);
     }
 }

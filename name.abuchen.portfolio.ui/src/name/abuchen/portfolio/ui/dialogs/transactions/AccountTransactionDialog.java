@@ -481,4 +481,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         model().setSource(account, transaction);
     }
 
+    public void presetTransaction(Account account, AccountTransaction transaction)
+    {
+        model().presetFromSource(account, transaction);
+    }
+
 }

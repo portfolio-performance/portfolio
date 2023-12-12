@@ -138,9 +138,9 @@ public class AccountTransactionModel extends AbstractModel
 
         t.clearUnits();
 
-        if(fees != 0)
+        if (fees != 0)
             t.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(getAccountCurrencyCode(), fees)));
-        
+
         if (taxes != 0)
             t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(getAccountCurrencyCode(), taxes)));
 
@@ -158,7 +158,7 @@ public class AccountTransactionModel extends AbstractModel
                                 Money.of(getAccountCurrencyCode(), Math.round(fxFees * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), fxFees), //
                                 exchangeRate));
-            
+
             if (fxTaxes != 0)
                 t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                                 Money.of(getAccountCurrencyCode(), Math.round(fxTaxes * exchangeRate.doubleValue())), //
@@ -222,7 +222,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST;
     }
-    
+
     public boolean supportsFees()
     {
         return type == AccountTransaction.Type.DIVIDENDS;
@@ -233,6 +233,11 @@ public class AccountTransactionModel extends AbstractModel
         this.sourceAccount = account;
         this.sourceTransaction = transaction;
 
+        setSource(account, transaction);
+    }
+
+    public void presetFromSource(Account account, AccountTransaction transaction)
+    {
         this.security = transaction.getSecurity();
         if (this.security == null && supportsOptionalSecurity())
             this.security = EMPTY_SECURITY;
@@ -366,7 +371,8 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateExchangeRate()
     {
-        // set exchange rate to 1, if account and security have the same currency or no security is selected
+        // set exchange rate to 1, if account and security have the same
+        // currency or no security is selected
         if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
         {
             setExchangeRate(BigDecimal.ONE);
@@ -545,7 +551,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         return fxTaxes;
     }
-    
+
     public long getFxFees()
     {
         return fxFees;
@@ -559,7 +565,7 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
-    
+
     public void setFxFees(long fxFees)
     {
         firePropertyChange(Properties.fxFees.name(), this.fxFees, this.fxFees = fxFees);
@@ -573,7 +579,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         return taxes;
     }
-    
+
     public long getFees()
     {
         return fees;
@@ -587,7 +593,7 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
-    
+
     public void setFees(long fees)
     {
         firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees);

@@ -169,6 +169,11 @@ public class SecurityTransferModel extends AbstractModel
     public void setSource(PortfolioTransferEntry entry)
     {
         this.source = entry;
+        presetFromSource(entry);
+    }
+    
+    public void presetFromSource(PortfolioTransferEntry entry)
+    {
         this.sourcePortfolio = (Portfolio) entry.getOwner(entry.getSourceTransaction());
         this.targetPortfolio = (Portfolio) entry.getOwner(entry.getTargetTransaction());
 
@@ -181,6 +186,7 @@ public class SecurityTransferModel extends AbstractModel
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
     }
+
 
     @Override
     public IStatus getCalculationStatus()
