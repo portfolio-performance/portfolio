@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -128,7 +130,14 @@ public class ImageUtilImageIOImpl extends ImageUtil
     @Override
     public String loadAndPrepare(String filename, int maxWidth, int maxHeight) throws IOException
     {
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("ICO");
+        while (readers.hasNext()) {
+            System.out.println("reader: " + readers.next());
+        }
+        
         BufferedImage imgData = ImageIO.read(new File(filename));
+        if (imgData == null)
+            throw new IOException("Image format not supported.");
 
         if (imgData.getWidth() > maxWidth || imgData.getHeight() > maxHeight)
         {
