@@ -39,9 +39,35 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.66.0" date="2023-12-12">
+      <description>
+        <ul>
+            <li>Improvement: In the price chart, the tooltip now displays the last value if there is no other value on that day. This eliminates the need to precisely pinpoint the buying or selling time in the FIFO or inventory data series.</li>
+            <li>Improvement: Icon images under Windows now have improved transparency (no white background).</li>
+            <li>Improvement: The tooltip in the chart legend shows the ISIN, WKN, and ticker symbol of the security.</li>
+            <li>Improvement: Accounts with transactions can no longer be deleted. Transactions are required for calculations.</li>
+            <li>Improvement: In the "Payments" overview, transactions now also include the closing transaction of a trade.</li>
+            <li>PDF Importer Improvement: Trade Republic, OLB, Baader Bank, Comdirect.</li>
+            <li>Fix: Resolves a rounding issue in calculating the average of investments or earnings.</li>
+            <li>Fix: Finnhub has transitioned the API for historical prices to a premium subscription. Currently, at least partially, current prices are still available for free.</li>
+            <li>Fix: Resolves a performance issue in displaying historical security prices.</li>
+        </ul>
+        <ul xml:lang="de">
+            <li>Verbesserung: Im Kursdiagramm wird im Tooltip der letzte Wert angezeigt, falls es an diesem Tag keinen anderen Wert gibt. Damit muss man bei der FIFO- oder Bestandsdatenreihe nicht genau den Kauf- oder Verkaufszeitpunkt treffen.</li>
+            <li>Verbesserung: Icon-Bilder unter Windows mit verbesserter Transparenz (kein weißer Hintergrund).</li>
+            <li>Verbesserung: Der Tooltip in der Legende des Diagramms zeigt ISIN, WKN und Ticker-Symbol des Wertpapiers an.</li>
+            <li>Verbesserung: Konten mit Buchungen können nicht mehr gelöscht werden. Die Buchungen werden für die Berechnung benötigt.</li>
+            <li>Verbesserung: In der Übersicht "Zahlungen" enthalten die Buchungen jetzt auch die Schlussbuchung eines Trades.</li>
+            <li>Verbesserung des PDF-Importers: Trade Republic, OLB, Baader Bank, Comdirect.</li>
+            <li>Fix: Behebt ein Rundungsproblem bei der Berechnung des Durchschnitts der Investitionen oder Erträge.</li>
+            <li>Fix: Finnhub hat das API für historische Kurse auf ein Premium-Abo umgestellt. Aktuell sind zumindest teilweise noch die aktuellen Kurse kostenlos.</li>
+            <li>Fix: Behebt ein Performance-Problem bei der Anzeige der historischen Wertpapierkurse.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.65.6" date="2023-11-11">
       <description>
-        <ul xml:lang="en">
+        <ul>
           <li>New: Display the number of shares held in the historical price chart</li>
           <li>Improvement of the PDF importer: Baader Bank, WIR, VIAC, Oldenburgische Landesbank</li>
           <li>Fix: Fixes an problem with IllegalArgumentException errors when displaying investements and dividends</li>
