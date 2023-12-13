@@ -39,6 +39,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.66.2" date="2023-12-13">
+      <description>
+        <ul>
+            <li>Fix: Fixes a problem with displaying previsouly added logos that use the ICO format.</li>
+        </ul>
+        <ul xml:lang="de">
+            <li>Fix: Behebt ein Problem der Anzeige von zuvor eingefügten Logos im ICO Format.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.66.1" date="2023-12-12">
       <description>
         <ul>
