@@ -18,7 +18,6 @@
 		<unit id="org.hamcrest.library.source" version="1.3.0.v20180524-2246"/>
 		<unit id="org.mockito.mockito-core" version="4.8.1.v20221103-2317"/>
 		<unit id="org.mockito.mockito-core.source" version="4.8.1.v20221103-2317"/>
-		<unit id="org.objectweb.asm" version="9.4.0.v20221107-1714"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.5.0"/>
@@ -224,6 +223,84 @@
 				<groupId>com.sun.activation</groupId>
 				<artifactId>javax.activation</artifactId>
 				<version>1.2.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="TwelveMonkey ImageIO" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.twelvemonkeys.common</groupId>
+				<artifactId>common-image</artifactId>
+				<version>3.10.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.common</groupId>
+				<artifactId>common-io</artifactId>
+				<version>3.10.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.common</groupId>
+				<artifactId>common-lang</artifactId>
+				<version>3.10.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.imageio</groupId>
+				<artifactId>imageio-bmp</artifactId>
+				<version>3.10.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.twelvemonkeys.imageio</groupId>
+				<artifactId>imageio-core</artifactId>
+				<version>3.10.1</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache Aries" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.aries.spifly</groupId>
+				<artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+				<version>1.3.7</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="org.objectweb.asm" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-analysis</artifactId>
+				<version>9.6</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-commons</artifactId>
+				<version>9.6</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-tree</artifactId>
+				<version>9.6</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-util</artifactId>
+				<version>9.6</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>9.6</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>

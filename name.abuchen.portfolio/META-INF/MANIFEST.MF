@@ -63,7 +63,8 @@ Import-Package: com.google.common.annotations,
  org.jsoup,
  org.jsoup.nodes,
  org.jsoup.safety,
- org.jsoup.select
+ org.jsoup.select,
+ org.osgi.service.component.annotations
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
@@ -73,3 +74,6 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
+Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.processor)",osgi.serviceloader;filter:="(osgi.serviceloader=javax.imageio.spi.ImageReaderSpi)";cardinality:=multiple
