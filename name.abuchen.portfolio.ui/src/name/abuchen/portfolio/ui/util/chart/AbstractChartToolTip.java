@@ -97,10 +97,13 @@ public abstract class AbstractChartToolTip implements Listener
                     moveToolTip(event);
                 break;
             case SWT.MouseDown:
-                if (event.button == 1 && (event.stateMask & SWT.MOD1) != SWT.MOD1)
+                // open tooltip only on left-click or on left click with MOD3
+                // (Alt on most platforms, Option on macOS)
+                var isValidKey = event.stateMask == 0 || event.stateMask == SWT.MOD3;
+                if (event.button == 1 && isValidKey)
                 {
                     showToolTip = true;
-                    isAltPressed = (event.stateMask & SWT.MOD3) == SWT.MOD3;
+                    isAltPressed = event.stateMask == SWT.MOD3;
                     showToolTip(event);
                 }
                 break;
