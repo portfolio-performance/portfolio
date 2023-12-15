@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.ui.jobs;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -62,7 +63,8 @@ public final class UpdateDividendsJob extends AbstractClientJob
                 {
                     List<DividendEvent> current = security.getEvents().stream()
                                     .filter(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT)
-                                    .map(event -> (DividendEvent) event).collect(Collectors.toList());
+                                    .map(DividendEvent.class::cast) //
+                                    .collect(toMutableList());
 
                     for (DividendEvent dividendEvent : dividends)
                     {
@@ -82,12 +84,13 @@ public final class UpdateDividendsJob extends AbstractClientJob
                     isDirty = isDirty || !current.isEmpty();
                 }
             }
+            catch (WebAccessException e)
+            {
+                PortfolioPlugin.log(security.getName() + ": " + e.getMessage()); //$NON-NLS-1$
+            }
             catch (IOException e)
             {
-                if (e instanceof WebAccessException)
-                    PortfolioPlugin.log(e.getMessage());
-                else
-                    PortfolioPlugin.log(e);
+                PortfolioPlugin.log(security.getName(), e);
             }
         }
 

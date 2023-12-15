@@ -234,7 +234,7 @@ public class WebAccess
         {
             String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
             if (reason != null)
-                return message + " " + reason; //$NON-NLS-1$
+                message += " " + reason; //$NON-NLS-1$
         }
         catch (IllegalArgumentException e)
         {
