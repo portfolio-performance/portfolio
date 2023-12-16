@@ -126,7 +126,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 }
 
                 Label l = new Label(table, SWT.NONE);
-                l.setText(position.getLabel());
+                l.setText(TextUtil.tooltip(position.getLabel()));
                 if (image == null)
                     GridDataFactory.fillDefaults().span(2, 1).applyTo(l);
 
