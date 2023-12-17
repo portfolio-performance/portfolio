@@ -125,7 +125,7 @@ public class SecurityDetailsViewer
             }
             else
             {
-                valueName.setText(security.getName());
+                valueName.setText(TextUtil.tooltip(security.getName()));
                 valueISIN.setText(nonNullString(security.getIsin()));
                 valueTickerSymbol.setText(nonNullString(security.getTickerSymbol()));
                 valueWKN.setText(nonNullString(security.getWkn()));
