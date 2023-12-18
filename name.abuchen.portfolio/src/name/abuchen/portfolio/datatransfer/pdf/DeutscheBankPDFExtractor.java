@@ -304,22 +304,44 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        // @formatter:off
-                        // Bruttoertrag 98,80 USD 87,13 EUR
-                        // Umrechnungskurs USD zu EUR 1,1339000000
-                        // @formatter:on
-                        .section("fxGross", "gross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
-                        .match("^Umrechnungskurs (?<termCurrency>[\\w]{3}) zu (?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Bruttoertrag 98,80 USD 87,13 EUR
+                                        // Umrechnungskurs USD zu EUR 1,1339000000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "gross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^Umrechnungskurs (?<termCurrency>[\\w]{3}) zu (?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Bruttoertrag 78,20 USD
+                                        // Umrechnungskurs USD zu EUR 1,1019000000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Bruttoertrag (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^Umrechnungskurs (?<termCurrency>[\\w]{3}) zu (?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (!type.getCurrentContext().getBoolean("negative"))
+                                                            {
+                                                                ExtrExchangeRate rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            }
+                                                        }))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
@@ -417,7 +439,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
                                 if ("Saldo der Abschlussposten".equals(v.get("note1")))
                                     type.getCurrentContext().putBoolean("skipTransaction", true);
-    
+
                             // @formatter:off
                             // If we have security transaction, then we skip the transaction
                             //
