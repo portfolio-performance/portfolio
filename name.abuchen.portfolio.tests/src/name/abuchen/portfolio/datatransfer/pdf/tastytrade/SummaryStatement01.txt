@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.3
+-----------------------------------------
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, TX  75201
+Account Number: 7oC-67214 
+OFFICE SERVING YOU OwtskCBUgpo htjJOoUhgGYnhqlzvdWgeCp 9
+TASTYWORKS, INC 05064 mazRCH
+cclFJin
+Account cleared by
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, Texas 75201
+Account Number: 7pq-54863                                         Account Name: YjDizxmMooK nncvHCJ
+M C
+Acct Add’l Tag K A
+Type B/S Trade Date Settle Date QTY SYM PRICE Principal COMM Tran Fee Fees Number Net Amount Trade# T P
+2 B 07/17/23 07/19/23 8 VUG 290.5298000 2,324.24 0.00 0.00 0.00 D2851 2,324.24 TUA0719 6 1  
+Desc: VANGUARD INDEX FUNDS VANGUARD GROWTH ETF Interest/STTax: 0.00 CUSIP: 922908736
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED, PRODUCT DESCRIPTION UNDER SEPARATE COVER
+SUMMARY FOR CURRENT TRADE DATE: 07/17/23
+TOTAL SHARES BOUGHT: 8.00 TOTAL DOLLARS BOUGHT: -2,324.24
+TOTAL SHARES SOLD: 0.00 TOTAL DOLLARS SOLD: 0.00
+ProcessDate:07/17/2023 Page: 1

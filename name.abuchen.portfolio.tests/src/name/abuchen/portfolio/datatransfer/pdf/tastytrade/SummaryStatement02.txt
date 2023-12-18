@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.3
+-----------------------------------------
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, TX  75201
+Account Number: 5uG-41377 
+OFFICE SERVING YOU gNVQmlKELJj KOprETBzIYYAsyzeiJlehuu 5
+TASTYWORKS, INC 06390 kGcJFe
+icwsGKR
+Account cleared by
+Apex Clearing Corporation
+350 N. St. Paul Street 1300
+Dallas, Texas 75201
+Account Number: 0Od-42313                                         Account Name: LQGbzrPuJaN CgKhHxB
+M C
+Acct Add’l Tag K A
+Type B/S Trade Date Settle Date QTY SYM PRICE Principal COMM Tran Fee Fees Number Net Amount Trade# T P
+2 S 06/22/23 06/26/23 20 NVDA 422.5500000 8,451.00 0.00 0.08 0.01 I7086 8,450.91 TUA0626 6 1  
+Desc: NVIDIA CORP Interest/STTax: 0.00 CUSIP: 67066G104
+Currency: USD ReportedPX: MarkUp/Down:
+Trailer:  UNSOLICITED
+SUMMARY FOR CURRENT TRADE DATE: 06/22/23
+TOTAL SHARES BOUGHT: 0.00 TOTAL DOLLARS BOUGHT: 0.00
+TOTAL SHARES SOLD: -20.00 TOTAL DOLLARS SOLD: 8,450.91
+ProcessDate:06/22/2023 Page: 1
