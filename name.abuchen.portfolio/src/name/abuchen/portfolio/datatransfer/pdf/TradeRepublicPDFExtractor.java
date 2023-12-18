@@ -592,8 +592,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.|Pcs\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|Pz\\.) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // @formatter:on
@@ -1650,25 +1657,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
-    }
-
-    @Override
-    protected long asShares(String value)
-    {
-        String language = "de";
-        String country = "DE";
-
-        int lastDot = value.lastIndexOf(".");
-        int lastComma = value.lastIndexOf(",");
-
-        // returns the greater of two int values
-        if (Math.max(lastDot, lastComma) == lastDot)
-        {
-            language = "en";
-            country = "US";
-        }
-
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 
     @Override
