@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -8,6 +9,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class FidelityPDFExtractor extends AbstractPDFExtractor
 {
@@ -75,7 +77,7 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount") //
                         .match(".*Settlement Amount\\s+(?<amount>[\\.,\\d]+)$")
-                        .assign((t, v) -> t.setAmount(asAmount(convertFromUs(v.get("amount")))))
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
 
                         .section("fee") //
                         .optional() //
@@ -84,12 +86,12 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
                             t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(asCurrencyCode("USD")),
-                                                                            asAmount(convertFromUs(v.get("fee"))))));
+                                                                            asAmount(v.get("fee")))));
                         })
 
                         .section("shares") //
                         .match("^\\s+(?<shares>[\\.,\\d]+)\\s.*$") //
-                        .assign((t, v) -> t.setShares(asShares(convertFromUs(v.get("shares")))))
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .wrap(BuySellEntryItem::new));
     }
@@ -100,12 +102,42 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
         return "Fidelity"; //$NON-NLS-1$
     }
 
-    public String convertFromUs(String amount)
+    @Override
+    protected long asAmount(String value)
     {
-        // 53,321.56 => 53.321,56
-        String val = amount.replace(',', '#');
-        val = val.replace('.', ',');
-        val = val.replace('#', '.');
-        return val;
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
     }
+
+    @Override
+    protected long asShares(String value)
+    {
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
 }
