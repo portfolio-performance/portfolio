@@ -48,6 +48,8 @@ public class ExtractorUtils
                     DateTimeFormatter.ofPattern("d LLLL yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d LLL yyyy", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("MM-dd-yy", Locale.US), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("LLL/dd/yyyy", Locale.US), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("yyyyMMdd", Locale.US) }; //$NON-NLS-1$
 
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
