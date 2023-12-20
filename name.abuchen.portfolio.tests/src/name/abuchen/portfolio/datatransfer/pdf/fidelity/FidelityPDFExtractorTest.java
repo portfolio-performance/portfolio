@@ -18,7 +18,6 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.FidelityPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FidelityStockPlanPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -45,10 +44,6 @@ public class FidelityPDFExtractorTest
                         .extract(PDFInputFile.loadTestCase(getClass(), "Fidelity-TradeConfirmation01.txt"), errors);
 
         assertThat(errors, empty());
-        /*
-         * System.out.println("Got " + results.size() + " results"); for (Item
-         * item : results) { System.out.println("item: " + item); }
-         */
         assertThat(results.size(), is(10));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
@@ -206,7 +201,7 @@ public class FidelityPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        FidelityStockPlanPDFExtractor extractor = new FidelityStockPlanPDFExtractor(new Client());
+        FidelityPDFExtractor extractor = new FidelityPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -238,9 +233,9 @@ public class FidelityPDFExtractorTest
         assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(15023.41))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2423.41))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(15023.54))));
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2423.54))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -257,21 +252,6 @@ public class FidelityPDFExtractorTest
 
         List<Item> results = extractor
                         .extract(PDFInputFile.loadTestCase(getClass(), "Fidelity-TradeConfirmation03.txt"), errors);
-
-        // if (!errors.isEmpty())
-        // {
-        // for (Exception ex : errors)
-        // {
-        // System.out.println(ex.getMessage());
-        // System.out.println(ex.getStackTrace());
-        // }
-        // }
-        //
-        // System.out.println("Got " + results.size() + " results");
-        // for (Item item : results)
-        // {
-        // System.out.println("item: " + item);
-        // }
 
         assertThat(errors, empty());
         assertThat(results.size(), is(7));
