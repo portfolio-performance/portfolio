@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.time.LocalDateTime;
+import java.util.Locale;
+
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -11,22 +14,20 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class FidelityPDFExtractor extends AbstractPDFExtractor
 {
     public FidelityPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("FIDELITY BROKERAGE SERVICES LLC"); //$NON-NLS-1$
+        addBankIdentifier("FIDELITY"); //$NON-NLS-1$
 
+        addSummaryStatementBuySellTransaction();
         addBuySellTransaction();
-        // addSellTransaction();
-        // addDividendTransaction();
-        // addInboundDelivery();
     }
 
-    @SuppressWarnings("nls")
-    private void addBuySellTransaction()
+    private void addSummaryStatementBuySellTransaction()
     {
         // line must start with this!
         DocumentType type = new DocumentType("Transaction Confirmation");
@@ -42,19 +43,21 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
-                        /*
-                         * REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT
-                         * DATE CUSIP NO. ORDER NO. 23348-SR3JMJ 1* WO# 12-14-23
-                         * 12-18-23 02079K107 23348-I7W2H DESCRIPTION and
-                         * DISCLOSURES You Bought ALPHABET INC CAP STK CL C
-                         * Principal Amount 3,990.00 30 WE HAVE ACTED AS AGENT.
-                         * Settlement Amount 3,990.00 at 133.0000 Symbol: GOOG
+                        /* @formatter:off
+                         * REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+                         * 20123-1XXXXX 1* WK# 01-04-21 01-06-21 46428Q109 20123-XXXXX
+                         * DESCRIPTION and DISCLOSURES
+                         * You Bought ISHARES SILVER TR ISHARES Principal Amount       1,011.60
+                         *        40 WE HAVE ACTED AS AGENT. Settlement Amount       1,011.60
+                         *               at    25.2900 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+                         * Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+                         * SLV other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+                         * @formatter:on
                          */
 
-                        .section("month", "day", "year") //
-                        .match("^\\d+-\\w+.* (?<month>\\d+)-(?<day>\\d+)-(?<year>\\d+) \\d+-\\d+-\\d+.*$")
-                        .assign((t, v) -> //
-                        t.setDate(asDate(v.get("day") + "." + v.get("month") + ".20" + v.get("year"))))
+                        .section("date") //
+                        .match("^.* \\w{2}# (?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{2}) .*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("type", "gross", "tickerSymbol", "name") //
                         .match("^You (?<type>Bought|Sold) (?<name>.*) Principal Amount\\s+(?<gross>[\\.,\\d]+)$") //
@@ -67,12 +70,6 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
                             {
                                     t.setType(PortfolioTransaction.Type.SELL);
                             }
-                            // t.setAmount(asAmount(convertFromUs(v.get("gross"))));
-                            // t.getPortfolioTransaction().addUnit(new
-                            // Unit(Unit.Type.GROSS_VALUE,
-                            // Money.of(asCurrencyCode(asCurrencyCode("USD")),
-                            // asAmount(convertFromUs(v.get("gross"))))));
-
                         })
 
                         .section("amount") //
@@ -92,6 +89,76 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
                         .section("shares") //
                         .match("^\\s+(?<shares>[\\.,\\d]+)\\s.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .wrap(BuySellEntryItem::new));
+    }
+
+    private void addBuySellTransaction()
+    {
+        // line must start with this!
+        DocumentType type = new DocumentType("SECURITY DESCRIPTION");
+        this.addDocumentTyp(type);
+
+        Block block = new Block(
+                        "CUSTOMER NO\\.\\s+PARTICIPANT ID\\. TYPE REG\\.REP\\. TRADE DATE SETTLEMENT DATE TRANS NO\\. CUSIP NO\\. ORIG\\.");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+                        /* @formatter:off
+                         * CUSTOMER NO.   PARTICIPANT ID. TYPE REG.REP. TRADE DATE SETTLEMENT DATE TRANS NO. CUSIP NO. ORIG.
+                         * I00123456 1 WI# 12-12-23 12-14-23 K9T1Q9 11135F101
+                         * YOU SOLD 14 AT 173.1100
+                         *       EXPLANATION OF PROCEEDS
+                         * SECURITY DESCRIPTION SYMBOL: AAPL Sale Proceeds     $2,423.54
+                         * APPLE INC
+                         * DETAILS: Total Fees          $0.13
+                         * Sale Date: DEC/12/2023
+                         * Proceeds Available: DEC/14/2023
+                         * Plan Type: COMPANY STOCK PLAN
+                         * Net Cash Proceeds¹     -$2,423.41
+                         * @formatter:on
+                         */
+
+                        .section("date") //
+                        .match("^Sale Date: (?<date>[\\w]{3}\\/[\\d]{2}\\/[\\d]{4})$")
+                        .assign((t, v) -> {
+                            String date = v.get("date");
+                            // convert month to camel case
+                            if (Character.isLetter(date.charAt(0)))
+                            {
+                                date = date.charAt(0) + date.substring(1, 3).toLowerCase() + date.substring(3);
+                            }
+                            t.setDate(asDate(date));
+                        })
+
+                        .section("shares") //
+                        .match("^YOU SOLD (?<shares>[\\.,\\d]+) AT.*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("gross", "tickerSymbol") //
+                        .match("SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,5}) Sale Proceeds\\s+\\$(?<gross>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode("USD"));
+                            v.put("currency", "USD");
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("amount") //
+                        .match(".*Net Cash Proceeds.*\\$(?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> t.setAmount(asAmount((v.get("amount")))))
+
+                        .section("fee") //
+                        .optional() //
+                        .match(".*Total Fees\\s+\\$(?<fee>[\\.,\\d]+)").assign((t, v) -> {
+                            t.getPortfolioTransaction().addUnit(
+                                            new Unit(Unit.Type.FEE, Money.of(asCurrencyCode(asCurrencyCode("USD")),
+                                                            asAmount((v.get("fee"))))));
+                        })
 
                         .wrap(BuySellEntryItem::new));
     }
@@ -138,6 +205,12 @@ public class FidelityPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected LocalDateTime asDate(String value, Locale... hints)
+    {
+        return ExtractorUtils.asDate(value, Locale.US);
     }
 
 }
