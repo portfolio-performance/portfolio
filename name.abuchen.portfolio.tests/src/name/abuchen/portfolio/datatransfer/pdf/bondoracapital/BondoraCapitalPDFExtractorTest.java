@@ -1,5 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf.bondoracapital;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -791,5 +801,31 @@ public class BondoraCapitalPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.87)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertThat(transaction.getNote(), is("Go & Grow returns"));
+    }
+
+    @Test
+    public void testKontoauszug14()
+    {
+        BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-11-27"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote("SEPA-Banküberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-11-28"), hasAmount("EUR", 0.19), //
+                        hasSource("Kontoauszug14.txt"), hasNote("Go & Grow Zinsen"))));
     }
 }
