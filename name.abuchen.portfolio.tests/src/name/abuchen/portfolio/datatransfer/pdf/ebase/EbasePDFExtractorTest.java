@@ -5116,6 +5116,61 @@ public class EbasePDFExtractorTest
                         }))));
     }
 
+    @Test
+    public void testUmsatzabrechnung29()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung29.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2572257124"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi.I.S. MSCI World3 Act.Nom. U.ETF USD Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-27T00:00"), hasShares(0.533761), //
+                        hasSource("Umsatzabrechnung29.txt"), //
+                        hasNote("Ref.-Nr.: 0400004708/26102023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-11-27T00:00"), hasShares(0.505318), //
+                        hasSource("Umsatzabrechnung29.txt"), //
+                        hasNote("Ref.-Nr.: 0400002625/24112023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check 3rd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-12-19T00:00"), hasShares(0.604172), //
+                        hasSource("Umsatzabrechnung29.txt"), //
+                        hasNote("Ref.-Nr.: 0400130505/15122023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 48.77), hasGrossValue("EUR", 48.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-15T00:00"), hasShares(39.68203200), //
+                        hasSource("Umsatzabrechnung29.txt"), //
+                        hasNote("Ref.-Nr.: 0400059203/15122023"), //
+                        hasAmount("EUR", 48.77), hasGrossValue("EUR", 60.71), //
+                        hasTaxes("EUR", 10.44 + 0.57 + 0.93), hasFees("EUR", 0.00))));
+    }
 
     @Test
     public void testDepotStatement01()

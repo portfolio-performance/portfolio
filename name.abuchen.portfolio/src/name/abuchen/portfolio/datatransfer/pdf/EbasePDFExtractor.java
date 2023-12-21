@@ -24,6 +24,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("European Bank for Financial Services GmbH");
         addBankIdentifier("European Bank for Financial Services AG");
         addBankIdentifier("FNZ Bank AG");
+        addBankIdentifier("FNZ Bank SE");
 
         addBuySellTransaction();
         addDividendeTransaction();
