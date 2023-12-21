@@ -1,0 +1,169 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/3
+Herrn München
+03.11.2023
+byRrVsQtv beCd
+lZ UoGMkKQFGE 15 qgQFeYpZO SOoS
+94663 RnNbYxufSJ Stamm-Nr.: 6722454    Portfolio: 1
+Konto-Nr.: 9468181358
+IBAN: ok24 0658 7549 9136 8720 12
+BLZ: 583 456 83
+BIC: GGDwgzzw
+Vorgangs-Nr.: 343077922
+Referenz-Nr.: 730489779
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 023010
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 29.09.2023 442,04
+02.10.2023 Kauf 04.10.2023 15,28 -
+NIKE INC. B
+ISIN US6541061031
+STK               0,167
+Vorgangs-Nr.: WWUM 00230752699
+02.10.2023 Kauf 04.10.2023 15,14 -
+VISA INC. CL. A DL -,0001
+ISIN US92826C8394
+STK               0,069
+Vorgangs-Nr.: WWUM 00230799537
+02.10.2023 Kauf 04.10.2023 10,11 -
+SPDR MSCI WORLD UE DLUA
+ISIN IE00BFY0GT14
+STK               0,359
+Vorgangs-Nr.: WWUM 00230809474
+02.10.2023 Kauf 04.10.2023 22,78 -
+SYMRISE AG INH. O.N.
+ISIN DE000SYM9999
+STK               0,254
+Vorgangs-Nr.: WWUM 00230820807
+02.10.2023 Kauf 04.10.2023 11,81 -
+MTU AERO ENGINES NA O.N.
+ISIN DE000A0D9PT0
+STK               0,069
+Vorgangs-Nr.: WWUM 00230936486
+Übertrag: 366,92
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KKTKK801-043.041
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 023010
+Fortsetzung: Seite 2/3
+Konto-Nr.: 1869641009   BLZ: 700 331 00   IBAN: DE04 7003 3100 1869 6410 09   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 366,92
+02.10.2023 Kauf 04.10.2023 21,65 -
+STRYKER CORP. DL-,10
+ISIN US8636671013
+STK               0,083
+Vorgangs-Nr.: WWUM 00231099794
+02.10.2023 Kauf 04.10.2023 21,30 -
+HOME DEPOT INC. DL-,05
+ISIN US4370761029
+STK               0,074
+Vorgangs-Nr.: WWUM 00231161123
+02.10.2023 Kauf 04.10.2023 108,89 -
+VANG.FTSE A.W. DLA
+ISIN IE00BK5BQT80
+STK               1,076
+Vorgangs-Nr.: WWUM 00231061429
+02.10.2023 Kauf 04.10.2023 22,80 -
+MCDONALDS CORP. DL-,01
+ISIN US5801351017
+STK               0,091
+Vorgangs-Nr.: WWUM 00231189099
+02.10.2023 Kauf 04.10.2023 9,98 -
+NESTLE NAM. ADR/1 SF 1
+ISIN US6410694060
+STK               0,092
+Vorgangs-Nr.: WWUM 00231203094
+02.10.2023 Kauf 04.10.2023 18,98 -
+ADOBE INC.
+ISIN US00724F1012
+STK               0,039
+Vorgangs-Nr.: WWUM 00231247222
+02.10.2023 Kauf 04.10.2023 16,27 -
+NEXTERA ENERGY INC.DL-,01
+ISIN US65339F1012
+STK               0,297
+Vorgangs-Nr.: WWUM 00231270329
+02.10.2023 Kauf 04.10.2023 18,92 -
+MICROSOFT DL-,00000625
+ISIN US5949181045
+STK               0,063
+Vorgangs-Nr.: WWUM 00231377551
+02.10.2023 Kauf 04.10.2023 20,13 -
+BRIT.AMER.TOBACCO LS-,25
+ISIN GB0002875804
+STK               0,674
+Vorgangs-Nr.: WWUM 00231389908
+Übertrag: 108,00
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KKTKK801-043.041
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 023010
+Fortsetzung: Seite 3/3
+Konto-Nr.: 1869641009   BLZ: 700 331 00   IBAN: DE04 7003 3100 1869 6410 09   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 108,00
+02.10.2023 Kauf 04.10.2023 18,83 -
+ASML HOLDING EO -,09
+ISIN NL0010273215
+STK               0,034
+Vorgangs-Nr.: WWUM 00231602059
+03.10.2023 Coupons/Dividende 02.10.2023 3,92
+NIKE INC. B
+ISIN US6541061031
+STK              14,21
+19340823
+Vorgangs-Nr.: WWEK 18067427
+16.10.2023 Coupons/Dividende 13.10.2023 2,25
+KEURIG DR PEPPER DL-,01
+ISIN US49271V1008
+STK              13
+19455914
+Vorgangs-Nr.: WWEK 18157625
+31.10.2023 Lastschrift aktiv 31.10.2023 356,29
+Alexander Edin
+DE73200411440240111100
+COBADEHD044
+Scalable Capital Broker 15x Sparpla
+n
+End to end Referenz:
+B5VA7WE8TPKXWCAVDJCFQG
+Mandatsreferenz:
+QNL9VHR4Z7WVUXW9ZANBQC
+Mandatsdatum:
+16.11.2021
+Gläubiger-ID:
+DE63MUC00001787612
+Vorgangs-Nr.: 929414633
+Kontostand in EUR am 31.10.2023 451,63
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KKTKK801-043.041
