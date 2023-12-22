@@ -320,7 +320,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Kundennummer.*$", "^Den Betrag buchen wir mit.*$");
+        Block firstRelevantLine = new Block("^10919 Berlin( Seite 1)?$", "^Den Betrag buchen wir mit.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
