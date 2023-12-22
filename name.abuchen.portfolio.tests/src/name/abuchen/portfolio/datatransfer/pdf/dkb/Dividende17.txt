@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 696332917
+Kundennummer 3096891285
+awtpqiC uGNNqJbwIwjCWN und YEAEV
+hwOYJkxVfssQRh
+Herrn u.Frau Abrechnungsnr. 85345940130
+cFboDhM zmpXIGVpEhjjcM Datum 19.12.2023
+und qftLP DVMoKPyDXFzGkA
+FvDhPht Vdo 16
+39654 FuUvur Qh gxL RcrSX
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 497 MAIN STREET CAPITAL CORP. US56035L1044 (A0X8Y3)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 15.12.2023 Dividende pro Stück 0,235 USD
+Bestandsstichtag 06.12.2023 Herkunftsland USA
+Ex-Tag 07.12.2023 Art der Dividende Monatliche Dividende
+Geschäftsjahr 01.01.2023 - 31.12.2023
+Devisenkurs EUR / USD 1,1002
+Devisenkursdatum 19.12.2023
+Dividendengutschrift 211,50 USD 192,24+ EUR
+Umrechnung in EUR 192,24 EUR
+Einbehaltene Quellensteuer 15 % auf 211,50 USD 28,84- EUR
+Anrechenbare Quellensteuer 15 % auf 192,24 EUR 28,84 EUR
+Kapitalertragsteuerpflichtige Dividende 192,24 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 28,84 EUR 115,36 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 76,88 EUR
+Anteilige Berechnungsgrundlage für (50,00 %) entspricht 38,44 EUR
+Kapitalertragsteuer 24,45 % auf 38,44 EUR 9,40- EUR
+Solidaritätszuschlag 5,5 % auf 9,40 EUR 0,51- EUR
+Kirchensteuer 9 % auf 9,40 EUR 0,84- EUR
+Anteilige Berechnungsgrundlage für (50,00 %) entspricht 38,44 EUR
+Kapitalertragsteuer 24,45 % auf 38,44 EUR 9,40- EUR
+Solidaritätszuschlag 5,5 % auf 9,40 EUR 0,51- EUR
+Kirchensteuer 9 % auf 9,40 EUR 0,84- EUR
+Ausmachender Betrag 141,90+ EUR
+Bitte ggf. Rückseite beachten.
+0883.12200101.0012054ER01
+
+Seite 2
+Depotnummer 126072620
+Kundennummer 0210779768
+Abrechnungsnr. 21909666735
+Datum 19.12.2023
+Lagerstelle Clearstream Banking Lux (855719 / 28196)
+Den Betrag buchen wir mit Wertstellung 19.12.2023 zu Gunsten des Kontos 9365186941 (IBAN DE81 0209 9860 3621
+4110 01), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.174,52
+Ertrag 28,84
+0,00 0,00 0,00 28,84- 76,88
+Nachher 0,00 0,00 0,00 0,00 1.251,40
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.12200101.0012055ER01
