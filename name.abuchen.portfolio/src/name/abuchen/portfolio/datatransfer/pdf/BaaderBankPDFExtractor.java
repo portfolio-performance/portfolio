@@ -26,7 +26,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Baader Bank");
+        addBankIdentifier("Baader Bank Aktiengesellschaft");
+        addBankIdentifier("Baader Bank AG");
+        addBankIdentifier("Verrechnungskonto bei der Baader Bank");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -42,7 +44,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH";
+        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA";
     }
 
     private void addBuySellTransaction()
@@ -74,7 +76,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
+                        // @formatter:off
                         // Is type --> "Spitzenregulierung" change from BUY to SELL
+                        // @formatter:off
                         .section("type").optional() //
                         .match("^(?<type>Spitzenregulierung).*$") //
                         .assign((t, v) -> {
@@ -82,35 +86,63 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // Nominale ISIN: IE0032895942 WKN: 911950 Kurs
-                        // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
-                        // Registered Shares o.N.
-                        // Kurswert EUR 208,74
-                        // @formatter:on
-                        .section("isin", "wkn", "name", "nameContinued", "currency") //
-                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$") //
-                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
-                        .match("^(?<nameContinued>.*)$") //
-                        .assign((t, v) -> {
-                            if (v.get("nameContinued").endsWith("p.STK"))
-                                v.put("nameContinued", v.get("nameContinued").replace("p.STK", ""));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nominale ISIN: IE0032895942 WKN: 911950 Kurs
+                                        // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
+                                        // Registered Shares o.N.
+                                        // Kurswert EUR 208,74
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "nameContinued", "currency") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$") //
+                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            if (v.get("nameContinued").endsWith("p.STK"))
+                                                                v.put("nameContinued", v.get("nameContinued").replace("p.STK", ""));
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Nominale ISIN: DE000VU9QLB0 WKN: VU9QLB Kurs
+                                        // EUR   1.000,00 15,00 % 97,28 %
+                                        // Vontobel Financial Products
+                                        // Aktienanleihe v.23(24)ZAL
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "nameContinued", "currency") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$") //
+                                                        .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
-                        // Units 2.734 iShsIII-Core MSCI World U.ETF EUR 73.128
-                        // @formatter:on
-                        .section("local", "shares") //
-                        .match("^(?<local>(STK|Units)) (?<shares>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> {
-                            if ("Units".equals(v.get("local")))
-                                t.setShares(asShares(v.get("shares"), "en", "US"));
-                            else
-                                t.setShares(asShares(v.get("shares")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // STK 2 iShs DL Corp Bond UCITS ETF EUR 104,37
+                                        // Units 2.734 iShsIII-Core MSCI World U.ETF EUR 73.128
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("local", "shares") //
+                                                        .match("^(?<local>(STK|Units)) (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            if ("Units".equals(v.get("local")))
+                                                                t.setShares(asShares(v.get("shares"), "en", "US"));
+                                                            else
+                                                                t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // EUR   1.000,00 15,00 % 97,28 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\w]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .assign((t, v) -> {
+                                                            // Percentage quotation, workaround for bonds
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -221,6 +253,19 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^(?<note>Spitzenregulierung).*$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+
+                        // @formatter:off
+                        // Stückzinsen für 54 Tag(e) nächster Zinstermin: 27.09.2023 EUR 9,36
+                        // @formatter:on
+                        .section("note1", "note2", "note3").optional() //
+                        .match("^(?<note1>St.ckzinsen .* [\\d]+ Tag\\(e\\)).* (?<note3>[\\w]{3}) (?<note2>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
+                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), ": "));
+                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                        })
+
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(BuySellEntryItem::new);
 
@@ -1111,6 +1156,13 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Provision Smartbroker (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Provision TradersPlace EUR 4,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Provision TradersPlace (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
