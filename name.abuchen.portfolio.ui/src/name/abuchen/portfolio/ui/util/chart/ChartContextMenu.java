@@ -52,7 +52,7 @@ import name.abuchen.portfolio.util.TextUtil;
             manager.add(new Separator());
         }
 
-        Action actionAdjustRange = new Action(Messages.MenuChartAdjustRange)
+        Action actionAdjustRange = new Action(Messages.MenuChartAdjustRangeToOriginalSize)
         {
             @Override
             public void run()
