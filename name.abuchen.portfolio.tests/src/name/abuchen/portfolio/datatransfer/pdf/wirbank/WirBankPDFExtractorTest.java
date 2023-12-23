@@ -695,7 +695,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-31T00:00"), hasShares(0.025), //
                         hasSource("Kauf08.txt"), //
@@ -794,7 +794,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-08T00:00"), hasShares(0.027), //
                         hasSource("Kauf10_English.txt"), //
@@ -880,7 +880,7 @@ public class WirBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2022-05-19T00:00"), hasShares(0.027), //
                         hasSource("Kauf11_Francais.txt"), //

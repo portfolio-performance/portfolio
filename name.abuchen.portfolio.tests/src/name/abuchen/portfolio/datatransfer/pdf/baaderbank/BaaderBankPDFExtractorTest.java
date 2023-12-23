@@ -1210,7 +1210,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-06-14T08:48:32"), hasShares(52.22), //
                         hasSource("Kauf27.txt"), //
@@ -1310,7 +1310,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-11-06T10:13:44"), hasShares(5), //
                         hasSource("Kauf29.txt"), //
@@ -1410,7 +1410,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-11-17T10:37:30"), hasShares(10), //
                         hasSource("Kauf31.txt"), //
@@ -1479,7 +1479,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-12-06T19:25:22"), hasShares(100), //
                         hasSource("Kauf32.txt"), //

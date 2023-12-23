@@ -4949,7 +4949,7 @@ public class EbasePDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-23T00:00"), hasShares(30.000000), //
                         hasSource("Umsatzabrechnung27.txt"), //
