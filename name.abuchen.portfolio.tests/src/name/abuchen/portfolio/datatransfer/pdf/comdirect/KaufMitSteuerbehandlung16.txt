@@ -1,0 +1,180 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                        
+                             
+                                       
+                             
+    11833 010
+Depotnr.:        4711
+            BLZ:             200 411 11
+Max Mustermann                
+                          
+                             
+Blumenstraße                                              
+12345 Musterstadt                                          
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 14.11.2023                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 92 017178                                                                                                       
+                    317309783000      Rechnungsnummer   : 627068187716DB85                                                          
+Geschäftstag      : 13.11.2023        Abwicklung        : FRANKFURT                                                                 
+                                                          Außerbörslich                                                             
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+  14,00000% SG Issuer S.A.                                               SR7YCM                                                     
+            EO-MTN 23(24) Tesla                                    DE000SR7YCM4                                                     
+Zinstermin        : 20. NOVEMBER                                                                                                    
+Fälligkeit        : GESAMTFAELLIG                                                                                                   
+                    am 20.11.2024                                                                                                   
+                    Gemäß Rückzahlungsbedingungen                                                                                   
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Preis von                                                                                             
+EUR  1.000                100%                                                                                                      
+                          Kurswert                    : EUR            1.000,00                                                     
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE69 2004 1111 04711 00   EUR     20.11.2023        EUR            1.000,00                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Ihre comdirect                                                                                                                      
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+4711  Max Mustermann                                     
+                                                  
+            
+200 411 11 Blumengasse                                       12345 Musterstadt                                  
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t                                    
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  1  1833
+                                                  
+ T  e  le  f o  n  :              0  4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                        1  4  . 1  1  .2023         
+Max Mustermann                   D   e  p  o  t  n  u  m   m  er:        4711  
+Blumengasse                     
+12345   R  e  f e  r e  n  z  - N   u mmer:     0P   I J  Z  B  2  1  X  FR000BZ   Musterstadt
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 92017178 vom 13.11.2023                                                                
+EUR           1.000 SG ISSUER 23/24 TL0 , WKN / ISIN: SR7YCM  / DE000SR7YCM4                                                      
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R          -1.000,0 0   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  _0 ,_ _0 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 0__,0_ 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R          -1.000,0 0   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 20.11.2023 auf Konto EUR mit der IBAN DE69 2004 1111 04711                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2023 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+in 2023 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+           -3.399,47               942,13               -87,55                 0,00
+nach Ermittlung
+           -3.399,47               942,13
+              -87,55                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+Ihre comdirect                                                                                                                                        
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

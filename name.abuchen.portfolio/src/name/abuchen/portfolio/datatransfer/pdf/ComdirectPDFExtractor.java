@@ -217,7 +217,20 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^St\\. (?<shares>[\\.,\\d]+) .* [A-Z0-9]{6}.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // EUR  1.000                100%
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\w]{3}[\\s]{1,}(?<shares>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+%.*$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
                         // @formatter:off
                         // Handelszeit       : 20:06 Uhr (MEZ/MESZ)
