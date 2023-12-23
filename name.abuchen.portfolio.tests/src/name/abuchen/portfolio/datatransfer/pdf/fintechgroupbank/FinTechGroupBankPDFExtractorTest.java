@@ -3957,7 +3957,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //

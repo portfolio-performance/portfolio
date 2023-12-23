@@ -206,7 +206,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-04-16T18:33"), hasShares(2.00), //
                         hasSource("Kauf04.txt"), //
@@ -486,7 +486,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2017-06-07T00:00"), hasShares(0.843), //
                         hasSource("KaufMitSteuerbehandlung05.txt"), //
@@ -619,7 +619,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-03-11T00:00"), hasShares(720.00), //
                         hasSource("KaufMitSteuerbehandlung07.txt"), //
@@ -710,7 +710,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(6000.00), //
                         hasSource("KaufMitSteuerbehandlung08.txt"), //
@@ -1054,7 +1054,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-05-07T00:00"), hasShares(0.165), //
                         hasSource("KaufMitSteuerbehandlung15.txt"), //
