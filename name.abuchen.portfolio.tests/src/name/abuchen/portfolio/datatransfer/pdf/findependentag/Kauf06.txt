@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Findependent AG
+Bannhaldenweg 11
+5600 Lenzburg
+www.findependent.ch
+service@findependent.ch
+Max Muster Kunden-Nr. 111111 
+Zürichstrasse 99 Portfolio-Nr. 123456789 
+1234 Dorf IBAN CH1234567891234567890
+Lenzburg, 09.08.2023
+ETF-Kauf
+Für deine Anlagelösung wurde folgende ETF-Transaktion getätigt:
+ETF-Name iShares MSCI Japan ESG Screened ETF
+ISIN IE00BFNM3L97
+Valuta 11.08.2023
+Anzahl Anteile 26
+Preis pro Anteil USD 5.866
+Kaufpreis total USD 152.52
+Wechselkurs CHF/USD 0.87695
+Kaufpreis CHF CHF 133.75
+Börsenabgaben CHF 0.05
+Stempelabgaben CHF 0.20
+Verrechneter Betrag CHF 134.00
+Hinweis: Auf dem Devisenwechsel wurde ein Wechselkursaufschlag von max. 0.5% belastet.
+Dein findependent Team
+Erstellt am: 14.12.2023 4 von 9
