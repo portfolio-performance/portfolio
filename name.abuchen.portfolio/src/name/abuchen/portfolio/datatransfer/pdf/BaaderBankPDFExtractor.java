@@ -51,7 +51,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("((Wertpapierabrechnung|Transaction Statement): " //
                         + "(Kauf|Verkauf|Purchase|Sale)" //
-                        + "|Zeichnung|Spitzenregulierung).*");
+                        + "|Zeichnung|Spitzenregulierung|Gesamtr.ckzahlung)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -77,12 +77,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Is type --> "Spitzenregulierung" change from BUY to SELL
+                        // Is type --> "Spitzenregulierung" or "Gesamtrückzahlung" change from BUY to SELL
                         // @formatter:off
                         .section("type").optional() //
-                        .match("^(?<type>Spitzenregulierung).*$") //
+                        .match("^(?<type>(Spitzenregulierung|Gesamtr.ckzahlung)).*$") //
                         .assign((t, v) -> {
-                            if ("Spitzenregulierung".equals(v.get("type")))
+                            if ("Spitzenregulierung".equals(v.get("type")) || "Gesamtrückzahlung".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -95,7 +95,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "wkn", "name", "nameContinued", "currency") //
-                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
                                                         .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> {
@@ -112,7 +112,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "wkn", "name", "nameContinued", "currency") //
-                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price).*$") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
                                                         .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
                                                         .match("^(?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
@@ -187,10 +187,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // Trade Date Trade Time
                                         // 2022-02-28 13:48:52:44
                                         // @formatter:on
-                                        section -> section.attributes("date", "time") //
+                                        section -> section //
+                                                        .attributes("date", "time") //
                                                         .find(".*Trade Date Trade Time.*") //
                                                         .match("^.*(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}):.*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Zu Gunsten Konto 7777777704 Valuta: 22.12.2023 EUR 2.088,13
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zu (Gunsten|Lasten) Konto .* Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
