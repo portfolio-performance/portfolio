@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.66.2
 -----------------------------------------
@@ -170,5 +169,3 @@ ATTN: Banking Services 9900012345
 Mail Zone KC1N
 100 Crosby Parkway
 Covington, KY 41015
-
-```

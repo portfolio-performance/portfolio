@@ -53,6 +53,7 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("11-04-2023", Locale.GERMANY));
         assertEquals(expected, ExtractorUtils.asDate("2023-04-11", Locale.GERMANY));
         assertEquals(expected, ExtractorUtils.asDate("11. April 2023", Locale.GERMANY));
+        assertEquals(expected, ExtractorUtils.asDate("11. APRIL 2023", Locale.GERMANY));
         assertEquals(expected, ExtractorUtils.asDate("11/04/2023", Locale.GERMANY));
 
         // Test valid date strings for each pattern in
@@ -63,6 +64,7 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("20230409", Locale.US));
         assertEquals(expected, ExtractorUtils.asDate("Apr/09/2023", Locale.US));
         assertEquals(expected, ExtractorUtils.asDate("04-09-23", Locale.US));
+        assertEquals(expected, ExtractorUtils.asDate("APR/09/2023", Locale.US));
 
         // Test valid date strings for each pattern in
         // DATE_FORMATTER_CANADA with hints
@@ -78,6 +80,7 @@ public class ExtractorUtilsDateParserTest
         // DATE_FORMATTER_UK with hints
         expected = LocalDateTime.of(2023, 4, 11, 0, 0);
         assertEquals(expected, ExtractorUtils.asDate("11 Apr 2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("11 APR 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("04/11/2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("11.04.2023", Locale.UK));
     }

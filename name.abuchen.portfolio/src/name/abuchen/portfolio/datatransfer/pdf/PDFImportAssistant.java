@@ -56,7 +56,7 @@ public class PDFImportAssistant
         extractors.add(new EasyBankAGPDFExtractor(client));
         extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
-        extractors.add(new FidelityPDFExtractor(client));
+        extractors.add(new FidelityInternationalPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FindependentAGPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));

@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.66.2
 -----------------------------------------
@@ -27,6 +26,4 @@ Net Cash Proceeds¹     -$2,423.41
 PLEASE RETAIN THIS STATEMENT FOR YOUR RECORDS
 ¹  Your proceeds will be held by Fidelity in your trust. Please contact Fidelity Stock Plan Services to request a distribution.
 PAGE 1 OF 1 Recordkeeping and administrative services for your company's equity compensation plans are
-provided by your company and its service providers.
-
-```
+provided by your company and its service providers
