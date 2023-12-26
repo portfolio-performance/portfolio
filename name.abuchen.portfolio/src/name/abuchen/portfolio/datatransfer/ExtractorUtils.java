@@ -110,7 +110,9 @@ public class ExtractorUtils
                     createFormatter("yyyyMMdd HHmmss", Locale.US), //$NON-NLS-1$
                     createFormatter("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
                     createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd.MM.yyyy hh:mm:ss a", Locale.UK) }; //$NON-NLS-1$
+                    createFormatter("dd.MM.yyyy hh:mm:ss a", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd/MM/yy HH.mm", Locale.UK), //$NON-NLS-1$
+                    createFormatter("d/MM/yy HH.mm", Locale.UK) }; //$NON-NLS-1$
 
     private ExtractorUtils()
     {

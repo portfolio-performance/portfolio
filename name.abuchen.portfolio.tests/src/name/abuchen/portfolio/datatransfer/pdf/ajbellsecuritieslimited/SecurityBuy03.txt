@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+XXXXXXX CONTNOTE                      05122019 XXXXXX     000000049992168 44619C5L6BV
+Tel: 0845 373 3479
+Email: dealingservices@Youinvest.co.uk
+Mr XXXX XXXX
+XXXX
+XXXX
+XXXX
+UNITED KINGDOM
+XXXXXXXX
+CONTRACT NOTE
+Account No. XXXX AJ Bell Youinvest Dealing account for Mr XXX XXXX
+     Deal date           Time Settlement date Bought or Sold          Sedol Reference
+05/12/19 10.22 09/12/19 Bought BDGSVH2 C5L6BV
+We have bought for you as agent
+XTRACKERS (IE) PLC MSCI WLD INFO TECHNOLOGY UCITS ETF 1C
+Venue Quantity Price Consideration
+XLON                   380 26.23712         9,970.11 GBP
+Dealing charge          9.95 GBP
+                     _____________    
+
+Total debit      9,980.06 GBP
+Order type: Market order
+This transaction is subject to the rules of the London Stock Exchange
+Dealing services for AJ Bell Youinvest are provided by AJ Bell Securities Limited (company number 2723420)
+whose registered office is: 4 Exchange Quay, Salford Quays, Manchester M5 3EE .
+AJ Bell Securities Limited is a member of the London Stock Exchange and is authorised and regulated by the Financial Conduct Authority (number 155593)
