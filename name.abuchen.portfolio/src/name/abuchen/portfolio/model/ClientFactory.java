@@ -835,6 +835,8 @@ public class ClientFactory
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
+            case 58:
+                fixDataSeriesLabelForAccumulatedTaxes(client);
             case Client.CURRENT_VERSION:
                 break;
             default:
@@ -1534,6 +1536,16 @@ public class ClientFactory
                                                     client.addSecurity(s);
                                             }
                                         }));
+    }
+
+    private static void fixDataSeriesLabelForAccumulatedTaxes(Client client)
+    {
+        var configSet = client.getSettings().getConfigurationSet("StatementOfAssetsHistoryView-PICKER"); //$NON-NLS-1$
+
+        configSet.getConfigurations() //
+                        .filter(config -> config.getData() != null) //
+                        .forEach(config -> config.setData(config.getData() //
+                                        .replace("Client-taxes;", "Client-taxes_accumulated;"))); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("nls")
