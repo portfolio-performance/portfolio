@@ -828,15 +828,15 @@ public class ClientFactory
 
                 // remove obsolete MARKET properties
                 removeMarketSecurityProperty(client);
-            case 57:
+            case 57: // NOSONAR
                 // remove securities in watchlists which are not present in "all
                 // securities", see #3452
                 removeWronglyAddedSecurities(client);
+            case 58:
+                fixDataSeriesLabelForAccumulatedTaxes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
-            case 58:
-                fixDataSeriesLabelForAccumulatedTaxes(client);
             case Client.CURRENT_VERSION:
                 break;
             default:
