@@ -334,15 +334,15 @@ The structure of the PDF importers is as follows:
 * Bank name
   	* `getLabel` --> display label of bank/broker, e.g. *Deutsche Bank Privat- und Geschäftskunden AG*
 * Transaction types (basic types)
-	* `addBuySellTransaction` --> Purchase and sale ( single settlement )
-	* `addSummaryStatementBuySellTransaction`  --> Purchase and sale ( multiple settlements )
+	* `addBuySellTransaction` --> Purchase and sale (single settlement)
+	* `addSummaryStatementBuySellTransaction`  --> Purchase and sale (multiple settlements)
 	* `addBuyTransactionFundsSavingsPlan` --> Savings plans
 	* `addDividendeTransaction` --> Dividends
 	* `addTaxTreatmentForDividendeTransaction` --> Tax treatment for dividends
 	* `addAdvanceTaxTransaction` --> Advance tax payment
   	* `addCreditcardStatementTransaction` --> Credit card transactions
   	* `addAccountStatementTransaction` --> Giro account transactions
-  	* `addDepotStatementTransaction` --> Securities account transactions ( Settlement account )
+  	* `addDepotStatementTransaction` --> Securities account transactions (settlement account)
   	* `addTaxStatementTransaction` --> Tax settlement
   	* `addDeliveryInOutBoundTransaction` --> Inbound and outbound deliveries
   	* `addTransferInOutBoundTransaction` --> Transfer in and outbound deliveries
@@ -356,7 +356,7 @@ The structure of the PDF importers is as follows:
 	* Example: [Bank SLM](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BankSLMPDFExtractor.java) (de_CH)
 	* Example:  [Baader Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) (de_DE + en_US)
 * Add post processing on imported transaction using a `postProcessing` method:
-	* Example: [Targobank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/TargobankPDFExtractor.java)
+	* Example: [ComDirect](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java)
 
 
 ### Naming conventions for detected values
@@ -364,7 +364,7 @@ The structure of the PDF importers is as follows:
 The importers are structured according to the following scheme and the mapping variables are to be adhered to as far as possible:
 
 * Type (Optional)
-  * `type` --> Exchange of the transaction pair ( e.g. from purchase to sale )
+  * `type` --> Exchange of the transaction pair (e.g. from purchase to sale)
 * Security identification
   * `name` --> Security name
   * `isin` --> International Securities Identification Number
@@ -375,8 +375,8 @@ The importers are structured according to the following scheme and the mapping v
   * `shares` --> Shares
 * Date and time
   * `date` --> Date
-  * `time` --> Time ( Optional )
-* Total amount (With fees and taxes)
+  * `time` --> Time (optional)
+* Total amount (with fees and taxes)
   * `amount` --> Amount e.g. 123,15
   * `currency` --> Currency of the total amount
 * Foreign currency
@@ -427,7 +427,7 @@ Via the application menu, users can create a test case file. The test file is th
 * The test files should not be modified beyond the anonymization
 * All source code (including the test files) are stored in UTF-8 encoding
 * Follow the naming convention for test files (type in the local language, two digit counter):
-	* `Buy01.txt, Sell01.txt` --> Purchase and sale (single settlements) ( e.g. Buy01.txt or Sell01.txt )
+	* `Buy01.txt, Sell01.txt` --> Purchase and sale (single settlements) (e.g. SecurityBuy01.txt or SecuritySale01.txt)
 	* `Dividend01.txt` --> Dividends (single statements)
 	* `SteuermitteilungDividende01.txt` --> Tax settlement for dividends (single settlement)
 	* `SammelabrechnungKaufVerkauf01.txt` --> Purchase and sale (multiple settlements)
@@ -475,6 +475,9 @@ Keep in mind that the regular expressions work against text that is automaticall
 | Time			| 12:01			| `\\d+:\\d+`			| `[\\d]{2}\\:[\\d]{2}}`						|
 | ISIN			| IE00BKM4GZ66	| `\\w+`					| `[A-Z]{2}[A-Z0-9]{9}[0-9]`					|
 | WKN			| A111X9		| `\\w+`					| `[A-Z0-9]{6}`									|
+| Valoren		| 1098758		| `\\w+`					| `[A-Z0-9]{5,9}`								|
+| SEDOL			| B5B74S0		| `\\w+`					| `[A-Z0-9]{7}`									|
+| CUSIP			| 11135F101		| `\\w+`					| `[A-Z0-9]{9}`									|
 | Amount		| 751,68		| `[\\d,.]+`				| `[\\.,\\d]+`									|
 |				|				|							| `[\\.\\d]+,[\\d]{2}`							|
 |				| 74'120.00		| `[\\d.']+`				| `[\\.'\\d]+`									|
