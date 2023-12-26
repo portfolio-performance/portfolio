@@ -1540,6 +1540,9 @@ public class ClientFactory
 
     private static void fixDataSeriesLabelForAccumulatedTaxes(Client client)
     {
+        if (!client.getSettings().hasConfigurationSet("StatementOfAssetsHistoryView-PICKER")) //$NON-NLS-1$
+            return;
+
         var configSet = client.getSettings().getConfigurationSet("StatementOfAssetsHistoryView-PICKER"); //$NON-NLS-1$
 
         configSet.getConfigurations() //
