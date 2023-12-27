@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -13,10 +12,9 @@ import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -50,13 +48,17 @@ public class MyDividends24Uploader
     }
 
     @SuppressWarnings("unchecked")
-    public void upload(Client client, CurrencyConverter converter, String portfolioId) throws IOException
+    public void upload(Client client, CurrencyConverter converter, String portfolioId, Portfolio ppPortfolio)
+                    throws IOException
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
-        PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
+        /*
+         * ClientSnapshot snapshot = ClientSnapshot.create(client, converter,
+         * LocalDate.now()); PortfolioSnapshot portfolio =
+         * snapshot.getJointPortfolio();
+         */
 
         // Filters out any transactions that do not have an ISIN.
-        List<JSONObject> resultTransactions = portfolio.getPortfolio().getTransactions().stream()
+        List<JSONObject> resultTransactions = ppPortfolio.getTransactions().stream()
                         .filter(item -> item.getSecurity().getIsin() != null).map(item -> {
                             double quantity = item.getShares() / Values.Share.divider();
                             double buyingprice = item.getGrossValueAmount() / Values.Amount.divider() / quantity;
@@ -74,6 +76,8 @@ public class MyDividends24Uploader
                             jsonObject.put("isin", isin); //$NON-NLS-1$
                             return jsonObject;
                         }).toList();
+
+
 
         if (resultTransactions.isEmpty())
             return;
