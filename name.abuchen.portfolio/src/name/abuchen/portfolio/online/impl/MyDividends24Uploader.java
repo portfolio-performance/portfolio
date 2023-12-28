@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,8 +15,11 @@ import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -51,22 +56,34 @@ public class MyDividends24Uploader
     public void upload(Client client, CurrencyConverter converter, String portfolioId, Portfolio ppPortfolio)
                     throws IOException
     {
-        /*
-         * ClientSnapshot snapshot = ClientSnapshot.create(client, converter,
-         * LocalDate.now()); PortfolioSnapshot portfolio =
-         * snapshot.getJointPortfolio();
-         */
+
+        Stream<PortfolioTransaction> stream;
+
+        if (ppPortfolio != null)
+        {
+            // Case: one portfolio of PP is selected
+            stream = ppPortfolio.getTransactions().stream();
+        }
+        else
+        {
+            // Case: all portfolios of PP is selected
+            ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+            PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
+            stream = portfolio.getPortfolio().getTransactions().stream();
+
+        }
 
         // Filters out any transactions that do not have an ISIN.
-        List<JSONObject> resultTransactions = ppPortfolio.getTransactions().stream()
-                        .filter(item -> item.getSecurity().getIsin() != null).map(item -> {
+        List<JSONObject> resultTransactions = stream.filter(item -> item.getSecurity().getIsin() != null)
+                        .map(item -> {
                             double quantity = item.getShares() / Values.Share.divider();
                             double buyingprice = item.getGrossValueAmount() / Values.Amount.divider() / quantity;
                             String purchasedate = item.getDateTime().toString();
                             String isin = item.getSecurity().getIsin();
                             String type = item.getType().isPurchase() ? "buy" : "sell"; //$NON-NLS-1$ //$NON-NLS-2$
 
-                            // Creates a JSONObject for each transaction with
+                            // Creates a JSONObject for each transaction
+                            // with
                             // the calculated data.
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("type", type); //$NON-NLS-1$

@@ -103,24 +103,16 @@ public class UploadToMyDividends24Handler
         if (portfolios.isEmpty())
             return Optional.empty();
 
-        /*
-         * if (portfolios.size() == 1) { if (!MessageDialog.openConfirm(shell,
-         * Messages.LabelInfo, Messages.MyDividends24ConfirmUpload)) return
-         * Optional.empty(); return Optional.of(portfolios.get(0).getValue()); }
-         */
 
         else
         {
-            PortfolioSelectionDialog2 dialog = new PortfolioSelectionDialog2(shell);
+            PortfolioSelectionDialog24 dialog = new PortfolioSelectionDialog24(shell);
             dialog.setMyDividendsPortfolio(portfolios);
 
             List<Object> ppPortfolios = new ArrayList<>();
             ppPortfolios.add(name.abuchen.portfolio.Messages.LabelJointPortfolio);
             ppPortfolios.addAll(clientInput.getClient().getPortfolios());
             dialog.setPortfolio(ppPortfolios);
-
-
-
 
             if (dialog.open() == Window.OK)
             {
@@ -130,8 +122,7 @@ public class UploadToMyDividends24Handler
                 if (dialog.getSelectedPPPortfolio() instanceof Portfolio p)
                     portfolio = p;
 
-
-                if (selected != null && portfolio != null)
+                if (selected != null)
                 {
                     Selection selection = new Selection(selected.getValue(), portfolio);
                     return Optional.of(selection);
@@ -182,7 +173,7 @@ public class UploadToMyDividends24Handler
     }
 }
 
-class PortfolioSelectionDialog2 extends Dialog
+class PortfolioSelectionDialog24 extends Dialog
 {
 
     private List<Object> portfolios;
@@ -196,10 +187,9 @@ class PortfolioSelectionDialog2 extends Dialog
 
     private boolean includeTransactions = false;
 
-    protected PortfolioSelectionDialog2(Shell parentShell)
+    protected PortfolioSelectionDialog24(Shell parentShell)
     {
         super(parentShell);
-        // TODO Auto-generated constructor stub
     }
 
     public void setMyDividendsPortfolio(List<Pair<Integer, String>> myDividendsPortfolios)
@@ -258,15 +248,6 @@ class PortfolioSelectionDialog2 extends Dialog
         buildPortfolioTable(container);
         buildMyDividendsTable(container);
 
-        /*
-         * Button btnCheckbox = new Button(container, SWT.CHECK);
-         * btnCheckbox.setText(Messages.DivvyDiaryIncludeTransactionHistory);
-         * btnCheckbox.setSelection(includeTransactions);
-         * btnCheckbox.addSelectionListener(
-         * SelectionListener.widgetSelectedAdapter(e -> includeTransactions =
-         * btnCheckbox.getSelection())); GridDataFactory.fillDefaults().span(2,
-         * 1).grab(true, false).applyTo(btnCheckbox);
-         */
         return composite;
     }
 
