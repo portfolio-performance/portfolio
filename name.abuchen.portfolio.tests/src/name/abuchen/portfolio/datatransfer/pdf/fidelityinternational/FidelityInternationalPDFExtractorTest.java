@@ -39,6 +39,37 @@ import name.abuchen.portfolio.model.Client;
 public class FidelityInternationalPDFExtractorTest
 {
     @Test
+    public void testSecurityBuy01()
+    {
+        FidelityInternationalPDFExtractor extractor = new FidelityInternationalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SecurityBuy01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("31620M106"), hasTicker("FIS"), //
+                        hasName("FIDELITY NATL"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-12-08T00:00"), hasShares(7.5146), //
+                        hasSource("SecurityBuy01.txt"), //
+                        hasNote("Ref. No. 23342-0D6SVL"), //
+                        hasAmount("USD", 442.83), hasGrossValue("USD", 442.83), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testSecuritySale01()
     {
         FidelityInternationalPDFExtractor extractor = new FidelityInternationalPDFExtractor(new Client());
@@ -67,6 +98,37 @@ public class FidelityInternationalPDFExtractorTest
                         hasNote("Ref. No. 23346-K9T1Q9"), //
                         hasAmount("USD", 2423.41), hasGrossValue("USD", 2423.54), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.13))));
+    }
+
+    @Test
+    public void testSecuritySale02()
+    {
+        FidelityInternationalPDFExtractor extractor = new FidelityInternationalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SecuritySale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("31620M106"), hasTicker("FIS"), //
+                        hasName("FIDELITY NATL"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-07-19T00:00"), hasShares(30), //
+                        hasSource("SecuritySale02.txt"), //
+                        hasNote("Ref. No. 33107-zz91lf"), //
+                        hasAmount("USD", 2887.43), hasGrossValue("USD", 2887.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.07))));
     }
 
     @Test
