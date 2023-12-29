@@ -154,76 +154,127 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift)", jointAccount);
+        DocumentType type = new DocumentType("(Dividendengutschrift" //
+                        + "|Zinsgutschrift" //
+                        + "|Aussch.ttung Investmentfonds" //
+                        + "|Ertragsgutschrift)", jointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("^(Dividendengutschrift|Aussch.ttung Investmentfonds|Ertragsgutschrift .*)$");
-        type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        pdfTransaction
-                // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
-                // INHABER-AKTIEN C ZY 1
-                // Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
-                .section("name", "isin", "wkn", "name1", "currency")
-                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$")
-                .match("^(?<name1>.*)$")
-                .match("^.* ((Dividende|Ertrag) ([\\s]+)?pro St.ck|Aussch.ttung pro St\\.) [\\.,\\d]+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    if (!v.get("name1").startsWith("Zahlbarkeitstag"))
-                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+        Block firstRelevantLine = new Block("^(Dividendengutschrift" //
+                        + "|Zinsgutschrift" //
+                        + "|Aussch.ttung Investmentfonds" //
+                        + "|Ertragsgutschrift .*)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+        pdfTransaction //
 
-                // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
-                .section("shares")
-                .match("^St.ck (?<shares>[\\.,\\d]+) .*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                // Den Betrag buchen wir mit Wertstellung 10.06.2021 zu Gunsten des Kontos XXXX (IBAN DE88 4306 0967 1154
-                .section("date")
-                .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
+                                        // INHABER-AKTIEN C ZY 1
+                                        // Zahlbarkeitstag 08.06.2021 Dividende pro Stück 5,00 PLN
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^.* ((Dividende|Ertrag)([\\s]{1,})pro St.ck|Aussch.ttung pro St\\.) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                // Ausmachender Betrag 13,28+ EUR
-                .section("amount", "currency")
-                .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // EUR 10.000,00 RECONCEPT GREEN ENERGY ASSET B DE000A3MQQJ0 (A3MQQJ)
+                                        // INH.-SCHULDV. 2022(2024/2027)
+                                        // Zahlbarkeitstag 28.12.2023 Zinssatz p. a. 4,25 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin", "wkn", "name1") //
+                                                        .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                // Devisenkurs EUR / PLN 4,5044
-                // Dividendengutschrift 85,00 PLN 18,87+ EUR
-                .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional()
-                .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$")
-                .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})")
-                .assign((t, v) -> {
-                    ExtrExchangeRate rate = asExchangeRate(v);
-                    type.getCurrentContext().putType(rate);
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
-                    Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                    Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Stück 17 CD PROJEKT S.A. PLOPTTC00011 (534356)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // EUR 10.000,00 RECONCEPT GREEN ENERGY ASSET B DE000A3MQQJ0 (A3MQQJ)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
+                                                        .assign((t, v) -> {
+                                                            // Percentage quotation, workaround for bonds
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
-                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                })
+                        // @formatter:off
+                        // Den Betrag buchen wir mit Wertstellung 10.06.2021 zu Gunsten des Kontos XXXX (IBAN DE88 4306 0967 1154
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                // Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
-                .section("note").optional()
-                .match("^.* Art der Dividende (?<note>.*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        // @formatter:off
+                        // Ausmachender Betrag 13,28+ EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
 
-                .wrap(TransactionItem::new);
+                        // @formatter:off
+                        // Devisenkurs EUR / PLN 4,5044
+                        // Dividendengutschrift 85,00 PLN 18,87+ EUR
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "fxCurrency", "gross", "currency").optional() //
+                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Ex-Tag 26.02.2021 Art der Dividende Quartalsdividende
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.* Art der Dividende (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     public void addDepotStatementTransaction()
