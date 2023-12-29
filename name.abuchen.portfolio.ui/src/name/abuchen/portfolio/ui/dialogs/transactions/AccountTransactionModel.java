@@ -474,14 +474,17 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setDividendAmount(BigDecimal amount)
     {
-        triggerDividendAmount(amount);
+        // if the users deletes the input, amount can be null
+        var dividend = amount != null ? amount : BigDecimal.ZERO;
+
+        triggerDividendAmount(dividend);
         long myGrossAmount = calculateGrossAmount4Dividend();
         setFxGrossAmount(myGrossAmount);
     }
 
     public void triggerDividendAmount(BigDecimal amount)
     {
-        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount);
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount); // NOSONAR
     }
 
     public BigDecimal getExchangeRate()
