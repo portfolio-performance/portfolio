@@ -43,7 +43,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("YOU SOLD");
+        DocumentType type = new DocumentType("YOU (PURCHASED|SOLD)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -62,52 +62,91 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "SOLD" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^YOU (?<type>SOLD) [\\.,\\d]+.*$") //
+                        .match("^YOU (?<type>(PURCHASED|SOLD)) [\\.,\\d]+.*$") //
                         .assign((t, v) -> {
                             if ("SOLD".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // I00123456 1 WI# 12-12-23 12-14-23 K9T1Q9 11135F101
-                        // SECURITY DESCRIPTION SYMBOL: AAPL Sale Proceeds     $2,423.54
-                        // APPLE INC
-                        // @formatter:off
-                        .section("wkn", "tickerSymbol", "currency", "name") //
-                        .match("^.* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\w]+ (?<wkn>[A-Z0-9]+)$") //
-                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,}) .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
-                        .match("^(?<name>.*)$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // U98299884 1 000 12-08-23 12-12-23 0D6SVL 31620M106
+                                        // YOU PURCHASED 7.5146 AT $58.9290 PURCHASE PRICE Gain²          $0.00
+                                        // SECURITY DESCRIPTION SYMBOL: FIS EXPLANATION OF PROCEEDS
+                                        // FIDELITY NATL
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "tickerSymbol", "currency", "name") //
+                                                        .match("^.* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\w]+ (?<wkn>[A-Z0-9]+)$") //
+                                                        .match("^YOU PURCHASED [\\.,\\d]+ AT (?<currency>\\p{Sc})[\\.,\\d]+.*$") //
+                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,}) .*$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // I00123456 1 WI# 12-12-23 12-14-23 K9T1Q9 11135F101
+                                        // YOU SOLD 14 AT 173.1100
+                                        // SECURITY DESCRIPTION SYMBOL: AAPL Sale Proceeds     $2,423.54
+                                        // APPLE INC
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "tickerSymbol", "currency", "name") //
+                                                        .match("^.* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\w]+ (?<wkn>[A-Z0-9]+)$") //
+                                                        .match("^YOU SOLD [\\.,\\d]+.*$") //
+                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,}) .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Sale Date: DEC/12/2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Sale Date: (?<date>[\\w]{3}\\/[\\d]{2}\\/[\\d]{4})$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Sale Date: DEC/12/2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Sale Date: (?<date>[\\w]{3}\\/[\\d]{2}\\/[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // FIS ESPP on DEC/08/2023. PURCHASE INFORMATION
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^.* (?<date>[\\w]{3}\\/[\\d]{2}\\/[\\d]{4})\\. PURCHASE INFORMATION$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // YOU SOLD 14 AT 173.1100
+                        // YOU PURCHASED 7.5146 AT $58.9290 PURCHASE PRICE Gain²          $0.00
                         // @formatter:on
                         .section("shares") //
-                        .match("^YOU SOLD (?<shares>[\\.,\\d]+).*$") //
+                        .match("^YOU (PURCHASED|SOLD) (?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Net Cash Proceeds¹     -$2,423.41
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Net Cash Proceeds.* \\-(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Net Cash Proceeds¹     -$2,423.41
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Net Cash Proceeds.* \\-(?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Accumulated Contributions*        $442.83
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Accumulated Contributions.* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // REF # 23346-K9T1Q9
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^REF # (?<note>[A-Z0-9]+\\-[A-Z0-9]+)$") //
+                        .match("^REF # (?<note>[\\w]+\\-[\\w]+)$") //
                         .assign((t, v) -> t.setNote("Ref. No. " + v.get("note")))
 
                         .wrap(BuySellEntryItem::new);
@@ -227,14 +266,14 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                         // 20123-1XXXXX 1* WK# 01-04-21 01-06-21 46428Q109 20123-XXXXX
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>[A-Z0-9]+\\-[A-Z0-9]+) .*$") //
+                        .match("^(?<note>[\\w]+\\-[\\w]+) .*$") //
                         .assign((t, v) -> t.setNote("Ref. No. " + v.get("note")))
 
                         // @formatter:off
                         // 20123-1XXXXX 1* WK# 01-04-21 01-06-21 46428Q109 20123-XXXXX
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^[A-Z0-9]+\\-[A-Z0-9]+ .* (?<note>[A-Z0-9]+\\-[A-Z0-9]+)$") //
+                        .match("^[\\w]+\\-[\\w]+ .* (?<note>[\\w]+\\-[\\w]+)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ord. No. ")))
 
                         .wrap(BuySellEntryItem::new);
