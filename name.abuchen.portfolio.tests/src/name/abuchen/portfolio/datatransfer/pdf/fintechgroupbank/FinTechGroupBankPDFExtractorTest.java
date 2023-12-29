@@ -24,6 +24,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -1358,9 +1359,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1321692761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(399.99))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(399.99))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -3930,7 +3931,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasDate("2023-09-04T09:53"), hasShares(20.00), //
                         hasSource("FlatExDegiroKauf02.txt"), //
                         hasNote("Transaktion-Nr.: 3409315621"), //
-                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1126.29), hasForexGrossValue("USD", 1213.80), //
+                        hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1126.29), //
+                        hasForexGrossValue("USD", 1213.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71 + 1.25))));
     }
 
@@ -3969,6 +3971,92 @@ public class FinTechGroupBankPDFExtractorTest
                             Status s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testFlatExDegiroKauf03()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US912810TB44"), hasWkn("A3KYSD"), hasTicker(null), //
+                        hasName("USA 21/51"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-12-18T15:19"), hasShares(20.00), //
+                        hasSource("FlatExDegiroKauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1159.52), //
+                        hasForexGrossValue("USD", 1264.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2023-12-18T15:19"), hasShares(20.00), //
+                        hasSource("FlatExDegiroKauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasAmount("EUR", 0.87), hasGrossValue("EUR", 0.87), //
+                        hasForexGrossValue("USD", 0.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroKauf03WithSecurityInEUR()
+    {
+        Security security = new Security("USA 21/51", CurrencyUnit.EUR);
+        security.setIsin("US912810TB44");
+        security.setWkn("A3KYSD");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-12-18T15:19"), hasShares(20.00), //
+                        hasSource("FlatExDegiroKauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1159.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2023-12-18T15:19"), hasShares(20.00), //
+                        hasSource("FlatExDegiroKauf03.txt"), //
+                        hasNote("Transaktion-Nr.: 3527408249"), //
+                        hasAmount("EUR", 0.87), hasGrossValue("EUR", 0.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
