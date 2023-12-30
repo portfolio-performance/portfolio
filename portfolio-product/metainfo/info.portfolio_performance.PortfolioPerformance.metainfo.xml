@@ -39,6 +39,38 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.67.0" date="2023-12-30">
+      <description>
+        <ul>
+            <li>New: Update to Eclipse Version 4.30 (Release 2023-12)</li>
+            <li>New: PDF Importer for AJ Bell Securities Limited</li>
+            <li>New: PDF Importer for Findependent AG</li>
+            <li>New: PDF Importer for Fidelity International</li>
+            <li>New: PDF Importer for Liechtensteinische Landesbank</li>
+            <li>New: PDF Importer for Aviva PLC</li>
+            <li>Improvement: New data series 'Taxes' in the asset chart (in addition to the already existing data series 'accumulated taxes')</li>
+            <li>Improvement of the PDF Importer: DZ Bank, FlatEx, Baader Bank, V Bank, ComDirect, DKB, FNZ Bank, Trade Republic, Deutsche Bank</li>
+            <li>Fix: Fixes an issue if the user deletes the value for dividend per share in the input dialog.</li>
+            <li>Fix: Fixes an issue where the information pane could not be fully collapsed by dragging.</li>
+            <li>Fix: Fixes an issue with the display of special characters in the performance tooltip and in the master data infobox.</li>
+            <li>Fix: Fixes an issue with the display of tooltips under macOS when the Control key is pressed.</li>
+        </ul>
+        <ul xml:lang="de">
+            <li>Neu: Update auf Eclipse Version 4.30 (Release 2023-12)</li>
+            <li>Neu: PDF-Importer für AJ Bell Securities Limited</li>
+            <li>Neu: PDF-Importer für Findependent AG</li>
+            <li>Neu: PDF-Importer für Fidelity International</li>
+            <li>Neu: PDF-Importer für die Liechtensteinische Landesbank</li>
+            <li>Neu: PDF-Importer für Aviva PLC</li>
+            <li>Verbesserung: Neue Datenreihe 'Steuern' im Vermögensdiagramm (zusätzlich zu der bereits existierenden Datenreihe 'akkumulierte Steuern')</li>
+            <li>Verbesserung des PDF-Importers: DZ Bank, FlatEx, Baader Bank, V Bank, ComDirect, DKB, FNZ Bank, Trade Republic, Deutsche Bank</li>
+            <li>Fix: Behebt ein Problem, wenn der Benutzer im Eingabedialog den Wert für die Dividende pro Anteil löscht.</li>
+            <li>Fix: Behebt ein Problem, bei dem das Informationsfenster nicht vollständig zusammengeschoben werden konnte.</li>
+            <li>Fix: Behebt ein Problem mit der Anzeige von Sonderzeichen im Performance-Tooltip und in der Stammdaten-Infobox</li>
+            <li>Fix: Behebt ein Problem bei der Anzeige des Tooltips unter macOS, wenn die Control-Taste gedrückt wird</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.66.2" date="2023-12-13">
       <description>
         <ul>
