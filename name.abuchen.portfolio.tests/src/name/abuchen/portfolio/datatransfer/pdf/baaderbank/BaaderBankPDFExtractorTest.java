@@ -3521,6 +3521,77 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende19()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1XNHC34"), hasWkn("A0MW0M"), hasTicker(null), //
+                        hasName("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-11-29T00:00"), hasShares(140), //
+                        hasSource("Dividende19.txt"), //
+                        hasNote("Vorgangs-Nr.: 20483837"), //
+                        hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende19WithSecurityInEUR()
+    {
+        Security security = new Security("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        security.setIsin("IE00B1XNHC34");
+        security.setWkn("A0MW0M");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-11-29T00:00"), hasShares(140), //
+                        hasSource("Dividende19.txt"), //
+                        hasNote("Vorgangs-Nr.: 20483837"), //
+                        hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
+                        hasForexGrossValue("EUR", 5.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
