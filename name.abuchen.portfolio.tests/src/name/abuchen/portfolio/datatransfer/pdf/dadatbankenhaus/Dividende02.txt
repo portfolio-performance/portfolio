@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Abrechnung Ereignis
+84052423-27.12.2023
+Depot-Nr.: Depotnummer
+Vorname Nachname               
+01/5020
+DADAT-Bank                         
+Herrn
+Vorname Nachname
+Straße
+PLZ Ort                                                                                                                                                                                                     
+Wir haben für Sie am 27.12.2023 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+100 Stk
+Titel: US56035L1044  M a i n  S t r e e t Capital Corp.          
+Registered Shares DL -,01          
+Dividende: 0,275 USD 
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+Zinsen/Dividenden: 27,50 USD 
+Quellensteuer: -4,13 USD 
+Auslands-KESt: -3,44 USD 
+19,93 USD 
+Devisenkurs: 1,1082 (22.12.2023) 17,99 EUR 
+Zu Gunsten IBAN IBAN 17,99 EUR 
+Valuta 27.12.2023
+Extag: 19.12.2023
+Record-Tag: 20.12.2023
+QUSt pro Stück 15,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+Devisenkurs: 1,1082 (22.12.2023)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 100 Stk
+Ertrag: 24,82 EUR
+27.12.2023 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+05181 Doknr.: BSG0-045-0000005138
