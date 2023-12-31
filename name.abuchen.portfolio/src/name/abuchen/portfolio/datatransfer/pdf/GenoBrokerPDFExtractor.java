@@ -62,7 +62,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        .oneOf(
+                        .oneOf( //
                                         // @formatter:off
                                         // Nominale Wertpapierbezeichnung ISIN (WKN)
                                         // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
@@ -79,8 +79,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
 
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                        })
-                                        ,
+                                                        }),
                                         // @formatter:off
                                         // Nominale Wertpapierbezeichnung ISIN (WKN)
                                         // Stück 2.100 LOGAN ENERGY CORP.                 CA5408991019 (A3EMQR)
@@ -88,18 +87,17 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                         // Abrech.-Preis 0,35 CAD
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("name", "isin", "wkn", "name1", "currency")
-                                                .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                .match("^(?<name1>.*)$") //
-                                                .match("^Abrech\\.\\-Preis [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                .assign((t, v) -> { //
-                                                    if (!v.get("name1").startsWith("Handels-/Ausführungsplatz")) //
-                                                        v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
+                                                        .attributes("name", "isin", "wkn", "name1", "currency")
+                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Abrech\\.\\-Preis [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> { //
+                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz")) //
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
 
-                                                    t.setSecurity(getOrCreateSecurity(v));
-                                                })
-                                )
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
@@ -121,7 +119,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> { //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -130,9 +128,9 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs (EUR/CAD) 1,4508 vom 01.08.2023
                         // Kurswert 506,62- EUR
                         // @formatter:on
-                        .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional()
-                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$")
-                        .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$")
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
+                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$") //
+                        .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -143,25 +141,23 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
-                        .optionalOneOf(
+                        .optionalOneOf( //
                                         // @formatter:off
                                         //  Auftragsnummer
                                         // Mustermann 00000000     Datum
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("note1", "note2") //
-                                                .match("^.*(?<note1>Auftragsnummer).*$") //
-                                                .match(".* (?<note2>[\\d]+\\/[\\.\\d]+) .* Datum.*$") //
-                                                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
-                                        ,
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>Auftragsnummer).*$") //
+                                                        .match(".* (?<note2>[\\d]+\\/[\\.\\d]+) .* Datum.*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2")))),
                                         // @formatter:off
                                         //  Auftragsnummer 433499/69.01
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("note1", "note2") //
-                                                .match("^.*(?<note1>Auftragsnummer) (?<note2>[\\d]+\\/[\\.\\d]+).*$") //
-                                                .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
-                                )
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>Auftragsnummer) (?<note2>[\\d]+\\/[\\.\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2")))))
 
                         // @formatter:off
                         // Limit billigst
@@ -178,7 +174,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -206,8 +202,19 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "nameContinued", "isin", "wkn", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?\\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}\\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Dividende pro St.ck .* (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Stück 30 VANGUARD S&P 500 UCITS ETF IE00B3XXRP09 (A1JX53)
+                                        // REGISTERED SHARES USD DIS.ON
+                                        // Zahlbarkeitstag 27.12.2023 Ausschüttung pro St. 0,279226000 USD
+                                        // @formatter:on
+                                        section -> section
+                                                        .attributes("name", "isin", "wkn", "nameContinued", "currency") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^.* Aussch.ttung pro St\\. [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Stück 600 EQUINOR ASA NO0010096985 (675213)
@@ -215,12 +222,11 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                         // Zahlbarkeitstag 25.08.2023 Dividende pro Stück 9,4091 NOK
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("name", "isin", "wkn", "nameContinued", "currency") //
-                                                .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                .match("^(?<nameContinued>.*)$") //
-                                                .match("^.* Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-                                )
+                                                        .attributes("name", "isin", "wkn", "nameContinued", "currency") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^.* Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Stück 1.000                              CROPENERGIES AG
@@ -240,35 +246,54 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag        445,94+   EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag ([\\s]+)?(?<amount>[\\.,\\d]+)\\+ ([\\s]+)?(?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> { //
+                        .match("^Ausmachender Betrag[\\s]{1,}(?<amount>[\\.,\\d]+)\\+[\\s]{1,}(?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Devisenkurs                             EUR / CAD  1,4915
-                        // Dividendengutschrift                                   14.133,00     CAD        9.475,70+   EUR
-                        // @formatter:on
-                        .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
-                        .match("^Devisenkurs ([\\s]+)?(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Dividendengutschrift ([\\s]+)?(?<fxGross>[\\.,\\d]+) ([\\s]+)?[\\w]{3} ([\\s]+)?(?<gross>[\\.,\\d]+)\\+ ([\\s]+)?[\\w]{3}$") //
-                        .assign((t, v) -> { //
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs                             EUR / CAD  1,4915
+                                        // Dividendengutschrift                                   14.133,00     CAD        9.475,70+   EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
+                                                        .match("^Devisenkurs[\\s]{1,}(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^Dividendengutschrift[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}[\\w]{3}[\\s]{1,}(?<gross>[\\.,\\d]+)\\+[\\s]{1,}[\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Devisenkurs EUR / USD  1,1168
+                                        // Ausschüttung 8,38 USD 7,50+ EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
+                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^Aussch.ttung[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}[\\w]{3}[\\s]{1,}(?<gross>[\\.,\\d]+)\\+[\\s]{1,}[\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         //      Abrechnungsnr.      60007000
                         // Abrechnungsnr.        000000000
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^.*(?<note1>Abrechnungsnr\\.) ([\\s]+)?(?<note2>[\\d]+)$") //
+                        .match("^.*(?<note1>Abrechnungsnr\\.)[\\s]{1,}(?<note2>[\\d]+)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
 
                         .wrap(TransactionItem::new);
@@ -309,7 +334,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Einbuchung|Ausbuchung).*$") //
-                        .assign((t, v) -> { //
+                        .assign((t, v) -> {
                             if (v.get("type").contains("Ausbuchung"))
                                 t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                         })
@@ -324,7 +349,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         .find("(Einbuchung|Ausbuchung).*") //
                         .match("^St.ck [\\.,\\d]+(\\-)? (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .assign((t, v) -> { //
+                        .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setDateTime(asDate(v.get("date")));
 
@@ -353,19 +378,20 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
+
                         // @formatter:off
                         // Einbehaltene Quellensteuer 25 % auf 14.133,00 CAD     2.368,93-    EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<withHoldingTax>[\\.,\\d]+)\\- ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 9.475,70 EUR             1.421,36     EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<creditableWithHoldingTax>[\\.,\\d]+) ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<creditableWithHoldingTax>[\\.,\\d]+)[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
@@ -374,7 +400,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
                         .find("Verrechnete anrechenbare ausl.ndische Quellensteuer") //
-                        .match("^\\(Verh.ltnis .*\\) auf [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<creditableWithHoldingTax>[\\.,\\d]+) ([\\s]+)?(\\-)? ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^\\(Verh.ltnis .*\\) auf [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<creditableWithHoldingTax>[\\.,\\d]+)[\\s]{1,}(\\-)?[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
@@ -383,7 +409,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25,00% auf 38,43 EUR 9,61- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<tax>[\\.,\\d]+)\\- ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<tax>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -392,20 +418,21 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,50% auf 9,61 EUR 0,53- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<tax>[\\.,\\d]+)\\- ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<tax>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer 5,5 % auf 146,03 EUR     8,03-    EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} ([\\s]+)?(?<tax>[\\.,\\d]+)\\- ([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<tax>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
+
                         // @formatter:off
                         // Provision 32,95-EUR
                         // @formatter:on
@@ -417,28 +444,28 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // Provision 0,1900 % vom Kurswert 12,03- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Provision [\\.,\\d]+ % .* (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Transaktionsentgelt Börse 5,60- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsentgelt 2,52- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Handelsentgelt (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^Handelsentgelt (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Übertragungs-/Liefergebühr 0,10- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\-([\\s]+)?(?<currency>[\\w]{3}).*$") //
+                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
