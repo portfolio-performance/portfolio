@@ -103,6 +103,12 @@ public class AllTransactionsView extends AbstractFinanceView
             else
                 return false;
         }), //
+        NON_CASH_EFFECTIVE_DIVIDEND(Messages.TransactionFilterNonCashEffectiveDividend, 1, tx -> {
+            if (tx instanceof AccountTransaction atx)
+                return atx.getType() == AccountTransaction.Type.DIVIDENDS && atx.getNonCashEffective();
+            else
+                return false;
+        }), //
         DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, 0, tx -> {
             if (tx instanceof AccountTransaction atx)
                 return atx.getType() == AccountTransaction.Type.DEPOSIT
