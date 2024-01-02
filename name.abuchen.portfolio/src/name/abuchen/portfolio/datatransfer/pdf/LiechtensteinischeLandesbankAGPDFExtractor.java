@@ -36,6 +36,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -144,12 +145,14 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Bardividende \\(Ordentliche Dividende\\)");
+        DocumentType type = new DocumentType("(Bardividende \\(Ordentliche Dividende\\)" //
+                        + "|Wahldividende)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Bardividende \\(Ordentliche Dividende\\)$");
+        Block firstRelevantLine = new Block("^(Bardividende \\(Ordentliche Dividende\\)" //
+                        + "|Wahldividende)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -161,20 +164,36 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Auftragsnummer 623950393
-                        // Reg Shs Healthpeak Pptys Inc
-                        // ISIN US42250P1030
-                        // Valorennummer 50880191
-                        // Zahlungswert USD 0.30
-                        // @formatter:on
-                        .section("name", "currency", "isin", "wkn") //
-                        .find("Auftragsnummer .*") //
-                        .match("^(?<name>.*)$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
-                        .match("^Zahlungswert (?<currency>[\\w]{3}) [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Auftragsnummer 623950393
+                                        // Reg Shs Healthpeak Pptys Inc
+                                        // ISIN US42250P1030
+                                        // Valorennummer 50880191
+                                        // Zahlungswert USD 0.30
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "wkn") //
+                                                        .find("Auftragsnummer .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^Zahlungswert (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Auftragsnummer XXXXXXXXX
+                                        // Reg Shs Pearson PLC
+                                        // ISIN GB0006776081
+                                        // Zahlungswert GBP 0.07 pro Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "wkn") //
+                                                        .find("Auftragsnummer .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Valorennummer (?<wkn>[A-Z0-9]{5,9})$") //
+                                                        .match("^Zahlungswert (?<currency>[\\w]{3}) [\\.'\\d]+ pro St.ck$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Ihr Bestand per 06.11.2023 25.114744 Stück
@@ -227,6 +246,49 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug in", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Kontoauszug in EUR 01.12.2023 - 31.12.2023
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Kontoauszug in (?<currency>[\\w]{3}) .*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // Per 31. Dezember 2023
+        // Abrechnungsperiode 30.09.2023-31.12.2023
+        // Habenzins 456.60
+        // @formatter:on
+        Block interestBlock = new Block("^Per [\\d]{1,2}\\. .* [\\d]{4}$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note1", "note2", "amount") //
+                        .documentContext("currency") //
+                        .match("^Per (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .match("^Abrechnungsperiode (?<note1>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})\\-(?<note2>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^Habenzins (?<amount>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note1") + " - " + v.get("note2"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
