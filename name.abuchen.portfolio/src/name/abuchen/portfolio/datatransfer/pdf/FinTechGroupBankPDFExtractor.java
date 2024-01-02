@@ -1428,14 +1428,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Kontowährung:      EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Kontow.hrung: ([\\s]+)?(?<currency>[\\w]{3})$") //
+                                        .match("^Kontow.hrung:[\\s]{1,}(?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
                                         // Kontoauszug Nr:    004/2014                              Seite 1 von 2
                                         // @formatter:on
                                         .section("year") //
-                                        .match("^Kontoauszug Nr: ([\\s]+)?[\\d]+\\/(?<year>[\\d]{4}).*$") //
+                                        .match("^Kontoauszug Nr:[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4}).*$") //
                                         .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
@@ -1447,14 +1447,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
         // 19.11.     19.11.  R-Transaktion                                       -53,00-
         // @formatter:on
-        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
                         + "(.berweisung" //
                         + "|Lastschrift" //
                         + "|CASH .*" //
                         + "|EINZAHLUNG .*" //
                         + "|AUSZAHLUNG .*" //
                         + "|R\\-Transaktion) " //
-                        + "([\\s]+)?[\\-\\.,\\d]+[\\+|\\-]$");
+                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-]$");
         type.addBlock(depositRemovalblock);
         depositRemovalblock.set(new Transaction<AccountTransaction>()
 
@@ -1466,15 +1466,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?" //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
                                         + "(?<note>(.berweisung" //
                                         + "|Lastschrift" //
                                         + "|CASH .*" //
                                         + "|EINZAHLUNG .*" //
                                         + "|AUSZAHLUNG .*" //
-                                        + "|R\\-Transaktion)) " //
-                                        + "([\\s]+)?" //
+                                        + "|R\\-Transaktion))" //
+                                        + "[\\s]{1,}" //
                                         + "(?<amount>[\\-\\.,\\d]+)" //
                                         + "(?<type>[\\+|\\-])$") //
                         .assign((t, v) -> {
@@ -1490,12 +1490,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                         + "(Depotgeb.hren .*," //
                         + "|Depotservicegeb.hr .*" //
                         + "|flatex trader [\\d]\\.[\\d] Basis" //
-                        + "|Geb.hr .*) " //
-                        + "([\\s]+)?[\\.,\\d]+\\-$");
+                        + "|Geb.hr .*)" //
+                        + "[\\s]{1,}[\\.,\\d]+\\-$");
         type.addBlock(feeblock);
         feeblock.set(new Transaction<AccountTransaction>()
 
@@ -1512,9 +1512,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
-                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?" //
-                                                                        + "(?<note>Depotgeb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), ([\\s]+)?" //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Depotgeb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}),[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
@@ -1530,12 +1530,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
-                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?" //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
                                                                         + "(?<note>Depotservicegeb.hr .*" //
                                                                         + "|flatex trader [\\d]\\.[\\d] Basis" //
-                                                                        + "|Geb.hr .*) " //
-                                                                        + "([\\s]+)?" //
+                                                                        + "|Geb.hr .*)" //
+                                                                        + "[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
@@ -1556,7 +1556,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Zinsabschluss .*$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Zinsabschluss .*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -1569,8 +1569,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?" //
-                                        + "(?<note>Zinsabschluss ([\\s]+)?([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\- ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) ([\\s]+)?" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                        + "(?<note>Zinsabschluss[\\s]{1,}([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\- ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)" //
                                         + "(?<type>[\\+|\\-])$") //
                         .assign((t, v) -> {
@@ -1594,9 +1594,52 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         }));
 
         // @formatter:off
+        // 09.10.     30.09.  Storno Zinsabschluss  01.07.2023 -                    0,68+
+        // @formatter:on
+        Block interestCancellationBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Storno Zinsabschluss .*$");
+        type.addBlock(interestCancellationBlock);
+        interestCancellationBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return t;
+                        })
+
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("year", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                        + "Storno (?<note>Zinsabschluss).*[\\s]{1,}" //
+                                        + "(?<amount>[\\.,\\d]+)" //
+                                        + "(?<type>[\\+|\\-])$") //
+                        .assign((t, v) -> {
+                            // Is type --> "+" change from INTEREST_CHARGE to INTEREST
+                            if ("+".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.INTEREST);
+
+                            // Set transaction cancellation
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                        })
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
+
+        // @formatter:off
         // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
         // @formatter:on
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?Steuertopfoptimierung .*$");
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Steuertopfoptimierung .*$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1608,9 +1651,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\s]+)?" //
-                                        + "(?<note>Steuertopfoptimierung ([\\s]+)?([\\d]{4})) ([\\s]+)?" //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                        + "(?<note>Steuertopfoptimierung[\\s]{1,}([\\d]{4}))[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
                         .assign((t, v) -> {
                             // Is type --> "-" change from TAX_REFUND to TAXES
