@@ -1003,6 +1003,23 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> processFeeEntries(t, v, type))
 
                 // @formatter:off
+                // Ex-Tag : 23. April 2009 Inkassogebühr : EUR 0,48
+                // @formatter:on
+                .section("currency", "fee").optional()
+                .match("^.* Inkassogeb.hr : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
+                // Art der Belastung : Transaktionsgebühr
+                // Spesen : USD 0.35
+                // Art der Belastung : Devisenprovision
+                // Spesen : USD 0.22
+                // @formatter:on
+                .section("currency", "fee").multipleTimes().optional()
+                .match("^Spesen : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$")
+                .assign((t, v) -> processFeeEntries(t, v, type))
+
+                // @formatter:off
                 // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                 // @formatter:on
                 .section("currency", "fee").optional()
