@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+wiLLBe powered by
+Liechtensteinische Landesbank
+Aktiengesellschaft
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+service@willbe-invest.com
+Max Mustermann www.willbe-invest.com
+Musterstr. 123
+01234 Musterstadt Vaduz, 31. Dezember 2023
+DEUTSCHLAND
+Kontonummer 1234.5678.9012 Tagesgeldkonto wiLLBe EUR
+IBAN LI03 0880 0123 4567 8901 2 / BIC LILALI2X
+Kontoauszug in EUR 01.12.2023 - 31.12.2023
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in EUR
+30.11. Saldovortrag 50'157.97
+31.12. Abschluss 31.12. 456.60 50'614.57
+Per 31. Dezember 2023
+Abrechnungsperiode 30.09.2023-31.12.2023
+Zinsusanz Schweizer Usanz (30/360)
+Habenzins 456.60
+Auftragsnummer: 999999999
+Saldo per 31.12.2023 50'614.57
+Umsatz 0.00 456.60
+Konditionen
+Sollzinsen
+01.10.2023 - 31.12.2023 0.00 %
+Habenzinsen
+01.10.2023 - 31.12.2023 3.80 % bis 50'000.00
+3.50 % bis 100'000.00
+0.25 % über 100'000.00
+Bei Überschreitungen des laufenden Kontos beträgt der aktuelle Sollzinssatz 0 % pro Jahr ab dem Zeitpunkt der Überschreitung.
+Als Referenzzinssatz gilt: EURIBOR 3M, zuzüglich einer Marge. Der Sollzinssatz verändert sich bei der Änderung des
+Referenzzinssatzes. Vorbehalten bleiben anderslautende Vereinbarungen.
+Einlagen auf diesem Konto sind nach Massgabe des Einlagensicherungs- und Anlegerentschädigungsgesetzes (EAG)
+grundsätzlich erstattungsfähig. Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den
+Sie auch unter www.llb.li/eag einsehen können.
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20231229 99999-999999999-999999999 EBANKING

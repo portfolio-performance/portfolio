@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -44,6 +45,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class LiechtensteinischeLandesbankAGPDFExtractorTest
@@ -448,5 +450,97 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0006776081"), hasWkn("400018"), hasTicker(null), //
+                        hasName("Reg Shs Pearson PLC"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-18T00:00"), hasShares(17.943232), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Auftragsnummer XXXXXXXXX"), //
+                        hasAmount("CHF", 1.39), hasGrossValue("CHF", 1.39), //
+                        hasForexGrossValue("GBP", 1.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInCHF()
+    {
+        Security security = new Security("Reg Shs Pearson PLC", "CHF");
+        security.setIsin("GB0006776081");
+        security.setWkn("400018");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-18T00:00"), hasShares(17.943232), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Auftragsnummer XXXXXXXXX"), //
+                        hasAmount("CHF", 1.39), hasGrossValue("CHF", 1.39), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testKontoauzug01()
+    {
+        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 456.60), //
+                        hasSource("Kontoauszug01.txt"), hasNote("30.09.2023 - 31.12.2023"))));
     }
 }
