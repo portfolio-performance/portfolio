@@ -93,9 +93,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
                                         + "|VERKAUF KAPITALMA.*) ([\\s]+)?AM .*$")
                         .assign((t, v) -> {
-                            if ("VERKAUF".equals(v.get("type")) || "Verkauf".equals(v.get("type"))
-                                            || "VERK. TEIL-/BEZUGSR.".equals(v.get("type"))
-                                            || "VERKAUF KAPITALMAßN.".equals(v.get("type"))
+                            if ("VERKAUF".equals(v.get("type")) //
+                                            || "Verkauf".equals(v.get("type")) //
+                                            || "VERK. TEIL-/BEZUGSR.".equals(v.get("type")) //
+                                            || "VERKAUF KAPITALMAßN.".equals(v.get("type")) //
                                             || "VERKAUF KAPITALMASSN.".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);

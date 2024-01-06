@@ -2045,6 +2045,37 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf14()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SQ6N9E4"), hasWkn("SQ6N9E"), hasTicker(null), //
+                        hasName("SG EFF. CALL23 VOW3"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-09-13T15:22:30"), hasShares(3000.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote("345678901.001 | Limitkurs 0,001000 EUR"), //
+                        hasAmount("EUR", 0.95), hasGrossValue("EUR", 4.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.95))));
+    }
+
+    @Test
     public void testWertpapierEinloesung01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
