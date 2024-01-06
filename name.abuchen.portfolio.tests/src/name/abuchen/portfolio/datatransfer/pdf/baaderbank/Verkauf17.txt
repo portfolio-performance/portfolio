@@ -1,0 +1,73 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+Max Mustermann 05.01.2024
+Musterstraße. 1
+Max Mustermann
+12345 Musterhausen PF 02
+Stamm-Nr.: 1234567    Portfolio: 2
+Depot-Nr.: 1234567890
+Vorgangs-Nr.: 123456789
+Referenz-Nr.: 123456789
+Wertpapierabrechnung: Verkauf
+Auftragsdatum: 04.01.2024 Ausführungsplatz: Stuttgart
+Auftragszeit: 11:54:24:00
+Nominale ISIN: LU0290358497 WKN: DBX0AN Kurs 
+STK 20    Xtrackers II EUR Over.Rate Sw. EUR 139,636
+Inhaber-Anteile 1C o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingsystem
+Kurswert EUR 2.792,72
+Provision Smartbroker EUR 4,00 -
+Börsengebühren EUR 3,32 -
+Zu Gunsten Konto 1234567890 Valuta: 08.01.2024 EUR 2.785,40
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   20    EUR 139,636 Stuttgart 04.01.2024 11:54:40:376
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: XSTU
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114
+Wertpapierabrechnung: Verkauf
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlusttopf (VVT) EUR 2,92 EUR 10,52 EUR 13,44
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräußerungsergebnis sonstiger Fonds ohne Teilfreistellung EUR 10,52 - EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 10,52 - EUR 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 263057445 04.01.2024 STK 20 2.795,92 2.785,40 10,52 -
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

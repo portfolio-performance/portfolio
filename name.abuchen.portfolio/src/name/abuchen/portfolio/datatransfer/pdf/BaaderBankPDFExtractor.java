@@ -1215,28 +1215,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Provision EUR 0,08 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision? (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision Baader EUR 5,21
-                        // @formatter:on
-                        .section("currency", "fee").optional() //
-                        .match("^Provision Baader (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
                         // Provision Smartbroker EUR 4,00
-                        // @formatter:on
-                        .section("currency", "fee").optional() //
-                        .match("^Provision Smartbroker (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
                         // Provision TradersPlace EUR 4,00
                         // @formatter:on
+                        .section("currency", "fee").multipleTimes().optional() //
+                        .match("^Provision .* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Börsengebühren EUR 13,13
+                        // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision TradersPlace (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
