@@ -11,6 +11,7 @@ BUCHUNGEN
 Aufstellung über die Buchungen in Deinem Verrechnungskonto DE12312312312312312312.
 BUCHUNGSTAG / 
 WERTSTELLUNG BUCHUNGSTEXT BETRAG IN EUR
+01.01.2023 Auszahlung an Referenzkonto -11.111,11
 01.04.2023 Your interest payment 00,01
 01.04.2023
 01.04.2023 Customer c3e9411b-b0ab-4820-a3b3-48cd72f6963b inpayed net: 700,00
