@@ -1,18 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf.ingdiba;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -23,7 +16,16 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -935,7 +938,8 @@ public class INGDiBaPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-12-18T10:45:15"), hasShares(100.00), //
-                        hasSource("Kauf18.txt"), hasNote("Ordernummer 123456789.001 | Stückzinsen EUR 6,23 (Zinsvaluta 21.12.2020 13 Tage)"), //
+                        hasSource("Kauf18.txt"), //
+                        hasNote("Ordernummer 123456789.001 | Stückzinsen EUR 6,23 (Zinsvaluta 21.12.2020 13 Tage)"), //
                         hasAmount("EUR", 10226.61), hasGrossValue("EUR", 10196.23), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 30.38))));
     }
@@ -965,7 +969,8 @@ public class INGDiBaPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-09T09:04:17"), hasShares(44.86352), //
-                        hasSource("Kauf19.txt"), hasNote("Ordernummer 304273918.001"), //
+                        hasSource("Kauf19.txt"), //
+                        hasNote("Ordernummer 304273918.001"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 4980.75), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.90 + 17.35))));
     }
@@ -1416,6 +1421,106 @@ public class INGDiBaPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf10()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US62526P3073"), hasWkn("A3ER8P"), hasTicker(null), //
+                        hasName("Mullen Automotive Inc. Registered Shares DL -,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-08-14T00:00"), hasShares(0.77778), //
+                        hasSource("Verkauf10.txt"), //
+                        hasNote("Ordernummer 123654987.456"), //
+                        hasAmount("EUR", 0.70), hasGrossValue("EUR", 0.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf11()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US49177J1025"), hasWkn("A3EEHU"), hasTicker(null), //
+                        hasName("Kenvue Inc. Registered Shares DL -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-09-01T00:00"), hasShares(0.0648), //
+                        hasSource("Verkauf11.txt"), //
+                        hasNote("Ordernummer 123654987.456"), //
+                        hasAmount("EUR", 1.25), hasGrossValue("EUR", 1.25), //
+                        hasForexGrossValue("USD", 1.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf11WithSecurityInEUR()
+    {
+        Security security = new Security("Kenvue Inc. Registered Shares DL -,001", CurrencyUnit.EUR);
+        security.setIsin("US49177J1025");
+        security.setWkn("A3EEHU");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-09-01T00:00"), hasShares(0.0648), //
+                        hasSource("Verkauf11.txt"), //
+                        hasNote("Ordernummer 123654987.456"), //
+                        hasAmount("EUR", 1.25), hasGrossValue("EUR", 1.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
