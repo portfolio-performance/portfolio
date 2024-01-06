@@ -1518,6 +1518,37 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf33()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf33.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358497"), hasWkn("DBX0AN"), hasTicker(null), //
+                        hasName("Xtrackers II EUR Over.Rate Sw. Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-04T08:28:27"), hasShares(79), //
+                        hasSource("Kauf33.txt"), //
+                        hasNote("Vorgangs-Nr.: 123456789"), //
+                        hasAmount("EUR", 11043.90), hasGrossValue("EUR", 11030.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 13.13))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -2258,6 +2289,37 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 77777888"), //
                         hasAmount("EUR", 2088.13), hasGrossValue("EUR", 2100.00), //
                         hasTaxes("EUR", 11.26 + 0.61), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf17()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358497"), hasWkn("DBX0AN"), hasTicker(null), //
+                        hasName("Xtrackers II EUR Over.Rate Sw. Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-01-04T11:54:40"), hasShares(20), //
+                        hasSource("Verkauf17.txt"), //
+                        hasNote("Vorgangs-Nr.: 123456789"), //
+                        hasAmount("EUR", 2785.40), hasGrossValue("EUR", 2792.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.00 + 3.32))));
     }
 
     @Test
