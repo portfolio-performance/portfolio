@@ -31,6 +31,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Verrechnungskonto bei der Baader Bank");
 
         addBuySellTransaction();
+        addBuySellCryptoTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
@@ -274,6 +275,71 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        DocumentType type = new DocumentType("Abrechnung über den Kauf von Kryptowerten");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Nominale Kennung: BTC Kurs
+                        // STK 0,0024 Bitcoin EUR 41.981,240
+                        // @formatter:on
+                        .section("name", "tickerSymbol", "currency") //
+                        .match("^Nominale Kennung: (?<tickerSymbol>[A-Z]+) Kurs$") //
+                        .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
+
+                        // @formatter:off
+                        // STK 0,0024 Bitcoin EUR 41.981,240
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^STK (?<shares>[\\.,\\d]+) .* [\\w]{3} [\\.,\\d]+$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // STK 0,0024 EUR 41.981,240 B4C Markets BV 02.01.2024 11:04:16:95
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^STK [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Zu Lasten Konto 1234567890 Valuta: 04.01.2024 EUR 101,75
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Zu Lasten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Vorgangs-Nr.: KRY 000000123456
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
 
