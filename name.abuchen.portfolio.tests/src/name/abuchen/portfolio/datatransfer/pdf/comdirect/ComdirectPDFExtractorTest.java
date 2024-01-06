@@ -5724,6 +5724,38 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testSteuerbehandlungOhneDividende01()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneDividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasWkn("899744"), hasTicker(null), //
+                        hasName("REALTY INC. CORP. DL 1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2023-07-18T00:00"), hasShares(70), //
+                        hasSource("SteuerbehandlungOhneDividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.90 - 11.84), hasGrossValue("EUR", 15.90 - 11.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testCheckIfSellWithTwoBuyTaxesTransactionsOnTheSameDate()
     {
         // @formatter:off
