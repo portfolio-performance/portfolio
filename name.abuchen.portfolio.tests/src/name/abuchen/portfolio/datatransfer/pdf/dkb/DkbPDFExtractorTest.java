@@ -18,9 +18,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -4359,6 +4361,36 @@ public class DkbPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2023-10-02"), hasAmount("EUR", 0.01), //
                         hasSource("GiroKontoauszug26.txt"), hasNote("Abrechnungszeitraum vom 01.07.2023 bis 30.09.2023"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug27()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug27.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-06-30"), hasAmount("EUR", 302.54), //
+                        hasSource("GiroKontoauszug27.txt"), hasNote("Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2023-06-30"), hasAmount("EUR", 75.64), //
+                        hasSource("GiroKontoauszug27.txt"), hasNote("Kapitalertragsteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2023-06-30"), hasAmount("EUR", 4.16), //
+                        hasSource("GiroKontoauszug27.txt"), hasNote("Solidaritätszuschlag"))));
     }
 
     @Test

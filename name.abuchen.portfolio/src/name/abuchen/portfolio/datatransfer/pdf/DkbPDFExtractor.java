@@ -769,13 +769,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
-        Block taxesBlock = new Block("^Kapitalertragsteuer ([\\s]+)?[\\.,\\d]+(([\\-|\\+]))$");
+        Block taxesBlock = new Block("^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -787,7 +783,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("note", "amount", "type") //
                         .documentContext("date", "currency") //
-                        .match("^(?<note>Kapitalertragsteuer) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .match("^(?<note>(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer))[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "+" change from TAXES to TAX_REFUND
@@ -801,11 +797,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
 
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(?i)(.berweisung" //
@@ -1426,7 +1418,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
+
                         // @formatter:off
                         // Kapitalertragsteuer (Account)
                         // Kapitalertragsteuer 24,45% auf 1.718,79 EUR 420,24- EUR
@@ -1556,7 +1549,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
+
                         // @formatter:off
                         // Provision 7,50- EUR
                         // @formatter:on
