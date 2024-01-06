@@ -52,6 +52,13 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^(?<type>(Kauf|Verkauf))( \\-|:).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
                         // @formatter:off
                         // Kauf - iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
                         // DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
@@ -60,7 +67,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // LU1861134382 (A2JSDA) 9,727757 93,4642 EUR 982,07 EUR
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
-                        .match("^Kauf( \\-|:) (?<name>.*)$") //
+                        .match("^(Kauf|Verkauf)( \\-|:) (?<name>.*)$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -98,6 +105,23 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // IE00B0M62Q58 (A0HGV0) 5,214577 66,4800 USD 317,67 EUR
+                        // Devisenkurs EUR/ USD 1,09130 vom 18.12.2023
+                        // @formatter:on
+                        .section("gross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         // @formatter:off

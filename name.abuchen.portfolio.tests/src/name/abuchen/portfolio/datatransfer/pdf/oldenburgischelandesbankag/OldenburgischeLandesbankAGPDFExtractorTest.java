@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -41,6 +42,8 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
@@ -138,6 +141,75 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
                         hasNote("Ord.-Ref.: 8774105"), //
                         hasAmount("EUR", 911.48), hasGrossValue("EUR", 904.07), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 7.41))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B0M62Q58"), hasWkn("A0HGV0"), hasTicker(null), //
+                        hasName("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-12-19T18:25:53"), hasShares(5.214577), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ord.-Ref.: 1431554"), //
+                        hasAmount("EUR", 317.03), hasGrossValue("EUR", 317.67), //
+                        hasForexGrossValue("USD", 346.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.64))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01WithSecurityInEUR()
+    {
+        Security security = new Security("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN", CurrencyUnit.EUR);
+        security.setIsin("IE00B0M62Q58");
+        security.setWkn("A0HGV0");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-12-19T18:25:53"), hasShares(5.214577), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ord.-Ref.: 1431554"), //
+                        hasAmount("EUR", 317.03), hasGrossValue("EUR", 317.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.64), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
