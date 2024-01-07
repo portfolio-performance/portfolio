@@ -51,7 +51,7 @@ public class DirectaPDFExtractor extends AbstractPDFExtractor
                         // Nota Informativa per l'ordine T1673620593440
                         // @formatter:on
                         .section("orderNo").match("^Nota Informativa per l'ordine (?<orderNo>[A-Z0-9]+)$")
-                        .assign((t, v) -> t.setNote(v.get("orderNo")))
+                        .assign((t, v) -> t.setNote("Ordine " + v.get("orderNo")))
 
                         // @formatter:off
                         // per l'acquisto di: 29  VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
