@@ -41,12 +41,21 @@ public class DirectaPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
 
-        Block firstRelevantLine = new Block("^.*(acquisto di).*$");
+        Block firstRelevantLine = new Block("^Nota Informativa per l'ordine.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction
                         //
+                        // @formatter:off
+                        // Nota Informativa per l'ordine T1673620593440
+                        // @formatter:on
+                        .section("orderNo").match("^Nota Informativa per l'ordine (?<orderNo>[A-Z0-9]+)$")
+                        .assign((t, v) -> t.setNote(v.get("orderNo")))
+
+                        // @formatter:off
+                        // per l'acquisto di: 29  VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
+                        // @formatter:on
                         .section("shares", "name", "isin")
                         .match("^.*:\s*(?<shares>\\d+)\s+(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                         .assign((t, v) -> { 
@@ -55,17 +64,26 @@ public class DirectaPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                         })
 
-                        .section("date", "amount")
-                        .match("^\\s(?<date>.*)(\\s{2}.*\\s{2}Eseguito\\s+([0-9]+))\\s+(?<amount>.\\S+)\\s+.*$")
+                        // @formatter:off
+                        //  5.01.2024  14:02:36  Eseguito                           29             3.074,29             106,0100  09.01.2024
+                        // @formatter:on
+                        .section("date", "time").match("^\\s?(?<date>[0-9.]+)\\s{2}(?<time>[0-9:]+)\\s{2}Eseguito.*$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDate(asDate(v.get("date"), v.get("time")));
                         })
 
-                        // // Auftrags-Nummer: 20220106123456789000000612345
-                        // .section("note").optional().match("^(?<note>Auftrags-Nummer:
-                        // [\\d]+)$")
-                        // .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        // @formatter:off
+                        // per l'acquisto di: 29  VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
+                        // @formatter:on
+                        .section("amount").match("^.*Totale a Vs. Debito\\s*(?<amount>[0-9.,]+)$")
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+
+                        // @formatter:off
+                        //                       Commissioni:                                          5,00
+                        // @formatter:on
+                        .section("fee").match("^.*Commissioni:\s*(?<fee>[0-9,]+)$").assign((t, v) -> {
+                            processFeeEntries(t, v, type);
+                        })
 
                         .wrap(BuySellEntryItem::new);
                         
