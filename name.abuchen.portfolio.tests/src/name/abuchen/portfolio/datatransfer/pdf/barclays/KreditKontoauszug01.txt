@@ -26,7 +26,6 @@ Konto-Saldo und Rückzahlung
 Bezeichnung/Individueller Verwendungszweck Neuer Saldo Rückzahlungsoptionen Nächste Zahlung
 (EUR) (EUR)
 Allgemeine Umsätze        597,00- 100,0 %        597,00
-Ratenkauf: DoktorAlbufeira        105,00- 3 offene Raten         35,00
 Ratenkauf: BootAlbufeira        119,96- 3 offene Raten         39,99
 Gesamt (EUR)        821,96-        671,99
 Wie mit Ihnen vereinbart, ziehen wir zum 08.01.2024 den Betrag in Höhe von EUR 671,99 von Ihrem Konto mit der IBAN
@@ -78,7 +77,6 @@ Zinsen nicht an. Bei Teilzahlung werden Zinsen taggenau ab dem Buchungs-/Valutad
 Ratenkäufe
 Für Ihre nachfolgend aufgeführten Ratenkäufe gelten ab Einrichtung bis zur Auflösung oder Beendigung des jeweiligen
 Ratenkaufs folgende Sollzinssätze:
-Ratenkauf: " DoktorAlbufeira " - gültig seit 24.11.2023  0,00 % p.a.
 Ratenkauf: " BootAlbufeira " - gültig seit 24.11.2023  0,00 % p.a.
 Der Barclays Ratenkauf
 Für einzelne Umsätze ab 95 Euro bieten wir Ihnen auch den Barclays Ratenkauf an. Diesen richten Sie ganz einfach per
@@ -89,7 +87,6 @@ Für folgende Umsätze aus diesem Kontoauszug können Sie einen Barclays Ratenka
 Belegdatum Beschreibung Betrag (EUR) Einrichtung
 möglich bis
 19.11.2023 GetYourGuide Tickets   Berlin        DE            119,96- 03.01.2024
-23.11.2023 ORANGE MEDICAL CENT    ALBUFEIRA     PT            105,00- 03.01.2024
                    Seite 3 von 4
 Barclays Bank Ireland PLC Hamburg Branch | Gasstraße 4 c | 22761 Hamburg | barclays.de | BIC BARCDEHAXXX | Handelsregister HRB: 153530
 USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt | Hauptsitz: One Molesworth Street Dublin 2 DO2 RF29

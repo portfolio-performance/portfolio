@@ -16,9 +16,10 @@ public class BarclaysPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Barclays");
         addBankIdentifier("Barclays Bank Ireland PLC");
-        addBankIdentifier("22792 Hamburg");
+        addBankIdentifier("USt-IdNr.: DE 319 453 063");
+        addBankIdentifier("Handelsregister HRB: 153530");
+        addBankIdentifier("barclays.de");
 
         addCreditcardStatementTransaction();
     }
