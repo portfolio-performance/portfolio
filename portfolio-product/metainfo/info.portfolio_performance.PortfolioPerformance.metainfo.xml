@@ -39,6 +39,24 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.67.1" date="2024-01-08">
+      <description>
+        <ul>
+          <li>New: PDF Importer for Gladbacher Bank</li>
+          <li>New: PDF Importer for Directa SIM</li>
+          <li>New: PDF Importer for Barclays credit card statements (withdrawals only)</li>
+          <li>New: Update of the security name via Portfolio Report when a security is imported via CSV without a name</li>
+          <li>Improvement of the PDF Importer: Erste Bank, Baader Bank, Consorsbank, ING DiBa, comdirect, OLB, DKB, Trade Republic, FlatEx, Geno Broker, DADAT Bankenhaus</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: PDF-Importer für die Gladbacher Bank</li>
+          <li>Neu: PDF-Importer für Directa SIM</li>
+          <li>Neu: PDF-Importer für Barclays-Kreditkartenabrechnungen (nur Abbuchungen)</li>
+          <li>Neu: Aktualisierung des Wertpapiernamens per Portfolio-Report, wenn das Wertpapier per CSV ohne Namen importiert wurde</li>
+          <li>Verbesserung des PDF-Importers: Erste Bank, Baader Bank, Consorsbank, ING DiBa, comdirect, OLB, DKB, Trade Republic, FlatEx, Geno Broker, DADAT Bankenhaus</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.67.0" date="2023-12-30">
       <description>
         <ul>
