@@ -75,4 +75,48 @@ public class DirectaPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.00))));
 
     }
+
+    @Test
+    public void testBuy02Import()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+
+        if (!errors.isEmpty())
+            errors.get(0).printStackTrace();
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("LU000FXZOR04"));
+        assertThat(security.getName(), is("ISHARES EUR ULTRALONG BOND"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-01-09T11:57:34")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2900)));
+        assertThat(entry.getSource(), is("Buy02.txt"));
+        assertThat(entry.getNote(), is("Ordine X4171246514720"));
+
+        Transaction transaction = entry.getPortfolioTransaction();
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1511.58))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1502.08))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.50))));
+
+    }
 }

@@ -58,7 +58,7 @@ public class DirectaPDFExtractor extends AbstractPDFExtractor
                         // per l'acquisto di: 29  VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
                         // @formatter:on
                         .section("shares", "name", "isin")
-                        .match("^.*:\\s*(?<shares>\\d+)\\s+(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                        .match("^.*:\\s*(?<shares>[0-9.]+)\\s+(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
