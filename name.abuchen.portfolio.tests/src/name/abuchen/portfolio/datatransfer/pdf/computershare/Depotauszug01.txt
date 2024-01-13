@@ -1,0 +1,50 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2.qualifier
+-----------------------------------------
+Page 1 of 3
+Computershare Trust Company, N.A.
+PO Box 43021
+Providence RI 02940-3021
+Within USA, US territories & Canada 888 Acme 6700
+Outside USA, US territories & Canada 781 575 2727
+XXXXXX Tie Line 771 7000
+MAX MUSTERMANN help@computershare.com
+BAHNHOFSTRASSE 02
+BERLIN  12345
+GERMANY
+C0011609255
+*C0011609255*
+*C0011609255*
+AMZN
+023135106
+Acme Labs - Employee Plan Statement
+29 Sep 2023
+29 Sep 2023
+01 Jan 2023 29 Sep 2023
+Acme Labs ESPP 0.000 67.000 67.000 120.00 8,040.00
+     Subject To Disqualification 0.000 67.000 67.000 120.00 8,040.00
+Acme Labs ESPP
+     Dividends 164.38 24.65 139.73 0.000000
+     Purchases 7,370.00 12.00 7,370.00 67.000000
+If you joined after 1/1/23 you will receive only digital statements.  If you joined before 1/1/23, you will receive digital statements for Q1, Q2, Q3 and paper
+for Q4 unless you have made an election to receive digital statements. Contact Computershare if you have questions. Thank you.
+I B M
+QESPP 001CS0121.Em.Acme.XXXXXX_XXXXX/XXXXXX/030835
+Acme Labs 01 Jan 2023 - 29 Sep 2023 C0011609255
+Page 2 of 3
+Acme Labs ESPP        
+Balance Forward 0.000
+31 Jan 2023 Purchase 756.00 6.00 750.00 03 Jan 2023 140.000 31 Jan 2023 120.000 110.000 7.500 7.000
+28 Feb 2023 Purchase 750.00 750.00 03 Jan 2023 140.000 28 Feb 2023 120.000 110.000 7.500 15.000
+31 Mar 2023 Purchase 750.00 750.00 03 Jan 2023 140.000 31 Mar 2023 120.000 110.000 7.500 22.500
+28 Apr 2023 Purchase 750.00 750.00 03 Jan 2023 140.000 28 Apr 2023 120.000 110.000 7.500 30.000
+31 May 2023 Purchase 750.00 750.00 03 Jan 2023 140.000 31 May 2023 1120.000 110.000 7.500 37.500
+30 Jun 2023 Purchase 750.00 750.00 03 Jan 2023 140.000 30 Jun 2023 120.000 110.000 7.500 45.000
+31 Jul 2023 Purchase 756.00 6.00 750.00 03 Jul 2023 135.000 31 Jul 2023 120.000 110.000 7.500 52.500
+31 Aug 2023 Purchase 750.00 750.00 03 Jul 2023 135.000 31 Aug 2023 120.000 110.000 7.500 60.000
+29 Sep 2023 Purchase 750.00 750.00 03 Jul 2023 135.000 29 Sep 2023 120.000 110.000 7.500 67.000
+Page 3 of 3
+001CS0121.Em.Acme.XXXXXX_XXXXX/XXXXXX/XXXXXX/i1
+
+```
