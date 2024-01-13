@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.junit;
 
+import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Random;
@@ -15,7 +16,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class SecurityBuilder
 {
-	private static final Random RANDOM = new Random();
+	private static final Random RANDOM = new SecureRandom();
 
     private Security security;
 

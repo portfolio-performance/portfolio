@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
+import java.security.SecureRandom;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -116,7 +117,7 @@ public class DetectDuplicatesActionTest
 
     private static class PropertyChecker<T extends Transaction>
     {
-        private Random random = new Random();
+        private Random random = new SecureRandom();
 
         private Class<T> type;
         private List<PropertyDescriptor> properties = new ArrayList<>();

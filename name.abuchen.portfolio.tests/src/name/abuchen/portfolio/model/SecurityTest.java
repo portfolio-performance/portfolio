@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.security.SecureRandom;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -45,7 +46,7 @@ public class SecurityTest
             else if (p.getPropertyType() == boolean.class && p.getWriteMethod() != null)
                 p.getWriteMethod().invoke(source, true);
             else if (p.getPropertyType() == int.class && p.getWriteMethod() != null)
-                p.getWriteMethod().invoke(source, new Random().nextInt());
+                p.getWriteMethod().invoke(source, new SecureRandom().nextInt());
             else
                 skipped++;
         }

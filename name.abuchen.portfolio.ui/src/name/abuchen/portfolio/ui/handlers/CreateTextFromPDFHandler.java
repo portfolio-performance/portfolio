@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import jakarta.inject.Named;
@@ -95,7 +96,7 @@ public class CreateTextFromPDFHandler
 
     private static class PDFDebugMouseListener extends MouseAdapter
     {
-        private final Random random = new Random();
+        private final Random random = new SecureRandom();
         private final Text widget;
 
         public PDFDebugMouseListener(Text widget)

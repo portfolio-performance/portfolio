@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public class Classification implements Named
     public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
     public static final String VIRTUAL_ROOT = "$virtualroot$"; //$NON-NLS-1$
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private String id;
     private String name;
@@ -150,7 +151,7 @@ public class Classification implements Named
 
         if (color == null)
         {
-            Random r = new Random();
+            Random r = new SecureRandom();
             this.color = '#' + Integer.toHexString(((r.nextInt(128) + 127) << 16) //
                             | ((r.nextInt(128) + 127) << 8) //
                             | (r.nextInt(128) + 127));
