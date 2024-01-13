@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -367,7 +368,7 @@ public final class UpdateHelper
         File fileTest = null;
         try
         {
-            fileTest = File.createTempFile("writeableArea", ".dll", installDir); //$NON-NLS-1$ //$NON-NLS-2$
+            fileTest = Files.createTempFile(installDir.toPath(), "writeableArea", ".dll").toFile(); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (IOException e)
         {
