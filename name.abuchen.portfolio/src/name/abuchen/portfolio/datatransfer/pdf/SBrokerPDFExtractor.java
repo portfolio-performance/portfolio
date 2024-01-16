@@ -31,6 +31,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("S Broker AG & Co. KG");
         addBankIdentifier("Sparkasse");
         addBankIdentifier("Stadtsparkasse");
+        addBankIdentifier("Kreissparkasse");
 
         addBuySellTransaction();
         addDividendTransaction();

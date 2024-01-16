@@ -1860,6 +1860,40 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testDividende14()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9884981013"), hasWkn("909190"), hasTicker(null), //
+                        hasName("YUM! BRANDS, INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results,
+                        hasItem(dividend(hasDate("2023-12-08T00:00"), hasShares(105.000), hasSource("Dividende14.txt"),
+                                        hasNote("Abrechnungsnr. 84528768080 | Quartalsdividende"),
+                                        hasGrossValue("EUR", 58.89),
+                                        hasAmount("EUR", 43.51),
+                                        hasForexGrossValue("USD", 63.53),
+                                        hasTaxes("EUR", 8.83 + 5.78 + 0.31 + 0.46),
+                                        hasFees("EUR", 0.00)
+        )));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
