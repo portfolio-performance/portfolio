@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Herr Hamburger Allee 14
+Mein Name 60486 Frankfurt am Main
+MeineStraße 1 E-Mail: service@justtrade.com
+01234 Mein Ort Web: www.justtrade.com
+13 Januar 2024
+Abrechnung Vorabpauschale für Mein Name
+Kalenderjahr 2023
+Depotnummer 123456789
+Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €34,25
+Tag des Zuflusses 02 Januar 2024
+Name iShares MSCI World (Acc)
+ISIN IE00B4L5Y983
+Monat Anzahl Stücke Vorabpauschale in EUR Vorabpauschale in EUR
+Bemessungsgrundlage* gemäß §18 InvStg pro gesamt
+Stück
+Jahresnettobestand 150,0000 1,24 185,55
+*Die Anzahl Stücke Jahresnettobestand reflektiert den Jahresanfangsbestand abzüglich unterjähriger
+Veräußerungen. Die Anzahl Stücke Januar bis Dezember reflektiert den unterjährigen Kaufüberhang an
+Fondsanteilen gemäß FiFo-Staffel.
+Vorabpauschale €185,55
+Teilfreistellung (30,00%) ./. €-55,67
+Zu versteuernder Betrag nach Teilfreistellung €129,88
+Kapitalertragssteuer (25,00%) ./. €32,47
+Solidaritätszuschlag (5,50%) ./. €1,78
+1 von 1
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
