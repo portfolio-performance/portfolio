@@ -17,9 +17,9 @@ import name.abuchen.portfolio.model.Client;
 public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
 {
 
-    private static final String DEPOSIT_2023 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*gutschr\\.?)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    private static final String REMOVAL_2023 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Überweisungsauftrag)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
-    private static final String INTEREST_2023 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Abschluss lt\\. Anlage \\d) (?<amount>[\\d\\s,.]*?) (.*)";
+    private static final String DEPOSIT_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s*)(?<amount>[\\.\\d]+,[\\d]{2}) [H]";
+    private static final String REMOVAL_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Überweisungsauftrag)(\\s*)(?<amount>[\\.\\d]+,[\\d]{2}) [S]";
+    private static final String INTEREST_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss lt\\. Anlage \\d) (?<amount>[\\.\\d]+,[\\d]{2}) (.*)";
 
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -30,7 +30,6 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("500 150 01");
         addBankIdentifier("J&T Direktbank");
 
         addTransactionWith2023Format();
