@@ -311,16 +311,23 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // Nominale 1.000,00 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "wkn", "name", "name1", "currency") //
+                                                        .attributes("isin", "wkn", "name", "nameContinued", "currency") //
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
-                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
                                                         .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // ISIN (WKN) DE000A3MP4P9 (A3MP4P)
+                                        // Wertpapierbezeichnung 4,00000% PCC SE Inh.-Teilschuldv. v.21(22/26)
+                                        // Nominale 5.000,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "currency") //
+                                                        .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Nominale 66,00 Stück
@@ -456,16 +463,18 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Valuta 04.01.2021
+                        // Zahltag 02.01.2024
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(Valuta|Zahltag) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Gesamtbetrag zu Ihren Lasten EUR - 0,16
+                        // Gesamtbetrag zu Ihren Gunsten EUR 0,00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[.,\\d]+)$") //
+                        .match("^Gesamtbetrag zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (\\- )?(?<amount>[.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
