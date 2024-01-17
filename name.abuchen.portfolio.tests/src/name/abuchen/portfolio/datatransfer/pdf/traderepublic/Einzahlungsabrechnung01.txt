@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VPzq pDYavUN SEITE 1 von 1
+eEtQYpxxWyny. 4 DATUM 07.01.2024
+99650 gbvRjCE EH Zxf BXAl DEPOT 6567648869
+ABRECHNUNG EINZAHLUNG
+ÜBERSICHT
+Du hast Geld via Lastschrift auf Dein Trade Republic Konto eingezahlt.
+GESAMT BETRAG
+Gesamtbetrag 49,00 EUR
+GESAMT 49,00 EUR
+ABRECHNUNG
+BETRAG
+Gebühr für Einzahlung via Lastschrift 0,00 EUR
+GESAMT 49,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DEXXxxxxxxxxxxXXXXXXXXX 07.01.2024 49,00 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer

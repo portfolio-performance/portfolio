@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+nRDD KcvQIkF SEITE 1 von 1
+hxTZALjiAGgX. 6 DATUM 15.01.2024
+18013 LJWavkh zB nKn WrHv DEPOT 3988558866
+VORABPAUSCHALE
+ÜBERSICHT
+Besteuerung der Vorabpauschale gem. § 18 InvStG.
+POSITION ANZAHL
+MUF-Amundi MSCI World II U.E. 5,598 Stück
+Actions au Port.Dist o.N.
+FR0010315770
+VORABPAUSCHALE
+POSITION BETRAG
+Steuerpflichtige Vorabpauschale 1,73 EUR
+STEUERLICHE VERRECHNUNG
+VORHER NACHHER
+Aktienverlusttopf 0,00 EUR 0,00 EUR
+Allgemeiner Verlusttopf 0,00 EUR 0,00 EUR
+Freistellungsauftrag (eingereicht: 1.000,00 EUR) 929,28 EUR 927,55 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR
+Sofern eine Nichtveranlagungsbescheinigung vorliegt, wurde diese berücksichtigt.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. §4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Die Vorabpauschale unterliegt grundsätzlich einem Steuerabzug von 25% (zuzüglich Solidaritätszuschlag und gegebenenfalls 
+Kirchensteuer).
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
