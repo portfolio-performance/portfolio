@@ -103,9 +103,9 @@ public class DataSeriesCache
                                     reportingPeriod, warnings);
 
                 case TYPE_PARENT:
-                    Object parentObject = ((ParentObjectClientDataSeries) series.getInstance()).getParentObject();
-
-                    return PerformanceIndex.forParentObject(client, converter, parentObject, reportingPeriod, warnings);
+                    var instance = ((GroupedDataSeries) series.getInstance());
+                    
+                    return instance.getPerformanceIndexMethod(client, converter, reportingPeriod, warnings);
 
                 case PORTFOLIO_PRETAX:
                     return calculatePortfolioPretax(series, reportingPeriod, warnings);
