@@ -47,7 +47,6 @@ import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
-import name.abuchen.portfolio.util.Pair;
 
 public class UploadToMyDividends24Handler
 {
@@ -82,11 +81,10 @@ public class UploadToMyDividends24Handler
 
     }
 
-    @SuppressWarnings("unchecked")
     private Optional<Selection> retrieveAndPickPortfolio(Shell shell, MyDividends24Uploader uploader,
                     ClientInput clientInput)
     {
-        List<Pair<Integer, String>> portfolios;
+        List<String> portfolios;
 
         try
         {
@@ -103,7 +101,6 @@ public class UploadToMyDividends24Handler
         if (portfolios.isEmpty())
             return Optional.empty();
 
-
         else
         {
             PortfolioSelectionDialog24 dialog = new PortfolioSelectionDialog24(shell);
@@ -116,21 +113,20 @@ public class UploadToMyDividends24Handler
 
             if (dialog.open() == Window.OK)
             {
-                Pair<Integer, String> selected = dialog.getSelectedMyDividendsPortfolio();
+                String selectedMY24Portfolio = dialog.getSelectedMY24Portfolio();
 
                 Portfolio portfolio = null;
-                if (dialog.getSelectedPPPortfolio() instanceof Portfolio p)
+                if (dialog.getSelectedPortfolio() instanceof Portfolio p)
                     portfolio = p;
 
-                if (selected != null)
+                if (selectedMY24Portfolio != null)
                 {
-                    Selection selection = new Selection(selected.getValue(), portfolio);
+                    Selection selection = new Selection(selectedMY24Portfolio, portfolio);
                     return Optional.of(selection);
                 }
 
             }
         }
-
 
         return Optional.empty();
     }
@@ -177,24 +173,22 @@ class PortfolioSelectionDialog24 extends Dialog
 {
 
     private List<Object> portfolios;
-    private List<Pair<Integer, String>> myDividendsPortfolios;
+    private List<String> MY24Portfolios;
 
     private Object selectedPortfolio;
-    private Pair<Integer, String> selectedMyDividendsPortfolio;
+    private String selectedMY24Portfolio;
 
     private TableViewer portfoliosTableViewer;
-    private TableViewer myDividendsTableViewer;
-
-    private boolean includeTransactions = false;
+    private TableViewer MY24TableViewer;
 
     protected PortfolioSelectionDialog24(Shell parentShell)
     {
         super(parentShell);
     }
 
-    public void setMyDividendsPortfolio(List<Pair<Integer, String>> myDividendsPortfolios)
+    public void setMyDividendsPortfolio(List<String> MY24Portfolio)
     {
-        this.myDividendsPortfolios = myDividendsPortfolios;
+        this.MY24Portfolios = MY24Portfolio;
     }
 
     public void setPortfolio(List<Object> portfolios)
@@ -202,14 +196,14 @@ class PortfolioSelectionDialog24 extends Dialog
         this.portfolios = portfolios;
     }
 
-    public Object getSelectedPPPortfolio()
+    public Object getSelectedPortfolio()
     {
         return selectedPortfolio;
     }
 
-    public Pair<Integer, String> getSelectedMyDividendsPortfolio()
+    public String getSelectedMY24Portfolio()
     {
-        return selectedMyDividendsPortfolio;
+        return selectedMY24Portfolio;
     }
 
     @Override
@@ -287,32 +281,29 @@ class PortfolioSelectionDialog24 extends Dialog
         TableColumnLayout layout = new TableColumnLayout();
         tableArea.setLayout(layout);
 
-        myDividendsTableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
-        myDividendsTableViewer.setUseHashlookup(true);
-        CopyPasteSupport.enableFor(myDividendsTableViewer);
+        MY24TableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
+        MY24TableViewer.setUseHashlookup(true);
+        CopyPasteSupport.enableFor(MY24TableViewer);
 
-        Table table = myDividendsTableViewer.getTable();
+        Table table = MY24TableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);
 
-        TableViewerColumn column = new TableViewerColumn(myDividendsTableViewer, SWT.None);
+        TableViewerColumn column = new TableViewerColumn(MY24TableViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        myDividendsTableViewer.setLabelProvider(
-                        LabelProvider.createTextProvider(e -> ((Pair<Integer, String>) e).getValue()));
-        myDividendsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        myDividendsTableViewer.setInput(myDividendsPortfolios);
+        MY24TableViewer.setLabelProvider(LabelProvider.createTextProvider(e -> ((String) e)));
+        MY24TableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        MY24TableViewer.setInput(MY24Portfolios);
 
-        myDividendsTableViewer.setSelection(new StructuredSelection(myDividendsPortfolios.get(0)));
+        MY24TableViewer.setSelection(new StructuredSelection(MY24Portfolios.get(0)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void okPressed()
     {
         this.selectedPortfolio = portfoliosTableViewer.getStructuredSelection().getFirstElement();
-        this.selectedMyDividendsPortfolio = (Pair<Integer, String>) myDividendsTableViewer.getStructuredSelection()
-                        .getFirstElement();
+        this.selectedMY24Portfolio = (String) MY24TableViewer.getStructuredSelection().getFirstElement();
         super.okPressed();
     }
 }

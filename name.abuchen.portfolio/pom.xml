@@ -80,27 +80,27 @@
 					<target>17</target>
 				</configuration>
 			</plugin>
-	            <plugin>
-	                <groupId>com.github.os72</groupId>
-	                <artifactId>protoc-jar-maven-plugin</artifactId>
-	                <executions>
-	                    <execution>
-	                        <phase>generate-sources</phase>
-	                        <goals>
-	                            <goal>run</goal>
-	                        </goals>
-							<configuration>
-									<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
-	                                <addProtoSources>all</addProtoSources>
-	                                <includeMavenTypes>direct</includeMavenTypes>
-	                                <outputDirectory>protos</outputDirectory>
-	                                <inputDirectories>
-	                                        <include>src</include>
-	                                </inputDirectories>
-	                        </configuration>
-	                    </execution>
-	                </executions>
-	            </plugin>
+			<plugin>
+				<groupId>com.github.os72</groupId>
+				<artifactId>protoc-jar-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
+							<addProtoSources>all</addProtoSources>
+							<includeMavenTypes>direct</includeMavenTypes>
+							<outputDirectory>protos</outputDirectory>
+							<inputDirectories>
+								<include>src</include>
+							</inputDirectories>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

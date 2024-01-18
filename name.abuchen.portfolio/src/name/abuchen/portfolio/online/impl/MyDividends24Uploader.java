@@ -1,11 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
@@ -18,9 +16,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class MyDividends24Uploader
@@ -33,7 +28,7 @@ public class MyDividends24Uploader
         this.apiKey = Objects.requireNonNull(apiKey, "MyDividende24.de ApiKey must not be null"); //$NON-NLS-1$
     }
 
-    public List<Pair<Integer, String>> getPortfolios() throws IOException
+    public List<String> getPortfolios() throws IOException
     {
         String response = new WebAccess("dividend-jsa-pp-bnp8.vercel.app", "/api/import/retrieve-depots") //$NON-NLS-1$//$NON-NLS-2$
                         .addHeader("Authorization", "Bearer: " + apiKey).addUserAgent("PortfolioPerformance/" //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
@@ -47,29 +42,26 @@ public class MyDividends24Uploader
         @SuppressWarnings("unchecked")
         JSONArray portfolios = (JSONArray) session.getOrDefault("depots", Collections.emptyList()); //$NON-NLS-1$
 
-        // Maps each portfolio to a pair of its index and its name and returns
-        // the list of pairs.
-        return IntStream.range(0, portfolios.size()).mapToObj(i -> new Pair<>(i, (String) portfolios.get(i))).toList();
+        return portfolios;
     }
 
     @SuppressWarnings("unchecked")
-    public void upload(Client client, CurrencyConverter converter, String portfolioId, Portfolio ppPortfolio)
+    public void upload(Client client, CurrencyConverter converter, String MY24PortfolioID, Portfolio portfolio)
                     throws IOException
     {
 
         Stream<PortfolioTransaction> stream;
 
-        if (ppPortfolio != null)
+        if (portfolio != null)
         {
             // Case: one portfolio of PP is selected
-            stream = ppPortfolio.getTransactions().stream();
+            stream = portfolio.getTransactions().stream();
         }
         else
         {
-            // Case: all portfolios of PP is selected
-            ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
-            PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
-            stream = portfolio.getPortfolio().getTransactions().stream();
+            // Case: all portfolios are selected
+
+            stream = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream());
 
         }
 
@@ -101,7 +93,7 @@ public class MyDividends24Uploader
 
         JSONObject uploadData = new JSONObject();
         uploadData.put("transactions", resultTransactions); //$NON-NLS-1$
-        uploadData.put("depot", portfolioId); //$NON-NLS-1$
+        uploadData.put("depot", MY24PortfolioID); //$NON-NLS-1$
 
         System.err.println(JSONValue.toJSONString(uploadData));
 
