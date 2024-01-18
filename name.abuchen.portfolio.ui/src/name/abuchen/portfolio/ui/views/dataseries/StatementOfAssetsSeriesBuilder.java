@@ -41,9 +41,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         ClientDataSeries clientDataSeries;
 
-        if (series.getInstance() instanceof ParentObjectClientDataSeries)
+        if (series.getInstance() instanceof GroupedDataSeries instance)
         {
-            clientDataSeries = ((ParentObjectClientDataSeries) series.getInstance()).getClientDataSeries();
+            clientDataSeries = instance.getClientDataSeries();
         }
         else
         {

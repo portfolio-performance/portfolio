@@ -35,7 +35,7 @@ public class DataSeriesSet
         switch (useCase)
         {
             case STATEMENT_OF_ASSETS:
-                buildStatementOfAssetsDataSeries(client);
+                buildStatementOfAssetsDataSeries(client, preferences, wheel);
                 return;
             case PERFORMANCE:
                 buildPerformanceDataSeries(client, preferences, wheel);
@@ -68,26 +68,44 @@ public class DataSeriesSet
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
     }
 
-    private void buildStatementOfAssetsDataSeries(Client client)
+    private void buildStatementOfAssetsDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         for (var entry : DataSeries.statementOfAssetsDataSeriesLabels.entrySet())
         {
-            availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, entry.getKey(), entry.getValue(),
-                            Colors.DARK_GREEN.getRGB()));
+            // Common folder
+            availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, entry.getKey(), entry.getValue(), wheel.next()));
             
             for (Portfolio portfolio : client.getPortfolios())
             {
-                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT,
-                                portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                                new ParentObjectClientDataSeries(portfolio, entry.getKey()), entry.getValue(),
-                                Colors.DARK_GREEN.getRGB()));
+                var instance = new GroupedDataSeries(portfolio, entry.getKey());
+                instance.setIsPortfolioPlusReferenceAccount(true);
+
+                var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, name, instance, entry.getValue(),
+                                wheel.next());
+
+                availableSeries.add(dataSeries);
+            }
+            
+            for (Portfolio portfolio : client.getPortfolios())
+            {
+                var instance = new GroupedDataSeries(portfolio, entry.getKey());
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, portfolio.getName(), instance,
+                                entry.getValue(), wheel.next());
+
+                availableSeries.add(dataSeries);
             }
 
             for (Account account : client.getAccounts())
             {
-                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT, account.getName(),
-                                new ParentObjectClientDataSeries(account, entry.getKey()), entry.getValue(),
-                                Colors.DARK_GREEN.getRGB()));
+                var instance = new GroupedDataSeries(account, entry.getKey());
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, account.getName(), instance,
+                                entry.getValue(), wheel.next());
+
+                availableSeries.add(dataSeries);
             }
 
             for (Taxonomy taxonomy : client.getTaxonomies())
@@ -102,12 +120,26 @@ public class DataSeriesSet
 
                         Object[] groups = { taxonomy, classification.getName() };
 
-                        availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT, groups,
-                                        new ParentObjectClientDataSeries(classification, entry.getKey()),
-                                        entry.getValue(),
-                                        ColorConversion.hex2RGB(classification.getColor())));
+                        var instance = new GroupedDataSeries(classification, entry.getKey());
+
+                        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, groups, instance, entry.getValue(),
+                                        wheel.next());
+
+                        availableSeries.add(dataSeries);
                     }
                 });
+            }
+            
+            ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
+
+            for (ClientFilterMenu.Item item : menu.getCustomItems())
+            {
+                var instance = new GroupedDataSeries(item, entry.getKey());
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, item.getLabel(), instance,
+                                entry.getValue(), wheel.next());
+
+                availableSeries.add(dataSeries);
             }
         }
     }

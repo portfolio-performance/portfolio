@@ -31,10 +31,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -147,12 +143,12 @@ public class DataSeriesSelectionDialog extends Dialog
 
             if (series.getGroups() != null)
             {
-                Node lastParent = parent;
+                Node lastParentTracker = parent;
                 int index = 0;
 
                 for (Object groupGiven : series.getGroups())
                 {
-                    final Node copyOfLastParent = lastParent;
+                    final Node lastParent = lastParentTracker;
                     
                     String groupPath = Arrays.asList(series.getGroups())
                         .stream()
@@ -160,26 +156,27 @@ public class DataSeriesSelectionDialog extends Dialog
                         .limit(index + 1)
                         .collect(Collectors.joining("|")); //$NON-NLS-1$
 
-                    groupPath = map(series) + "|" + groupPath;
+                    groupPath = map(series) + "|" + groupPath; //$NON-NLS-1$
 
                     Node group = group2node.computeIfAbsent(groupPath, g -> {
                         Node n = new Node(groupGiven.toString());
-                        n.parent = copyOfLastParent;
-                        copyOfLastParent.children.add(n);
+                        n.parent = lastParent;
+                        lastParent.children.add(n);
                         return n;
                     });
 
+                    // If there are no more nested groups to go through
+                    // we set the data series as the children
                     if (series.getGroups().length == (index + 1))
                     {
-                        // If there are no more nested groups to go through
-                        // we set the data series as the children
                         group.children.add(child);
                         child.parent = group;
                     }
                     else
                     {
-                        // If there are nested groups, we handle it here
-                        lastParent = group;
+                        // If there are nested groups, we just set the current
+                        // node ready to be the parent
+                        lastParentTracker = group;
                     }
 
                     index++;
@@ -205,7 +202,7 @@ public class DataSeriesSelectionDialog extends Dialog
         switch (dataSeries.getType())
         {
             case TYPE_PARENT:
-                return getLabelForParentObject(dataSeries);
+                return ((GroupedDataSeries) dataSeries.getInstance()).getTopLevelLabel();
             case SECURITY:
                 return Messages.LabelSecurities;
             case SECURITY_BENCHMARK:
@@ -218,26 +215,6 @@ public class DataSeriesSelectionDialog extends Dialog
             default:
                 return Messages.LabelClientFilterDialogTitle;
         }
-    }
-    
-    private String getLabelForParentObject(DataSeries dataSeries)
-    {
-        if (!(dataSeries.getInstance() instanceof ParentObjectClientDataSeries instance))
-            throw new IllegalArgumentException("Data series instance must be ParentObjectSeries"); //$NON-NLS-1$
-
-        if (instance.getParentObject() instanceof Portfolio)
-            return Messages.LabelSecurities;
-
-        if (instance.getParentObject() instanceof Account)
-            return Messages.LabelAccounts;
-
-        if (instance.getParentObject() instanceof Classification)
-            return Messages.LabelTaxonomies;
-
-        if (instance.getParentObject() instanceof Client)
-            return Messages.PerformanceChartLabelEntirePortfolio;
-
-        throw new IllegalArgumentException("Unable to determine parent object type."); //$NON-NLS-1$
     }
 
     public List<DataSeries> getResult()

@@ -1,8 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
@@ -83,7 +82,7 @@ public final class DataSeries implements Adaptable
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
-        TYPE_PARENT("Type-Parent-", i -> ((ParentObjectClientDataSeries) i).getId()), //$NON-NLS-1$
+        TYPE_PARENT("Type-Parent-", i -> ((GroupedDataSeries) i).getId()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
@@ -130,10 +129,10 @@ public final class DataSeries implements Adaptable
         this(type, null, instance, label, color);
     }
 
-    /* package */ DataSeries(Type type, Object[] group, Object instance, String label, RGB color)
+    /* package */ DataSeries(Type type, Object[] groups, Object instance, String label, RGB color)
     {
         this.type = type;
-        this.groups = group;
+        this.groups = groups;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -141,15 +140,8 @@ public final class DataSeries implements Adaptable
 
     /* package */ DataSeries(Type type, Object group, Object instance, String label, RGB color)
     {
-        List<Object> groups = new ArrayList<>();
-
-        if (group != null)
-        {
-            groups.add(group);
-        }
-
         this.type = type;
-        this.groups = groups.toArray();
+        this.groups = group != null ? Arrays.asList(group).toArray() : null;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -172,7 +164,7 @@ public final class DataSeries implements Adaptable
 
     public String getLabel()
     {
-        if (instance instanceof ParentObjectClientDataSeries c && groups.length > 0)
+        if (instance instanceof GroupedDataSeries c && groups.length > 0)
             return groups[groups.length - 1] + " - " + label; //$NON-NLS-1$
 
         return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
