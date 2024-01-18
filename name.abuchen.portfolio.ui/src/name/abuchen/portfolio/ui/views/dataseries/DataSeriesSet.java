@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -26,6 +27,7 @@ public class DataSeriesSet
 {
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
+    private final List<DataSeries> availableDerivedSeries = new ArrayList<>();
 
     public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
@@ -48,6 +50,12 @@ public class DataSeriesSet
         }
 
         buildCommonDataSeries(client, preferences, wheel);
+
+        if (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS)
+        {
+            // created the derived data series based
+            buildStatementOfAssetsDerivedDataSeries(wheel);
+        }
     }
 
     public DataSeries.UseCase getUseCase()
@@ -60,12 +68,77 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    public List<DataSeries> getAvailableDerivedSeries()
+    {
+        return availableDerivedSeries;
+    }
+
     /**
      * Returns DataSeries matching the given UUID.
      */
     public DataSeries lookup(String uuid)
     {
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
+    }
+
+    private void buildStatementOfAssetsDerivedDataSeries(ColorWheel wheel)
+    {
+        var typesForInterestPayments = EnumSet.of(ClientDataSeries.INTEREST, //
+                        ClientDataSeries.INTEREST_ACCUMULATED, //
+                        ClientDataSeries.INTEREST_CHARGE, //
+                        ClientDataSeries.INTEREST_CHARGE_ACCUMULATED);
+
+        var typesWithBarChart = EnumSet.of(ClientDataSeries.DIVIDENDS, //
+                        ClientDataSeries.EARNINGS, //
+                        ClientDataSeries.FEES, //
+                        ClientDataSeries.INTEREST, //
+                        ClientDataSeries.INTEREST_CHARGE, //
+                        ClientDataSeries.TAXES, //
+                        ClientDataSeries.TRANSFERALS);
+
+        var typesWithArea = EnumSet.of(ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL, //
+                        ClientDataSeries.INVESTED_CAPITAL, //
+                        ClientDataSeries.TRANSFERALS_ACCUMULATED);
+
+        for (var baseDataSeries : availableSeries)
+        {
+            // skip client - the client already defines all derived data series
+            // (but only for the total client)
+            if (baseDataSeries.getType() == DataSeries.Type.CLIENT)
+                continue;
+
+            for (var type : DataSeries.ClientDataSeries.values())
+            {
+                // skip totals - that is already covered by the base data series
+                // itself
+                if (type == ClientDataSeries.TOTALS)
+                    continue;
+                // skip delta percentage - that is applicable only for
+                // performance data series
+                if (type == ClientDataSeries.DELTA_PERCENTAGE)
+                    continue; // NOSONAR
+
+                // skip interest and interest charge for portfolios and
+                // securities - not supported
+                if ((baseDataSeries.getType() == DataSeries.Type.SECURITY
+                                || baseDataSeries.getType() == DataSeries.Type.PORTFOLIO)
+                                && typesForInterestPayments.contains(type))
+                    continue;
+
+                var label = type.getLabel() + ": " + baseDataSeries.getLabel(); //$NON-NLS-1$
+
+                var dataSeries = new DataSeries(DataSeries.Type.DERIVED_DATA_SERIES, baseDataSeries.getGroup(),
+                                new DerivedDataSeries(baseDataSeries, type), label, wheel.next());
+
+                if (typesWithBarChart.contains(type))
+                    dataSeries.setLineChart(false);
+
+                if (typesWithArea.contains(type))
+                    dataSeries.setShowArea(true);
+
+                availableDerivedSeries.add(dataSeries);
+            }
+        }
     }
 
     private void buildStatementOfAssetsDataSeries()
