@@ -77,7 +77,7 @@ public class DataSeriesSet
             
             for (Portfolio portfolio : client.getPortfolios())
             {
-                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_COMMON,
+                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT,
                                 portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
                                 new ParentObjectClientDataSeries(portfolio, entry.getKey()), entry.getValue(),
                                 Colors.DARK_GREEN.getRGB()));
@@ -85,7 +85,7 @@ public class DataSeriesSet
 
             for (Account account : client.getAccounts())
             {
-                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_COMMON, account.getName(),
+                availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT, account.getName(),
                                 new ParentObjectClientDataSeries(account, entry.getKey()), entry.getValue(),
                                 Colors.DARK_GREEN.getRGB()));
             }
@@ -102,7 +102,7 @@ public class DataSeriesSet
 
                         Object[] groups = { taxonomy, classification.getName() };
 
-                        availableSeries.add(new DataSeries(DataSeries.Type.TYPE_COMMON, groups,
+                        availableSeries.add(new DataSeries(DataSeries.Type.TYPE_PARENT, groups,
                                         new ParentObjectClientDataSeries(classification, entry.getKey()),
                                         entry.getValue(),
                                         ColorConversion.hex2RGB(classification.getColor())));

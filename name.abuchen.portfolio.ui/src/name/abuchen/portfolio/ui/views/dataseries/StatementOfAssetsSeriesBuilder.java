@@ -23,7 +23,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == DataSeries.Type.CLIENT || series.getType() == DataSeries.Type.TYPE_COMMON)
+        if (series.getType() == DataSeries.Type.CLIENT || series.getType() == DataSeries.Type.TYPE_PARENT)
         {
             addClient(series, index);
         }

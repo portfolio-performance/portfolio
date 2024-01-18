@@ -145,16 +145,16 @@ public class DataSeriesSelectionDialog extends Dialog
 
             Node parent = type2node.computeIfAbsent(map(series), Node::new);
 
-            if (series.getGroup() != null)
+            if (series.getGroups() != null)
             {
                 Node lastParent = parent;
                 int index = 0;
 
-                for (Object groupGiven : series.getGroup())
+                for (Object groupGiven : series.getGroups())
                 {
                     final Node copyOfLastParent = lastParent;
                     
-                    String groupPath = Arrays.asList(series.getGroup())
+                    String groupPath = Arrays.asList(series.getGroups())
                         .stream()
                         .map(Object::toString)
                         .limit(index + 1)
@@ -169,7 +169,7 @@ public class DataSeriesSelectionDialog extends Dialog
                         return n;
                     });
 
-                    if (series.getGroup().length == (index + 1))
+                    if (series.getGroups().length == (index + 1))
                     {
                         // If there are no more nested groups to go through
                         // we set the data series as the children
@@ -204,7 +204,7 @@ public class DataSeriesSelectionDialog extends Dialog
         
         switch (dataSeries.getType())
         {
-            case TYPE_COMMON:
+            case TYPE_PARENT:
                 return getLabelForParentObject(dataSeries);
             case SECURITY:
                 return Messages.LabelSecurities;
