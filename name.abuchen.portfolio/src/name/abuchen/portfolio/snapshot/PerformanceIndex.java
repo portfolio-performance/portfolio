@@ -119,6 +119,27 @@ public class PerformanceIndex
         return index;
     }
 
+    public static PerformanceIndex forParentObject(Client client, CurrencyConverter converter, Object parentObject,
+                    Interval reportInterval, List<Exception> warnings)
+    {
+        if (parentObject instanceof Portfolio portfolio)
+        {
+            return PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio, reportInterval, warnings);
+        }
+        
+        if (parentObject instanceof Account account)
+        {
+            return PerformanceIndex.forAccount(client,  converter, account, reportInterval, warnings);
+        }
+
+        if (parentObject instanceof Classification classification)
+        { 
+            return PerformanceIndex.forClassification(client, converter, classification, reportInterval, warnings);
+        }
+
+        throw new IllegalArgumentException("Unable to determine transaction owner account"); //$NON-NLS-1$
+    }
+
     /* package */
     Client getClient()
     {
