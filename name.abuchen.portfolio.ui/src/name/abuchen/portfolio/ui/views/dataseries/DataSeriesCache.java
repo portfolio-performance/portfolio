@@ -135,6 +135,12 @@ public class DataSeriesCache
                                     new WithoutTaxesFilter().filter(pretax.getFilter().filter(client)), converter,
                                     reportingPeriod, warnings);
 
+                case DERIVED_DATA_SERIES:
+                    // redirect to the #lookup method to use the cached data, if
+                    // available
+                    var derivedDataSeries = (DerivedDataSeries) series.getInstance();
+                    return lookup(derivedDataSeries.getBaseDataSeries(), reportingPeriod);
+
                 default:
                     throw new IllegalArgumentException(series.getType().name());
             }
