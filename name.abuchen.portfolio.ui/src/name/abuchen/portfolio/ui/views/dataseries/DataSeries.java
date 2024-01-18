@@ -83,7 +83,7 @@ public final class DataSeries implements Adaptable
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
-        TYPE_COMMON("Type-Common-", i -> ((ParentObjectClientDataSeries) i).getId()), //$NON-NLS-1$
+        TYPE_PARENT("Type-Parent-", i -> ((ParentObjectClientDataSeries) i).getId()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
@@ -107,7 +107,7 @@ public final class DataSeries implements Adaptable
     }
 
     private Type type;
-    private Object[] group;
+    private Object[] groups;
     private Object instance;
     private String label;
     private boolean isLineChart = true;
@@ -133,7 +133,7 @@ public final class DataSeries implements Adaptable
     /* package */ DataSeries(Type type, Object[] group, Object instance, String label, RGB color)
     {
         this.type = type;
-        this.group = group;
+        this.groups = group;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -149,7 +149,7 @@ public final class DataSeries implements Adaptable
         }
 
         this.type = type;
-        this.group = groups.toArray();
+        this.groups = groups.toArray();
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -160,9 +160,9 @@ public final class DataSeries implements Adaptable
         return type;
     }
 
-    public Object[] getGroup()
+    public Object[] getGroups()
     {
-        return group;
+        return groups;
     }
 
     public Object getInstance()
@@ -172,8 +172,8 @@ public final class DataSeries implements Adaptable
 
     public String getLabel()
     {
-        if (instance instanceof ParentObjectClientDataSeries c && group.length > 0)
-            return group[group.length - 1] + " - " + label; //$NON-NLS-1$
+        if (instance instanceof ParentObjectClientDataSeries c && groups.length > 0)
+            return groups[groups.length - 1] + " - " + label; //$NON-NLS-1$
 
         return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
