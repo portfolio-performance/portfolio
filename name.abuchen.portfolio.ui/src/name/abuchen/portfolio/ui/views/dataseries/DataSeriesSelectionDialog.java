@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -29,10 +31,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
 {
@@ -138,18 +143,47 @@ public class DataSeriesSelectionDialog extends Dialog
             Node child = new Node(series.getSearchLabel());
             child.dataSeries = series;
 
-            Node parent = type2node.computeIfAbsent(map(series.getType()), Node::new);
+            Node parent = type2node.computeIfAbsent(map(series), Node::new);
 
             if (series.getGroup() != null)
             {
-                Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
-                    Node n = new Node(g.toString());
-                    n.parent = parent;
-                    parent.children.add(n);
-                    return n;
-                });
-                child.parent = group;
-                group.children.add(child);
+                Node lastParent = parent;
+                int index = 0;
+
+                for (Object groupGiven : series.getGroup())
+                {
+                    final Node copyOfLastParent = lastParent;
+                    
+                    String groupPath = Arrays.asList(series.getGroup())
+                        .stream()
+                        .map(Object::toString)
+                        .limit(index + 1)
+                        .collect(Collectors.joining("|")); //$NON-NLS-1$
+
+                    groupPath = map(series) + "|" + groupPath;
+
+                    Node group = group2node.computeIfAbsent(groupPath, g -> {
+                        Node n = new Node(groupGiven.toString());
+                        n.parent = copyOfLastParent;
+                        copyOfLastParent.children.add(n);
+                        return n;
+                    });
+
+                    if (series.getGroup().length == (index + 1))
+                    {
+                        // If there are no more nested groups to go through
+                        // we set the data series as the children
+                        group.children.add(child);
+                        child.parent = group;
+                    }
+                    else
+                    {
+                        // If there are nested groups, we handle it here
+                        lastParent = group;
+                    }
+
+                    index++;
+                }
             }
             else
             {
@@ -165,10 +199,13 @@ public class DataSeriesSelectionDialog extends Dialog
      * Reduce number of first-level folders to a meaningful set for the
      * end-user.
      */
-    private String map(Type type)
+    private String map(DataSeries dataSeries)
     {
-        switch (type)
+        
+        switch (dataSeries.getType())
         {
+            case TYPE_COMMON:
+                return getLabelForParentObject(dataSeries);
             case SECURITY:
                 return Messages.LabelSecurities;
             case SECURITY_BENCHMARK:
@@ -181,6 +218,26 @@ public class DataSeriesSelectionDialog extends Dialog
             default:
                 return Messages.LabelClientFilterDialogTitle;
         }
+    }
+    
+    private String getLabelForParentObject(DataSeries dataSeries)
+    {
+        if (!(dataSeries.getInstance() instanceof ParentObjectClientDataSeries instance))
+            throw new IllegalArgumentException("Data series instance must be ParentObjectSeries"); //$NON-NLS-1$
+
+        if (instance.getParentObject() instanceof Portfolio)
+            return Messages.LabelSecurities;
+
+        if (instance.getParentObject() instanceof Account)
+            return Messages.LabelAccounts;
+
+        if (instance.getParentObject() instanceof Classification)
+            return Messages.LabelTaxonomies;
+
+        if (instance.getParentObject() instanceof Client)
+            return Messages.PerformanceChartLabelEntirePortfolio;
+
+        throw new IllegalArgumentException("Unable to determine parent object type."); //$NON-NLS-1$
     }
 
     public List<DataSeries> getResult()
@@ -268,8 +325,6 @@ public class DataSeriesSelectionDialog extends Dialog
         treeViewer.setComparator(new ViewerComparator());
 
         hookListener();
-
-        treeViewer.expandAll();
 
         return composite;
     }

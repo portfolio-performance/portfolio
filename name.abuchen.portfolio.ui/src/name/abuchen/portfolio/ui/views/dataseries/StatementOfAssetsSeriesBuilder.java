@@ -23,7 +23,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == DataSeries.Type.CLIENT)
+        if (series.getType() == DataSeries.Type.CLIENT || series.getType() == DataSeries.Type.TYPE_COMMON)
         {
             addClient(series, index);
         }
@@ -39,7 +39,18 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     {
         double[] values;
 
-        switch ((ClientDataSeries) series.getInstance())
+        ClientDataSeries clientDataSeries;
+
+        if (series.getInstance() instanceof ParentObjectClientDataSeries)
+        {
+            clientDataSeries = ((ParentObjectClientDataSeries) series.getInstance()).getClientDataSeries();
+        }
+        else
+        {
+            clientDataSeries = (ClientDataSeries) series.getInstance();
+        }
+        
+        switch (clientDataSeries)
         {
             case TOTALS:
                 values = toDouble(clientIndex.getTotals(), Values.Amount.divider());
