@@ -119,9 +119,8 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
     private BiConsumer<DocumentContext, String[]> contextProvider2023()
     {
         return (context, lines) -> {
-            Pattern yearPattern = Pattern.compile(".*Kontoauszug Nr\\.[\\s]{1,}[\\d+]\\/(?<year>[\\d]{4})");
-            Pattern currencyPattern = Pattern
-                            .compile("(?<currency>[\\w]{3})\\-Konto Kontonummer.*");
+            Pattern yearPattern = Pattern.compile("^.*Kontoauszug Nr\\.[\\s]{1,}[\\d]{1,2}\/(?<year>[\\d]{4})$");
+            Pattern currencyPattern = Pattern.compile("^(?<currency>[\\w]{3})\\-Konto Kontonummer.*$");
             contextProviderCommon(context, lines, yearPattern, currencyPattern);
         };
     }
