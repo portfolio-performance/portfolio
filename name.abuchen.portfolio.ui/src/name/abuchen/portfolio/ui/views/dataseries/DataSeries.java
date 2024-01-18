@@ -20,7 +20,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
-
 /**
  * A data series available to add to charts.
  */
