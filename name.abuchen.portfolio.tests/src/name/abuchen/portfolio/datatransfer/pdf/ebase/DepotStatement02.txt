@@ -1,12 +1,4 @@
-PDFExport:
-`PDF Autor: ''
-PDFBox Version: 1.8.16
-
-Hallo zusammen,
-ich update gerade mein Portfolio von ebase, leider kann ich den Kontoauszug nicht importieren. Es geht darum das die "Einlagen" welche eingezahlt werden dem Buchungskonto gutgeschrieben werden.
-Der Wertpapierkauf erzeugt automatisch eine Buchung. Daher geht es nur um die Ein- und Auszahlungen,
-PDFExport:
-`PDF Autor: ''
+PDF Autor: ''
 PDFBox Version: 1.8.16
 
 European Bank for Financial Services GmbH, 80218 München
@@ -43,4 +35,3 @@ ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des 
 European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
 Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
 80218 München DE68ZZZyyyyyyyyyyy Kai Friedrich, Jürgen Keller
-`
