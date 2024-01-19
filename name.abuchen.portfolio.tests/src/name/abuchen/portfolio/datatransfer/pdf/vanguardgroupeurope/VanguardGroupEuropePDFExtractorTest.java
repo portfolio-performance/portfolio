@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -88,7 +89,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-03T11:11:17")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.956954)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Referenznummer 12345678"));
+        assertThat(entry.getNote(), is("Ord.-Nr.: 9876543 | Ref.-Nr.: 12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
@@ -134,7 +135,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-07T01:32:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.228799)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Referenznummer 11001804"));
+        assertThat(entry.getNote(), is("Ord.-Nr.: 2586411 | Ref.-Nr.: 11001804"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300.00))));
@@ -180,7 +181,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-06T01:33:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.446747)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Referenznummer 11001804"));
+        assertThat(entry.getNote(), is("Ord.-Nr.: 2586325 | Ref.-Nr.: 11001804"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
@@ -190,6 +191,37 @@ public class VanguardGroupEuropePDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf17()
+    {
+        VanguardGroupEuropePDFExtractor extractor = new VanguardGroupEuropePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFMXYX26"), hasWkn(null), hasTicker(null), //
+                        hasName("FDIX Vanguard FTSE Japan UCITS ETF EUR Hedged Accumulating"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-01-18T10:30:30"), hasShares(0.444601), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Ord.-Nr.: 3403175 | Ref.-Nr.: 11001912"), //
+                        hasAmount("EUR", 12.31), hasGrossValue("EUR", 12.60), //
+                        hasTaxes("EUR", 0.28 + 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
