@@ -19,7 +19,8 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
 
     private static final String DEPOSIT_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s*)(?<amount>[\\.\\d]+,[\\d]{2}) [H]";
     private static final String REMOVAL_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Überweisungsauftrag)(\\s*)(?<amount>[\\.\\d]+,[\\d]{2}) [S]";
-    private static final String INTEREST_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss lt\\. Anlage \\d) (?<amount>[\\.\\d]+,[\\d]{2}) (.*)";
+    private static final String INTEREST_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss lt\\. Anlage \\d) (?<amount>[\\.\\d]+,[\\d]{2}) [H]";
+    private static final String INTEREST_CHARGE_2023 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Storno Abschluss)(\\s*)(?<amount>[\\.\\d]+,[\\d]{2}) [S]";
 
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -57,6 +58,10 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         Block interestBlock = new Block(INTEREST_2023);
         interestBlock.set(interestTransaction(type, INTEREST_2023));
         type.addBlock(interestBlock);
+
+        Block interestChargeBlock = new Block(INTEREST_CHARGE_2023);
+        interestChargeBlock.set(interestChargeTransaction(type, INTEREST_CHARGE_2023));
+        type.addBlock(interestChargeBlock);
     }
 
 
@@ -82,6 +87,15 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
                         .match(regex)
                         .assign(assignmentsProvider(type))
                         .wrap(TransactionItem::new);
+    }
+
+    private Transaction<AccountTransaction> interestChargeTransaction(DocumentType type, String regex)
+    {
+        return new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.INTEREST_CHARGE);
+            return entry;
+        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
     }
 
     private Transaction<AccountTransaction> removalTransaction(DocumentType type, String regex)
