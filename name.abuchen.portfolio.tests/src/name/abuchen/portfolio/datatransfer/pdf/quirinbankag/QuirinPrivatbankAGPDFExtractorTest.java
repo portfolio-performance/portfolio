@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.quirinbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -17,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -676,7 +679,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf27WithSecurityInEUR()
+    public void testDividende04WithSecurityInEUR()
     {
         Security security = new Security("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("IE00B3F81G20");
@@ -711,6 +714,37 @@ public class QuirinPrivatbankAGPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testVorabpauschale01()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1048314196"), hasWkn("A110QF"), hasTicker(null), //
+                        hasName("UBS(L)FS-BBG EO A.L.Crp1-5UETF Inhaber-Anteile A Dis.EUR"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(852.8631), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote("Referenz-Nr 350705756"), //
+                        hasAmount("EUR", 4.66), hasGrossValue("EUR", 4.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1414,5 +1448,31 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.58)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 Ref: KA-01 44738244"));
+    }
+
+    @Test
+    public void testDepotauszug05()
+    {
+        QuirinBankAGPDFExtractor extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug05.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-02"), hasAmount("EUR", 250.00), //
+                        hasSource("Depotauszug05.txt"), hasNote("Sammelgutschrift Ref.: 4*******2"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-10-16"), hasAmount("EUR", 0.48), //
+                        hasSource("Depotauszug05.txt"), hasNote("Vermögensverwaltungshonorar Ref.: 4******6"))));
     }
 }

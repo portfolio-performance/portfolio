@@ -1,0 +1,100 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+Kontoauszug
+Konto 8***0 EUR
+IBAN DE****0
+*********
+Vermögensverwaltungskonto in EUR
+****** Datum 16.10.2023
+****** Auszug-Nr 10
+******** Seite 1 von 2
+**********
+Betreuer quirion ***
+Telefon *****
+E-Mail ****@quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Sammelgutschrift 02.10.2023 02.10.2023 250,00 EUR
+D***********0
+Ref.: 4*******2
+Wertpapier Kauf, Ref.: 403747782 05.10.2023 09.10.2023 -45,77 EUR
+Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN
+LU1931974692, ST 1,6866
+Wertpapier Kauf, Ref.: 403747787 05.10.2023 09.10.2023 -40,37 EUR
+SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14, ST 1,4495
+Wertpapier Kauf, Ref.: 403747790 05.10.2023 09.10.2023 -36,34 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 6,3384
+Wertpapier Kauf, Ref.: 403747793 05.10.2023 09.10.2023 -31,46 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 0,8758
+Wertpapier Kauf, Ref.: 403747796 05.10.2023 09.10.2023 -16,71 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66, ST 0,612
+Wertpapier Kauf, Ref.: 403747798 05.10.2023 09.10.2023 -12,08 EUR
+iShsIII-Core Gl.Aggr.Bd UC.ETF Registered Shs EUR Acc.hgd o.N
+IE00BDBRDM35, ST 2,7067
+Wertpapier Kauf, Ref.: 403747802 05.10.2023 09.10.2023 -12,02 EUR
+Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N.
+LU1109942653, ST 0,7906
+Wertpapier Kauf, Ref.: 403747807 05.10.2023 09.10.2023 -11,91 EUR
+AMUN.GOV.BD EO BR.IG 1-3 U.ETF Actions au Porteur o.N.
+FR0010754135, ST 0,0743
+Wertpapier Kauf, Ref.: 403747811 05.10.2023 09.10.2023 -9,55 EUR
+Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR
+Dis.oN
+LU1931975079, ST 0,543
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 6****7 / 2******7 02:47:43
+Kontoauszug
+Konto 8*********0 EUR
+IBAN DE*****20
+****************
+Vermögensverwaltungskonto in EUR
+**** Datum 16.10.2023
+***** Auszug-Nr 10
+****** Seite 2 von 2
+*********
+Betreuer quirion *****
+Telefon *******
+E-Mail *****quirion.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 403747815 05.10.2023 09.10.2023 -8,80 EUR
+Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR
+Ac.oN
+LU2037748774, ST 0,179
+Wertpapier Kauf, Ref.: 403747821 05.10.2023 09.10.2023 -8,22 EUR
+Xtr.(IE)-MSCI World Minim.Vol. Registered Shares 1C USD o.N.
+IE00BL25JN58, ST 0,2334
+Wertpapier Kauf, Ref.: 403747828 05.10.2023 09.10.2023 -7,72 EUR
+InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN
+IE00BGJWWY63, ST 0,2069
+Wertpapier Kauf, Ref.: 403747834 05.10.2023 09.10.2023 -4,66 EUR
+iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03, ST 0,1258
+Wertpapier Kauf, Ref.: 403747842 05.10.2023 09.10.2023 -3,57 EUR
+iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N.
+IE00B3F81G20, ST 0,0482
+Vermögensverwaltungshonorar ********0, 01.10.2023 - 12.10.2023 16.10.2023 16.10.2023 -0,48 EUR
+Bemessungsgrundlage ***** EUR
+Betrag inkl. USt: -0,48 EUR (Netto: -0,40 EUR, USt: -0,08 EUR)
+Ref.: 4******6
+letzter Auszug 30.09.2023 alter Saldo 10,89 EUR
+Umsatz 0,34 EUR
+Limit (in Währung) 0,00 neuer Saldo 11,23 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 65025347 / 20231017 02:47:43
