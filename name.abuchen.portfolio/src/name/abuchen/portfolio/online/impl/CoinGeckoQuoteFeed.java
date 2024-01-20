@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -32,7 +33,15 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
+/**
+ * Load prices from CoinGecko.
+ * 
+ * @implNote Even though the CoinGecko documentation states that the free
+ *           version allows 30 requests per minute, we see error messages when
+ *           reaching about 9.5 calls per minute.
+ */
 public class CoinGeckoQuoteFeed implements QuoteFeed
 {
     public static class Coin
@@ -71,14 +80,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
     public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
-    /**
-     * Use rate limiter with CoinGecko. The free API plan allows between 10 to
-     * 50 calls per minute. The Guava RateLimiter uses permits per second.
-     * However, with 10 permits per 60 seconds, we still get an error message
-     * every once in a while. Therefore we are a little bit more conservative
-     * when setting up the rate limiter.
-     */
-    private static RateLimiter rateLimiter = RateLimiter.create(40 / 60d);
+    private static RateLimiter rateLimiter = RateLimiter.create(9.5 / 60);
 
     private List<Coin> coins;
 
@@ -199,12 +201,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
-        if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
-            throw new RateLimitExceededException("CoinGecko rate limit exceeded"); //$NON-NLS-1$
-
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
+
+        if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
+            throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
 
         QuoteFeedData data = new QuoteFeedData();
 
@@ -243,6 +245,13 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
                 JSONArray priceArray = (JSONArray) marketChartObject.get("prices"); //$NON-NLS-1$
                 convertCoinGeckoJsonArray(priceArray, data);
             }
+        }
+        catch (WebAccessException e)
+        {
+            if (e.getHttpErrorCode() == HttpStatus.SC_TOO_MANY_REQUESTS)
+                throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
+
+            data.addError(e);
         }
         catch (IOException | URISyntaxException e)
         {
