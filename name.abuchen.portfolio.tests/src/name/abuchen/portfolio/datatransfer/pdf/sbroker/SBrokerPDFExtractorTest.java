@@ -1901,7 +1901,7 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
-    public void testDividende17WithSecurityInEUR()
+    public void testDividende14WithSecurityInEUR()
     {
         Security security = new Security("YUM! BRANDS, INC. REGISTERED SHARES O.N.", CurrencyUnit.EUR);
         security.setIsin("US9884981013");
@@ -1937,6 +1937,37 @@ public class SBrokerPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testVorabpauschale01()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYZK4552"), hasWkn("A2ANH0"), hasTicker(null), //
+                        hasName("ISHSIV-AUTOMATION&ROBOT.U.ETF REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(155), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote("Abrechnungsnr. 51274930950"), //
+                        hasAmount("EUR", 4.86), hasGrossValue("EUR", 4.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

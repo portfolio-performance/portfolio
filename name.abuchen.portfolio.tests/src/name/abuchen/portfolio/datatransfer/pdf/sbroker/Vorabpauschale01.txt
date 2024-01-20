@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+~$~|ER03|263256||||||||ERTRAEGE.D240112.AFP||||20240112||104075|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 7263256012
+miwNEGN VTLzG
+Abrechnungsnr. 51274930950
+Datum 12.01.2024
+HjKC
+kotlGFi WCAVY
+xxxxxxx-Str. 33
+51864 QAEvSluAJAKZLh
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 155 ISHSIV-AUTOMATION&ROBOT.U.ETF IE00BYZK4552 (A2ANH0)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 02.01.2024 Vorabpauschale pro St. 0,160196610 EUR
+Bestandsstichtag 29.12.2023 mit Teilfreistellung (Aktien-
+Ex-Tag 02.01.2024 fonds) 0,112137620 EUR
+Geschäftsjahr 01.01.2023 - 31.12.2023 Herkunftsland Irland
+Steuerpflichtige Vorabpauschale 24,83+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 7,45- EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 17,38+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 17,38+ EUR
+Kapitalertragsteuer 24,45 % auf 17,38 EUR 4,25- EUR
+Solidaritätszuschlag 5,5 % auf 4,25 EUR 0,23- EUR
+Kirchensteuer 9 % auf 4,25 EUR 0,38- EUR
+Ausmachender Betrag 4,86- EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Jahressteuerbescheinigung folgt.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 170,84
+Ertrag 0,00 0,00 0,00 0,00 17,38
+Nachher 0,00 0,00 0,00 0,00 188,22
+Bitte ggf. Rückseite beachten.
+5500.01130043.0208454ER03
+SBRO_ER03_v10.9P.ERTRAEGE.D240112.AFP_104075
+
+Seite 2
+Depotnummer 7263256012
+Abrechnungsnr. 51274930950
+Datum 12.01.2024
+Nachrichtlich zur Ermittlung des Bruttowertes zur Vorabpauschale berücksichtigte Anschaffungsgeschäfte.
+Anschaffungen Summe Nominale Anzahl Monat(e) anteiliger Bruttowert
+Summe vorherige Kalenderjahre 155,0000 12/12 24,83 €
+Bestand zum 29.12.2023 155,0000 24,83 €
+5500.01130043.0208455ER03
