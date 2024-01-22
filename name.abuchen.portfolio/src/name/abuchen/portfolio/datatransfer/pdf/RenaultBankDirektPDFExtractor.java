@@ -185,7 +185,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Pattern currencyPattern = Pattern
                             .compile("(.*)(Summe Zinsen\\/Kontoführung)(\\s*)                (?<currency>[\\w]{3})(.*)");
           Pattern currencyPattern2 = Pattern
-                          .compile("(.*)_N_E_U_E__R_ K__O_NT__O_S_T_A_N_D_ _VO_M(.*)__ I__N_ _(?<currency>[\\w]{5})(.*)");
+                            .compile("^.*N.*E.*U.*E.*R.*K.*O.*N.*T.*O.*S.*T.*A.*N.*D.*V.*O.*M.*I.*N.*(?<currency>[A-Z_]{5,}).*$");
 
             contextProviderCommon(context, lines, yearPattern, currencyPattern, currencyPattern2);
         };
