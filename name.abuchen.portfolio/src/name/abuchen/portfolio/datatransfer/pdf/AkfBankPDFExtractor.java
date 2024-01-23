@@ -2,10 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
@@ -42,7 +39,12 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTransactions()
     {
-        DocumentType type = new DocumentType("akf bank", contextProvider());
+        final DocumentType type = new DocumentType("akf bank", //
+                        documentContext -> documentContext //
+                                        .section("currency") //
+                                        .match("^Nr\\. Valuta \\/ Buchungstag Buchungstext (?<currency>[\\w]{3}).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
         this.addDocumentTyp(type);
 
         Block depositBlock = new Block(DEPOSIT);
@@ -99,26 +101,5 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
             }
             transaction.setCurrencyCode(context.get(AkfBankPDFExtractor.CONTEXT_KEY_CURRENCY));
         };
-    }
-
-    private BiConsumer<DocumentContext, String[]> contextProvider()
-    {
-        return (context, lines) -> {
-            Pattern currencyPattern = Pattern
-                            .compile("^Nr\\. Valuta \\/ Buchungstag Buchungstext (?<currency>[\\w]{3}).*$");
-            contextProviderCommon(context, lines, currencyPattern);
-        };
-    }
-
-    private void contextProviderCommon(Map<String, String> context, String[] lines, Pattern currencyPattern)
-    {
-        for (String line : lines)
-        {
-            Matcher currencyMatcher = currencyPattern.matcher(line);
-            if (currencyMatcher.matches())
-            {
-                context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency"));
-            }
-        }
     }
 }

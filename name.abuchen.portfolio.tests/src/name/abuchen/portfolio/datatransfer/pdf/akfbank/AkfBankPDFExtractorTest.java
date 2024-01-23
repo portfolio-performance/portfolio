@@ -26,11 +26,11 @@ import name.abuchen.portfolio.money.Values;
 public class AkfBankPDFExtractorTest
 {
     @Test
-    public void testKontoauszug1()
+    public void testTagesgeldKontoauzug01()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld1.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug01.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -77,11 +77,11 @@ public class AkfBankPDFExtractorTest
     }
     
     @Test
-    public void testKontoauszug2()
+    public void testTagesgeldKontoauzug02()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld2.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug02.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -133,11 +133,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug3()
+    public void testTagesgeldKontoauzug03()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld3.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug03.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -157,11 +157,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug4()
+    public void testTagesgeldKontoauzug04()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld4.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug04.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -182,11 +182,11 @@ public class AkfBankPDFExtractorTest
     }
     
     @Test
-    public void testKontoauszug5()
+    public void testTagesgeldKontoauzug05()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld5.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug05.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -207,11 +207,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug6()
+    public void testTagesgeldKontoauzug06()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld6.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug06.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -232,11 +232,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug7()
+    public void testTagesgeldKontoauzug07()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugTagesgeld7.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug07.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -269,11 +269,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszugFestgeld1()
+    public void testFestgeldKontoauzug01()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugFestgeld1.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("FestgeldKontoauzug01.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -306,11 +306,11 @@ public class AkfBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszugAnlagekonto1()
+    public void testAnlagekontoKontoauzug01()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("akfbankKontoauszugAnlagekonto1.txt"), errors);
+        List<Item> results = extractor.extract(loadFile("AnlagekontoKontoauzug01.txt"), errors);
 
         assertThat(errors, empty());
 
