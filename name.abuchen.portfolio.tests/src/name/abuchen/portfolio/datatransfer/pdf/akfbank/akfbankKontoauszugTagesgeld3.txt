@@ -1,0 +1,56 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+akf bank
+der finanzpartner
+Kontoauszug
+Herrn Kunde Max Muster akf bank 
+Max Muster GmbH & Co KG
+Musterstr. 2 Servicecenter
+Datum 04.05.2015
+04668 Musterhausen Postfach 1242 
+Auszug Nr. 1 85312 Freising
+Blatt 1 von 1 Tel. 0202 25727-2121
+Kontonummer 10016175 Fax 0202 25727-2122
+service@akf24.de
+alter Saldo zum 01.01.2015 www.akf24.de
+in EUR 1,24
+Nr. Valuta / Buchungstag Buchungstext EUR
+01 13.04.2015 / 11.04.2015 SEPA Überweisung online -1,24
+Max Muster 
+AG Giro 
+neuer Saldo zum 30.04.2015
+in EUR 0,00
+Bitte beachten Sie die folgenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11. Absatz 4 entsprechend unserer Allgemeinen Geschäftsbedingungen, als 
+unserer Allgemeinen Geschäftsbedingungen auf Vollständigkeit von Ihnen anerkannt.
+und Richtigkeit zu prüfen und Einwendungen der Revision Genehmigung von Belastungen aus Lastschriften
+unserer Bank unverzüglich schriftlich mitzuteilen. 
+Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die 
+akf bank GmbH & Co KG, Abteilung Revision, Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht 
+Am Diek 50, 42277 Wuppertal schon genehmigt, so haben Sie Einwendungen gegen die im 
+Saldo bzw. in den Salden dieses Rechnungsabschlusses 
+enthaltene Belastungsbuchung spätestens vor Ablauf von sechs 
+Rechnungsabschluss inkl. Saldenmitteilung Wochen nach Zugang des Rechnungsabschlusses zu erheben. 
+Wir bitten Sie, den Saldo Ihres Kontos bzw. die Salden Ihrer Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt 
+Konten zu prüfen und Einwendungen der Revision unserer Bank die Absendung innerhalb der Sechs-Wochen-Frist. Das 
+unverzüglich, spätestens innerhalb von sechs Wochen nach unterlassen rechtzeitiger Einwendungen gilt als Genehmigung der 
+Zugang, schriftlich mitzuteilen. Belastungsbuchung.
+Werden innerhalb der Frist keine Einwendungen vorgebracht, so 
+gilt der Saldo bzw. gelten die Salden wie oben aufgeführt,  Ihre 
+akf bank GmbH & Co KG 
+Geschäftsführer:
+Martin Mudersbach
+(Vorsitzender),
+Günter Jäger,
+Ulrich Weyer 
+akf bank 
+GmbH & Co KG
+Sitz der Gesellschaft:
+Am Diek 50
+42277 Wuppertal
+ELG_KAbl_08_13
+
+```
