@@ -185,6 +185,16 @@ public final class TextUtil
     }
 
     /**
+     * Removes all tags from the given input
+     */
+    public static String stripTags(String input)
+    {
+        if (input == null || input.isEmpty())
+            return input;
+        return input.replaceAll("<[^>]*>", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * Retrieves the appropriate list separator character based on the default
      * locale. Handles Switzerland differently, using a semicolon as a list
      * separator if the locale is Swiss.

@@ -82,6 +82,7 @@ public class LabelConfig implements WidgetConfig
     private final WidgetDelegate<?> delegate;
 
     private boolean isMultiLine = false;
+    private boolean containsTags = false;
 
     public LabelConfig(WidgetDelegate<?> delegate)
     {
@@ -93,11 +94,21 @@ public class LabelConfig implements WidgetConfig
         this.isMultiLine = isMultiLine;
     }
 
+    public void setContainsTags(boolean containsTags)
+    {
+        this.containsTags = containsTags;
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
+        var label = delegate.getWidget().getLabel();
+
+        if (containsTags)
+            label = TextUtil.stripTags(label);
+
         manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                        new LabelOnly(TextUtil.tooltip(TextUtil.limit(delegate.getWidget().getLabel(), 60))));
+                        new LabelOnly(TextUtil.tooltip(TextUtil.limit(label, 60))));
 
         manager.add(new SimpleAction(Messages.MenuRenameLabel, a -> {
 
@@ -149,6 +160,11 @@ public class LabelConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return Messages.ColumnLabel + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+        var label = delegate.getWidget().getLabel();
+
+        if (containsTags)
+            label = TextUtil.stripTags(label);
+
+        return Messages.ColumnLabel + ": " + label; //$NON-NLS-1$
     }
 }
