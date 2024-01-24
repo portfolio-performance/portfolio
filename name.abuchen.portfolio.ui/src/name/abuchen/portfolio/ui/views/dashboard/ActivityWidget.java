@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -78,6 +77,37 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         public ChartTypeConfig(WidgetDelegate<?> delegate)
         {
             super(delegate, Messages.LabelChartType, ChartType.class, Dashboard.Config.AGGREGATION, Policy.EXACTLY_ONE);
+        }
+    }
+
+    public enum TransactionFilter
+    {
+        ALL_TRANSACTIONS(Messages.LabelAllTransactions), //
+        BUYS_ONLY(Messages.LabelPurchaseTransactionsOnly), //
+        SELLS_ONLY(Messages.LabelSaleTransactionsOnly), //
+        ALL_INBOUND(Messages.LabelAllInboundTransactions), //
+        ALL_OUTBOUND(Messages.LabelAllOutboundTransactions);
+
+        private String label;
+
+        private TransactionFilter(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class TransactionFilterConfig extends EnumBasedConfig<TransactionFilter>
+    {
+        public TransactionFilterConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelTransactionFilter, TransactionFilter.class,
+                            Dashboard.Config.TRANSACTION_FILTER, Policy.EXACTLY_ONE);
         }
     }
 
@@ -178,6 +208,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartTypeConfig(this));
+        addConfig(new TransactionFilterConfig(this));
         addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
@@ -300,27 +331,52 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             {
                 List<Year> years = interval.getYears();
                 chart.setData(years);
-                xAxis.setCategorySeries(years.stream().map(year -> String.valueOf(year.getValue()))
-                                .collect(Collectors.toList()).toArray(new String[0]));
+                xAxis.setCategorySeries(years.stream().map(year -> String.valueOf(year.getValue())).toList()
+                                .toArray(new String[0]));
             }
             else
             {
                 List<YearMonth> yearMonths = interval.getYearMonths();
                 chart.setData(yearMonths);
-                xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue()))
-                                .collect(Collectors.toList()).toArray(new String[0]));
+                xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue())).toList()
+                                .toArray(new String[0]));
             }
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+            TransactionFilter filter = get(TransactionFilterConfig.class).getValue();
+            switch (filter)
+            {
+                case ALL_TRANSACTIONS:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
-                            Colors.brighter(Colors.ICON_BLUE));
+                case ALL_INBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                case BUYS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    break;
 
-            createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
-                            Colors.brighter(Colors.ICON_ORANGE));
+                case ALL_OUTBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
+                case SELLS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
         finally
         {
@@ -371,12 +427,10 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             {
                 switch (chartType)
                 {
-                    case COUNT:
-                    case COUNT_BY_YEAR:
+                    case COUNT, COUNT_BY_YEAR:
                         series[indexOf] += 1;
                         break;
-                    case SUM:
-                    case SUM_BY_YEAR:
+                    case SUM, SUM_BY_YEAR:
                         series[indexOf] += (tx.get().getTransaction().getMonetaryAmount(converter).getAmount()
                                         / Values.Amount.divider());
                         break;

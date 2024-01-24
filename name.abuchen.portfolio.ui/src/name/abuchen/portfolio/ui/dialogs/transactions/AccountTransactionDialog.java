@@ -12,9 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -479,6 +479,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     public void setTransaction(Account account, AccountTransaction transaction)
     {
         model().setSource(account, transaction);
+    }
+
+    public void presetTransaction(Account account, AccountTransaction transaction)
+    {
+        model().presetFromSource(account, transaction);
     }
 
 }

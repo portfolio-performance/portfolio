@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,8 +27,7 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        List<Security> toBeSynced = getClient().getSecurities().stream().filter(s -> s.getOnlineId() != null)
-                        .collect(Collectors.toList());
+        List<Security> toBeSynced = getClient().getSecurities().stream().filter(s -> s.getOnlineId() != null).toList();
 
         if (toBeSynced.isEmpty())
             return Status.OK_STATUS;
@@ -62,11 +60,11 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
             }
             catch (WebAccessException e)
             {
-                PortfolioPlugin.log(e.getMessage());
+                PortfolioPlugin.log(security.getName() + ": " + e.getMessage()); //$NON-NLS-1$
             }
             catch (IOException e)
             {
-                PortfolioPlugin.log(e);
+                PortfolioPlugin.log(security.getName(), e);
             }
 
             try

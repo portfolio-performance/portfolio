@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.views.payments;
 import java.text.MessageFormat;
 import java.util.function.Function;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;

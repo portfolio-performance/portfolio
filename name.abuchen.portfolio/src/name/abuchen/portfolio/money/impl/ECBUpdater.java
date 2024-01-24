@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.util.Dates;
@@ -84,6 +85,8 @@ import name.abuchen.portfolio.util.Dates;
             long lastModified = connection.getLastModified();
             if (lastModified <= data.getLastModified())
                 return;
+
+            PortfolioLog.info("ECB: updating exchange rates " + feedUrl.toExternalForm()); //$NON-NLS-1$
 
             input = connection.getInputStream();
 

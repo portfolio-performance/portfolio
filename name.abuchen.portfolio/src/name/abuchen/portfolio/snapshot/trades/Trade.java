@@ -175,11 +175,19 @@ public class Trade implements Adaptable
         return transactions;
     }
 
-
     public TransactionPair<PortfolioTransaction> getLastTransaction()
     {
-        // transactions have been sorted by calculate(), which is called once after creation
+        // transactions have been sorted by calculate(), which is called once
+        // after creation
         return transactions.get(transactions.size() - 1);
+    }
+
+    /**
+     * Returns the transaction that closed the trade (if the trade is closed)
+     */
+    public Optional<TransactionPair<PortfolioTransaction>> getClosingTransaction()
+    {
+        return isClosed() ? Optional.of(transactions.get(transactions.size() - 1)) : Optional.empty();
     }
 
     public Money getEntryValue()

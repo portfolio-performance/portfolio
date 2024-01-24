@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard.earnings;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;

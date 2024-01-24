@@ -157,6 +157,18 @@ public class AllTransactionsView extends AbstractFinanceView
                                 || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
             else
                 return false;
+        }), //
+        DELIVERIES_INBOUND(PortfolioTransaction.Type.DELIVERY_INBOUND.toString(), 1, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
+            else
+                return false;
+        }), //
+        DELIVERIES_OUTBOUND(PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString(), 1, tx -> {
+            if (tx instanceof PortfolioTransaction ptx)
+                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            else
+                return false;
         });
 
         private String name;

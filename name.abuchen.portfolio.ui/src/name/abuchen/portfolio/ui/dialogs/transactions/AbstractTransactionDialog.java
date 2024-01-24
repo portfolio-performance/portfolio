@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -14,6 +15,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.conversion.text.NumberToStringConverter;
 import org.eclipse.core.databinding.conversion.text.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -24,6 +26,9 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
@@ -31,6 +36,9 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -44,9 +52,11 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CurrencyProposalProvider;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
@@ -174,6 +184,62 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             IObservableValue<?> targetObservable = WidgetProperties.text().observe(currency);
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
+        }
+    }
+
+    public class CurrencyInput
+    {
+        public final Text currencyCode;
+        public final Label description;
+
+        public CurrencyInput(Composite editArea)
+        {
+            List<CurrencyUnit> units = new ArrayList<>();
+            units.addAll(CurrencyUnit.getAvailableCurrencyUnits());
+
+            currencyCode = new Text(editArea, SWT.BORDER);
+            currencyCode.setTextLimit(3);
+            currencyCode.addFocusListener(FocusListener.focusGainedAdapter(e -> currencyCode.selectAll()));
+            description = new Label(editArea, SWT.NONE);
+
+            IContentProposalProvider provider = new CurrencyProposalProvider(units);
+            ContentProposalAdapter adapter = new ContentProposalAdapter(currencyCode, new TextContentAdapter(),
+                            provider, null, null);
+            adapter.setPropagateKeys(true);
+            adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+
+            currencyCode.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+                if (e.keyCode == SWT.BS)
+                    adapter.openProposalPopup();
+            }));
+
+            currencyCode.addMouseListener(MouseListener.mouseUpAdapter(e -> adapter.openProposalPopup()));
+
+            currencyCode.addModifyListener(e -> {
+                String code = currencyCode.getText();
+                CurrencyUnit unit = CurrencyUnit.getInstance(code);
+                description.setText(unit != null ? unit.getDisplayName() : ""); //$NON-NLS-1$
+            });
+        }
+
+        public IObservableValue<String> bindValue(String property)
+        {
+            UpdateValueStrategy<String, CurrencyUnit> fieldToModel = new UpdateValueStrategy<>();
+            fieldToModel.setAfterGetValidator(c -> CurrencyUnit.getInstance(c) != null ? ValidationStatus.ok()
+                            : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                                            Messages.ColumnCurrency)));
+            fieldToModel.setConverter(IConverter
+                            .create(selected -> selected.isEmpty() ? null : CurrencyUnit.getInstance(selected)));
+
+            UpdateValueStrategy<CurrencyUnit, String> modelToField = new UpdateValueStrategy<>();
+            modelToField.setConverter(IConverter.create(unit -> unit != null ? unit.getCurrencyCode() : null));
+
+            IObservableValue<CurrencyUnit> modelObservable = BeanProperties.value(property, CurrencyUnit.class)
+                            .observe(model);
+            IObservableValue<String> fieldObservable = WidgetProperties.text(SWT.Modify).observe(currencyCode);
+            context.bindValue(fieldObservable, modelObservable, fieldToModel, modelToField);
+
+            return fieldObservable;
         }
     }
 

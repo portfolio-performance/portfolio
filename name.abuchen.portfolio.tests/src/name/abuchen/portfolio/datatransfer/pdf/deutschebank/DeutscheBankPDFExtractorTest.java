@@ -1,16 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
@@ -32,6 +21,16 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -91,7 +90,8 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasShares(380), //
-                        hasSource("Dividende01.txt"), hasNote(null), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), hasForexGrossValue("USD", 98.80), //
                         hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00))));
     }
@@ -118,7 +118,8 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasShares(380), //
-                        hasSource("Dividende01.txt"), hasNote(null), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
                         hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00), //
                         check(tx -> {
@@ -155,7 +156,8 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasShares(123), //
-                        hasSource("Dividende02.txt"), hasNote(null), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 14.95), hasGrossValue("EUR", 20.22), //
                         hasTaxes("EUR", 4.28 + 0.23 + 0.76), hasFees("EUR", 0.00))));
     }
@@ -406,13 +408,44 @@ public class DeutscheBankPDFExtractorTest
                         hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividende transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-05T00:00"), hasShares(60.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
                         hasTaxes("EUR", 88.02 + 4.84 + 7.92), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("COCA-COLA CO., THE REGISTERED SHARES DL -,25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-15T00:00"), hasShares(170.00), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 58.22), hasGrossValue("USD", 78.21), //
+                        hasTaxes("USD", 11.74 + 7.82 + 0.43), hasFees("USD", 0.00))));
     }
 
     @Test

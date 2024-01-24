@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.editor;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +15,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -629,8 +630,7 @@ public class ClientInput
 
         this.navigation = ContextInjectionFactory.make(Navigation.class, this.context, c2);
 
-        client.addPropertyChangeListener(event -> {
-
+        PropertyChangeListener listener = event -> {
             boolean recalculate = !"touch".equals(event.getPropertyName()); //$NON-NLS-1$
 
             // convenience: Client#markDirty can be called on any thread, but
@@ -645,7 +645,9 @@ public class ClientInput
             {
                 Display.getDefault().asyncExec(() -> setDirty(true, recalculate));
             }
-        });
+        };
+        client.addPropertyChangeListener(listener);
+        disposeJobs.add(() -> client.removePropertyChangeListener(listener));
 
         loadPreferences();
 

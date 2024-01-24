@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.65.4-SNAPSHOT</version>
+		<version>0.67.2-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -212,7 +212,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>3.1.1</version>
 						<executions>
 							<execution>
 								<id>check-p2-inf-files</id>
@@ -432,7 +432,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>3.4.0</version>
+						<version>3.5.0</version>
 						<executions>
 							<execution>
 								<id>attach-dmg</id>

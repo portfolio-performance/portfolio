@@ -59,4 +59,76 @@ public class SecurityCacheTest
         Security lookup = cache.lookup(null, "SAP", null, null, () -> new Security());
         assertThat(client.getSecurities().get(0), is(lookup));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatSecurityWithDuplicateIdentiferAreNotMatched()
+    {
+        Security duplicate = new Security();
+        duplicate.setName("Security Name");
+        duplicate.setIsin("DE0007164600");
+        duplicate.setTickerSymbol("SAP.DE");
+        duplicate.setWkn("716460");
+        client.addSecurity(duplicate);
+
+        SecurityCache cache = new SecurityCache(client);
+        cache.lookup("DE0007164600", null, null, null, () -> new Security());
+    }
+
+    @Test
+    public void testThatSecurityWithDuplicateIdentiferAreMatchedIfOneIsRetired()
+    {
+        Security duplicate = new Security();
+        duplicate.setName("Security Name");
+        duplicate.setIsin("DE0007164600");
+        duplicate.setTickerSymbol("SAP.DE");
+        duplicate.setWkn("716460");
+        duplicate.setRetired(true);
+        client.addSecurity(duplicate);
+
+        SecurityCache cache = new SecurityCache(client);
+        Security lookup = cache.lookup("DE0007164600", null, null, null, () -> new Security());
+        assertThat(client.getSecurities().get(0), is(lookup));
+
+        Security duplicate2 = new Security();
+        duplicate2.setName("Security Name");
+        duplicate2.setIsin("DE0007164600");
+        duplicate2.setTickerSymbol("SAP.DE");
+        duplicate2.setWkn("716460");
+        duplicate2.setRetired(true);
+        client.addSecurity(duplicate2);
+
+        cache = new SecurityCache(client);
+        lookup = cache.lookup("DE0007164600", null, null, null, () -> new Security());
+        assertThat(client.getSecurities().get(0), is(lookup));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatSecurityWithDuplicateIdentiferAreNotMatchedWithMultipleActive()
+    {
+        Security active2 = new Security();
+        active2.setName("Security Name");
+        active2.setIsin("DE0007164600");
+        active2.setTickerSymbol("SAP.DE");
+        active2.setWkn("716460");
+        client.addSecurity(active2);
+        
+        Security duplicate = new Security();
+        duplicate.setName("Security Name");
+        duplicate.setIsin("DE0007164600");
+        duplicate.setTickerSymbol("SAP.DE");
+        duplicate.setWkn("716460");
+        duplicate.setRetired(true);
+        client.addSecurity(duplicate);
+
+        Security duplicate2 = new Security();
+        duplicate2.setName("Security Name");
+        duplicate2.setIsin("DE0007164600");
+        duplicate2.setTickerSymbol("SAP.DE");
+        duplicate2.setWkn("716460");
+        duplicate2.setRetired(true);
+        client.addSecurity(duplicate2);
+
+        SecurityCache cache = new SecurityCache(client);
+        cache.lookup("DE0007164600", null, null, null, () -> new Security());
+    }
 }

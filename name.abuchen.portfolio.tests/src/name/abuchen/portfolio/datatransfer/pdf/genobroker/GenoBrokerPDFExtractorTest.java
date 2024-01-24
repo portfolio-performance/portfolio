@@ -1,13 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.genobroker;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -30,6 +22,13 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +142,8 @@ public class GenoBrokerPDFExtractorTest
                         hasDate("2023-08-03T12:00"), hasShares(2100), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftragsnummer: 896962/04.00"), //
-                        hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), hasForexGrossValue("CAD", 735.00), //
+                        hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), //
+                        hasForexGrossValue("CAD", 735.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -170,7 +170,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check check buy sell transaction
+        // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-03T12:00"), hasShares(2100), //
                         hasSource("Kauf03.txt"), //
@@ -304,7 +304,8 @@ public class GenoBrokerPDFExtractorTest
                         hasDate("2023-07-10T00:00"), hasShares(2100), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungsnr.: 000000000"), //
-                        hasAmount("EUR", 6107.09), hasGrossValue("EUR", 9475.70), hasForexGrossValue("CAD", 14133.00), //
+                        hasAmount("EUR", 6107.09), hasGrossValue("EUR", 9475.70), //
+                        hasForexGrossValue("CAD", 14133.00), //
                         hasTaxes("EUR", 2368.93 + 947.57 + 52.11), hasFees("EUR", 0.00))));
     }
 
@@ -335,7 +336,8 @@ public class GenoBrokerPDFExtractorTest
                         hasDate("2023-08-29T00:00"), hasShares(600), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr.: 74014833940"), //
-                        hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), hasForexGrossValue("NOK", 5645.46), //
+                        hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
+                        hasForexGrossValue("NOK", 5645.46), //
                         hasTaxes("EUR", 121.51 + 121.50 + 6.68), hasFees("EUR", 0.00))));
     }
 
@@ -405,7 +407,8 @@ public class GenoBrokerPDFExtractorTest
                         hasDate("2023-09-13T00:00"), hasShares(23), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr.: 75555439660"), //
-                        hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), hasForexGrossValue("USD", 34.73), //
+                        hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
+                        hasForexGrossValue("USD", 34.73), //
                         hasTaxes("EUR", 4.84 + 3.23 + 0.18), hasFees("EUR", 0.00))));
     }
 
@@ -439,6 +442,77 @@ public class GenoBrokerPDFExtractorTest
                         hasNote("Abrechnungsnr.: 75555439660"), //
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
                         hasTaxes("EUR", 4.84 + 3.23 + 0.18), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3XXRP09"), hasWkn("A1JX53"), hasTicker(null), //
+                        hasName("VANGUARD S&P 500 UCITS ETF REGISTERED SHARES USD DIS.ON"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-29T00:00"), hasShares(30), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Abrechnungsnr.: 86249245170"), //
+                        hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
+                        hasForexGrossValue("USD", 8.38), //
+                        hasTaxes("EUR", 1.29 + 0.07 + 0.11), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende05WithSecurityInEUR()
+    {
+        Security security = new Security("VANGUARD S&P 500 UCITS ETF REGISTERED SHARES USD DIS.ON", CurrencyUnit.USD);
+        security.setIsin("IE00B3XXRP09");
+        security.setWkn("A1JX53");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-29T00:00"), hasShares(30), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Abrechnungsnr.: 86249245170"), //
+                        hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
+                        hasTaxes("EUR", 1.29 + 0.07 + 0.11), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();

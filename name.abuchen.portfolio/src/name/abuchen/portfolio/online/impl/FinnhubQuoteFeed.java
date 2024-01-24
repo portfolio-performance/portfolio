@@ -6,22 +6,22 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class FinnhubQuoteFeed implements QuoteFeed
 {
@@ -49,15 +49,42 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now().minusDays(5));
-
-        List<LatestSecurityPrice> prices = data.getLatestPrices();
-        if (prices.isEmpty())
+        if (security.getTickerSymbol() == null)
             return Optional.empty();
 
-        Collections.sort(prices, new SecurityPrice.ByDate());
+        if (apiKey == null || apiKey.isBlank())
+            return Optional.empty();
 
-        return Optional.of(prices.get(prices.size() - 1));
+        try
+        {
+            @SuppressWarnings("nls")
+            WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/quote") //
+                            .addParameter("token", apiKey) //
+                            .addParameter("symbol", security.getTickerSymbol());
+
+            String response = webaccess.get();
+
+            JSONObject json = (JSONObject) JSONValue.parse(response);
+
+            Number t = (Number) json.get("t"); //$NON-NLS-1$
+            Number h = (Number) json.get("h"); //$NON-NLS-1$
+            Number l = (Number) json.get("l"); //$NON-NLS-1$
+            Number c = (Number) json.get("c"); //$NON-NLS-1$
+
+            LatestSecurityPrice price = new LatestSecurityPrice();
+            price.setDate(LocalDateTime.ofEpochSecond((Long) t, 0, ZoneOffset.UTC).toLocalDate());
+            price.setValue(c == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(c.doubleValue()));
+            price.setHigh(h == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(h.doubleValue()));
+            price.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
+            price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
+            return price.getValue() > 0 ? Optional.of(price) : Optional.empty();
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -87,20 +114,20 @@ public final class FinnhubQuoteFeed implements QuoteFeed
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
 
+        if (apiKey == null || apiKey.isBlank())
+            return QuoteFeedData.withError(new IllegalArgumentException(Messages.MsgErrorMissingAPIKey));
+
         QuoteFeedData data = new QuoteFeedData();
 
         try
         {
             @SuppressWarnings("nls")
-            WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/stock/candle")
+            WebAccess webaccess = new WebAccess("finnhub.io", "/api/v1/stock/candle").addParameter("token", apiKey) //
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("resolution", "D") //
                             .addParameter("from",
                                             String.valueOf(startDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC))) //
                             .addParameter("to", String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)));
-
-            if (apiKey != null)
-                webaccess.addParameter("token", apiKey); //$NON-NLS-1$
 
             String response = webaccess.get();
 
@@ -117,7 +144,6 @@ public final class FinnhubQuoteFeed implements QuoteFeed
             JSONArray high = (JSONArray) json.get("h"); //$NON-NLS-1$
             JSONArray low = (JSONArray) json.get("l"); //$NON-NLS-1$
             JSONArray close = (JSONArray) json.get("c"); //$NON-NLS-1$
-            JSONArray volume = (JSONArray) json.get("v"); //$NON-NLS-1$
 
             if (timestamps == null)
             {
@@ -148,11 +174,19 @@ public final class FinnhubQuoteFeed implements QuoteFeed
                 Number l = (Number) low.get(index);
                 price.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
 
-                Number v = (Number) volume.get(index);
-                price.setVolume(v == null ? LatestSecurityPrice.NOT_AVAILABLE : v.longValue());
-
                 if (price.getValue() > 0)
                     data.addPrice(price);
+            }
+        }
+        catch (WebAccessException e)
+        {
+            if (e.getHttpErrorCode() == HttpStatus.SC_FORBIDDEN)
+            {
+                data.addError(new IOException("API requires premium subscription. " + e.getMessage(), e)); //$NON-NLS-1$
+            }
+            else
+            {
+                data.addError(e);
             }
         }
         catch (IOException | URISyntaxException e)

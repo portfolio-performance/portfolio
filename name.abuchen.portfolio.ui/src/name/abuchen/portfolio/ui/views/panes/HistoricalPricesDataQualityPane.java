@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;

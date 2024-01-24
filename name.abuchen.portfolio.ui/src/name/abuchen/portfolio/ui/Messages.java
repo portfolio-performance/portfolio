@@ -47,6 +47,7 @@ public class Messages extends NLS
     public static String MenuDashboardColumnWidthDecrease;
     public static String MenuDashboardColumnWidthIncrease;
     public static String MenuDuplicateDashboardColumn;
+    public static String MenuDuplicateTransaction;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
     public static String BookmarksListView_NewBookmark;
@@ -296,6 +297,7 @@ public class Messages extends NLS
     public static String ColumnShareInPercent;
     public static String ColumnShares;
     public static String ColumnSharesOwned;
+    public static String ColumnSharesOwnedHoldingPeriod;
     public static String ColumnSource;
     public static String ColumnStartDate;
     public static String ColumnLastDate;
@@ -513,6 +515,8 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAllTrades;
     public static String LabelAllTransactions;
+    public static String LabelAllInboundTransactions;
+    public static String LabelAllOutboundTransactions;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
@@ -523,6 +527,7 @@ public class Messages extends NLS
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
+    public static String LabelPurchaseTransactionsOnly;
     public static String LabelEarningsByTaxonomy;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
@@ -761,6 +766,7 @@ public class Messages extends NLS
     public static String LabelSelectedTransactions;
     public static String LabelSelectYear;
     public static String LabelSelectYearSince;
+    public static String LabelSaleTransactionsOnly;
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
@@ -831,6 +837,7 @@ public class Messages extends NLS
     public static String LabelTradesTurnoverRate;
     public static String LabelTradingActivityChart;
     public static String LabelTransactionCount;
+    public static String LabelTransactionFilter;
     public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelTransfer;
@@ -870,7 +877,7 @@ public class Messages extends NLS
     public static String MenuAddNewDashboardColumnRight;
     public static String MenuApplyToAllWidgets;
     public static String MenuChangeHeight;
-    public static String MenuChartAdjustRange;
+    public static String MenuChartAdjustRangeToOriginalSize;
     public static String MenuChartShowYAxis;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
@@ -1142,6 +1149,7 @@ public class Messages extends NLS
     public static String RebalancingSavingPlansSum;
     public static String RebalancingSavingPlansExecutionsTextBefore;
     public static String RebalancingSavingPlansExecutionsTextAfter;
+    public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
     public static String SecuritiesChart_NoDataMessage_NoPricesInSelectedPeriod;

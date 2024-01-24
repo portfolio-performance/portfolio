@@ -101,9 +101,11 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
         // average
         if (showAverage)
         {
-            model.getRows().forEach(
-                            row -> row.addData((long) row.getDataSubList(0, 12).stream().filter(Objects::nonNull)
-                                            .mapToLong(l -> l == null ? 0L : l.longValue()).average().getAsDouble()));
+            model.getRows().forEach(row -> {
+                long average = Math.round(row.getDataSubList(0, 12).stream().filter(Objects::nonNull)
+                                .mapToLong(l -> l == null ? 0L : l.longValue()).average().getAsDouble());
+                row.addData(average);
+            });
         }
 
         return model;

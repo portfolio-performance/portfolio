@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;

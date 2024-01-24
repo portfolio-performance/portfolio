@@ -122,7 +122,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
 
         model.getHeader().forEach(header -> {
             CLabel l = new CLabel(table, SWT.CENTER);
-            l.setText(header.getLabel());
+            l.setText(TextUtil.tooltip(header.getLabel()));
             l.setBackground(table.getBackground());
 
             InfoToolTip.attach(l, header.getToolTip() != null ? header.getToolTip() : header.getLabel());

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.65.4.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.67.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -62,11 +62,13 @@
    </features>
 
    <configurations>
-      <plugin id="name.abuchen.portfolio.ui" autoStart="false" startLevel="5" />
-      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
+      <plugin id="name.abuchen.portfolio.ui" autoStart="false" startLevel="4" />
+      <plugin id="com.twelvemonkeys.imageio.bmp" autoStart="true" startLevel="4"/>
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
       <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
       <property name="osgi.instance.area.default" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/workspace" os="macosx" />

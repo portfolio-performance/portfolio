@@ -1,0 +1,66 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstrasse 8e
+80538 Munich
+service@scalable.capital
+Page 1/2
+Mr. Munich
+2023-05-23
+Max Musterman
+Strasse Max Musterman
+10117 Berlin Client ID: 123456    Portfolio: 1
+Sec. Account No.: 123456789
+Transaction No.: 15390292
+Reference No.: 419539593
+Dividend Statement
+Ex-Date: 2023-05-12
+Quantity ISIN: US0378331005 WKN: 865985 Distribution
+Units 2 Apple Inc. USD 0.24 p. Unit
+Payment Period: 2022-10-01 - 2023-09-30 
+Payday: 2023-05-18
+Exchange Rate: EUR/USD 1.0832
+Gross Amount USD 0.48
+Gross Amount EUR 0.44
+US withholding tax EUR 0.12 -
+Amount credited to account 1962254007 Value: 2023-05-18 EUR 0.32
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, District Court 
+Munich • VAT No. DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Oliver Riedel (Deputy CEO), Dietmar von Blücher • Chairman of the Supervisory Board: Helmut Schreyer • 
+Commercial Register HRB 121537 • Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-055.048
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
+ 
+Dividend Statement
+Continued: Page 2/2
+Basis for Tax Calculation:
+Taxes paid / Tax Funds Before Increase/Reduction Afterwards
+Foreign dividend
+Free allowance amount (FAA) EUR 1,999.60 EUR 0.44 - EUR 1,999.16
+Foreign withholding tax (WHT) pot EUR 0.07 EUR 0.06 EUR 0.13
+Foreign dividend
+Utilisation FAA (general income) EUR 0.40 - EUR 0.44 - EUR 0.84 -
+Assessment Bases Gross Tax Obligation Net Tax Obligation
+Foreign dividend EUR 0.44 EUR 0.00
+Taxable base: German flat rate tax EUR 0.44 EUR 0.00
+Foreign withholding tax credit EUR 0.00 EUR 0.00
+US withholding tax 15.00% EUR 0.06 - EUR 0.06 -
+US withholding tax 15.00% EUR 0.06 - EUR 0.06 -
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+Please note that some German tax specific terms are not translated into English.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, District Court 
+Munich • VAT No. DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Oliver Riedel (Deputy CEO), Dietmar von Blücher • Chairman of the Supervisory Board: Helmut Schreyer • 
+Commercial Register HRB 121537 • Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-055.048
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

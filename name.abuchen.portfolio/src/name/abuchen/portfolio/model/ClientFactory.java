@@ -828,10 +828,12 @@ public class ClientFactory
 
                 // remove obsolete MARKET properties
                 removeMarketSecurityProperty(client);
-            case 57:
+            case 57: // NOSONAR
                 // remove securities in watchlists which are not present in "all
                 // securities", see #3452
                 removeWronglyAddedSecurities(client);
+            case 58:
+                fixDataSeriesLabelForAccumulatedTaxes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1534,6 +1536,19 @@ public class ClientFactory
                                                     client.addSecurity(s);
                                             }
                                         }));
+    }
+
+    private static void fixDataSeriesLabelForAccumulatedTaxes(Client client)
+    {
+        if (!client.getSettings().hasConfigurationSet("StatementOfAssetsHistoryView-PICKER")) //$NON-NLS-1$
+            return;
+
+        var configSet = client.getSettings().getConfigurationSet("StatementOfAssetsHistoryView-PICKER"); //$NON-NLS-1$
+
+        configSet.getConfigurations() //
+                        .filter(config -> config.getData() != null) //
+                        .forEach(config -> config.setData(config.getData() //
+                                        .replace("Client-taxes;", "Client-taxes_accumulated;"))); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("nls")

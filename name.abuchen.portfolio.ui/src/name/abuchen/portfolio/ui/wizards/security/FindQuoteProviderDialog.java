@@ -279,6 +279,20 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 item.security.setFeed(PortfolioReportQuoteFeed.ID);
                 item.security.setPropertyValue(Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
                                 market.getMarketCode());
+
+                // if and only if the label includes the characters of a newly
+                // imported security (e.g. "Imported security: {0}"), then we
+                // also update the name of the instrument. Because we do not
+                // know which identifier was used to construct the name, we
+                // check with indexOf.
+
+                var labelOfNewlyImportedSecurity = MessageFormat
+                                .format(name.abuchen.portfolio.Messages.CSVImportedSecurityLabel, ""); //$NON-NLS-1$
+                if (item.security.getName().indexOf(labelOfNewlyImportedSecurity) >= 0)
+                {
+                    item.security.setName(onlineItem.getName());
+                }
+
                 PortfolioReportNet.updateWith(item.security, onlineItem);
             });
 

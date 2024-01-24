@@ -1,0 +1,19 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+Tomas Vančo PAGE 1 from 1
+A. JiTLqb 34 DATE 02.10.2023
+690 48 KRfwumSc CASH ACCOUNT 9569919482
+TAX ID 2669622448
+INTEREST INVOICE
+as of 30.09.2023
+OVERVIEW
+ASSET INCOME TYPE INTEREST RATE TOTAL
+Cash Interest 2,00% 1,47 EUR
+BOOKING
+IBAN BOOKING DATE TOTAL
+DE27502109007011534672 02.10.2023 1,47 EUR
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -310,13 +310,20 @@ public class AccountListView extends AbstractFinanceView implements Modification
                             resetInput();
                         }));
 
-        manager.add(new ConfirmAction(Messages.AccountMenuDelete,
+        var label = Messages.AccountMenuDelete;
+        if (!account.getTransactions().isEmpty())
+            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+
+        Action action = new ConfirmAction(label,
                         MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //
                         a -> {
                             getClient().removeAccount(account);
                             markDirty();
                             resetInput();
-                        }));
+                        });
+
+        action.setEnabled(account.getTransactions().isEmpty());
+        manager.add(action);
     }
 
     // //////////////////////////////////////////////////////////////

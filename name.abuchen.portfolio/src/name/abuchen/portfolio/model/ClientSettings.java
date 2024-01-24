@@ -211,6 +211,11 @@ public class ClientSettings
         attributeTypes.clear();
     }
 
+    public boolean hasConfigurationSet(String key)
+    {
+        return configurationSets.containsKey(key);
+    }
+
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());

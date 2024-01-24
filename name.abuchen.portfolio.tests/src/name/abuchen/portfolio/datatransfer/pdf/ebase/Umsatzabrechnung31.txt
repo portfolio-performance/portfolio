@@ -1,0 +1,111 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+finvesto, 80218 München
+Depotauszug-Nr. 14
+Depot-Nr. 00000000000
+Seite 1 von 3
+xxxxx
+xxxxx xxxxx
+xxxxxxxxxxx xx
+xxxxx xxxxxxxx
+02.10.2023
+Depotauszug für Ihr finvesto Depot bei der FNZ Bank
+für den Zeitraum vom 01.07.2023 bis 29.09.2023
+Kauf 40,00 EUR mit Kursdatum 13.07.2023 in Depotposition 99136000000.01
+Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN
+Ref. Nr. 0400001111/13072023, Buchungsdatum 14.07.2023
+ISIN Anteile Abrechnungskurs Betrag
+LU2023678282 3,395511 11,756700 EUR 39,92 EUR
+vermögenswirksame Leistungen
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 75,000 % Bonus)
+Belastete Entgelte zzgl. Entgelte
+Summe 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,08 EUR 0,00 EUR 0,08 EUR
+Summe der belasteten Entgelte 0,08 EUR
+Kauf 40,00 EUR mit Kursdatum 14.08.2023 in Depotposition 99136000000.01
+Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN
+Ref. Nr. 0400011111/14082023, Buchungsdatum 15.08.2023
+ISIN Anteile Abrechnungskurs Betrag
+LU2023678282 3,524447 11,326600 EUR 39,92 EUR
+vermögenswirksame Leistungen
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 75,000 % Bonus)
+Belastete Entgelte zzgl. Entgelte
+Summe 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,08 EUR 0,00 EUR 0,08 EUR
+Summe der belasteten Entgelte 0,08 EUR
+Gerne beantworten wir Ihre Fragen unter der Info-Line +49 89 45460-380.
+Das Team der finvesto Anlageberatung erreichen Sie unter +49 89 45460-389.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 286 792 Vorstand: Telefon: +49 89 45460-380
+eine Marke der FNZ Bank AG USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Telefax: +49 89 45460-161
+80218 München Gläubiger-ID: Jonathan Brander, Peter Karst E-Mail: info@finvesto.de
+DE68ZZZ00000025032 Aufsichtsratsvorsitzender: Web: www.finvesto.de
+Frank Strauß
+Depotauszug-Nr. 14
+Depot-Nr. 99136000000
+Seite 2 von 3
+Kauf 40,00 EUR mit Kursdatum 14.09.2023 in Depotposition 99136000000.01
+Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN
+Ref. Nr. 0400001111/14092023, Buchungsdatum 15.09.2023
+ISIN Anteile Abrechnungskurs Betrag
+LU2023678282 3,508340 11,378600 EUR 39,92 EUR
+vermögenswirksame Leistungen
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 75,000 % Bonus)
+Belastete Entgelte zzgl. Entgelte
+Summe 0,08 EUR
+Zahlungsbetrag aus Überweisung 40,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,08 EUR 0,00 EUR 0,08 EUR
+Summe der belasteten Entgelte 0,08 EUR
+Bestand Depotpositionen
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+01 LU2023678282 109,672963 11,597800 USD 28.09.2023 1,054000 1.206,80 EUR
+Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN
+vermögenswirksame Leistungen
+Bis 01.01.2027 sind xx,xxxxxx Anteile gemäß Vermögensbildungsgesetz gesperrt.
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+Für die im Depot verbuchten und hier ausgewiesenen Fondsanteile besteht - soweit nicht abweichend gekennzeichnet - ein Eigentums-
+bzw. eigentumsähnlicher Schutz im Sinne der europäischen Finanzmarktrichtlinie 2014/65 (EU).
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit erheben Sie bitte unverzüglich, nach Erhalt dieses Depotauszugs, gegenüber der FNZ Bank AG unter Nennung
+der Depotnummer und des Datums des Depotauszugs.
+Das Unterlassen der rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt
+"Prüfungen und Einwendungen bei Mitteilungen der FNZ Bank" der Allgemeinen Geschäftsbedingungen der FNZ Bank AG
+für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 286 792 Vorstand: Telefon: +49 89 45460-380
+eine Marke der FNZ Bank AG USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Telefax: +49 89 45460-161
+80218 München Gläubiger-ID: Jonathan Brander, Peter Karst E-Mail: info@finvesto.de
+DE68ZZZ00000025032 Aufsichtsratsvorsitzender: Web: www.finvesto.de
+Frank Strauß
+Depotauszug-Nr. 14
+Depot-Nr. 99136000000
+Seite 3 von 3
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der FNZ Bank
+AG. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den Verkaufsunterlagen. Die
+FNZ Bank AG ist lediglich depotführende Stelle.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 286 792 Vorstand: Telefon: +49 89 45460-380
+eine Marke der FNZ Bank AG USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Telefax: +49 89 45460-161
+80218 München Gläubiger-ID: Jonathan Brander, Peter Karst E-Mail: info@finvesto.de
+DE68ZZZ00000025032 Aufsichtsratsvorsitzender: Web: www.finvesto.de
+Frank Strauß

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;

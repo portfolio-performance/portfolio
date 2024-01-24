@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Abcd BLZ: 12345
+Abcd Abcdefghijk Referenz: 12-123456789
+Ab. 12 Kundennummer: 12345
+1234 Abcdefghi Wertpapierdepot: 12345-1
+Austria
+Wien, 15.10.2012
+WERTPAPIERBESTÄTIGUNG
+KAPITALAUSSCHÜTTUNG
+Wertpapierdetails
+ISIN : AT0000809058
+Wertpapierbezeichnung : IMMOFINANZ IMMOBILIEN ANLAGEN AG
+Informationen zur Kapitalmaßnahme
+Anspruchsberechtigter : 1750
+Bestand
+Preis : EUR 0.15
+Ex-Tag : 08.10.2012
+Zahltag : 15.10.2012
+Lagerort : Vienna
+Verwahrart : SV
+Angaben zur Geld-Ausschüttung
+Gutschrift/Belastung : Gutschrift
+Valutatag : 15.10.2012
+Brutto-Betrag : EUR 262.5
+Gesamtbetrag (in : EUR 262.5
+Kontowährung)
+Wir erkennen Ihr EUR Konto Nummer 1-12345 mit Valuta 15.10.2012.
+Die Buchung erfolgt “Eingang vorbehalten”.
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+Brokerjet Bank AG | Mariahilfer Straße 121B | A-1060 Wien
+e-mail: support@brokerjet.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Online Broker Erste Group

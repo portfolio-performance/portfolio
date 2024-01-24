@@ -18,6 +18,9 @@ public final class SWTHelper
 {
     public static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 
+    /** average char width needed to resize input fields on length */
+    private static double averageCharWidth = -1;
+
     private SWTHelper()
     {
     }
@@ -88,6 +91,20 @@ public final class SWTHelper
         gc.dispose();
         return extentText.x;
     }
+    
+    public static double getAverageCharWidth(Drawable drawable)
+    {
+        if (averageCharWidth > 0)
+            return averageCharWidth;
+
+        GC gc = new GC(drawable);
+        FontMetrics fm = gc.getFontMetrics();
+        averageCharWidth = fm.getAverageCharacterWidth();
+        gc.dispose();
+
+        return averageCharWidth;
+    }
+
 
     /**
      * Returns the number of pixels needed to render one character.

@@ -167,7 +167,9 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         }
         else
         {
-            for (int i = 0; i < series.length; i++)
+            // reverse the order because stacked series are sorted in reverse
+            // order in the legend by SWTChart
+            for (int i = series.length - 1; i >= 0; i--)
             {
                 int year = model.getStartYear() + i;
                 IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
@@ -181,6 +183,15 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
                 barSeries.setBarColor(PaymentsColors.getColor(year));
                 barSeries.setBarPadding(25);
                 barSeries.enableStack(true);
+            }
+
+            // Un-suspend chart to force SWTChart to update the stackSeries.
+            // Otherwise the internal metadata is not correct and SWTChart does
+            // not recognized them fully as stacked series
+            if (chart.isUpdateSuspended())
+            {
+                chart.suspendUpdate(false);
+                chart.suspendUpdate(true);
             }
         }
     }

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.65.4.qualifier
+Bundle-Version: 0.67.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.checks,
@@ -43,8 +43,8 @@ Import-Package: com.google.common.annotations,
  com.thoughtworks.xstream.converters.reflection,
  com.thoughtworks.xstream.io,
  com.thoughtworks.xstream.mapper,
- javax.annotation,
- javax.inject,
+ jakarta.annotation,
+ jakarta.inject,
  org.apache.commons.csv,
  org.apache.commons.math3,
  org.apache.commons.math3.linear,
@@ -63,7 +63,8 @@ Import-Package: com.google.common.annotations,
  org.jsoup,
  org.jsoup.nodes,
  org.jsoup.safety,
- org.jsoup.select
+ org.jsoup.select,
+ org.osgi.service.component.annotations
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
@@ -73,3 +74,6 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson
 Automatic-Module-Name: name.abuchen.portfolio
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
+Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.processor)",osgi.serviceloader;filter:="(osgi.serviceloader=javax.imageio.spi.ImageReaderSpi)";cardinality:=multiple

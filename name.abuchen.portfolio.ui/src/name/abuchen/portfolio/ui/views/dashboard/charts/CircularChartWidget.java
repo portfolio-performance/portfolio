@@ -20,7 +20,6 @@ import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
-import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -33,7 +32,6 @@ public abstract class CircularChartWidget<T> extends WidgetDelegate<T>
     {
         super(widget, data);
 
-        addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartHeightConfig(this));
     }

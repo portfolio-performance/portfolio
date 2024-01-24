@@ -97,8 +97,13 @@ public class DataSeriesSet
                         Messages.LabelAbsoluteDelta, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         availableSeries.add(series);
 
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.ColumnTaxes,
                         Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES_ACCUMULATED,
+                        Messages.LabelAccumulatedTaxes, Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,

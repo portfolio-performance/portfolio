@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1234 567 899
+1234567899/00
+Vermerk der Bank: 2000
+2
+Abcdef Ghijklm
+Strstrstrstr. 7
+01099 Dresden Datum: 01.11.2023Seite: 1 von 1
+Ordernummer 123456789.111
+Orderdatum 01.11.2023
+ORDERABRECHNUNG
+KAUF AM 01.11.2023 UM 09:32:16 SPARPLAN NR. 123456789.111
+Bezeichnung WKN ISIN
+INVESCOM3 NASDAQ-100 A 801498 IE0032077012
+Einheit Umsatz
+ST 0,60087
+Preis pro Anteil 332,850000 EUR NETTO
+Kurswert 200,00 EUR
+zulasten Konto-Nr. 1234567890 200,00 EUR
+Valuta 03.11.2023
+Bestand zugunsten Wertpapierrechnung Großbritannien
+CBL 62126
+Die Order wurde an folgender Börse gehandelt: SPARPLAN TRADEGATE
+Sparplanname: SPNAME NN
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

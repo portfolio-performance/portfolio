@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
@@ -503,10 +504,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.TAX, taxTransaction.getMonetaryAmount()));
 
                         // Combine at sources file
-                        sellTransaction.setSource(sellTransaction.getSource() + "; " + taxTransaction.getSource());
+                        sellTransaction.setSource(concatenate(sellTransaction.getSource(), taxTransaction.getSource(), "; "));
 
                         // Combine at notes
-                        sellTransaction.setNote(concat(sellTransaction.getNote(), taxTransaction.getNote()));
+                        sellTransaction.setNote(concatenate(sellTransaction.getNote(), taxTransaction.getNote(), " | "));
 
                         // Set note that the tax transaction will be deleted
                         taxTransaction.setNote(TO_BE_DELETED);
@@ -571,11 +572,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxTransaction.getMonetaryAmount()));
 
                         // Combine at sources file
-                        dividendTransaction
-                                        .setSource(dividendTransaction.getSource() + "; " + taxTransaction.getSource());
+                        dividendTransaction.setSource(concatenate(dividendTransaction.getSource(), taxTransaction.getSource(), "; "));
 
                         // Combine at notes
-                        dividendTransaction.setNote(concat(dividendTransaction.getNote(), taxTransaction.getNote()));
+                        dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxTransaction.getNote(), " | "));
 
                         // Set note that the tax transaction will be deleted
                         taxTransaction.setNote(TO_BE_DELETED);
@@ -609,16 +609,5 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         }
 
         return items;
-    }
-
-    private String concat(String first, String second)
-    {
-        if (first == null && second == null)
-            return null;
-
-        if (first != null && second == null)
-            return first;
-
-        return first == null ? second : first + "; " + second;
     }
 }

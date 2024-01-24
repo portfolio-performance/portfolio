@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -166,10 +166,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                     if ("Splittkauf".equals(v.get("note")))
                         v.put("note", "Splitkauf");
 
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note"));
-                    else
-                        t.setNote(trim(v.get("note")));
+                    t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
                 })
 
                 .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -409,36 +406,21 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>Depotf.hrungsentgelt( [\\d]+)?) [\\.,\\d]+ [\\w]{3}$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note"));
-                    else
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                 // @formatter:off
                 // Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
                 // @formatter:on
                 .section("note1", "note2").optional()
                 .match("^(?<note1>Verwahrentgelt Fonds) .* (?<note2>[\\d]{4}) .*$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note1") + " " + v.get("note2"));
-                    else
-                        t.setNote(v.get("note1") + " " + v.get("note2"));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " " + v.get("note2"), " | ")))
 
                 // @formatter:off
                 // lfd. Vermögensverwaltungsentgelt gem. separatem Auftrag 0,09 EUR
                 // @formatter:on
                 .section("note").optional()
                 .match("^(?<note>lfd\\. Verm.gensverwaltungsentgelt) .*$")
-                .assign((t, v) -> {
-                    if (t.getNote() != null)
-                        t.setNote(t.getNote() + " | " + v.get("note"));
-                    else
-                        t.setNote(trim(v.get("note")));
-                })
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                 .wrap(TransactionItem::new));
     }

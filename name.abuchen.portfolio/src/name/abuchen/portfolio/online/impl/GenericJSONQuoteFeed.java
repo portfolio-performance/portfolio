@@ -182,12 +182,12 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         // if latestFeed is null, then the policy is 'use same configuration
         // as historic quotes'
 
-        String latestFeedURL = security.getLatestFeedURL();
+        String latestFeed = security.getLatestFeed();
 
-        if (latestFeedURL == null)
+        if (latestFeed == null || latestFeed.isEmpty())
             return QuoteFeed.super.getLatestQuote(security);
 
-        QuoteFeedData data = getHistoricalQuotes(security, latestFeedURL, false, false, true);
+        QuoteFeedData data = getHistoricalQuotes(security, security.getLatestFeedURL(), false, false, true);
 
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
@@ -319,7 +319,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         return 0;
     }
 
-    /* testing */ long extractIntegerValue(Object object) throws ParseException
+    /* testing */ long extractIntegerValue(Object object)
     {
         if (object instanceof String s)
             try

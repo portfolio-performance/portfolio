@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Traders Place GmbH & Co. KGaA
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de E-Mail: kundenservice@tradersplace.de
+www.tradersplace.de
+Seite 1/1
+Freilassing
+LDHXr 07.12.2023
+KJbbGtsL sGeSlWQNgy
+QhROVPrb vusPySBFnT
+ccWGQzWrK-EewRc-gjU. 1 Stamm-Nr.: 8728857    Portfolio: 1
+47795 fVTDQLShY Depot-Nr.: 5334679728
+Vorgangs-Nr.: 275613522
+Referenz-Nr.: 428054155
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 06.12.2023 Ausführungsplatz: MEMX LLC
+Auftragszeit: 15:41:51:00
+Nominale ISIN: CH1134540470 WKN: A3C20K Kurs 
+STK 100 On Holding AG USD 28,10
+Namens-Aktien A SF-,01
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert Umrechnungskurs USD/EUR: 1,0751 EUR 2.613,71
+Provision Baader EUR 3,95
+Provision TradersPlace EUR 4,00
+Zu Lasten Konto 6043417314 Valuta: 08.12.2023 EUR 2.621,66
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   100 USD 28,10 MEMX LLC 06.12.2023 19:25:22:320
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1679 MIC des Ausführungsplatzes: MEMX
+Lagerland: USA
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Traders Place GmbH & Co. KGaA, Sägewerkstraße 3, 83395 Freilassing, Deutschland • Impressum unter: www.tradersplace.de/impressum
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114
+
+``` ```

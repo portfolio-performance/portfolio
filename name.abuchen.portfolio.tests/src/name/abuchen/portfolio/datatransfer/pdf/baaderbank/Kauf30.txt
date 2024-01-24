@@ -1,0 +1,66 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Traders Place GmbH & Co. KGaA
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de E-Mail: kundenservice@tradersplace.de
+www.tradersplace.de
+Seite 1/2
+Freilassing
+Herrn 15.11.2023
+Max Mustermann
+Max Mustermann
+Musterstr. 15 Stamm-Nr.: 4404404    Portfolio: 1
+11111 Musterdorf Depot-Nr.: 4404404001
+Vorgangs-Nr.: 248368163
+Referenz-Nr.: 482462443
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 14.11.2023 Ausführungsplatz: TradeLink
+Auftragszeit: 11:24:19:00
+Nominale ISIN: DE000VU9QLB0 WKN: VU9QLB Kurs 
+EUR   1.000,00 15,00 % 97,28 %
+Vontobel Financial Products
+Aktienanleihe v.23(24)ZAL
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingsystem
+Kurswert EUR 972,80
+Stückzinsen für 123 Tag(e) nächster Zinstermin: 27.09.2024 EUR 51,25
+Zu Lasten Konto 4406014003 Valuta: 16.11.2023 EUR 1.024,05
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+EUR   1.000,00 97,28 % TradeLink 14.11.2023 11:24:19:586
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: VTLS
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Traders Place GmbH & Co. KGaA, Sägewerkstraße 3, 83395 Freilassing, Deutschland • Impressum unter: www.tradersplace.de/impressum
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114
+Wertpapierabrechnung: Kauf
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlusttopf (VVT) EUR 0,00 EUR 51,25 EUR 51,25
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Stückzinsen EUR 51,25 - EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 51,25 - EUR 0,00
+Traders Place GmbH & Co. KGaA, Sägewerkstraße 3, 83395 Freilassing, Deutschland • Impressum unter: www.tradersplace.de/impressum
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

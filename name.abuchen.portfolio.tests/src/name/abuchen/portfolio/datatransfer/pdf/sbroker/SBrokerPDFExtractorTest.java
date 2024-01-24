@@ -1,14 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.sbroker;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -35,6 +27,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -704,7 +704,8 @@ public class SBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-04-08T21:20"), hasShares(8.000), //
-                        hasSource("Kauf14.txt"), hasNote("Abrechnungs-Nr. 21461152"), //
+                        hasSource("Kauf14.txt"), //
+                        hasNote("Abrechnungs-Nr. 21461152"), //
                         hasAmount("EUR", 1106.31), hasGrossValue("EUR", 1095.84), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 10.47))));
     }
@@ -734,7 +735,8 @@ public class SBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-08-03T09:04"), hasShares(15.000), //
-                        hasSource("Kauf15.txt"), hasNote("Abrechnungs-Nr. 53941243"), //
+                        hasSource("Kauf15.txt"), //
+                        hasNote("Abrechnungs-Nr. 53941243"), //
                         hasAmount("EUR", 1007.47), hasGrossValue("EUR", 997.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.97))));
     }
@@ -936,7 +938,8 @@ public class SBrokerPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-01-03T12:15:16"), hasShares(2), //
-                        hasSource("Verkauf04.txt"), hasNote("Auftragsnummer 123456/38.00 | Limit bestens"), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftragsnummer 123456/38.00 | Limit bestens"), //
                         hasAmount("EUR", 13.69), hasGrossValue("EUR", 23.79), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 10.10))));
     }
@@ -1793,7 +1796,8 @@ public class SBrokerPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-05-09T00:00"), hasShares(28), //
-                        hasSource("Dividende11.txt"), hasNote("Abrechnungsnr. 12345678 | Zwischendividende"), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote("Abrechnungsnr. 12345678 | Zwischendividende"), //
                         hasAmount("EUR", 9.10), hasGrossValue("EUR", 14.00), //
                         hasTaxes("EUR", 4.90), hasFees("EUR", 0.00))));
     }
@@ -1824,10 +1828,12 @@ public class SBrokerPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         taxes( //
-                                hasDate("2017-12-31"), hasShares(6.064), //
-                                hasSource("Dividende12.txt"), hasNote("Thesaurierung (0,52 EUR)"), //
-                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), hasForexGrossValue("USD", 0.00), //
-                                hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+                                        hasDate("2017-12-31"), hasShares(6.064), //
+                                        hasSource("Dividende12.txt"), //
+                                        hasNote("Thesaurierung (0,52 EUR)"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasForexGrossValue("USD", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -1855,9 +1861,82 @@ public class SBrokerPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-09-07T00:00"), hasShares(8.000), //
-                        hasSource("Dividende13.txt"), hasNote(null), //
-                        hasAmount("EUR", 5.30), hasGrossValue("EUR", 7.12), hasForexGrossValue("USD", 8.47), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.30), hasGrossValue("EUR", 7.12), //
+                        hasForexGrossValue("USD", 8.47), //
                         hasTaxes("EUR", 1.07 + 0.71 + 0.04), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende14()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9884981013"), hasWkn("909190"), hasTicker(null), //
+                        hasName("YUM! BRANDS, INC. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-08T00:00"), hasShares(105.000), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote("Abrechnungsnr. 84528768080 | Quartalsdividende"), //
+                        hasAmount("EUR", 43.51), hasGrossValue("EUR", 58.89), //
+                        hasForexGrossValue("USD", 63.53), //
+                        hasTaxes("EUR", 8.83 + 5.78 + 0.31 + 0.46), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende17WithSecurityInEUR()
+    {
+        Security security = new Security("YUM! BRANDS, INC. REGISTERED SHARES O.N.", CurrencyUnit.EUR);
+        security.setIsin("US9884981013");
+        security.setWkn("909190");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-08T00:00"), hasShares(105.000), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote("Abrechnungsnr. 84528768080 | Quartalsdividende"), //
+                        hasAmount("EUR", 43.51), hasGrossValue("EUR", 58.89), //
+                        hasTaxes("EUR", 8.83 + 5.78 + 0.31 + 0.46), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -4116,6 +4195,40 @@ public class SBrokerPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2020-10-30"), hasAmount("EUR", 8.50), //
                         hasSource("GiroKontoauszug35.txt"), hasNote("Entgelte vom 01.10.2020 bis 30.10.2020"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug36()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug36.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-27"), hasAmount("EUR", 888.00), //
+                        hasSource("GiroKontoauszug36.txt"), hasNote("Bargeldauszahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-28"), hasAmount("EUR", 3333.00), //
+                        hasSource("GiroKontoauszug36.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-07-31"), hasAmount("EUR", 3.50), //
+                        hasSource("GiroKontoauszug36.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-07-31"), hasAmount("EUR", 8.50), //
+                        hasSource("GiroKontoauszug36.txt"), hasNote("Entgelte vom 01.07.2023 bis 31.07.2023"))));
     }
 
     @Test

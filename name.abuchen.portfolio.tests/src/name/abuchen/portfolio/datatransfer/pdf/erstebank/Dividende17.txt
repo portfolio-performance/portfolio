@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-123456
+Ab. 12 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  24. August 2011
+ 
+ERTRÄGNISGUTSCHRIFT
+BARDIVIDENDE
+ 
+Wertpapier : LUKOIL HLDG SP.ADR4//RR25 Dividende Brutto : USD 101,97
+WP-Kenn-Nr. : US6778621044 Fremde Steuer : USD 15,30
+WP-Bestand : 50,000 Dividendenbetrag : USD 86,67
+Dividende : USD 2,039405 KESt : USD 10,20
+Ex-Tag : 04. Mai 2011 Zahlungsprovision : USD 0,25
+Zahltag : 19. August 2011 Devisen Kommission : USD 0,19
+Dividende Netto : USD 76,03
+Lagerort : Frankfurt
+Verwahrart : WR Devisenkurs : 1,4490000
+Dividende Netto : EUR 52,47
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer 12345 mit Valuta 23. August 2011.
+Die Buchung wurde "Eingang vorbehalten" ausgeführt.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

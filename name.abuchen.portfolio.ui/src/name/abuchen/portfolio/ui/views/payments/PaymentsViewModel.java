@@ -6,6 +6,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -280,11 +281,11 @@ public class PaymentsViewModel
         Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);
         Predicate<Transaction> checkIsInInterval = t -> interval.contains(t.getDateTime());
 
+        Set<TransactionPair<?>> transactions = new HashSet<>();
         Map<InvestmentVehicle, Line> vehicle2line = new HashMap<>();
 
         this.sum = new Line(null, false, this.noOfmonths);
         this.sumRetired = new Line(null, useConsolidateRetired, this.noOfmonths);
-        this.transactions = new ArrayList<>();
 
         EnumSet<Mode> processGainTx = EnumSet.of(Mode.TRADES, Mode.ALL);
         if (processGainTx.contains(mode))
@@ -318,6 +319,8 @@ public class PaymentsViewModel
 
                     sum.values[index] += value;
                     sum.sum += value;
+
+                    trade.getClosingTransaction().ifPresent(transactions::add);
                 }
             }
         }
@@ -467,6 +470,8 @@ public class PaymentsViewModel
                 }
             }
         }
+        this.transactions = transactions.stream()
+                            .sorted(TransactionPair.BY_DATE).toList();
         this.lines = new ArrayList<>(vehicle2line.values());
     }
 

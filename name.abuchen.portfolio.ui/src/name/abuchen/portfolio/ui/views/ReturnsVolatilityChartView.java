@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -286,6 +286,9 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
             double risk = this.riskMetric.getRisk(index);
             double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
+
+            if (Double.isInfinite(risk) || Double.isInfinite(retrn))
+                return;
 
             ILineSeries lineSeries = chart.addScatterSeries(series.getUUID(), new double[] { risk },
                             new double[] { retrn }, series.getLabel());

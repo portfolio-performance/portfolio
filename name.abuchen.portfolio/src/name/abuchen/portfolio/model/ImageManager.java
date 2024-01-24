@@ -2,13 +2,12 @@ package name.abuchen.portfolio.model;
 
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.util.ImageUtil;
 
-public final class ImageManager
+public final class ImageManager // NOSONAR
 {
     private HashMap<String, Image> imageCache = new HashMap<>();
     private static ImageManager instance = new ImageManager();
@@ -22,13 +21,24 @@ public final class ImageManager
     {
     }
 
+    /**
+     * Retrieves an image associated with the given Attributable and
+     * AttributeType. If not found, a default image is returned.
+     *
+     * @return The retrieved image or null if not found.
+     */
     public Image getImage(Attributable target, AttributeType attr)
     {
-        int xOffset = Platform.OS_WIN32.equals(Platform.getOS()) ? 1 : 0;
-        return getImage(target, attr, xOffset, 16, 16);
+        return getImage(target, attr, 16, 16);
     }
 
-    public Image getImage(Attributable target, AttributeType attr, int xOffset, int width, int height)
+    /**
+     * Retrieves an image associated with the given Attributable, AttributeType,
+     * and additional parameters. If not found, a default image is returned.
+     *
+     * @return The retrieved image or null if not found.
+     */
+    public Image getImage(Attributable target, AttributeType attr, int width, int height)
     {
         if (target != null && target.getAttributes().exists(attr) && attr.getConverter() instanceof ImageConverter)
         {
@@ -37,14 +47,14 @@ public final class ImageManager
                 return null;
 
             String imgString = String.valueOf(imgObject);
-            String imgKey = imgString + width + height + xOffset;
+            String imgKey = imgString + width + height;
             synchronized (imageCache)
             {
                 Image img = imageCache.getOrDefault(imgKey, null);
                 if (img != null)
                     return img;
 
-                img = ImageUtil.toImage(imgString, xOffset, width, height);
+                img = ImageUtil.instance().toImage(imgString, width, height);
                 if (img != null)
                 {
                     imageCache.put(imgKey, img);

@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.typed.BeanProperties;

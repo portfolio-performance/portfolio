@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Abcd BLZ: 12345
+Abcd Abcdefghijk Referenz: 12-123456789
+Ab. 12 Kundennummer: 12345
+1234 Abcdefghi Wertpapierdepot: 12345-1
+Austria
+Wien, 06.09.2012
+WERTPAPIERBESTÄTIGUNG
+BARDIVIDENDE
+Wertpapierdetails
+ISIN : US6778621044
+Wertpapierbezeichnung : LUKOIL N.K.SP.ADR RL-025
+Informationen zur Kapitalmaßnahme
+Anspruchsberechtigter : 50
+Bestand
+Preis : USD 2.335742
+Ex-Tag : 09.05.2012
+Zahltag : 24.08.2012
+Lagerort : Frankfurt Am Main
+Verwahrart : WR
+Angaben zur Geld-Ausschüttung
+Gutschrift/Belastung : Gutschrift
+Valutatag : 24.08.2012
+Brutto-Betrag : USD 116.78
+Steuer : Quellensteuer
+Steuern : USD 17.51
+Steuer : KESt1
+Steuern : USD 11.67
+Art der Belastung : Transaktionsgebühr
+Spesen : USD 0.35
+Art der Belastung : Devisenprovision
+Spesen : USD 0.22
+Devisenkurs : 0.788923
+Gesamtbetrag (in : EUR 68.66
+Kontowährung)
+Wir erkennen Ihr EUR Konto Nummer 1-12345 mit Valuta 24.08.2012.
+Die Buchung erfolgt “Eingang vorbehalten”.
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

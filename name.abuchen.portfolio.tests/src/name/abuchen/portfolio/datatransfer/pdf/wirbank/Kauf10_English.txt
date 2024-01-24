@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4
+-----------------------------------------
+Terzo Pension Foundation of WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Phone 0800 80 40 40
+www.viac.ch
+Contract 3.172.581.899
+Portfolio 3.172.581.899.01
+Mr
+Samuel Ferrara
+Via Carlo Battaglini 67
+6955 Cagiallo
+Basel, 08.09.2023
+Exchange Settlement - Buy Swisscanto Pacific ex Japan
+We have executed the following order for you:
+Order: Buy
+0.027 units Swisscanto Pacific ex Japan
+ISIN: CH0117044831
+Price: USD 133.12
+Amount USD 3.54
+Exchange rate CHF/USD 0.89215 CHF 3.16
+Charged amount: Value date 08.09.2023 CHF 3.16
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Notice without signature

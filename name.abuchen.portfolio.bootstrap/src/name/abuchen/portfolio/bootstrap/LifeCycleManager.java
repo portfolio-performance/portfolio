@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -143,9 +143,12 @@ public class LifeCycleManager
             public void eventLoopException(final Throwable exception)
             {
                 boolean isAnnoyingNullPointerOnElCapitan = isAnnoyingNullPointerOnElCapitan(exception);
+                boolean isAnnoyingNoClassDefFoundErrorAccessibleObject = isAnnoyingNoClassDefFoundErrorAccessibleObject(
+                                exception);
 
                 StatusReporter statusReporter = (StatusReporter) context.get(StatusReporter.class.getName());
-                if (!isAnnoyingNullPointerOnElCapitan && statusReporter != null)
+                if (!isAnnoyingNullPointerOnElCapitan && !isAnnoyingNoClassDefFoundErrorAccessibleObject
+                                && statusReporter != null)
                 {
                     statusReporter.show(StatusReporter.ERROR, "Internal Error", exception); //$NON-NLS-1$
                 }
@@ -176,6 +179,13 @@ public class LifeCycleManager
 
                 return true;
             }
+
+            private boolean isAnnoyingNoClassDefFoundErrorAccessibleObject(Throwable exception)
+            {
+                return (exception instanceof NoClassDefFoundError
+                                && "org/eclipse/swt/accessibility/AccessibleObject".equals(exception.getMessage())); //$NON-NLS-1$
+            }
+
         });
     }
 
@@ -263,13 +273,13 @@ public class LifeCycleManager
                 {
                     // Must be a Detached Window
                     MUIElement eParent = (MUIElement) ((EObject) container).eContainer();
-                    if (eParent instanceof MPerspective)
+                    if (eParent instanceof MPerspective perspective)
                     {
-                        ((MPerspective) eParent).getWindows().remove(container);
+                        perspective.getWindows().remove(container);
                     }
-                    else if (eParent instanceof MWindow)
+                    else if (eParent instanceof MWindow window)
                     {
-                        ((MWindow) eParent).getWindows().remove(container);
+                        window.getWindows().remove(container);
                     }
                 }
             }
@@ -292,7 +302,7 @@ public class LifeCycleManager
             File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
                             ModelConstants.E4XMICOPY_FILENAME);
 
-            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))) // NOSONAR
             {
                 resource.save(out, null);
             }

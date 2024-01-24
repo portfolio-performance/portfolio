@@ -60,6 +60,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 values = toDouble(clientIndex.calculateAbsoluteDelta(), Values.Amount.divider());
                 break;
             case TAXES:
+                values = toDouble(clientIndex.getTaxes(), Values.Amount.divider());
+                break;
+            case TAXES_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getTaxes(), Values.Amount.divider());
                 break;
             case DIVIDENDS:

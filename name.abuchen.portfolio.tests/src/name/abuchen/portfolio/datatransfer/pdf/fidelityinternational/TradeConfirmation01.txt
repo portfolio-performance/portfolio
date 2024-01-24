@@ -1,0 +1,202 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Transaction Confirmation     Page 1 of 3
+Confirm Date: January 4, 2021
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+9900099999
+JOHN DOE
+1 Fidelity Place Customer Service 0800-200-288
+NEW YORK Dial 0800-200-288, when prompted to enter calling number,
+UNITED STATES enter 800-544-6666.
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+20123-1XXXXX 1* WK# 01-04-21 01-06-21 46428Q109 20123-XXXXX
+DESCRIPTION and DISCLOSURES
+You Bought ISHARES SILVER TR ISHARES Principal Amount       1,011.60
+       40 WE HAVE ACTED AS AGENT. Settlement Amount       1,011.60
+       at    25.2900 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+SLV other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+programs ("Marketing Program"). FBS is entitled to receive additional payments after
+termination of the Marketing Program based upon a number of criteria, including the
+overall success of the Marketing Program. The Marketing Program creates significant
+incentives for FBS to encourage customers to buy iShares funds. Additional information
+about the sources, amounts, and terms of compensation is in the ETF's prospectus and
+related documents.
+9900097688 ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you are eligible to make a deposit, please use this form for
+JOHN DOE investments in your brokerage account *****1234 only.
+JOSEPH-HAYDN-GASSE 4
+TULLN
+AUSTRIA AMOUNT OF INVESTMENT    $
+If there are sufficient funds in your brokerage core account
+(or margin account), Fidelity will use those funds to cover
+the trade(s) on this confirm.  If you wish to deposit
+FIDELITY INVESTMENTS additional money, use this deposit slip and make checks
+PO BOX 770001 payable to: NATIONAL FINANCIAL SERVICES LLC.
+CINCINNATI OH  45277-0003 Deposits will be made to the account listed above.  Please
+mail checks to the Fidelity address on this form. Refer to the
+last page for instructions on depositing certificates.
+FIDELITY BROKERAGE SERVICES LLC, MEMBER NYSE, SIPC
+099 ABC9871234  00  000
+
+Transaction Confirmation     Page 2 of 3
+Confirm Date: January 4, 2021
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+20123-7RRRRRR 1* WK# 01-04-21 01-06-21 464287622 20123-A2B3C
+DESCRIPTION and DISCLOSURES
+You Bought ISHARES RUSSELL 1000 INDEX FUND Principal Amount       4,994.40
+       24 WE HAVE ACTED AS AGENT. Settlement Amount       4,994.40
+       at    208.1000 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+IWB other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+programs ("Marketing Program"). FBS is entitled to receive additional payments after
+termination of the Marketing Program based upon a number of criteria, including the
+overall success of the Marketing Program. The Marketing Program creates significant
+incentives for FBS to encourage customers to buy iShares funds. Additional information
+about the sources, amounts, and terms of compensation is in the ETF's prospectus and
+related documents.
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+20123-XXXXX 1* WK# 01-04-21 01-06-21 464288885 20123-XXXXX
+DESCRIPTION and DISCLOSURES
+You Bought ISHARES TR EAFE GRWTH ETF Principal Amount       5,082.50
+       50 WE HAVE ACTED AS AGENT. Settlement Amount       5,082.50
+       at    101.6500 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+EFG other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+programs ("Marketing Program"). FBS is entitled to receive additional payments after
+termination of the Marketing Program based upon a number of criteria, including the
+overall success of the Marketing Program. The Marketing Program creates significant
+incentives for FBS to encourage customers to buy iShares funds. Additional information
+about the sources, amounts, and terms of compensation is in the ETF's prospectus and
+related documents.
+9900097688 ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE
+REMITTANCE COUPON
+Transaction Confirmation     Page 3 of 3
+Confirm Date: January 4, 2021
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+20123-9JAVAC 1* WK# 01-04-21 01-06-21 46434V621 20123-ASDFG
+DESCRIPTION and DISCLOSURES
+You Bought ISHARES TRUST CORE DIVID GWTH Principal Amount       5,016.00
+      114 WE HAVE ACTED AS AGENT. Settlement Amount       5,016.00
+       at    44.0000 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+DGRO other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+programs ("Marketing Program"). FBS is entitled to receive additional payments after
+termination of the Marketing Program based upon a number of criteria, including the
+overall success of the Marketing Program. The Marketing Program creates significant
+incentives for FBS to encourage customers to buy iShares funds. Additional information
+about the sources, amounts, and terms of compensation is in the ETF's prospectus and
+related documents.
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+20123-3COCOA 1* WK# 01-04-21 01-06-21 46435U440 20123-I789U
+DESCRIPTION and DISCLOSURES
+You Bought ISHARES TR GBL GREEN ETF Principal Amount       1,969.45
+       35 WE HAVE ACTED AS AGENT. Settlement Amount       1,969.45
+       at    56.2700 FBS receives compensation from the fund's advisor or its affiliates in connection with an
+Symbol: exclusive, long-term marketing program that includes the promotion of this security and
+BGRN other iShares funds, and the inclusion of iShares funds in certain platforms and investment
+programs ("Marketing Program"). FBS is entitled to receive additional payments after
+termination of the Marketing Program based upon a number of criteria, including the
+overall success of the Marketing Program. The Marketing Program creates significant
+incentives for FBS to encourage customers to buy iShares funds. Additional information
+about the sources, amounts, and terms of compensation is in the ETF's prospectus and
+related documents.
+9900097688 ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE
+In accordance with your instructions we are pleased to confirm the transaction or order In connection with (i) access to, purchase or redemption of, and/or maintenance of positions
+for your account and risk subject to terms listed below. in mutual funds and other investment products ("funds") such as alternative investments or
+Please inform our office promptly if there is an error in this confirmation. Your failure private placements or (ii) infrastructure needed to support such funds, some funds, or their
+to do so may result in the inability to amend a transaction. Please address all investment affiliates, pay FBS and/or NFS sales loads and 12b-1 fees described in the
+ications to the firm and not to individuals and include your brokerage account Offering Materials as well as additional compensation for shareholder services, start-upcommun
+ber on all checks and communications. fees, infrastructure support and maintenance, and marketing, engagement and analyticsnum programs. Additional information about the source(s) and amount(s) of compensation as
+It is understood and agreed that all transactions made for you are subject to the rules well as other remuneration received by FBS or NFS will be furnished to you upon written
+and customs of the exchange or market (and its clearing house, if any) where executed request.
+by us or by our agents, of the Financial Industry Regulatory Authority, Inc., as the case
+y be and to the Securities Exchange Act. It is further understood and agreed that on Currency exchanges may be effected by Fidelity FOREX, Inc. on a principal basis.ma
+margin business all securities or other things bought or held by us, are pledged as Fidelity FOREX, Inc., an affiliate of NFS, may impose a commission or markup on the
+llateral security for any and all claims and demands we then, or thereafter may have prevailing interbank market price. Fidelity FOREX may in turn share a portion of anyco
+against the party giving such orders whether arising thereunder or not. It is further foreign exchange commission or markup with NFS and/or FBS. The currency exchange
+understood and agreed that we have the right to close transactions without further rate applicable to any foreign security trade is available upon request.
+notice, at public or private sale, without liability for subsequent difference in value, For trades of positions set up for average cost, the cost basis per share is calculated as
+when such a sale or purchase is deemed necessary by us for our protection, with the the average price of all shares in the position and shares are depleted on a
+right upon our part of becoming the purchaser thereof free from all trust; that securities first-in-first-out basis.
+held by us in margin accounts (and in cash accounts until paid for in full) are or may be
+hypothecated for the sum, due thereon, or for a greater sum, under circumstances When there are multiple lots for the particular date indicated via versus purchase, the
+which will permit the commingling thereof with securities carried for the account of system depletes the lots starting with the highest quantity lot and moves through the lots
+other customers; and that we have the right to loan such securities held by us. in descending order of quantity until the order is filled. If an order cannot be matched
+versus purchase, or if the order quantity exceeds the matched lots, lots are depleted
+When-Issued, When-Distributed or TBA Transactions: The information contained herein using the account-level default disposal method.  If more than one lot has the same date
+is an estimate based upon information available at the time of your order. The final and quantity, selection among such lots is random.
+figures will be forwarded to you when obtainable upon issue, delivery or pool allocation.
+Such transactions shall be settled at such time, place and in such manner and by The local broker in a foreign securities transaction may be Fidelity Clearing Canada ULC,
+delivery of such securities and/or other property as determined by the exchange or an affiliate of NFS and FBS.
+association to whose requirements the transaction is subject, or shall be canceled if Other remuneration may have been received and information will be furnished on request.
+such exchange or association shall so determine. National Financial Services LLC,
+("NFS"), may demand deposits to secure this transaction and reserves the right to close At the time you purchase shares of a no-load fund, those shares will be assigned either a
+this transaction upon the failure of the customer to tender such deposit. transaction fee (TF) or no transaction fee (NTF) status. When you subsequently sell those
+shares, any applicable fees will be assessed based on the status assigned to the shares
+Fractional Share Trading: National Financial Services ("NFS"), an affiliate broker-dealer, at the time of purchase.
+will execute the fractional component of a customer order in a principal capacity. Certificates of deposit and certain securities, including bonds, preferred stocks, and
+Open Orders. An open order will remain in effect until executed or canceled. Customers common stocks, may be subject to call or redemption (prior to maturity, if applicable).
+may attempt to cancel open orders at any time prior to execution. NFS will cancel open Call features may exist in addition to those which may appear on the front of the
+orders after 180 calendar days (or in accordance with standards set by your Employer) confirmation. Early call or redemption could affect Yield. Complete information will be
+and we reserve the right, but are not obligated to, cancel open orders when the limit provided upon written request.
+price becomes unrealistic in relation to the market price. Limits on open orders to BUY
+and STOP ORDERS TO SELL, subject to the rules of the exchange or association This statement is computed for payment by bank draft on settlement date. If payment is
+where the securities are traded, may be automatically adjusted on the date the security made at a later date, additional interest to date of payment will be charged.
+trades "ex-dividend", "ex-rights", "ex-distribution", or "ex-interest". Unexecuted portions Name of the other party, time of execution and remuneration furnished on request.
+of an open order which are executed on subsequent days are treated as separate Fidelity Brokerage Services LLC, Member NYSE/SIPC. Account carried with National
+orders for commission purposes, in accordance with industry practices. Financial Services LLC.
+
+Orders marked "solicited" are not the result of "investment advice" from Fidelity, as * T - TYPE OF ACCOUNT
+that term is defined under ERISA and underlying U.S. Department of Labor 0 - Deliver / Receive vs. Payment 6 - Special Account
+Regulations, except to the extent that Fidelity utilizes an unaffiliated third party in 1 - Cash Account 8 - When Issued / TBA
+obtaining such advice. 2 - Margin Account 9 - Income Account
+Payment for Order Flow Disclosure [Exchange Act Rule 10b-10(a)(2)(i)(C)]. Fidelity 3 - Short Account
+Brokerage Services LLC ("FBS") and/or NFS receives remuneration, compensation, or If an odd-lot differential is indicated on the face of this confirmation, an amount of 12½
+consideration for directing orders in equity securities to particular broker/dealers or cents per share was added to the price of purchase or deducted from the price of sale.
+market centers for execution. The source and nature of any compensation received in
+connection with your particular transaction will be disclosed upon written request to D1. Additional call features exist that may affect yield; complete
+FBS. Please review FBS's annual disclosure on payment for order flow policies and information will be provided upon request.
+order routing policies. D2. No periodic interest payments - callable below maturity value without notice by mail
+to holder unless registered.
+The private placement memorandum, term sheet, prospectus or other disclosure
+("Offering Materials") you previously received include important D3. For bonds callable and issued in bearer form, it may be difficult for you to determinedocuments
+(e.g., hedge funds, whether the securities have been called.information concerning your alternative investment transaction
+). Please refer to these materials for an explanation of D4. Asset-backed Securities. An asset-backed security represents an interest in or isprivate equity funds, REITS
+(i.e., purchase) and redemption process as well as information secured by a pool of financial assets that may be subject to continuous prepayment.the subscription The actual yield may vary based on prepayment rates of the underlying receivable
+regarding compensation that FBS or NFS may receive from you and/or the alternative or other financial assets. Information concerning factors that affect yield will be
+investment in connection with your transaction. The settlement date for these furnished upon written request.
+transactions is often extended a number of days beyond the subscription (i.e., trade)
+or redemption date. As part of the subscription process, your subscription funds Ratings information, when provided, has been obtained from select ratings services which
+could be held in escrow until such time as your subscription is accepted by the NFS believes to be reliable, however, NFS cannot guarantee its timeliness, accuracy or
+alternative investment. Gross proceeds are reflected on the statement and may completeness. Ratings are opinions and not recommendations or investment advice.
+not be realized at the time of the redemption if the fund is subject to a holdback. Ratings or the absence of ratings should not alone be relied upon when assessing the credit
+See the Offering Materials for more details. Any such assets retained by the fund are quality of a security or making an investment decision.  Ratings are subject to change or
+held as a general obligation of the fund and are not protected by SIPC. withdrawal by the ratings services at any time.  Ratings information may not be provided
+for all debt securities.  When indicated, NR denotes that the security is not rated by the
+listed rating organization. The security may be rated by other rating services.  Please
+447970.27.0 contact your broker dealer if you need more information about a security.
+- - - - - - - - - - - - - - - - - - - - -  --  --  --  --  --  --  --  --  --  -- - - - - - - - - - - - - - - -  -   -  --  --  --  -- - - - - - - - - - - - - - - - - - - - - - -  -   -   --  --  -- - - - - - - - - - - - - - - - - -  -   -  -  -   --  --  --  --  --  --  -- - - - - - - - - - - - - - - - - - - - - - - -
+INSTRUCTIONS FOR DEPOSITING CERTIFICATES
+Endorsement Instructions
+1) The signature on the back of the certificate must correspond exactly to the name as written upon the face of the certificate.
+2) Write "National Financial Services LLC" on the line between "appoint" and "attorney."
+3) Write your brokerage account number on the top right corner of the front of the certificate.
+4) Failure to properly prepare the Certificate may result in delays completing your transaction.
+MAIL CERTIFICATES TO THIS ADDRESS:
+NATIONAL FINANCIAL SERVICES LLC
+ATTN: Banking Services
+Mail Zone KC1N
+100 Crosby Parkway
+Covington, KY 41015
+9900097688

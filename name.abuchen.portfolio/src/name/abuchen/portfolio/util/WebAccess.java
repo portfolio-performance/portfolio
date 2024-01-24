@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.net.URIBuilder;
@@ -116,9 +116,12 @@ public class WebAccess
     }
 
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom()
-                    .setConnectTimeout(Timeout.ofSeconds(5)) //
                     .setResponseTimeout(Timeout.ofSeconds(20)) //
                     .setCookieSpec(StandardCookieSpec.STRICT) //
+                    .build();
+
+    public static final ConnectionConfig defaultConnectionConfig = ConnectionConfig.custom()
+                    .setConnectTimeout(Timeout.ofSeconds(5)) //
                     .build();
 
     private final URIBuilder builder;
@@ -176,15 +179,13 @@ public class WebAccess
 
     public String get() throws IOException
     {
-        try
-        {
-            CloseableHttpResponse response = executeWith(HttpGet::new);
-            return EntityUtils.toString(response.getEntity());
-        }
-        catch (ParseException e)
-        {
-            throw new IOException(e);
-        }
+        var response = executeWith(HttpGet::new);
+
+        // the response handler can return a null string.
+        // To keep up the contract of the get method, we throw an exception
+        if (response == null)
+            throw new IOException("No message entity in response: " + builder.toString()); //$NON-NLS-1$
+        return response;
     }
 
     public void post(String body) throws IOException
@@ -197,13 +198,15 @@ public class WebAccess
         });
     }
 
-    private CloseableHttpResponse executeWith(Request function) throws IOException
+    private String executeWith(Request function) throws IOException
     {
-        CloseableHttpResponse response = null;
-
         try
         {
+            var connectionManager = new PoolingHttpClientConnectionManager();
+            connectionManager.setDefaultConnectionConfig(defaultConnectionConfig);
+
             CloseableHttpClient client = HttpClientBuilder.create() //
+                            .setConnectionManager(connectionManager) //
                             .setDefaultRequestConfig(defaultRequestConfig) //
                             .setDefaultHeaders(this.headers) //
                             .setUserAgent(this.userAgent) //
@@ -212,12 +215,11 @@ public class WebAccess
 
             URI uri = builder.build();
             HttpUriRequestBase request = function.create(uri);
-            response = client.execute(request);
-
-            if (response.getCode() != HttpStatus.SC_OK)
-                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode());
-
-            return response;
+            return client.execute(request, new BasicHttpClientResponseHandler());
+        }
+        catch (HttpResponseException e)
+        {
+            throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode());
         }
         catch (URISyntaxException e)
         {
@@ -225,20 +227,20 @@ public class WebAccess
         }
     }
 
-    private String buildMessage(URI uri, int statusCode)
+    private String buildMessage(String uri, int statusCode)
     {
         String message = String.valueOf(statusCode);
         try
         {
             String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
             if (reason != null)
-                return message + " " + reason; //$NON-NLS-1$
+                message += " " + reason; //$NON-NLS-1$
         }
         catch (IllegalArgumentException e)
         {
             // ignore -> unable to retrieve message
         }
-        message += " --> " + uri.toString(); //$NON-NLS-1$
+        message += " --> " + uri; //$NON-NLS-1$
         return message;
     }
 

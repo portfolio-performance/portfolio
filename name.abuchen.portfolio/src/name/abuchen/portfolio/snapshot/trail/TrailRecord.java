@@ -79,8 +79,10 @@ public interface TrailRecord
     {
         if (numerator == denominator || numerator == 0L)
             return this;
-        return new DefaultTrail(null, MessageFormat.format(Messages.LabelTrailXofYShares,
-                        Values.Share.format(numerator), Values.Share.format(denominator)), numerator, value, this);
+        return new DefaultTrail(null, "⇋ " //$NON-NLS-1$
+                        + MessageFormat.format(Messages.LabelTrailXofYShares, Values.Share.format(numerator),
+                                        Values.Share.format(denominator)),
+                        numerator, value, this);
     }
 
     default TrailRecord convert(Money value, ExchangeRate rate)
@@ -102,6 +104,7 @@ public interface TrailRecord
         if (grossValue.equals(getValue()))
             return this;
         else
-            return new DefaultTrail(null, Messages.LabelTrailWithoutTaxesAndFees, this.getShares(), grossValue, this);
+            return new DefaultTrail(null, "↳ " //$NON-NLS-1$
+                            + Messages.LabelTrailWithoutTaxesAndFees, this.getShares(), grossValue, this);
     }
 }

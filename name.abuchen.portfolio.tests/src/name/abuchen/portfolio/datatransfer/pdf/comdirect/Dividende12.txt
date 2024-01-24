@@ -1,8 +1,9 @@
-PDF Autor: 'HAVI Solutions GmbH & Co. KG, phg'
-PDFBox Version: 1.8.16
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
 -----------------------------------------
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-25449 Quickborn
+59647 Quickborn
                                                                                                     
                                                   
                                                                       
@@ -12,35 +13,37 @@ PDFBox Version: 1.8.16
                         
        
                        
-Depotnr.:    12345600 
-     123456 789 BLZ:        123 456 78 
+Depotnr.:    786204619 
+     97073 668 BLZ:        284 637 94 
 Herrn                              
                              
-Max Mustermann             
+jdnpgoD yaPG                 
                              
                              
                                    
-Musterstr. 123                                                        
+Muster-Weg 51                                              
                              
-12345 Musterstadt                                                    
-14.05.2018
- G u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
-Dividendengutschrift                                                               
+26323 QGLMeMgKaZya                                              
+30.06.2021
+G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
+Ertragsgutschrift                                                                  
 Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
-p e r  0 9 . 0  5.  2 0 1 8                         Al l  i an z   S E                              8 4 0 4 00 
-S  T K              1  6 , 00  0               v i  n k . N am  en  s - Ak t  ie  n  o . N .           D E0 0  0 84  04  00 5 
-                                      Emissionsland: DEUTSCHLAND                   
-EUR 8,00       Dividende pro Stück für Geschäftsjahr        01.01.17 bis 31.12.17  
-zahlbar ab 14.05.2018                                                              
-                         Abrechnung Dividendengutschrift                           
-Bruttobetrag:                                              EUR             128,00  
+ p er   16  . 06  .2  0 2 1                        V a n g u  a r d F T S  E  Al l  -W o  rl d  U  . E TF           A  1J  X5 2 
+S T K                84  , 0 00                R  eg i  st  er  e d S h  ar e s  U S  D  D is  .o  N      IE  00  B3  RB  W M 2 5
+                                      Emissionsland: IRLAND                        
+USD 0,58122    Ausschüttung pro Stück für Geschäftsjahr     01.07.20 bis 30.06.21  
+zahlbar ab 30.06.2021                                                              
+                         Abrechnung Ertragsgutschrift                              
+Bruttobetrag:                     USD              48,82                           
+    zum Devisenkurs: EUR/USD      1,192000                 EUR              40,96  
 Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
-DE12 3456 7890 1234 5678 00   EUR       14.05.2018         EUR             128,00  
+DE89 0189 9064 0302 2821 41   EUR       02.07.2021         EUR              40,96  
 Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
 Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
-(Referenz-Nr. 1234567890).                                                   
-comdirect bank                                                                     
-Aktiengesellschaft                                                                 
+(Referenz-Nr. 0OIH6DFZDB600A12).                                                   
+Ihre comdirect                                                                     
                                                                                    
 *Diese Abrechnung wird von der Bank nicht unterschrieben                           
-DD762/11/09
+DD111/11/11
+
+```

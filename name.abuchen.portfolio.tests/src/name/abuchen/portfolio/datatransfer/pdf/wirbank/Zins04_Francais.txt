@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+Fondation de prévoyance Terzo de la Banque WIR
+Auberg 1
+4002 Bâle
+Internet www.viac.ch
+Courrriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Suisse
+Bâle, 01.06.2022
+Intérêts
+Nous avons crédité le 31.05.2022 les intérêts suivants:
+Taux d’intérêt: 0.10%
+Période d’intérêt: mai
+Intérêts créditeurs: CHF 0.04
+Montant crédité: CHF 0.04
+S. E. & O.
+Meilleures salutations
+Fondation de prévoyance Terzo
+Avis sans signature

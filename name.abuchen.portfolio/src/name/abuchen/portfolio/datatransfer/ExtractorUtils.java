@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Map;
@@ -29,42 +30,61 @@ import name.abuchen.portfolio.money.Values;
 
 public class ExtractorUtils
 {
+    // Helper method to create case-insensitive DateTimeFormatter instances
+    private static DateTimeFormatter createFormatter(String pattern, Locale locale)
+    {
+        return new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter(locale);
+    }
+
+    // Date formatters with case-insensitive support for Germany
     private static final DateTimeFormatter[] DATE_FORMATTER_GERMANY = { //
-                    DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyy-M-d", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d-M-yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
+                    createFormatter("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d.M.yy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("yyyy-M-d", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d-M-yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd.MM.yy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd-MM-yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
 
+    // Date formatters with case-insensitive support for the United States
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
-                    DateTimeFormatter.ofPattern("dd LLLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLL yyyy", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyyMMdd", Locale.US) }; //$NON-NLS-1$
+                    createFormatter("dd LLLL yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("d LLLL yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("d LLL yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("MM-dd-yy", Locale.US), //$NON-NLS-1$
+                    createFormatter("MMM/dd/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("MMM/d/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("LLL/dd/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("LLL/d/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("LL/dd/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("LL/d/yyyy", Locale.US), //$NON-NLS-1$
+                    createFormatter("yyyyMMdd", Locale.US) }; //$NON-NLS-1$
 
+    // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
-                    DateTimeFormatter.ofPattern("LLL dd, yyyy", Locale.CANADA) }; //$NON-NLS-1$
+                    createFormatter("LLL dd, yyyy", Locale.CANADA) }; //$NON-NLS-1$
 
+    // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
-                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.CANADA_FRENCH) }; //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) }; //$NON-NLS-1$
 
+    // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
-                    DateTimeFormatter.ofPattern("dd LLLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("L/d/yyyy", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
+                    createFormatter("dd LLLL yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("d LLLL yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("d LLL yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("L/d/yyyy", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
 
+    // Map associating locales with their respective date formatters
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
                     Locale.GERMANY, DATE_FORMATTER_GERMANY, //
                     Locale.US, DATE_FORMATTER_US, //
@@ -72,23 +92,27 @@ public class ExtractorUtils
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
                     Locale.UK, DATE_FORMATTER_UK);
 
+    // DateTime formatters with case-insensitive support for various locales
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
-                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy H:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("yyyyMMdd HHmmss", Locale.US), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss a", Locale.UK) }; //$NON-NLS-1$
+                    createFormatter("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd.MM.yyyy H:mm:ss", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("yyyy-MM-dd HH:mm:ss", Locale.US), //$NON-NLS-1$
+                    createFormatter("yyyyMMdd HHmmss", Locale.US), //$NON-NLS-1$
+                    createFormatter("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd.MM.yyyy hh:mm:ss a", Locale.UK), //$NON-NLS-1$
+                    createFormatter("dd/MM/yy HH.mm", Locale.UK), //$NON-NLS-1$
+                    createFormatter("d/MM/yy HH.mm", Locale.UK) }; //$NON-NLS-1$
 
     private ExtractorUtils()
     {
@@ -186,26 +210,26 @@ public class ExtractorUtils
 
         /**
          * @formatter:off
-         * 
+         *
          * The group separator for language format French is a space followed by the decimal separator comma.
          * fr_FR --> 1 234,56
-         * 
+         *
          * If the amount has the group separator space, the string can still have the following format.
          * xh_ZA --> 1 234.56
-         * 
+         *
          * To simplify the two variants, we remove the spaces in the string, bypassing the generation of an additional identification via the locale.
-         * 
+         *
          * The problem is that we can only pass one main formatting per importer.
-         * e.g. 
+         * e.g.
          * Importer: PostfinancePDFExtractor.java
          * Test file: Kauf01.txt vs. Kauf04.txt
          * We remove the spaces from the complete string and bypass the formatting.
-         * 
+         *
          * @formatter:on
          */
         value = trim(value).replaceAll("\\s", "");
 
-        if (country.equals("CH"))
+        if ("CH".equals(country))
         {
             /***
              * The group separator for language format German, region
@@ -236,28 +260,28 @@ public class ExtractorUtils
     {
         /**
          * @formatter:off
-         * 
+         *
          * The group separator for language format French is a space followed by the decimal separator comma.
          * fr_FR --> 1 234,56
-         * 
+         *
          * If the amount has the group separator space, the string can still have the following format.
          * xh_ZA --> 1 234.56
-         * 
+         *
          * To simplify the two variants, we remove the spaces in the string, bypassing the generation of an additional identification via the locale.
-         * 
+         *
          * The problem is that we can only pass one main formatting per importer.
-         * e.g. 
+         * e.g.
          * Importer: PostfinancePDFExtractor.java
          * Test file: Kauf01.txt vs. Kauf04.txt
          * We remove the spaces from the complete string and bypass the formatting.
-         * 
+         *
          * @formatter:on
          */
         value = trim(value).replaceAll("\\s", "");
 
         DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale(language, country));
 
-        if (country.equals("CH"))
+        if ("CH".equals(country))
         {
             /***
              * The group separator for language format German, region

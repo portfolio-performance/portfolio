@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -100,12 +101,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                            else
-                                t.setNote(trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -192,12 +188,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> {
-                            if (t.getNote() != null)
-                                t.setNote(t.getNote() + " | " + trim(v.get("note")));
-                            else
-                                t.setNote(trim(v.get("note")));
-                        })
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(TransactionItem::new);
 

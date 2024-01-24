@@ -1,5 +1,25 @@
 package name.abuchen.portfolio.datatransfer.pdf.postbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -141,7 +161,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36.7701)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 242816/24.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.90))));
@@ -185,7 +205,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.4085)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/26.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.90))));
@@ -229,7 +249,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1700)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Limit 0,84 GBP"));
+        assertThat(entry.getNote(), is("Auftragsnummer 69123/22.01 | Limit 0,84 GBP"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1765.16))));
@@ -275,7 +295,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1700)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Limit 0,84 GBP"));
+        assertThat(entry.getNote(), is("Auftragsnummer 69123/22.01 | Limit 0,84 GBP"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1765.16))));
@@ -291,6 +311,37 @@ public class PostbankPDFExtractorTest
         account.setCurrencyCode(CurrencyUnit.EUR);
         Status s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        PostbankPDFExtractor extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009769760"), hasWkn("976976"), hasTicker(null), //
+                        hasName("DWS ESG TOP ASIEN INHABER-ANTEILE LC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-24T00:00"), hasShares(88), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Belegnummer 1481234555 / 987123"), //
+                        hasAmount("EUR", 17169.09), hasGrossValue("EUR", 16588.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 580.61))));
     }
 
     @Test
@@ -325,7 +376,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-11T16:34:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(137)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Limit 23,15 EUR"));
+        assertThat(entry.getNote(), is("Auftragsnummer 724152/50.00 | Limit 23,15 EUR"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3141.58))));
@@ -369,7 +420,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-13T10:35:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertThat(entry.getNote(), is("Limit bestens"));
+        assertThat(entry.getNote(), is("Auftragsnummer 12345678999/50.00 | Limit bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1094.73))));
@@ -413,7 +464,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertThat(entry.getNote(), is("Barabfindung wegen Fusion"));
+        assertThat(entry.getNote(), is("Auftragsnummer 12345678/32.00 | Barabfindung wegen Fusion"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1279.69))));
@@ -459,7 +510,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertThat(entry.getNote(), is("Barabfindung wegen Fusion"));
+        assertThat(entry.getNote(), is("Auftragsnummer 12345678/32.00 | Barabfindung wegen Fusion"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1279.69))));
@@ -509,7 +560,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7918)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 123456/37.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.01))));
@@ -585,7 +636,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.6027)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 189617/56.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.90))));
@@ -606,7 +657,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.6892)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 189663/67.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(525.90))));
@@ -627,7 +678,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.2308)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 189751/60.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(480.90))));
@@ -648,7 +699,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.6693)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 189908/99.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.90))));
@@ -669,7 +720,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.9897)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftragsnummer 190945/98.00"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(145.90))));
@@ -714,7 +765,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678999 | Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.64))));
@@ -757,7 +808,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Quartalsdividende"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678999 | Quartalsdividende"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.64))));
@@ -808,7 +859,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 56024913320"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.40))));
@@ -853,7 +904,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(114)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.40))));
@@ -898,7 +949,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 64628421310"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(19.25))));
@@ -943,7 +994,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 55626672580"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.65))));
@@ -986,7 +1037,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 55626672580"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.65))));
@@ -1037,7 +1088,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(124.02))));
@@ -1080,7 +1131,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111111"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(124.02))));
@@ -1131,7 +1182,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1430)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 72953370000"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.38))));
@@ -1174,7 +1225,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1430)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 72953370000"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(74.38))));
@@ -1225,7 +1276,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11223344550"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.76))));
@@ -1268,7 +1319,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 11223344550"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.76))));
@@ -1319,7 +1370,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
-        assertThat(transaction.getNote(), is("Zinsschein 365 Tag(e)"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 77122332030 | Zinsschein 365 Tag(e)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(579.80))));
@@ -1364,7 +1415,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(190)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertThat(transaction.getNote(), is("Zinsschein 180 Tag(e)"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 75805627080 | Zinsschein 180 Tag(e)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(122.44))));
@@ -1407,7 +1458,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(190)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
-        assertThat(transaction.getNote(), is("Zinsschein 180 Tag(e)"));
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 75805627080 | Zinsschein 180 Tag(e)"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(122.44))));
@@ -1458,7 +1509,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.3024)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 83904157190"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.56))));
@@ -1501,7 +1552,7 @@ public class PostbankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.3024)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Abrechnungsnr. 83904157190"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.56))));
@@ -1659,11 +1710,42 @@ public class PostbankPDFExtractorTest
     }
 
     @Test
+    public void testVorabpauschale01()
+    {
+        PostbankPDFExtractor extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009769760"), hasWkn("976976"), hasTicker(null), //
+                        hasName("DWS ESG TOP ASIEN INHABER-ANTEILE LC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(88), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.41), hasGrossValue("EUR", 26.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotauszug01()
     {
         PostbankPDFExtractor extractor = new PostbankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
 

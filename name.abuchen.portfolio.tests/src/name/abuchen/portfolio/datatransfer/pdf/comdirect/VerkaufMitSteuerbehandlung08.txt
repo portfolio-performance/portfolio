@@ -1,0 +1,75 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+Telefon   :   04106-708 25 00                                                  
+                                                                              
+                             
+                                       
+                             
+    XXXXX XXX
+Depotnr.:        XXXXXXX XX 
+            BLZ:             XXX XXX XX
+Max Mustermann                 
+                             
+                             
+Musterstraße 1                                              
+XXXXX Musterstadt                                          
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 25.08.2020                                                   
+                                                                                                                                    
+*
+Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : XX XXXXXX                                                                                                       
+Ordernummer       : 123-123  Rechnungsnummer   : XXXXXXXXXXXXXXXX                                                          
+Geschäftstag      : 25.08.2020        Ausführungsplatz  : XETRA                                                                     
+Handelszeit       : 14:34 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Wirecard AG                                                              747206                                                     
+Inhaber-Aktien o.N.                                                DE0007472060                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  3                    USD  0,97                                                                                                 
+                          Kurswert                    : USD                2,90                                                     
+
+                          Ausmachender Betrag         : USD                7,00-                                                     
+       Umrechn. zum Dev. kurs 1,222500 vom 16.12.2020 : EUR                5,73-                                                                                                                
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : USD                9,90-                                                    
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50-                                                    
+                          Summe Entgelte              : EUR               10,60-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+XXXX XXXX XXXX XXXX XXXX XX   EUR     27.08.2020        EUR                8,23-                                                    
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+GLOBALURKUNDE, KEIN STUECKEAUSDRUCK                                                                                                 
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: XX XXX XXX XXX                                                    
+XXXX
+XXXXXX/XX/XX/XXXX

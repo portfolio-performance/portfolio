@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;

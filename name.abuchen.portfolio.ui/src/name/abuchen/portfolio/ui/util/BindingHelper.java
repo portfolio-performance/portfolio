@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
+import static name.abuchen.portfolio.ui.util.SWTHelper.getAverageCharWidth;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
@@ -20,9 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
-import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,8 +36,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -55,40 +53,6 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class BindingHelper
 {
-    private static final class CurrencyProposalProvider implements IContentProposalProvider
-    {
-        private List<CurrencyUnit> currencies;
-
-        private CurrencyProposalProvider(List<CurrencyUnit> currencies)
-        {
-            this.currencies = currencies;
-        }
-
-        @Override
-        public IContentProposal[] getProposals(String contents, int position)
-        {
-            List<IContentProposal> proposals = new ArrayList<>();
-
-            if (!contents.isEmpty())
-            {
-                String c = contents.toLowerCase();
-
-                for (CurrencyUnit currency : currencies)
-                {
-                    String label = currency.getLabel().toLowerCase();
-                    if (label.contains(c))
-                        proposals.add(new ContentProposal(currency.getCurrencyCode(), currency.getLabel(), null));
-                }
-            }
-
-            // below matching currencies, add everything for scrolling
-            proposals.add(new ContentProposal(String.format("--- %s ---", Messages.LabelAllCurrencies))); //$NON-NLS-1$
-            for (CurrencyUnit currency : currencies)
-                proposals.add(new ContentProposal(currency.getCurrencyCode(), currency.getLabel(), null));
-            return proposals.toArray(new IContentProposal[0]);
-        }
-    }
-
     private static final class StringToCalendarConverter implements IConverter<String, TradeCalendar>
     {
         private TradeCalendar emptyOption;
@@ -229,9 +193,6 @@ public class BindingHelper
     private Model model;
     private ModelStatusListener listener = new ModelStatusListener();
     private DataBindingContext context;
-
-    /** average char width needed to resize input fields on length */
-    private double averageCharWidth = -1;
 
     public BindingHelper(Model model)
     {
@@ -551,18 +512,5 @@ public class BindingHelper
 
         context.bindValue(targetObservable, modelObservable);
         return btnCheckbox;
-    }
-
-    private double getAverageCharWidth(Control control)
-    {
-        if (averageCharWidth > 0)
-            return averageCharWidth;
-
-        GC gc = new GC(control);
-        FontMetrics fm = gc.getFontMetrics();
-        this.averageCharWidth = fm.getAverageCharacterWidth();
-        gc.dispose();
-
-        return averageCharWidth;
     }
 }

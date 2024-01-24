@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 123 DATUM 11.01.2024
+01234 Musterstadt DEPOT 0123456789
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 20.12.2023.
+POSITION ANZAHL ERTRAG BETRAG
+Philip Morris Internat. Inc. 55 Stk. 1,261 USD 69,36 USD
+Registered Shares o.N.
+ISIN: US7181721090
+GESAMT 69,36 USD
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 69,36 USD
+Zwischensumme 1,095514 EUR/USD 63,31 EUR
+Kapitalertragsteuer Optimierung 5,15 EUR
+Solidaritätszuschlag Optimierung 0,28 EUR
+GESAMT 68,74 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE99012345670123456789 10.01.2024 68,74 EUR
+Philip Morris Internat. Inc. Registered Shares o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 11.01.2024 / 22924803 / a29a-66b1

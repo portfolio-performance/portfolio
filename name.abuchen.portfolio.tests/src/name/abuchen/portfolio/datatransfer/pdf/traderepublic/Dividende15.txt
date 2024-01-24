@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+IixFs tznsm PAGE 1 from 1
+A. HQAjJs 51 DATE 16.11.2023
+528 65 PURfGBVA SECURITIES ACCOUNT 0769251403
+DIVIDEND
+OVERVIEW
+Dividend with the ex-tag 10.11.2023.
+POSITION QUANTITY INCOME AMOUNT
+Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
+Registered Shares o.N.
+ISIN: US0378331005
+TOTAL 0.02 USD
+BILLING
+POSITION AMOUNT
+Subtotal 0.02 USD
+Subtotal 1.0715 EUR/USD 0.02 EUR
+TOTAL 0.02 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+DE27502109007011534672 16.11.2023 0.02 EUR
+Apple Inc. Registered Shares o.N. in giro collection storage in Germany.
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 16.11.2023 / 91985921 / edd5-dbc2

@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+PARTICIPANT NO.
+I00123456
+90012345
+      JOHN DOE
+      1 FIDELITY PLACE
+      COVINGTON, KY 41015
+      NEW YORK FIDELITY STOCK PLAN SERVICES, LLC
+      CINCINNATI, OH P.O. BOX 770001
+CINCINNATI, OH  45277-0003
+TELEPHONE NUMBER:(800) 544-0275
+REF # 23346-K9T1Q9
+CUSTOMER NO.   PARTICIPANT ID. TYPE REG.REP. TRADE DATE SETTLEMENT DATE TRANS NO. CUSIP NO. ORIG.
+I00123456 1 WI# 12-12-23 12-14-23 K9T1Q9 11135F101
+YOU SOLD 14 AT 173.1100
+      EXPLANATION OF PROCEEDS
+SECURITY DESCRIPTION SYMBOL: AAPL Sale Proceeds     $2,423.54
+APPLE INC
+DETAILS: Total Fees          $0.13
+Sale Date: DEC/12/2023
+Proceeds Available: DEC/14/2023
+Plan Type: COMPANY STOCK PLAN
+Net Cash Proceeds¹     -$2,423.41
+PLEASE RETAIN THIS STATEMENT FOR YOUR RECORDS
+¹  Your proceeds will be held by Fidelity in your trust. Please contact Fidelity Stock Plan Services to request a distribution.
+PAGE 1 OF 1 Recordkeeping and administrative services for your company's equity compensation plans are
+provided by your company and its service providers

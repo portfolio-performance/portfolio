@@ -1,0 +1,31 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Signor
+wewEgPsw SygXMhRDTswM
+yNk acF XoFEaBHFH 15C
+04017 wqaiEb
+Italia
+Conto k7541
+Nota Informativa per l'ordine X4171246514720
+Vi Confermiamo il Vs. ordine sopra riportato del 9.01.2024
+per l'acquisto di: 2.900  ISHARES EUR ULTRALONG BOND ISIN LU000FXZOR04 (FASE CORRENTE)
+eseguito per: 2.900
+tramite l'intermediario Banca IMI
+Tipo di Operazione: Acquisto     Mercato di esecuzione: Borsa - XETRA
+Modalità di liquidazione:  Per consegna e pagamento in contanti
+                                                  Quantita'                 Euro               Prezzo      Valuta
+ 9.01.2024  11:57:33  Richiesta Immissione            2.900                                    0,5180
+ 9.01.2024  11:57:34  Inoltro
+ 9.01.2024  11:57:34  In negoziazione
+ 9.01.2024  11:57:34  Eseguito                        2.900             1.502,08               0,5179  11.01.2024
+                      Controvalore:                                     1.502,08               0,5179
+                      Commissioni:                                          9,50
+                      Capital Gain
+                      Totale a Vs. Debito                               1.511,58
+Gli effetti fiscali saranno disponibili a data valuta nel menu Info -  2b.Capital Gain
+Torino, 9.01.2024
+       DIRECTA SIM
+
+```

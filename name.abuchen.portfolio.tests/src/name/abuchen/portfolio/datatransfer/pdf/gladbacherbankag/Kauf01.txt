@@ -1,0 +1,43 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+   
+Gladbacher Bank AG von 1922 · Postfach 10 06 59 · 41006 Mönchengladbach
+Depotnummer
+ 12345678
+ Kundennummer 12345
+Max Mustermann
+ Auftragsnummer 640034/62.00
+Max Mustermann Datum 18.12.2023
+Kärntner Str. 28 Ihre Beraterin Frau XXXX XXXXXXX
+41063 Mönchengladbach Telefon 02161-123-147
+Telefax 02161-123-139
+Rechnungsnummer W07512-0000013677/23
+Umsatzsteuer-ID DE120494383   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 28 CHURCH & DWIGHT CO. INC.           US1713401024 (864371)
+REGISTERED SHARES DL 1             
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 18.12.2023 18:14:20 Auftraggeber Max Mustermann
+Ausführungskurs 85,00 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 2.380,00- EUR
+Provision 15,00- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 2.395,10- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 20.12.2023 zu Lasten des Kontos 14314008 (IBAN DE65 3106 0181 0012 3456 78),
+BLZ 31060181 (BIC GENODED1GBM).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7512.12182042.0000002OR07
+
+```

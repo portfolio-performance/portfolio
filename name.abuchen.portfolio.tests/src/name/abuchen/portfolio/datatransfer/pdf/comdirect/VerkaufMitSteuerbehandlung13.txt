@@ -1,0 +1,184 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-087 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    08820 010
+Depotnr.:        8565315 52 
+            BLZ:             200 535 11
+vmYZAP hPBo                  
+                             
+                             
+Musterstr. 99                                            
+24492 jRWWDeqOQZ                                          
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM  15.05.2013                                                   
+* Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : 55 549680                                                                                                       
+                    071132136214-001  Rechnungsnummer   : 295713531330DE85                                                          
+Geschäftstag      : 15.05.2013        Ausführungsplatz  : XETRA                                                                     
+Handelszeit       : 12:34 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Google Inc.                                                              A0B7FY                                                     
+Reg. Shares Class A DL -,001                                       US38259P5089                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  2                    EUR  689,00                                                                                               
+                          Kurswert                    : EUR            1.378,00                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                9,90-                                                    
+                          Börsenplatzabhäng. Entgelt  : EUR                1,50-                                                    
+                          Summe Entgelte              : EUR               11,40-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+Verrechnung über Konto   BLZ          Valuta        Zu Ihren Gunsten vor Steuern                                                    
+     0729715 02  EUR     200 411 11   17.05.2013        EUR            1.366,60                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 317 605 927                                                    
+A113
+DO15DD/16/04/2010
+                                                                      
+Kundennr. /BLZ Bezeichnung
+1085362  jfGGkZ  cLaw                                       
+                                                  
+            
+200 557 11 Musterstr. 71                                    36588 EFwkzyrvUZ                                  
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+ 0 1  0   1  1857
+                                                  
+T   e  le  f o  n  :              0  4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                        1  5  . 0  5  .2013         
+M   u  s  t  e  r  M   u  s t                     
+ D  e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 11  
+ M  u  s  t e r  r  s  t r .  7  1                  
+95641 gWstYmMlrx              R   e  f e  r e  n  z  - N   u mmer:    0 I  I 6  V  S  S   4  2  T00003Y                               
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierverkauf  Nr. 91006642  vom 15.05.2013                                                           
+Stk.               2 GOOGLE INC. A     DL-,001 , WKN / ISIN: A0B7FY  / US38259P5089                                               
+ Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R           1.366,6 0   
+                                                                                                                                
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e v o r V e r lu s tv e r re c h n u n g  ( 1 )                 E    U     R                                         3   0  4 , 4 0                          
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+ in A n s p ru c h  g e n o m m e n e r F r ei s te ll un g s a u ft ra g                                         E    U   R                             3   0  4 , 4 0                          
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e n a c h V e r lu s t ve r r ec h n u n g               E   U  R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+ K ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+ K irc h e n s te u e r                                                                              _E  U_   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, 0_ 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _  _ __ _  _0__,0_ _0   
+                                                                                                                                
+Z u  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   E U R           1.366,6 0   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Gutschrift erfolgt mit Valuta 17.05.2013 auf Konto EUR 94 19482 65 Bankleitzahl : 694 478 11                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Folgeseite                                                                  
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2013 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+2013 Gewinne / Verluste sonstige anrechenbare verfügbarerin aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+              198,46                34,84                -1,53               567,70
+nach Ermittlung
+              502,86                34,84
+               -1,53               263,30
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:                                                                                                             
+                                                                                                                                                                                    
+z u  Ih r e n G u n s te n  v o r  S te u e rn                                                                                                                                                          E  U R            1.366,60                           
+ An s  ch  af  f un  g  v om  2 2 . 1 0  . 2 0 1 2               2 , 0 0  S t  üc k                       E_ _U R_ _ _ _ _ _ _ _ _ _ _ -_ 1_ ._ 0_ _6_2_,2_0_                                                   
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach                                                                                                      
+ ab g e l tu n g s te u e rr e le v a n te m  S t ic h ta g                                                                                                                                                  _E  _U R__  _ __ _ _ _ _  __ _ _-_1.__0_62__,_20_                           
+S  te u e r b e m e s s u n g s g r u n d la g e  v o r  V  er l u s tv e r re c h n u n g                                                                                                                   E  U R              304,40                           
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG
+
+```

@@ -909,6 +909,7 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         manager.add(new Separator());
+
         manager.add(new BookmarkMenu(view.getPart(), selection.toList()));
 
         if (selection.size() == 1)

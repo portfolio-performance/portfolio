@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Findependent AG
+Bannhaldenweg 11
+5600 Lenzburg
+www.findependent.ch
+service@findependent.ch
+Max Muster Kunden-Nr. 111111 
+Zürichstrasse 99 Portfolio-Nr. 123456789 
+1234 Dorf IBAN CH1234567891234567890
+Lenzburg, 29.09.2023
+Depotgebühren an Hypothekarbank Lenzburg
+Deinem Konto wurde belastet:
+Depotgebühren CHF 1.95
+Valuta 29.09.2023
+Periode 01.07.2023 - 30.09.2023
+Aus technischen Gründen werden die quartalsweisen Depotgebühren unabhängig vom
+Freibetrag allen Kundinnen und Kunden belastet.
+Die Gebühren auf die Anlagesumme unterhalb deines persönlichen Freibetrags werden
+innerhalb von 1-3 Tagen zurückerstattet.
+Dein findependent Team
+Erstellt am: 14.12.2023 1 von 1

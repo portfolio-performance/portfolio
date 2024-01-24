@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.addons;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;

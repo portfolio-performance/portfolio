@@ -1,14 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.consorsbank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -28,6 +19,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1405,9 +1404,41 @@ public class ConsorsbankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-08-17T08:10:59"), hasShares(7.00), //
-                        hasSource("Kauf24.txt"), hasNote("5421561.010 | Limitkurs 143,000000 EUR"), //
+                        hasSource("Kauf24.txt"), //
+                        hasNote("5421561.010 | Limitkurs 143,000000 EUR"), //
                         hasAmount("EUR", 1003.95), hasGrossValue("EUR", 1001.00), //
                         hasTaxes("EUR", 2.00), hasFees("EUR", 0.95))));
+    }
+
+    @Test
+    public void testWertpapierKauf25()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0032077012"), hasWkn("801498"), hasTicker(null), //
+                        hasName("INVESCOM3 NASDAQ-100 A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-11-01T09:32:16"), hasShares(0.60087), //
+                        hasSource("Kauf25.txt"), //
+                        hasNote("123456789.111"), //
+                        hasAmount("EUR", 200.00), hasGrossValue("EUR", 200.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2007,9 +2038,41 @@ public class ConsorsbankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-07-21T09:06:26"), hasShares(32.00), //
-                        hasSource("Verkauf13.txt"), hasNote("266964025.001 | Limitkurs stop loss 106,600000 EUR"), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("266964025.001 | Limitkurs stop loss 106,600000 EUR"), //
                         hasAmount("EUR", 3357.87), hasGrossValue("EUR", 3372.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.95 + 0.60 + 8.43 + 3.95))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf14()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SQ6N9E4"), hasWkn("SQ6N9E"), hasTicker(null), //
+                        hasName("SG EFF. CALL23 VOW3"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-09-13T15:22:30"), hasShares(3000.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote("345678901.001 | Limitkurs 0,001000 EUR"), //
+                        hasAmount("EUR", 0.95), hasGrossValue("EUR", 4.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.95))));
     }
 
     @Test
@@ -3444,7 +3507,8 @@ public class ConsorsbankPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2017-10-13T00:00"), hasShares(27.47377), //
-                        hasSource("Dividende18.txt"), hasNote(null), //
+                        hasSource("Dividende18.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1.29), hasGrossValue("EUR", 1.92), //
                         hasTaxes("EUR", 0.30 + 0.01 + 0.29 + 0.02 + 0.01), hasFees("EUR", 0.00))));
     }
@@ -3474,8 +3538,10 @@ public class ConsorsbankPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2018-09-28T00:00"), hasShares(1000.00), //
-                        hasSource("Dividende19.txt"), hasNote(null), //
-                        hasAmount("EUR", 44.78), hasGrossValue("EUR", 60.15), hasForexGrossValue("USD", 70.00), //
+                        hasSource("Dividende19.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.78), hasGrossValue("EUR", 60.15), //
+                        hasForexGrossValue("USD", 70.00), //
                         hasTaxes("EUR", 9.02 + 6.02 + 0.33), hasFees("EUR", 0.00))));
     }
 
@@ -3505,7 +3571,8 @@ public class ConsorsbankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2018-09-28T00:00"), hasShares(1000.00), //
-                        hasSource("Dividende19.txt"), hasNote(null), //
+                        hasSource("Dividende19.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 44.78), hasGrossValue("EUR", 60.15), //
                         hasTaxes("EUR", 9.02 + 6.02 + 0.33), hasFees("EUR", 0.00), //
                         check(tx -> {
@@ -3542,7 +3609,8 @@ public class ConsorsbankPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-05-13T00:00"), hasShares(80.00), //
-                        hasSource("Dividende20.txt"), hasNote(null), //
+                        hasSource("Dividende20.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 518.44), hasGrossValue("EUR", 720.00), //
                         hasTaxes("EUR", 176.04 + 9.68 + 15.84), hasFees("EUR", 0.00))));
     }
