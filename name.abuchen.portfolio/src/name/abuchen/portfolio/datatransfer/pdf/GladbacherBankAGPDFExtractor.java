@@ -120,6 +120,7 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -220,37 +221,46 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kapitalertragsteuer 25 % auf 4,66 EUR 1,17- EUR
+                        // Kapitalertragsteuer 25,00% auf 291,57 EUR 72,89- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+ .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s])?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
+                        // Solidaritätszuschlag 5,50% auf 72,89 EUR 4,00- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+ .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s])?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer 5,5 % auf 23,41 EUR 1,28- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+ .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s])?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Einbehaltene Quellensteuer 15 % auf 13,00 USD 1,76- EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s])?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Anrechenbare Quellensteuer 35,23- EUR
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Anrechenbare Quellensteuer (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 11,70 EUR 1,76 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+ .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+([\\s])?% .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
