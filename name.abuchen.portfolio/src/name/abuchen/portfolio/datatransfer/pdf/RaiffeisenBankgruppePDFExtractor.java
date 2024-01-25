@@ -13,6 +13,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -555,7 +556,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransactions()
     {
-        final DocumentType type = new DocumentType("(Kontokorrent|Privatkonto)", //
+        final DocumentType type = new DocumentType("(Kontokorrent|Privatkonto|Tagesgeld Plus)", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // EUR-Konto Kontonummer 12364567
@@ -607,7 +608,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|Kartenzahlung" //
                                         + "|Auszahlung" //
                                         + "|LOHN\\/GEHALT" //
-                                        + "|.berweisung SEPA) " //
+                                        + "|.berweisung SEPA" //
+                                        + "|UEBERWEISUNG) " //
                                         + ".* " //
                                         + "(?<amount>[\\.,\\d]+) " //
                                         + "(?<sign>[S|H])$") //
@@ -649,6 +651,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("GUTSCHRIFT".equals(v.get("note")))
                                 v.put("note", "Gutschrift");
 
+                            if ("UEBERWEISUNG".equals(v.get("note")))
+                                v.put("note", "Überweisung");
+
                             t.setNote(v.get("note"));
                         })
 
@@ -667,40 +672,56 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
-
+                        .optionalOneOf(
                         // @formatter:off
-                        // 30.12. 31.12. Abschluss PN:905                                                      1,95 S
-                        //          9,60000% einger. Kontoüberziehung    3112       1,00S
-                        //          14,60000% einger. Kontoüberziehung    3112       1,00S
-                        // @formatter:on
-                        .section("day", "month", "sign", "amount1", "amount2", "note").optional() //
-                        .documentContext("currency", "nr", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ (?<sign>[S|H])$") //
-                        .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount1>[\\.,\\d]+)[S|H]$") //
-                        .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount2>[\\.,\\d]+)[S|H]$") //
-                        .match("^[\\s]+ (?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type --> "S" change from INTEREST to INTEREST_CHARGE
-                            // @formatter:on
-                            if ("S".equals(v.get("sign")))
-                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                                        // 30.12. 31.12. Abschluss PN:905                                                      1,95 S
+                                        //          9,60000% einger. Kontoüberziehung    3112       1,00S
+                                        //          14,60000% einger. Kontoüberziehung    3112       1,00S
+                                        // @formatter:on
+                                        section -> section.attributes("day", "month", "amount1", "amount2", "note") //
+                                            .documentContext("currency", "nr", "year") //
+                                            .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ ([S])$") //
+                                            .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount1>[\\.,\\d]+)[S|H]$") //
+                                            .match("^[\\s]+ [\\.,\\d]+% einger. Konto.berziehung .* (?<amount2>[\\.,\\d]+)[S|H]$") //
+                                            .match("^[\\s]+ (?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                            .assign((t, v) -> {
+                                                t.setType(Type.INTEREST_CHARGE);
+                                                if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
+                                                {
+                                                    int year = Integer.parseInt(v.get("year")) + 1;
+                                                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
+                                                }
+                                                else
+                                                {
+                                                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                }
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                                                t.setCurrencyCode(v.get("currency"));
+                                                t.setAmount(asAmount(v.get("amount1"))  + asAmount(v.get("amount2")));
+                                                t.setNote(v.get("note"));
+                                            })
 
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
-                            t.setNote(v.get("note"));
-                        })
+                                        ,
 
+                                        section -> section.attributes("day", "month", "amount1") //
+                                            .documentContext("currency", "nr", "year") //
+                                            .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* (?<amount1>[\\.,\\d]+) ([H])$") //
+                                            .assign((t, v) -> {
+                                                if (v.get("nr").compareTo("01") == 0
+                                                                && Integer.parseInt(v.get("month")) < 3)
+                                                {
+                                                    int year = Integer.parseInt(v.get("year")) + 1;
+                                                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
+                                                }
+                                                else
+                                                {
+                                                    t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                }
+
+                                                t.setCurrencyCode(v.get("currency"));
+                                                t.setAmount(asAmount(v.get("amount1")));
+                                                t.setNote(v.get("note"));
+                                            }))
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
@@ -788,6 +809,45 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        Block taxesBlock = new Block(
+                        "^([\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Kapitalertragsteuer|Solid\\.-Zuschlag|Kirchensteuer) (\\w+) (PN:\\d+) ([\\d\\s,.]*?) [S|H]");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        }).section("day", "month", "sign", "amount").optional() //
+                        .documentContext("currency", "nr", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (Kapitalertragsteuer|Solid\\.-Zuschlag|Kirchensteuer) (\\w+) (PN:\\d+) (?<amount>[\\d\\s,.]*?) (?<sign>[S|H])$") //
+                        .assign((t, v) -> {
+                        // @formatter:off
+                            // Is type --> "H" change from FEES to FEES_REFUND
+                            // @formatter:on
+                            if ("H".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
+                            {
+                                int year = Integer.parseInt(v.get("year")) + 1;
+                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
+                            }
+                            else
+                            {
+                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            }
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> {
