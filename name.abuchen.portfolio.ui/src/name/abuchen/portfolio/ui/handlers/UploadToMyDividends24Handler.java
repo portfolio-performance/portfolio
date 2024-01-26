@@ -103,7 +103,7 @@ public class UploadToMyDividends24Handler
 
         else
         {
-            PortfolioSelectionDialog24 dialog = new PortfolioSelectionDialog24(shell);
+            MyDividends24PortfolioSelector dialog = new MyDividends24PortfolioSelector(shell);
             dialog.setMyDividendsPortfolio(portfolios);
 
             List<Object> ppPortfolios = new ArrayList<>();
@@ -113,15 +113,15 @@ public class UploadToMyDividends24Handler
 
             if (dialog.open() == Window.OK)
             {
-                String selectedMY24Portfolio = dialog.getSelectedMY24Portfolio();
+                String selectedMyDividends24Portfolio = dialog.getSelectedMyDividends24Portfolio();
 
                 Portfolio portfolio = null;
                 if (dialog.getSelectedPortfolio() instanceof Portfolio p)
                     portfolio = p;
 
-                if (selectedMY24Portfolio != null)
+                if (selectedMyDividends24Portfolio != null)
                 {
-                    Selection selection = new Selection(selectedMY24Portfolio, portfolio);
+                    Selection selection = new Selection(selectedMyDividends24Portfolio, portfolio);
                     return Optional.of(selection);
                 }
 
@@ -169,26 +169,26 @@ public class UploadToMyDividends24Handler
     }
 }
 
-class PortfolioSelectionDialog24 extends Dialog
+class MyDividends24PortfolioSelector extends Dialog
 {
 
     private List<Object> portfolios;
-    private List<String> MY24Portfolios;
+    private List<String> myDividends24Portfolios;
 
     private Object selectedPortfolio;
-    private String selectedMY24Portfolio;
+    private String myDividends24SelectedPortfolio;
 
     private TableViewer portfoliosTableViewer;
-    private TableViewer MY24TableViewer;
+    private TableViewer myDividends24TableViewer;
 
-    protected PortfolioSelectionDialog24(Shell parentShell)
+    protected MyDividends24PortfolioSelector(Shell parentShell)
     {
         super(parentShell);
     }
 
-    public void setMyDividendsPortfolio(List<String> MY24Portfolio)
+    public void setMyDividendsPortfolio(List<String> myDividends24Portfolio)
     {
-        this.MY24Portfolios = MY24Portfolio;
+        this.myDividends24Portfolios = myDividends24Portfolio;
     }
 
     public void setPortfolio(List<Object> portfolios)
@@ -201,9 +201,9 @@ class PortfolioSelectionDialog24 extends Dialog
         return selectedPortfolio;
     }
 
-    public String getSelectedMY24Portfolio()
+    public String getSelectedMyDividends24Portfolio()
     {
-        return selectedMY24Portfolio;
+        return myDividends24SelectedPortfolio;
     }
 
     @Override
@@ -281,29 +281,29 @@ class PortfolioSelectionDialog24 extends Dialog
         TableColumnLayout layout = new TableColumnLayout();
         tableArea.setLayout(layout);
 
-        MY24TableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
-        MY24TableViewer.setUseHashlookup(true);
-        CopyPasteSupport.enableFor(MY24TableViewer);
+        myDividends24TableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
+        myDividends24TableViewer.setUseHashlookup(true);
+        CopyPasteSupport.enableFor(myDividends24TableViewer);
 
-        Table table = MY24TableViewer.getTable();
+        Table table = myDividends24TableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);
 
-        TableViewerColumn column = new TableViewerColumn(MY24TableViewer, SWT.None);
+        TableViewerColumn column = new TableViewerColumn(myDividends24TableViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        MY24TableViewer.setLabelProvider(LabelProvider.createTextProvider(e -> ((String) e)));
-        MY24TableViewer.setContentProvider(ArrayContentProvider.getInstance());
-        MY24TableViewer.setInput(MY24Portfolios);
+        myDividends24TableViewer.setLabelProvider(LabelProvider.createTextProvider(e -> ((String) e)));
+        myDividends24TableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        myDividends24TableViewer.setInput(myDividends24Portfolios);
 
-        MY24TableViewer.setSelection(new StructuredSelection(MY24Portfolios.get(0)));
+        myDividends24TableViewer.setSelection(new StructuredSelection(myDividends24Portfolios.get(0)));
     }
 
     @Override
     protected void okPressed()
     {
         this.selectedPortfolio = portfoliosTableViewer.getStructuredSelection().getFirstElement();
-        this.selectedMY24Portfolio = (String) MY24TableViewer.getStructuredSelection().getFirstElement();
+        this.myDividends24SelectedPortfolio = (String) myDividends24TableViewer.getStructuredSelection().getFirstElement();
         super.okPressed();
     }
 }

@@ -46,7 +46,7 @@ public class MyDividends24Uploader
     }
 
     @SuppressWarnings("unchecked")
-    public void upload(Client client, CurrencyConverter converter, String MY24PortfolioID, Portfolio portfolio)
+    public void upload(Client client, CurrencyConverter converter, String myDividends24PortfolioID, Portfolio portfolio)
                     throws IOException
     {
 
@@ -66,34 +66,31 @@ public class MyDividends24Uploader
         }
 
         // Filters out any transactions that do not have an ISIN.
-        List<JSONObject> resultTransactions = stream.filter(item -> item.getSecurity().getIsin() != null)
-                        .map(item -> {
-                            double quantity = item.getShares() / Values.Share.divider();
-                            double buyingprice = item.getGrossValueAmount() / Values.Amount.divider() / quantity;
-                            String purchasedate = item.getDateTime().toString();
-                            String isin = item.getSecurity().getIsin();
-                            String type = item.getType().isPurchase() ? "buy" : "sell"; //$NON-NLS-1$ //$NON-NLS-2$
+        List<JSONObject> resultTransactions = stream.filter(item -> item.getSecurity().getIsin() != null).map(item -> {
+            double quantity = item.getShares() / Values.Share.divider();
+            double buyingprice = item.getGrossValueAmount() / Values.Amount.divider() / quantity;
+            String purchasedate = item.getDateTime().toString();
+            String isin = item.getSecurity().getIsin();
+            String type = item.getType().isPurchase() ? "buy" : "sell"; //$NON-NLS-1$ //$NON-NLS-2$
 
-                            // Creates a JSONObject for each transaction
-                            // with
-                            // the calculated data.
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("type", type); //$NON-NLS-1$
-                            jsonObject.put("quantity", quantity); //$NON-NLS-1$
-                            jsonObject.put("stockprice", buyingprice); //$NON-NLS-1$
-                            jsonObject.put("date", purchasedate); //$NON-NLS-1$
-                            jsonObject.put("isin", isin); //$NON-NLS-1$
-                            return jsonObject;
-                        }).toList();
-
-
+            // Creates a JSONObject for each transaction
+            // with
+            // the calculated data.
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", type); //$NON-NLS-1$
+            jsonObject.put("quantity", quantity); //$NON-NLS-1$
+            jsonObject.put("stockprice", buyingprice); //$NON-NLS-1$
+            jsonObject.put("date", purchasedate); //$NON-NLS-1$
+            jsonObject.put("isin", isin); //$NON-NLS-1$
+            return jsonObject;
+        }).toList();
 
         if (resultTransactions.isEmpty())
             return;
 
         JSONObject uploadData = new JSONObject();
         uploadData.put("transactions", resultTransactions); //$NON-NLS-1$
-        uploadData.put("depot", MY24PortfolioID); //$NON-NLS-1$
+        uploadData.put("depot", myDividends24PortfolioID); //$NON-NLS-1$
 
         System.err.println(JSONValue.toJSONString(uploadData));
 
