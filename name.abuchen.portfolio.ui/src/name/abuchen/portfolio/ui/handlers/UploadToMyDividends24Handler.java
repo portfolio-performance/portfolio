@@ -37,8 +37,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.online.impl.MyDividends24Uploader;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -50,7 +48,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class UploadToMyDividends24Handler
 {
-    record Selection(String stringValue, Portfolio portfolio)
+    record Selection(String md24portfolio, Portfolio portfolio)
     {
     }
 
@@ -66,7 +64,7 @@ public class UploadToMyDividends24Handler
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @org.eclipse.e4.core.di.annotations.Optional @Preference(value = UIConstants.Preferences.MYDIVIDENDS24_API_KEY) String myDividends24ApiKey)
     {
-        if (myDividends24ApiKey == null)
+        if (myDividends24ApiKey == null || myDividends24ApiKey.isBlank())
         {
             MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.MyDividends24MissingAPIKey);
             return;
@@ -76,7 +74,7 @@ public class UploadToMyDividends24Handler
             MyDividends24Uploader uploader = new MyDividends24Uploader(myDividends24ApiKey);
 
             retrieveAndPickPortfolio(shell, uploader, clientInput)
-                            .ifPresent(portfolioId -> uploadPortfolio(clientInput, uploader, portfolioId));
+                            .ifPresent(selection -> uploadPortfolio(clientInput, uploader, selection));
         });
 
     }
@@ -84,11 +82,11 @@ public class UploadToMyDividends24Handler
     private Optional<Selection> retrieveAndPickPortfolio(Shell shell, MyDividends24Uploader uploader,
                     ClientInput clientInput)
     {
-        List<String> portfolios;
+        List<String> md24portfolios;
 
         try
         {
-            portfolios = uploader.getPortfolios();
+            md24portfolios = uploader.getPortfolios();
         }
         catch (IOException e)
         {
@@ -98,34 +96,27 @@ public class UploadToMyDividends24Handler
         }
 
         // should not happen because MyDividends24 always creates one portfolio
-        if (portfolios.isEmpty())
+        if (md24portfolios.isEmpty())
             return Optional.empty();
 
-        else
+        MyDividends24PortfolioSelector dialog = new MyDividends24PortfolioSelector(shell);
+        dialog.setMyDividendsPortfolio(md24portfolios);
+
+        List<Object> ppPortfolios = new ArrayList<>();
+        ppPortfolios.add(name.abuchen.portfolio.Messages.LabelJointPortfolio);
+        ppPortfolios.addAll(clientInput.getClient().getPortfolios());
+        dialog.setPortfolio(ppPortfolios);
+
+        if (dialog.open() == Window.OK)
         {
-            MyDividends24PortfolioSelector dialog = new MyDividends24PortfolioSelector(shell);
-            dialog.setMyDividendsPortfolio(portfolios);
+            Portfolio portfolio = null;
+            if (dialog.getSelectedPortfolio() instanceof Portfolio p)
+                portfolio = p;
 
-            List<Object> ppPortfolios = new ArrayList<>();
-            ppPortfolios.add(name.abuchen.portfolio.Messages.LabelJointPortfolio);
-            ppPortfolios.addAll(clientInput.getClient().getPortfolios());
-            dialog.setPortfolio(ppPortfolios);
+            String md24Portfolio = dialog.getSelectedMyDividends24Portfolio();
+            if (md24Portfolio != null)
+                return Optional.of(new Selection(md24Portfolio, portfolio));
 
-            if (dialog.open() == Window.OK)
-            {
-                String selectedMyDividends24Portfolio = dialog.getSelectedMyDividends24Portfolio();
-
-                Portfolio portfolio = null;
-                if (dialog.getSelectedPortfolio() instanceof Portfolio p)
-                    portfolio = p;
-
-                if (selectedMyDividends24Portfolio != null)
-                {
-                    Selection selection = new Selection(selectedMyDividends24Portfolio, portfolio);
-                    return Optional.of(selection);
-                }
-
-            }
         }
 
         return Optional.empty();
@@ -140,10 +131,7 @@ public class UploadToMyDividends24Handler
             {
                 try
                 {
-                    CurrencyConverter converter = new CurrencyConverterImpl(clientInput.getExchangeRateProviderFacory(),
-                                    clientInput.getClient().getBaseCurrency());
-
-                    uploader.upload(getClient(), converter, selection.stringValue, selection.portfolio);
+                    uploader.upload(getClient(), selection.md24portfolio, selection.portfolio);
 
                     Display.getDefault().asyncExec(() -> MessageDialog.openInformation(ActiveShell.get(),
                                     Messages.LabelInfo, Messages.MyDividends24UploadSuccessfulMsg));

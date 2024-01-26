@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
@@ -14,13 +13,11 @@ import org.osgi.framework.FrameworkUtil;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class MyDividends24Uploader
 {
-
     private final String apiKey;
 
     public MyDividends24Uploader(String apiKey)
@@ -28,10 +25,12 @@ public class MyDividends24Uploader
         this.apiKey = Objects.requireNonNull(apiKey, "MyDividende24.de ApiKey must not be null"); //$NON-NLS-1$
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getPortfolios() throws IOException
     {
         String response = new WebAccess("dividend-jsa-pp-bnp8.vercel.app", "/api/import/retrieve-depots") //$NON-NLS-1$//$NON-NLS-2$
-                        .addHeader("Authorization", "Bearer: " + apiKey).addUserAgent("PortfolioPerformance/" //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+                        .addHeader("Authorization", "Bearer: " + apiKey) //$NON-NLS-1$ //$NON-NLS-2$
+                        .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
                                         + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                         .get();
 
@@ -39,15 +38,11 @@ public class MyDividends24Uploader
         JSONObject session = (JSONObject) JSONValue.parse(response);
 
         // Retrieves the list of portfolios from the JSONObject
-        @SuppressWarnings("unchecked")
-        JSONArray portfolios = (JSONArray) session.getOrDefault("depots", Collections.emptyList()); //$NON-NLS-1$
-
-        return portfolios;
+        return (List<String>) session.getOrDefault("depots", Collections.<String>emptyList()); //$NON-NLS-1$
     }
 
     @SuppressWarnings("unchecked")
-    public void upload(Client client, CurrencyConverter converter, String myDividends24PortfolioID, Portfolio portfolio)
-                    throws IOException
+    public void upload(Client client, String myDividends24PortfolioID, Portfolio portfolio) throws IOException
     {
 
         Stream<PortfolioTransaction> stream;
@@ -62,7 +57,6 @@ public class MyDividends24Uploader
             // Case: all portfolios are selected
 
             stream = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream());
-
         }
 
         // Filters out any transactions that do not have an ISIN.
