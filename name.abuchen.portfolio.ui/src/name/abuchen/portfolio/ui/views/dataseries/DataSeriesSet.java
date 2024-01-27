@@ -118,7 +118,7 @@ public class DataSeriesSet
                         if (classification.getParent() == null)
                             return;
 
-                        Object[] groups = { taxonomy, classification.getName() };
+                        Object[] groups = { taxonomy, classification.getPathName(false) };
 
                         var instance = new GroupedDataSeries(classification, entry.getKey());
 
