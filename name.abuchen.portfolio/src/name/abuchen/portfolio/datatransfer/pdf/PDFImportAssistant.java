@@ -34,6 +34,7 @@ public class PDFImportAssistant
         this.files = files;
 
         extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
+        extractors.add(new AkfBankPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
@@ -43,6 +44,7 @@ public class PDFImportAssistant
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new CommSecPDFExtractor(client));
+        extractors.add(new ComputersharePDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new CrowdestorPDFExtractor(client));
@@ -51,7 +53,7 @@ public class PDFImportAssistant
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DekaBankPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
-        extractors.add(new DirectaPDFExtractor(client));
+        extractors.add(new DirectaSimPDFExtractor(client));
         extractors.add(new Direkt1822BankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
@@ -68,6 +70,7 @@ public class PDFImportAssistant
         extractors.add(new HargreavesLansdownPlcExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaPDFExtractor(client));
+        extractors.add(new JTDirektbankPDFExtractor(client));
         extractors.add(new JustTradePDFExtractor(client));
         extractors.add(new KBCGroupNVPDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));

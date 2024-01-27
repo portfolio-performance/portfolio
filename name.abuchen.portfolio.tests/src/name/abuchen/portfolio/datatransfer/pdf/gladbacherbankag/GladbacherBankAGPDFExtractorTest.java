@@ -110,6 +110,37 @@ public class GladbacherBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf02()
+    {
+        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
+                        hasName("MICROSOFT CORP. REGISTERED SHARES DL-,00000625"), //
+                        hasCurrencyCode(CurrencyUnit.EUR))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-01-23T11:20:08"), hasShares(6), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("R.-Nr.: W07512-0000001104/24 | Limit bestens"), //
+                        hasAmount("EUR", 2092.61), hasGrossValue("EUR", 2219.83), //
+                        hasTaxes("EUR", 35.23 + 72.89 + 4.00), hasFees("EUR", 15.00 + 0.10))));
+    }
+
+    @Test
     public void testDividende01()
     {
         GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());

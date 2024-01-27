@@ -470,45 +470,43 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
-                        .optionalOneOf(
+                        .optionalOneOf( //
                                         // @formatter:off
                                         // Umrechnungskurs: EUR/USD 1,1452
                                         // Bruttobetrag USD 3,94
                                         // Bruttobetrag EUR 3,44
                                         // @formatter:on
                                         section -> section
-                                                .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross")
-                                                .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                                                .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                                                .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
-                                                .assign((t, v) -> {
-                                                    ExtrExchangeRate rate = asExchangeRate(v);
-                                                    type.getCurrentContext().putType(rate);
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
+                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                    Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
-                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                })
-                                        ,
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
                                         // @formatter:off
                                         // Umrechnungskurs: EUR/USD 1,0878000
                                         // Bruttobetrag USD 14,40
                                         // @formatter:on
                                         section -> section
-                                                .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross")
-                                                .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                                                .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
-                                                .assign((t, v) -> {
-                                                    ExtrExchangeRate rate = asExchangeRate(v);
-                                                    type.getCurrentContext().putType(rate);
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                                    Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                    Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
-                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                })
-                                )
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // Vorgangs-Nr.: 184714818
@@ -579,15 +577,33 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // Zu Lasten Konto 1247201005 Valuta: 04.01.2021 EUR 0,04
+                        // Zahltag: 04.01.2021
                         // @formatter:on
-                        .section("date", "currency", "amount") //
-                        .match("^Zu Lasten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setDateTime(asDate(v.get("date")));
-                        })
+                        .section("date") //
+                        .match("^Zahltag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zu Lasten Konto 1247201005 Valuta: 04.01.2021 EUR 0,04
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Zu Lasten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Bemessungsgrundlage zur Kapitalertragsteuer EUR 24,17 EUR 0,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Bemessungsgrundlage zur Kapitalertragsteuer [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Vorgangs-Nr.: yyyyyyy
@@ -603,7 +619,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note>Zahlungszeitraum: .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
-                        .wrap(TransactionItem::new);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private void addTaxAdjustmentTransaction()

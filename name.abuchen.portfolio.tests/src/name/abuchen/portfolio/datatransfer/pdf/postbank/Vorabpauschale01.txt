@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Postbank - eine Niederlassung
+der Deutsche Bank AG
+Postbank
+24/7-Kundenservice (0228) 5500-5500
+Vorname Nachname
+Straße 1
+12345 Stadt
+17. Januar 2024
+Ihr Depot Nr. 123 4567890 00
+Vorabpauschale
+Stück WKN ISIN
+88,000000 976976 DE0009769760
+DWS ESG TOP ASIEN INHABER-ANTEILE LC
+Vorabpauschale Jahreswert (p.St.) 3,2556615000 EUR Kalenderjahr 2023
+Fondsart Aktienfonds (30% Teilfreistellung) Steuerjahr 2024
+KESt-pflichtige Vorabpauschale 100,12 EUR
+Kapitalertragsteuer (KESt) - 25,03 EUR
+Solidaritätszuschlag auf KESt - 1,38 EUR
+Belastung mit Wert 02.01.2024 26,41 EUR
+Steuerliche Bemessungsgrundlagen zur Vorabpauschale - keine Steuerbescheinigung
+Vorabpauschale vor Teilfreistellung* 143,03 EUR
+Abzüglich Teilfreistellung der Vorabpauschale 42,91 EUR
+Vorabpauschale nach Teilfreistellung 100,12 EUR
+KESt-pflichtige Vorabpauschale 100,12 EUR
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Claudio de Sanctis, Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de 1/2
+TRINCM0001 VOPA 20240117 43792666
+Wir belasten den Betrag von 26,41 EUR Ihrem Konto 4567890 01.
+Hinweise
+Im Steuerabzugsverfahren sind generell die für Privatanleger geltenden Teilfreistellungssätze anzuwenden. Für einkommensteuerpflichtige Anleger, die ihre
+Anteile im Betriebsvermögen halten, und körperschaftsteuerpflichtige Anleger werden die erhöhten Teilfreistellungssätze erst im Veranlagungsverfahren der
+Besteuerung zu Grunde gelegt.
+* Unterjährige Anschaffungen des bezogenen Kalenderjahres wurden mit einer anteiligen Vorabpauschale gemäß §18 Abs. 2 InvStG 2018
+(1/12 des Jahreswertes pro Haltemonat) berücksichtigt.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2

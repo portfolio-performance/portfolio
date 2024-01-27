@@ -1,23 +1,26 @@
 package name.abuchen.portfolio.datatransfer.ibflex;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -46,20 +49,54 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.Pair;
+
+/**
+ * @formatter:off
+ * @implNote https://ibkrguides.com/reportingreference/reportguide/tradesfq.htm
+ *
+ * @implSpec The IBFlexStatementExtractor class implements the Extractor interface
+ *           for importing Interactive Broker Activity Statements from XML files.
+ *
+ *           Therefore, we use the transaction based on their function and merge both, if possible, as one transaction.
+ *           {@code
+ *              matchTransactionPair(List<Item> transactionList,List<Item> taxesTreatmentList)
+ *           }
+ *
+ *           In postProcessing, we always finally delete the taxes treatment.
+ * @formatter:on
+ */
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
 {
-    /**
-     * https://ibkrguides.com/reportingreference/reportguide/tradesfq.htm
-     */
 
-    private static final String TO_BE_DELETED = "to_be_deleted"; //$NON-NLS-1$
-
+    // The client associated with this extractor
     private final Client client;
-    private List<Security> allSecurities;
 
-    private Map<String, String> exchanges;
+    // List to store all securities associated with the client
+    private List<Security> allSecurities = new ArrayList<>();
+
+    // Map to store exchange mappings from Interactive Broker to Yahoo
+    private Map<String, String> exchanges = new HashMap<>();
+
+    /**
+     * Constructs an IBFlexStatementExtractor with the given client.
+     * Initializes the list of securities and exchange mappings.
+     *
+     * @param client The client for which the extractor is created.
+     */
+    public IBFlexStatementExtractor(Client client)
+    {
+        this.client = new Client();
+        allSecurities.addAll(client.getSecurities());
+
+        initializeExchangeMappings();
+    }
+
+    private static record TransactionTaxesPair(Item transaction, Item tax)
+    {
+    }
 
     public Client getClient()
     {
@@ -72,66 +109,77 @@ public class IBFlexStatementExtractor implements Extractor
         return Messages.IBXML_Label;
     }
 
-    public IBFlexStatementExtractor(Client client)
+    /**
+     * Initializes the exchange mappings from Interactive Broker to Yahoo.
+     * This method can be extended as needed for additional mappings.
+     */
+    private void initializeExchangeMappings()
     {
-        this.client = client;
-        allSecurities = new ArrayList<>(client.getSecurities());
-
-        // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
-        this.exchanges = new HashMap<>();
-
-        this.exchanges.put("EBS", "SW");
-        this.exchanges.put("LSE", "L"); // London Stock Exchange
-        this.exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
-        this.exchanges.put("TSE", "TO"); // TSX Venture
-        this.exchanges.put("IBIS", "DE"); // XETRA
-        this.exchanges.put("TGATE", "DE"); // TradeGate
-        this.exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
-        this.exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
+        exchanges.put("EBS", "SW");
+        exchanges.put("LSE", "L"); // London Stock Exchange
+        exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
+        exchanges.put("TSE", "TO"); // TSX Venture
+        exchanges.put("IBIS", "DE"); // XETRA
+        exchanges.put("TGATE", "DE"); // TradeGate
+        exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
+        exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
     }
 
     /**
-     * Import an Interactive Broker ActivityStatement from an XML file. It
-     * currently only imports Trades, Corporate Transactions and Cash
-     * Transactions.
+     * Imports an Interactive Broker Activity Statement from an XML file.
+     *
+     * @param f The input stream of the XML file.
+     * @return The result of the extraction process.
      */
     /* package */ IBFlexStatementExtractorResult importActivityStatement(InputStream f)
     {
         IBFlexStatementExtractorResult result = new IBFlexStatementExtractorResult();
-        try
+
+        try (InputStream fileInputStream = f)
         {
+            // Setup XML document parsing with secure features
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(f);
+            Document doc = dBuilder.parse(fileInputStream);
 
             doc.getDocumentElement().normalize();
 
+            // Parse the document and populate the result
             result.parseDocument(doc);
         }
         catch (ParserConfigurationException | SAXException | IOException e)
         {
+            // Handle exceptions and add errors to the result
             result.addError(e);
         }
+
         return result;
     }
 
     /**
      * @formatter:off
-     * Information on the different asset categorie
+     * The IBFlexStatementExtractorResult class represents the result of importing
+     * an Interactive Broker Activity Statement from an XML file.
+     *
+     * Information on the different asset categories
      * --------------------------------------------
-     * STK  --> Stock
-     * FUND --> Fonds
-     * IND  --> Indices
-     * OPT  --> Options
-     * IOPT --> Certificate
-     * FOP  --> Future Options
-     * WAR  --> Warrants
+     * STK      --> Stock
+     * FUND     --> Fonds
+     * IND      --> Indices
+     * OPT      --> Options
+     * IOPT     --> Certificate
+     * FUT      --> Future
+     * FOP      --> Future Options
+     * WAR      --> Warrants
+     * CMDTY    --> Metal
      * @formatter:on
      */
     private class IBFlexStatementExtractorResult
     {
+        // Asset category keys
         private static final String ASSETKEY_STOCK = "STK";
         private static final String ASSETKEY_FUND = "FUND";
         private static final String ASSETKEY_OPTION = "OPT";
@@ -142,21 +190,33 @@ public class IBFlexStatementExtractor implements Extractor
         private Document document;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
-        private String ibAccountCurrency = null;
+        private String accountCurrency = null;
 
-        private Function<Element, Item> importAccountInformation = element -> {
+        /**
+         * Builds account information based on the provided XML element. Extracts the currency
+         * attribute from the element, converts it to a currency code, and sets the corresponding
+         * currency unit for the IB account if valid. The resulting information is not returned,
+         * as the primary purpose is to update the 'accountCurrency' field.
+         *
+         * @param element The XML element containing account information.
+         * @return Always returns null, as the focus is on updating the currency information.
+         */
+        private Function<Element, Item> buildAccountInformation = element -> {
             String currency = asCurrencyCode(element.getAttribute("currency"));
             if (currency != null && !currency.isEmpty())
             {
                 CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
                 if (currencyUnit != null)
-                    ibAccountCurrency = currency;
+                    accountCurrency = currency;
             }
             return null;
         };
 
+        /**
+         * Constructs an AccountTransactionItem based on the information provided in the XML element.
+         */
         private Function<Element, Item> buildAccountTransaction = element -> {
-            AccountTransaction transaction = new AccountTransaction();
+            AccountTransaction accountTransaction = new AccountTransaction();
 
             // @formatter:off
             // New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut
@@ -166,18 +226,17 @@ public class IBFlexStatementExtractor implements Extractor
             // Changed from dateTime to reportDate + Check for old Data-Formats,
             // Quapla 14.2.20
             // @formatter:on
-            String dateTime = !element.getAttribute("reportDate").isEmpty() //
-                            ? element.getAttribute("reportDate") //
+            String dateTime = !element.getAttribute("reportDate").isEmpty() ? element.getAttribute("reportDate")
                             : element.getAttribute("dateTime");
 
             dateTime = dateTime.length() == 15 ? dateTime.substring(0, 8) : dateTime;
-            transaction.setDateTime(ExtractorUtils.asDate(dateTime));
+            accountTransaction.setDateTime(ExtractorUtils.asDate(dateTime));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
                             asAmount(element.getAttribute("amount")));
 
-            // Set transaction type
+            // Set transaction type based on the attribute "type"
             switch (element.getAttribute("type"))
             {
                 case "Deposits":
@@ -185,137 +244,128 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Deposits/Withdrawals":
                     // Positive amount are a deposit
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
-                        transaction.setType(AccountTransaction.Type.REMOVAL);
+                        accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                     else
-                        transaction.setType(AccountTransaction.Type.DEPOSIT);
+                        accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                     break;
                 case "Dividends":
                 case "Payment In Lieu Of Dividends":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
-                    transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                    this.calculateShares(transaction, element);
+                    accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                    this.calculateShares(accountTransaction, element);
                     break;
                 case "Withholding Tax":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
                     // Positive amount are a tax refund
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
-                        transaction.setType(AccountTransaction.Type.TAXES);
+                        accountTransaction.setType(AccountTransaction.Type.TAXES);
                     else
-                        transaction.setType(AccountTransaction.Type.TAX_REFUND);
+                        accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                     break;
                 case "Broker Interest Received":
-                    transaction.setType(AccountTransaction.Type.INTEREST);
+                    accountTransaction.setType(AccountTransaction.Type.INTEREST);
                     break;
                 case "Broker Interest Paid":
-                    transaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                    accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
                     break;
                 case "Other Fees":
                     // Positive amount are a fee refund
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
-                        transaction.setType(AccountTransaction.Type.FEES);
+                        accountTransaction.setType(AccountTransaction.Type.FEES);
                     else
-                        transaction.setType(AccountTransaction.Type.FEES_REFUND);
+                        accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                     break;
                 default:
                     throw new IllegalArgumentException();
             }
 
-            if (AccountTransaction.Type.DIVIDENDS.equals(transaction.getType())
-                            || AccountTransaction.Type.TAXES.equals(transaction.getType()))
+            // @formatter:off
+            // If the account currency differs from transaction currency
+            // convert currency, if there is a matching security with the account currency
+            // @formatter:on
+            if ((AccountTransaction.Type.DIVIDENDS.equals(accountTransaction.getType())
+                            || AccountTransaction.Type.TAXES.equals(accountTransaction.getType()))
+                            && (this.accountCurrency != null && !this.accountCurrency.equals(amount.getCurrencyCode())))
             {
-                // if the account currency differs from transaction currency
-                // convert currency, if there is a matching security with the
-                // account currency
-                if (this.ibAccountCurrency != null && !this.ibAccountCurrency.equals(amount.getCurrencyCode())) // NOSONAR
+                // matching isin or wkn & base currency
+                boolean foundIsinBase = false;
+
+                // matching isin & transaction currency
+                boolean foundIsinTransaction = false;
+
+                // matching conid (wkn) & transaction currency
+                boolean foundWknTransaction = false;
+
+                for (Security s : allSecurities)
                 {
-                    // matching isin or wkn & base currency
-                    boolean foundIsinBase = false;
-                    // matching isin & transaction currency
-                    boolean foundIsinTransaction = false;
-                    // matching conid (wkn) & transaction currency
-                    boolean foundWknTransaction = false;
-
-                    for (Security s : allSecurities)
+                    // Find security with same isin or conid (wkn) and currency
+                    if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
                     {
-                        // Find security with same isin or conid (wkn) and
-                        // currency
-                        if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
-                        {
-                            if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
-                                foundIsinTransaction = true;
-                            else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
-                                foundIsinBase = true;
-                        }
-                        else if (element.getAttribute("conid").length() > 0 && element.getAttribute("conid").equals(s.getWkn()))
-                        {
-                            if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
-                                foundWknTransaction = true;
-                            else if (this.ibAccountCurrency.equals(s.getCurrencyCode()))
-                                foundIsinBase = true;
-                        }
+                        if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
+                            foundIsinTransaction = true;
+                        else if (this.accountCurrency.equals(s.getCurrencyCode()))
+                            foundIsinBase = true;
                     }
-
-                    if ((!foundIsinTransaction || !foundWknTransaction) && foundIsinBase
-                                    && element.getAttribute("fxRateToBase").length() > 0)
+                    else if (element.getAttribute("conid").length() > 0 && element.getAttribute("conid").equals(s.getWkn()))
                     {
-                        BigDecimal fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
-
-                        amount = Money.of(ibAccountCurrency, BigDecimal.valueOf(amount.getAmount())
-                                        .multiply(fxRateToBase).setScale(0, RoundingMode.HALF_UP).longValue());
+                        if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
+                            foundWknTransaction = true;
+                        else if (this.accountCurrency.equals(s.getCurrencyCode()))
+                            foundIsinBase = true;
                     }
                 }
+
+                // If the transaction currency is not found but the base
+                // currency is found, and there is an exchange rate, convert the
+                // amount.
+                if ((!foundIsinTransaction || !foundWknTransaction) && foundIsinBase && element.getAttribute("fxRateToBase").length() > 0)
+                {
+                    BigDecimal fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
+
+                    amount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount()).multiply(fxRateToBase)
+                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                }
             }
-            setAmount(element, transaction, amount);
+
+            // Set the amount in the transaction
+            setAmount(element, accountTransaction, amount);
 
             // Set note
-            if (!AccountTransaction.Type.DIVIDENDS.equals(transaction.getType()))
-                transaction.setNote(element.getAttribute("description"));
+            if (!AccountTransaction.Type.DIVIDENDS.equals(accountTransaction.getType()))
+                accountTransaction.setNote(element.getAttribute("description"));
 
             // Add Trade-ID note if available
-            if (transaction.getNote() == null)
+            if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
             {
-                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
-                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
-            }
-            else
-            {
-                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
-                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID") + " | " + transaction.getNote());
+                accountTransaction.setNote(concatenate("Trade-ID: " + element.getAttribute("tradeID"), accountTransaction.getNote(), " | "));
             }
 
             // Add Transaction-ID note if available
-            if (transaction.getNote() == null)
+            if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
             {
-                if (!element.getAttribute("transactionID").isEmpty()
-                                && !"N/A".equals(element.getAttribute("transactionID")))
-                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID"));
-            }
-            else
-            {
-                if (!element.getAttribute("transactionID").isEmpty()
-                                && !"N/A".equals(element.getAttribute("transactionID")))
-                    transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
-                                    + transaction.getNote());
+                accountTransaction.setNote(concatenate("Transaction-ID: " + element.getAttribute("transactionID"), accountTransaction.getNote(), " | "));
             }
 
-            // Transactions which do not have an account-id will not be
-            // imported.
+            // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                return new TransactionItem(transaction);
+                return new TransactionItem(accountTransaction);
             else
                 return null;
         };
 
         /**
-         * Construct a BuySellEntry based on Trade object defined in element
+         * Constructs a BuySellEntryItem based on the information provided in the XML element.
          */
         private Function<Element, Item> buildPortfolioTransaction = element -> {
+            BuySellEntry portfolioTransaction = new BuySellEntry();
+
+            // Check if the asset category is supported
             if (!Arrays.asList(ASSETKEY_STOCK, //
                             ASSETKEY_FUND, //
                             ASSETKEY_OPTION, //
@@ -324,25 +374,28 @@ public class IBFlexStatementExtractor implements Extractor
                             ASSETKEY_WARRANTS).contains(element.getAttribute("assetCategory")))
                 return null;
 
+            // Check if the level of detail is supported
             if (element.getAttribute("levelOfDetail").contains("ASSET_SUMMARY")
                             || element.getAttribute("levelOfDetail").contains("SYMBOL_SUMMARY")
                             || element.getAttribute("levelOfDetail").contains("ORDER"))
                 return null;
 
-            BuySellEntry transaction = new BuySellEntry();
-
             // Set transaction type
             switch (element.getAttribute("buySell"))
             {
                 case "BUY":
-                    transaction.setType(PortfolioTransaction.Type.BUY);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                     break;
                 case "BUY (Ca.)":
-                    transaction.setNote(Messages.MsgErrorOrderCancellationUnsupported);
-                    transaction.setType(PortfolioTransaction.Type.SELL);
+                    portfolioTransaction.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                     break;
                 case "SELL":
-                    transaction.setType(PortfolioTransaction.Type.SELL);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
+                    break;
+                case "SELL (Ca.)":
+                    portfolioTransaction.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -352,31 +405,29 @@ public class IBFlexStatementExtractor implements Extractor
             // If possible, set "tradeDate" with "tradeTime" as the correct
             // trading date of the transaction.
             //
-            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date, 
+            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date,
             // then set "dateTime" as the trading day.
             // @formatter:on
             if (element.hasAttribute("tradeDate"))
             {
                 if (element.hasAttribute("tradeTime"))
                 {
-                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
-                                    element.getAttribute("tradeTime")));
+                    portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
                 }
                 else if (element.hasAttribute("dateTime"))
                 {
                     if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
                     {
-                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"),
-                                        element.getAttribute("dateTime").substring(9, 15)));
+                        portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("dateTime").substring(9, 15)));
                     }
                     else
                     {
-                        transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
+                        portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
                     }
                 }
                 else
                 {
-                    transaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
+                    portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
                 }
             }
 
@@ -387,72 +438,62 @@ public class IBFlexStatementExtractor implements Extractor
             // @formatter:on
             if (element.hasAttribute("netCash"))
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                                asAmount(element.getAttribute("netCash")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
 
-                setAmount(element, transaction.getPortfolioTransaction(), amount);
-                setAmount(element, transaction.getAccountTransaction(), amount, false);
+                setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
+                setAmount(element, portfolioTransaction.getAccountTransaction(), amount, false);
             }
             else
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                                asAmount(element.getAttribute("cost")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
 
-                setAmount(element, transaction.getPortfolioTransaction(), amount);
-                setAmount(element, transaction.getAccountTransaction(), amount, false);
+                setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
+                setAmount(element, portfolioTransaction.getAccountTransaction(), amount, false);
             }
 
             // Set share quantity
             Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
             Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
+            portfolioTransaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
 
             // Set fees
-            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")),
-                            asAmount(element.getAttribute("ibCommission")));
+            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
             Unit feeUnit = createUnit(element, Unit.Type.FEE, fees);
-            transaction.getPortfolioTransaction().addUnit(feeUnit);
+            portfolioTransaction.getPortfolioTransaction().addUnit(feeUnit);
 
             // Set taxes
-            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                            asAmount(element.getAttribute("taxes")));
+            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes);
-            transaction.getPortfolioTransaction().addUnit(taxUnit);
+            portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
 
-            transaction.setSecurity(this.getOrCreateSecurity(element, true));
+            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
             // Set note
-            if (transaction.getNote() == null
-                            || !transaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+            if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
             {
                 // Add Trade-ID note if available
                 if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
-                    transaction.setNote("Trade-ID: " + element.getAttribute("tradeID"));
+                {
+                    portfolioTransaction.setNote(concatenate("Trade-ID: ", element.getAttribute("tradeID"), ""));
+                }
 
                 // Add Transaction-ID note if available
-                if (!element.getAttribute("transactionID").isEmpty()
-                                && !"N/A".equals(element.getAttribute("transactionID")))
+                if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
                 {
-                    if (transaction.getNote() != null)
-                        transaction.setNote(transaction.getNote() + " | Transaction-ID: " //
-                                        + element.getAttribute("transactionID"));
-                    else
-                        transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID"));
+                    portfolioTransaction.setNote(concatenate(portfolioTransaction.getNote(), "Transaction-ID: " + element.getAttribute("transactionID"), " | "));
                 }
             }
 
-            ExtractorUtils.fixGrossValueBuySell().accept(transaction);
+            ExtractorUtils.fixGrossValueBuySell().accept(portfolioTransaction);
 
-            BuySellEntryItem item = new BuySellEntryItem(transaction);
+            BuySellEntryItem item = new BuySellEntryItem(portfolioTransaction);
 
-            if (transaction.getPortfolioTransaction().getCurrencyCode() != null
-                            && transaction.getPortfolioTransaction().getAmount() == 0)
+            if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
                 return item;
             }
-            else if (Messages.MsgErrorOrderCancellationUnsupported
-                            .equals(transaction.getPortfolioTransaction().getNote()))
+            else if (Messages.MsgErrorOrderCancellationUnsupported.equals(portfolioTransaction.getPortfolioTransaction().getNote()))
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
                 return item;
@@ -462,143 +503,164 @@ public class IBFlexStatementExtractor implements Extractor
         };
 
         /**
-         * Constructs a Transaction object for a Corporate Transaction defined
-         * in element.
+         * Constructs a Corporate Transaction Item based on the information provided in the XML element.
          */
         private Function<Element, Item> buildCorporateTransaction = element -> {
-            Money proceeds = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                            Values.Amount.factorize(Double.parseDouble(element.getAttribute("proceeds"))));
+            Money proceeds = Money.of(asCurrencyCode(element.getAttribute("currency")), Values.Amount.factorize(Double.parseDouble(element.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
             {
-                BuySellEntry transaction = new BuySellEntry();
+                // Set transaction type
+                BuySellEntry portfolioTransaction = new BuySellEntry();
 
                 if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
-                    transaction.setType(PortfolioTransaction.Type.BUY);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                 else
-                    transaction.setType(PortfolioTransaction.Type.SELL);
+                    portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
 
-                transaction.setDate(ExtractorUtils.asDate(element.getAttribute("reportDate")));
+                portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
                 double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-                transaction.setShares(Values.Share.factorize(qty));
+                portfolioTransaction.setShares(Values.Share.factorize(qty));
 
-                transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
-                transaction.setMonetaryAmount(proceeds);
+                portfolioTransaction.setMonetaryAmount(proceeds);
 
-                return new BuySellEntryItem(transaction);
+                return new BuySellEntryItem(portfolioTransaction);
 
             }
             else
             {
                 // Set transaction type
-                PortfolioTransaction transaction = new PortfolioTransaction();
-                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
-                    transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                else
-                    transaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
 
-                transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("reportDate")));
+                if (Double.parseDouble(element.getAttribute("quantity")) >= 0)
+                    portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                else
+                    portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+
+                portfolioTransaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
                 Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-                transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
+                portfolioTransaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                transaction.setSecurity(this.getOrCreateSecurity(element, true));
-                transaction.setNote(element.getAttribute("description"));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setNote(element.getAttribute("description"));
 
-                transaction.setMonetaryAmount(proceeds);
+                portfolioTransaction.setMonetaryAmount(proceeds);
 
-                return new TransactionItem(transaction);
+                return new TransactionItem(portfolioTransaction);
             }
         };
 
         /**
-         * Constructs a Transaction object for a SalesTax Transaction defined in
-         * element.
+         * Constructs a Sales Tax Transaction Item based on the information provided in the XML element.
          */
         private Function<Element, Item> buildSalesTaxTransaction = element -> {
-            AccountTransaction transaction = new AccountTransaction();
+            AccountTransaction accountTransaction = new AccountTransaction();
 
             // Set transaction type
-            transaction.setType(AccountTransaction.Type.TAXES);
+            accountTransaction.setType(AccountTransaction.Type.TAXES);
 
             // Set date
-            transaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
+            accountTransaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
 
             // Set amount
-            Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
-                            asAmount(element.getAttribute("salesTax")));
-            setAmount(element, transaction, amount);
+            Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("salesTax")));
+            setAmount(element, accountTransaction, amount);
 
             // Set note
-            transaction.setNote(element.getAttribute("taxableDescription"));
+            accountTransaction.setNote(element.getAttribute("taxableDescription"));
 
             // Add Tax-Transaction-ID note if available
-            if (!element.getAttribute("taxableTransactionID").isEmpty()
-                            && !"N/A".equals(element.getAttribute("taxableTransactionID")))
-                transaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | "
-                                + transaction.getNote());
+            if (!element.getAttribute("taxableTransactionID").isEmpty() && !"N/A".equals(element.getAttribute("taxableTransactionID")))
+            {
+                accountTransaction.setNote("Tax-Transaction-ID: " + element.getAttribute("taxableTransactionID") + " | " + accountTransaction.getNote());
+            }
 
             // Add Transaction-ID note if available
-            if (!element.getAttribute("transactionID").isEmpty()
-                            && !"N/A".equals(element.getAttribute("transactionID")))
-                transaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | "
-                                + transaction.getNote());
+            if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
+            {
+                accountTransaction.setNote("Transaction-ID: " + element.getAttribute("transactionID") + " | " + accountTransaction.getNote());
+            }
 
-            // Transactions which do not have an account-id will not be
-            // imported.
+            // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                return new TransactionItem(transaction);
+                return new TransactionItem(accountTransaction);
             else
                 return null;
         };
 
+        /**
+         * Creates a Unit based on the specified element, unit type, and monetary amount.
+         *
+         * @param element The element containing FX rate information.
+         * @param unitType The type of the Unit to be created.
+         * @param amount The original monetary amount.
+         * @return The created Unit.
+         */
         private Unit createUnit(Element element, Unit.Type unitType, Money amount)
         {
             Unit unit;
-            if (ibAccountCurrency == null || ibAccountCurrency.equals(amount.getCurrencyCode()))
+
+            // Check if the IB account currency is null or matches the amount
+            // currency
+            if (accountCurrency == null || accountCurrency.equals(amount.getCurrencyCode()))
             {
                 unit = new Unit(unitType, amount);
             }
             else
             {
-                BigDecimal fxRateToBase;
+                // Calculate the FX rate to the base currency
+                BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
+                                : asExchangeRate(element.getAttribute("fxRateToBase"));
 
-                if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
-                    fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
-                else
-                    fxRateToBase = BigDecimal.ONE;
-
+                // Calculate the inverse rate
                 BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
-                Money fxAmount = Money.of(ibAccountCurrency, BigDecimal.valueOf(amount.getAmount())
+                // Convert the amount to the IB account currency using the
+                // inverse rate
+                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount())
                                 .divide(inverseRate, Values.MC).setScale(0, RoundingMode.HALF_UP).longValue());
 
+                // Create a Unit with FX amount, original amount, and FX rate
                 unit = new Unit(unitType, fxAmount, amount, fxRateToBase);
             }
+
             return unit;
         }
 
+        /**
+         * Sets the specified monetary amount on the given transaction, with an option to include in the portfolio transaction.
+         *
+         * @param element The XML element containing transaction details.
+         * @param transaction The transaction object to update with the amount.
+         * @param amount The monetary amount to set on the transaction.
+         */
         private void setAmount(Element element, Transaction transaction, Money amount)
         {
             setAmount(element, transaction, amount, true);
         }
 
+        /**
+         * Sets the specified monetary amount on the given transaction, with an option to include in the portfolio transaction.
+         *
+         * @param element      The XML element containing transaction details.
+         * @param transaction  The transaction object to update with the amount.
+         * @param amount       The monetary amount to set on the transaction.
+         * @param addUnit      A flag indicating whether to add a Unit to the transaction.
+         */
         private void setAmount(Element element, Transaction transaction, Money amount, boolean addUnit)
         {
-            if (ibAccountCurrency != null && !ibAccountCurrency.equals(amount.getCurrencyCode()))
+            if (accountCurrency != null && !accountCurrency.equals(amount.getCurrencyCode()))
             {
-                BigDecimal fxRateToBase;
+                BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
+                                : asExchangeRate(element.getAttribute("fxRateToBase"));
 
-                if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
-                    fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
-                else
-                    fxRateToBase = BigDecimal.ONE;
-
-                Money fxAmount = Money.of(ibAccountCurrency, BigDecimal.valueOf(amount.getAmount())
+                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount())
                                 .multiply(fxRateToBase).setScale(0, RoundingMode.HALF_UP).longValue());
 
                 transaction.setMonetaryAmount(fxAmount);
@@ -613,23 +675,17 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 transaction.setMonetaryAmount(amount);
 
-                if (addUnit && transaction.getSecurity() != null
-                                && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
+                if (addUnit && transaction.getSecurity() != null && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
                 {
                     // @formatter:off
-                    // If the transaction currency is different from the
-                    // security currency (as stored in PP) we need to supply the
-                    // gross value in the security currency.
+                    // If the transaction currency is different from the security currency (as stored in PP)
+                    // we need to supply the gross value in the security currency.
                     //
                     // We assume that the security currency is the same that IB
                     // thinks of as base currency for this transaction (fxRateToBase).
                     // @formatter:on
-                    BigDecimal fxRateToBase;
-
-                    if (element.getAttribute("fxRateToBase") != null && !element.getAttribute("fxRateToBase").isEmpty())
-                        fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
-                    else
-                        fxRateToBase = BigDecimal.ONE;
+                    BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
+                                    : asExchangeRate(element.getAttribute("fxRateToBase"));
 
                     BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
@@ -647,12 +703,17 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * @formatter:off
-         * Imports from Document
+         * Imports model objects from the document based on the specified type using the provided handling function.
+         *
+         * Supported types:
          * - AccountInformation
          * - Trades
          * - CashTransaction
          * - CorporateAction
          * - SalesTaxes
+         *
+         * @param type                 The type of model objects to import.
+         * @param handleNodeFunction  The function to handle each XML element node and convert it to an Item.
          * @formatter:on
          */
         private void importModelObjects(String type, Function<Element, Item> handleNodeFunction)
@@ -668,7 +729,9 @@ public class IBFlexStatementExtractor implements Extractor
                     {
                         Item item = handleNodeFunction.apply((Element) nNode);
                         if (item != null)
+                        {
                             results.add(item);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -678,6 +741,11 @@ public class IBFlexStatementExtractor implements Extractor
             }
         }
 
+        /**
+         * Parses the given XML document and processes various model objects.
+         *
+         * @param doc The XML document to parse.
+         */
         public void parseDocument(Document doc)
         {
             this.document = doc;
@@ -685,7 +753,8 @@ public class IBFlexStatementExtractor implements Extractor
             if (document == null)
                 return;
 
-            importModelObjects("AccountInformation", importAccountInformation);
+            // Import AccountInformation
+            importModelObjects("AccountInformation", buildAccountInformation);
 
             // Process all Trades
             importModelObjects("Trade", buildPortfolioTransaction);
@@ -708,9 +777,12 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Lookup a Security in the Model or create a new one if it does not yet
-         * exist It uses IB ContractID (conID) for the WKN, tries to degrade if
-         * conID or ISIN are not available
+         * Looks up a Security in the model or creates a new one if it does not yet exist.
+         * It uses the IB ContractID (conID) for the WKN, tries to degrade if conID or ISIN are not available.
+         *
+         * @param element   The XML element containing information about the security.
+         * @param doCreate  A flag indicating whether to create a new Security if not found.
+         * @return          The found or created Security object.
          */
         private Security getOrCreateSecurity(Element element, boolean doCreate)
         {
@@ -718,17 +790,17 @@ public class IBFlexStatementExtractor implements Extractor
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
             String quoteFeed = QuoteFeed.MANUAL;
 
-            // yahoo uses '-' instead of ' '
+            // Yahoo uses '-' instead of ' '
             String currency = asCurrencyCode(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
+            String conid = element.getAttribute("conid");
             Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replace(' ', '-'));
 
-            // Store cusip in isin if isin is not available
-            if (isin.length() == 0 && cusip.length() > 0)
+            // Store CUSIP in ISIN if ISIN is not available
+            if (isin.isEmpty() && !cusip.isEmpty())
                 isin = cusip;
 
-            String conID = element.getAttribute("conid");
             String description = element.getAttribute("description");
 
             if (Arrays.asList(ASSETKEY_OPTION, ASSETKEY_FUTURE_OPTION).contains(element.getAttribute("assetCategory")))
@@ -739,7 +811,8 @@ public class IBFlexStatementExtractor implements Extractor
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
-            if (Arrays.asList(ASSETKEY_STOCK, ASSETKEY_FUND, ASSETKEY_CERTIFICATE).contains(element.getAttribute("assetCategory")))
+            if (Arrays.asList(ASSETKEY_STOCK, ASSETKEY_FUND, ASSETKEY_CERTIFICATE)
+                            .contains(element.getAttribute("assetCategory")))
             {
                 computedTickerSymbol = tickerSymbol;
                 if (!CurrencyUnit.USD.equals(currency))
@@ -769,45 +842,47 @@ public class IBFlexStatementExtractor implements Extractor
 
                 }
 
-                // for Stock and Fund, use Yahoo as default (AlphaVantage has no
-                // meaningful free tier)
+                // @formatter:off
+                // For Stock and Fund, use Yahoo as default (AlphaVantage has no meaningful free tier)
+                // @formatter:on
                 quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
-            Security s2 = null;
+            Security matchingSecurity = null;
 
-            for (Security s : allSecurities)
+            for (Security security : allSecurities)
             {
-                // Find security with same conID or isin & currency or
-                // yahooSymbol
-                if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
-                    return s;
-                if (isin.length() > 0 && isin.equals(s.getIsin()))
-                    if (currency.equals(s.getCurrencyCode()))
-                        return s;
+                // Find security with same CONID or ISIN & currency or yahooSymbol
+                if (conid != null && conid.length() > 0 && conid.equals(security.getWkn()))
+                    return security;
+
+                if (!isin.isEmpty() && isin.equals(security.getIsin()))
+                    if (currency.equals(security.getCurrencyCode()))
+                        return security;
                     else
-                        s2 = s;
-                if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(s.getTickerSymbol()))
-                    return s;
+                        matchingSecurity = security;
+
+                if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(security.getTickerSymbol()))
+                    return security;
             }
 
-            if (s2 != null)
-                return s2;
+            if (matchingSecurity != null)
+                return matchingSecurity;
 
             if (!doCreate)
                 return null;
 
             Security security = new Security(description, isin, computedTickerSymbol.orElse(null), quoteFeed);
 
-            // We use the Wkn to store the IB conID as a unique identifier
-            security.setWkn(conID);
+            // We use the WKN to store the IB CONID as a unique identifier
+            security.setWkn(conid);
             security.setCurrencyCode(currency);
             security.setNote(description);
 
             // Store
             allSecurities.add(security);
 
-            // add to result
+            // Add to result
             SecurityItem item = new SecurityItem(security);
             results.add(item);
 
@@ -815,24 +890,22 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Figure out how many shares a dividend payment is related to. Extracts
-         * the information from the description string given by IB
+         * Calculates the number of shares related to a dividend payment by extracting
+         * information from the provided description string by IB (Interactive Brokers).
          */
         private void calculateShares(Transaction transaction, Element element)
         {
-            // Figure out how many shares were holding related to this Dividend
-            // Payment
             long numShares = 0;
             double amount = Double.parseDouble(element.getAttribute("amount"));
 
-            // Regex Pattern matches the Dividend per Share and calculate number
-            // of shares
-            Pattern pDividendPerShares = Pattern.compile(
-                            ".*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*");
-            Matcher mDividendPerShares = pDividendPerShares.matcher(element.getAttribute("description"));
-            if (mDividendPerShares.find())
+            // Regular expression pattern to match the Dividend per Share and
+            // calculate the number of shares
+            Pattern pDividendShare = Pattern.compile("^.*DIVIDEND( [\\w]{3})? (?<dividendPerShares>[\\.,\\d]+)( [\\w]{3})? PER SHARE .*$");
+            Matcher mDividendShare = pDividendShare.matcher(element.getAttribute("description"));
+
+            if (mDividendShare.find())
             {
-                double dividendPerShares = Double.parseDouble(mDividendPerShares.group("dividendPerShares"));
+                double dividendPerShares = Double.parseDouble(mDividendShare.group("dividendPerShares"));
                 numShares = Math.round(amount / dividendPerShares) * Values.Share.factor();
             }
 
@@ -866,79 +939,128 @@ public class IBFlexStatementExtractor implements Extractor
         }
     }
 
+    /**
+     * @formatter:off
+     * This method performs post-processing on a list of transaction items, categorizing and
+     * modifying them based on their types and associations. It follows several steps:
+     *
+     * 1. Filters the input list to isolate taxes treatment transactions and dividend transactions.
+     * 2. Matches dividend transactions with their corresponding taxes treatment.
+     * 3. Adjusts dividend transactions by updating the gross amount if necessary, subtracting tax amounts, adding tax units,
+     *    combining source information, appending taxes treatment notes, and removing taxes treatment's from the list of items.
+     *
+     * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
+     * in dividend transactions, making the transactions more comprehensive and accurate.
+     *
+     * @param items The list of transaction items to be processed.
+     * @return A modified list of transaction items after post-processing.
+     * @formatter:on
+     */
     @Override
     public List<Item> postProcessing(List<Item> items)
     {
-        // Group dividend and taxes transactions together and group by date and
-        // security
-        Map<LocalDateTime, Map<Security, List<Item>>> dividendTaxTransactions = items.stream() //
+        // Filter transactions by taxes treatment's
+        List<Item> taxesTreatmentList = items.stream() //
+                        .filter(TransactionItem.class::isInstance)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> {
+                            var type = ((AccountTransaction) i.getSubject()).getType(); //
+                            return type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND; //
+                        }) //
+                        .toList();
+
+        // Filter transactions by dividend transactions
+        List<Item> dividendTransactionList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
-                        .map(TransactionItem.class::cast) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.DIVIDENDS //
-                                        .equals(((AccountTransaction) i.getSubject()).getType()) || //
-                                        AccountTransaction.Type.TAXES //
-                                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
-                        .filter(i -> i.getSecurity() != null)
-                        .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
+                                        .equals((((AccountTransaction) i.getSubject()).getType()))) //
+                        .toList();
 
-        dividendTaxTransactions.forEach((k, v) -> {
-            v.forEach((security, transactions) -> {
-                AccountTransaction dividendTransaction = (AccountTransaction) transactions.get(0).getSubject();
+        var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
 
-                // @formatter:off
-                // It is possible that several dividend transactions exist on
-                // the same day without one or with several taxes transactions.
-                //
-                // We simplify here only one dividend transaction with one
-                // related taxes transaction.
-                // @formatter:on
-
-                if (transactions.size() == 2)
-                {
-                    AccountTransaction taxTransaction = (AccountTransaction) transactions.get(1).getSubject();
-
-                    // Which transaction is the taxes and which the dividend?
-                    if (!AccountTransaction.Type.TAXES.equals(taxTransaction.getType()))
-                    {
-                        dividendTransaction = (AccountTransaction) transactions.get(1).getSubject();
-                        taxTransaction = (AccountTransaction) transactions.get(0).getSubject();
-                    }
-
-                    // Check if there is a dividend transaction and a tax
-                    // transaction.
-                    if (AccountTransaction.Type.TAXES.equals(taxTransaction.getType())
-                                    && AccountTransaction.Type.DIVIDENDS.equals(dividendTransaction.getType()))
-                    {
-                        // Subtract the taxes from the tax transaction from the
-                        // total amount
-                        dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount()
-                                        .subtract(taxTransaction.getMonetaryAmount()));
-
-                        // Add taxes as tax unit
-                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxTransaction.getMonetaryAmount()));
-
-                        // Set note that the tax transaction will be deleted
-                        taxTransaction.setNote(TO_BE_DELETED);
-                    }
-                }
-                else
-                {
-                    // do nothing
-                }
-            });
-        });
-
-        // iterate list and remove items that are marked TO_BE_DELETED
-        Iterator<Item> iter = items.iterator();
-        while (iter.hasNext())
+        // @formatter:off
+        // This loop iterates through a list of dividend and tax pairs and processes them.
+        //
+        // For each pair, it subtracts the tax amount from the dividend transaction's total amount,
+        // adds the tax as a tax unit to the dividend transaction, combines source information if needed,
+        // appends taxes treatment notes to the dividend transaction, and removes the tax treatment from the 'items' list.
+        //
+        // It performs these operations when a valid tax treatment transaction is found.
+        // @formatter:on
+        for (TransactionTaxesPair pair : dividendTaxPairs)
         {
-            Object o = iter.next().getSubject();
-            if (o instanceof AccountTransaction a && TO_BE_DELETED.equals(a.getNote()))
-                iter.remove();
+            var dividendTransaction = (AccountTransaction) pair.transaction().getSubject();
+            var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
+
+            if (taxesTransaction != null)
+            {
+                Money taxesAmount = taxesTransaction.getMonetaryAmount();
+
+                dividendTransaction.setMonetaryAmount(dividendTransaction.getMonetaryAmount().subtract(taxesAmount));
+
+                dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesAmount));
+
+                dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                items.remove(pair.tax());
+            }
         }
 
         return items;
+    }
+
+    /**
+     * @formatter:off
+     * Matches transactions and taxes treatment's, ensuring unique pairs based on date and security.
+     *
+     * This method matches transactions and taxes treatment's by creating a Pair consisting of the transaction's
+     * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
+     * ensuring that the same combination of date and security is not processed multiple times.
+     * Duplicate transactions for the same security on the same day are avoided.
+     *
+     * @param transactionList      A list of transactions to be matched.
+     * @param taxesTreatmentList   A list of taxes treatment's to be considered for matching.
+     * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
+     * @formatter:on
+     */
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesTreatmentList)
+    {
+        // Use a Set to prevent duplicates
+        Set<Pair<LocalDate, Security>> keys = new HashSet<>();
+        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
+
+        // Match identified transactions and taxes treatment's
+        transactionList.forEach( //
+                        transaction -> {
+                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
+
+                            // Prevent duplicates
+                            if (keys.add(key))
+                                pairs.put(key, new TransactionTaxesPair(transaction, null));
+                        } //
+        );
+
+        // Iterate through the list of taxes treatment's to match them with transactions
+        taxesTreatmentList.forEach( //
+                        tax -> {
+                            // Check if the taxes treatment has a security
+                            if (tax.getSecurity() == null)
+                                return;
+
+                            // Create a key based on the taxes treatment date and security
+                            var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
+
+                            // Retrieve the TransactionTaxesPair associated with this key, if it exists
+                            var pair = pairs.get(key);
+
+                            // Skip if no transaction is found or if a taxes treatment already exists
+                            if (pair != null && pair.tax() == null)
+                                pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
+                        } //
+        );
+
+        return pairs.values();
     }
 
     protected String asCurrencyCode(String currency)

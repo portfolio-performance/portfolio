@@ -1,154 +1,90 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.65.4.qualifier
+Portfolio Performance Version: 0.67.1
 -----------------------------------------
-AVL Finanzvermittlung
-Poststr. 15/1, 71384 Weinstadt
-Tel: +49 (0)7151 604 59 30
-Fax: +49 (0)7151 604 59 399
-info@avl-investmentfonds.de
-FNZ Bank AG, 80218 München
-Umsatzabrechnung-Nr. 315
-Depot-Nr. 99131999055
-Seite 1 von 3
-aNdqU
-elYAOfma JBAOOULat ugKDr
-mQmBWbtDNJf. 07N
-08806 fsykvWIiF sm tTqT
-27.09.2023
-Umsatzabrechnung für Ihr ebase Depot
-für den Zeitraum vom 15.09.2023 bis 26.09.2023
-Fondsertrag (Ausschüttung) mit Bestandsdatum 13.09.2023 in Depotposition 99131999055.59
-InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N.
-Ref. Nr. 2210868091/45619741, Buchungsdatum 22.09.2023
-ISIN Anteilsbestand Betrag je Anteil Betrag
-IE0032077012 54,479737 0,383900000 USD 20,91 USD
-Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
-3,43 EUR 0,18 EUR 0,00 EUR 1,069793 3,86 USD
-Zahlungsbetrag 17,05 USD
-Wiederanlage des Zahlungsbetrags erfolgt in Depotposition 99131999055.59 mit Ref. Nr. 0400010911/22092023
-Wiederanlage Fondsertrag 17,05 USD mit Kursdatum 25.09.2023 in Depotposition 99131999055.59
-InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N.
-Ref. Nr. 0400010911/22092023, Buchungsdatum 26.09.2023
-Wiederanlage Fondsertrag erfolgt aus Depotposition 99131999055.59 mit Ref. Nr. 0400008806/22092023
-ISIN Anteile Abrechnungskurs Betrag
-IE0032077012 0,047550 358,570000 USD 17,05 USD
-Zahlungsbetrag 17,05 USD
-Fondsertrag (Ausschüttung) mit Bestandsdatum 13.09.2023 in Depotposition 99131999055.91
-InvescoMI S&P 500 ETF Reg.Shares Dist o.N.
-Ref. Nr. 0400008188/22092023, Buchungsdatum 22.09.2023
-ISIN Anteilsbestand Betrag je Anteil Betrag
-IE00BYML9W36 38,873327 0,167100000 USD 6,50 USD
-Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
-1,07 EUR 0,05 EUR 0,00 EUR 1,069793 1,19 USD
-Zahlungsbetrag in Fremdwährung 5,31 USD
-Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,069793 EUR/USD 4,96 EUR
-Wiederanlage des Zahlungsbetrags erfolgt in Depotposition 99131999055.91 mit Ref. Nr. 0400010223/22092023
-Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+European Bank for Financial Services GmbH, 80218 München
+Kontoauszug-Nr. 3
+vom 04.05.2020
+Seite 1 von 2
+Herrn Konto-Nr. 3267126501
+Tufu mOqRjBv
+ZIsfrfw 06
+65811 cjlXdlwqN
+Kontoauszug für Ihr ebase Konto flex
+Kontostand alt: 01.04.2020 7.789,16 EUR
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+01.04.2020 013011007 30.03.2020 Wertpapiergutschrift 169,00 EUR
+ebase
+DEPOT-NR 99132734493
+AUFTR.-NR. 000059239770830
+ARGENTINA 05/38 PAR
+GA/EA 13 WKN A0DUDC
+03.04.2020 013014232 07.04.2020 Wertpapierbelastung -4.174,90 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003219799700
+SEVERSTAL GDR S OCT2006 1
+GA/EA KV WKN A0LEJV
+06.04.2020 013015328 06.04.2020 SEPA Überweisung Gutschrift 5.000,00 EUR
+CvEv EKQQPrX
+. IP20094011522040
+06.04.2020 013016084 06.04.2020 Wertpapierbelastung -2,50 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003248217000
+GAZPROM NEFT ADR5/RL-0016
+GA/EA KV WKN A0J4TC
+06.04.2020 013016591 08.04.2020 Wertpapierbelastung -3.738,40 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003274015300
+GAZPROM NEFT ADR5/RL-0016
+GA/EA KV WKN A0J4TC
+07.04.2020 013017353 07.04.2020 SEPA Überweisung Gutschrift 10.000,00 EUR
+HuPh HcSrDCn
+Anlage
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
 Diese Mitteilung wird nicht unterschrieben.
-FNZ Bank AG Amtsgericht München HRB 286 792 Vorstand: Fax: +49 89 45460-892
-80218 München USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Web: www.fnz.de
-Gläubiger-ID: Jonathan Brander, Peter Karst
-DE68ZZZ00000025032 Aufsichtsratsvorsitzender:
-Frank Strauß
-Umsatzabrechnung-Nr. 315
-Depot-Nr. 99131999055
-Seite 2 von 3
-Wiederanlage Fondsertrag 4,96 EUR mit Kursdatum 25.09.2023 in Depotposition 99131999055.91
-InvescoMI S&P 500 ETF Reg.Shares Dist o.N.
-Ref. Nr. 0400010223/22092023, Buchungsdatum 26.09.2023
-Wiederanlage Fondsertrag erfolgt aus Depotposition 99131999055.91 mit Ref. Nr. 0400008188/22092023
-ISIN Anteile Abrechnungskurs Betrag
-IE00BYML9W36 0,130878 37,897900 EUR 4,96 EUR
-Zahlungsbetrag 4,96 EUR
-Bestand der Depotpositionen mit Umsatz nach Verbuchung
-Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
-59 IE0032077012 54,527287 361,184920 USD 25.09.2023 1,063800 18.513,29 EUR
-InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N.
-Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
-91 IE00BYML9W36 39,004205 40,280100 USD 25.09.2023 1,063800 1.476,87 EUR
-InvescoMI S&P 500 ETF Reg.Shares Dist o.N.
-Verwahrart: Wertpapierrechnung, Lagerland: Irland
-Depotgesamtwert 121.559,65 EUR
-Für die im Depot verbuchten und hier ausgewiesenen Fondsanteile besteht - soweit nicht abweichend gekennzeichnet - ein Eigentums-
-bzw. eigentumsähnlicher Schutz im Sinne der europäischen Finanzmarktrichtlinie 2014/65 (EU).
-4Ihr Freistellungsauftrag in Höhe von 850,00 EUR ist vorgemerkt.
-4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 0,00 EUR.
-Das vierteljährliche Depotführungsentgelt übernimmt AVL automatisch, wenn der erforderliche Mindestdepotbestand am
-jeweils letzten Bankarbeitstag im Quartal vorhanden ist.
-Einzahlungen
-Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
-FNZ Bank AG: Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
-BIC: COBADEFFXXX.
-Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
-• Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
-• Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
-Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
-Prüfung und Einwendungen
-Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
-prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
-dessen Zugang gegenüber der FNZ Bank AG unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der
-rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mitteilung-
-en der FNZ Bank" der Allgemeinen Geschäftsbedingungen der FNZ Bank AG für Privatanleger.
-Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
-Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Kai Friedrich, Jürgen Keller
+Kontoauszug-Nr. 3
+vom 04.05.2020
+Seite 2 von 2
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+ 
+07.04.2020 013019002 09.04.2020 Wertpapierbelastung -4.906,22 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003288416300
+COMPASS GROUP LS-,1105
+GA/EA KV WKN A2DR6K
+08.04.2020 013020563 14.04.2020 Wertpapierbelastung -5.618,50 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003313618400
+INTL GAME TECH. DL-,10
+GA/EA KV WKN A14QUY
+14.04.2020 013026566 16.04.2020 Wertpapierbelastung -4.190,94 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003343564800
+IMIII-I.EQ.NA.-100- AEOH
+GA/EA KV WKN A2DT9V
+16.04.2020 013032067 20.04.2020 Wertpapierbelastung -3,00 EUR
+SACHGEBIET 0500
+HANDELSTAG 16.04.2020
+AUFTR.-NR. 000000000001842
+GA/EA JABD WKN
+Kontostand neu: 04.05.2020 323,70 EUR
+IBAN: DE40 7001 3000 3267 1265 01, BIC: EBSGDEMXXXX
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Wir bitten Sie, den (Online-) Kontoauszug und die aufgeführten Buchungen und Berechnungen auf ihre Richtigkeit
+und Vollständigkeit hin zu überprüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieses (Online-)
+Kontoauszuges müssen Sie unverzüglich nach dessen Zugang gegenüber ebase bei der internen Revision unter Angabe
+der Kontonummer und des Datums des (Online-) Kontoauszuges erheben. Sofern Sie Ihre Einwendungen schriftlich
+geltend machen, genügt die unverzügliche Absendung. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmi-
+gung des (Online-) Kontoauszuges.
+Des Weiteren erfolgt die Gutschrift von Lastschriften und sonstiger Einzugspapiere zugunsten des Kontos bei ebase
+unter dem Vorbehalt Ihrer Einlösung.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
 Diese Mitteilung wird nicht unterschrieben.
-FNZ Bank AG Amtsgericht München HRB 286 792 Vorstand: Fax: +49 89 45460-892
-80218 München USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Web: www.fnz.de
-Gläubiger-ID: Jonathan Brander, Peter Karst
-DE68ZZZ00000025032 Aufsichtsratsvorsitzender:
-Frank Strauß
-AVL Finanzvermittlung
-die Poststr. 15/1, 71384 Weinstadt
-Tel: +49 (0)7151 604 59 30
-Fax: +49 (0)7151 604 59 399
-info@avl-investmentfonds.de
-Umsatzabrechnung-Nr. 315
-Depot-Nr. 99131999055
-Seite 3 von 3
-Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch die FNZ Bank
-Die FNZ Bank AG führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Ein-
-schaltung eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne
-des § 33a WpHG aus.
-Die FNZ Bank AG wird gemäß Punkt ”Ausführung und Erfüllung von Aufträgen” der Bedingungen für das Investment Depot für Privat-
-anleger, die Aufträge ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
-Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
-durch die FNZ Bank AG keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt ”Ausschluss von Beratung
-("execution only”)” sowie keine Risikoklassifizierung gemäß Punkt ”keine Risikoklassifizierung durch die FNZ Bank” der Bedingungen
-für das Investment Depot für Privatanleger bei der FNZ Bank, erfolgt.
-Sofern es sich um einen Auftrag zum Kauf von Finanzinstrumenten im beratungsfreien Geschäft (z.B. komplexe Fonds) und außerhalb
-des reinen Ausführungsgeschäft handelt, wird ein Abgleich auf Ihre Kenntnisse und Erfahrungen vollzogen.
-Zurverfügungstellung von Verkaufsunterlagen
-Der Vermittler, die Kapitalverwaltungs-/Verwaltungsgesellschaft oder die FNZ Bank AG habendem Kunden für sämtlich Geschäfte die
-jeweils gültigen Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt
-sowie der aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos recht-
-zeitig zur Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage der FNZ Bank (www.fnz.de) einge-
-sehen und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen
-Fonds.
-Pflicht des Kunden zur Einholung von Beratung gemäß Punkt "Mitwirkungspflichten und Obliegenheit des Kunden"
-Ihnen obliegt die vertragliche Verpflichtung, das Erstgeschäft sowie jedes Folgegeschäft nur nach Rücksprache mit Ihrem
-Vermittler zu tätigen, nachdem Ihr Vermittler Ihnen eine anleger- und anlagegerechte Aufklärung und ggf. Beratung (auch
-hinsichtlich der Provisionsentgelte) erteilt hat.
-Hinweis auf Erhalt, Weiterleitung und Auskehr von Provisionen/Zuwendungen
-Sie wurden von der FNZ Bank AG ausdrücklich auf den Erhalt, die Weiterleitung und die Auskehr von Provisionen/Zuwendungen
-gemäß Punkt "Hinweis auf den Erhalt und Weiterleitung und die Auskehr von Provisionen/Zuwendungen" in den
-Bedingungen für das Investment Depot für Privatanleger bei der FNZ Bank AG in dem jeweils aktuell gültigen Preis-
-und Leistungsverzeichnis hingewiesen.
-Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
-same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
-Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
-Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
-Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
-verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
-gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
-Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
-sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
-Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der FNZ Bank
-AG. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den Verkaufsunterlagen. Die
-FNZ Bank AG ist lediglich depotführende Stelle.
-Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
-Diese Mitteilung wird nicht unterschrieben.
-FNZ Bank AG Amtsgericht München HRB 286 792 Vorstand: Fax: +49 89 45460-892
-80218 München USt-ID Nr. DE 813330104 Sebastian Henrichs, Jürgen Keller, Web: www.fnz.de
-Gläubiger-ID: Jonathan Brander, Peter Karst
-DE68ZZZ00000025032 Aufsichtsratsvorsitzender:
-Frank Strauß
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Kai Friedrich, Jürgen Keller

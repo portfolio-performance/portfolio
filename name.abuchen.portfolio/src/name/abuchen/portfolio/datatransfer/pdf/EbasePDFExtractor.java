@@ -31,7 +31,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addFeesWithSecurityTransaction();
         addDeliveryInOutBoundTransaction();
-        addDepotStatementTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -802,10 +802,39 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDepotStatementTransaction()
+    private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
         this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 06.04.2020 013015328 06.04.2020 SEPA Überweisung Gutschrift 5.000,00 EUR
+        // 07.04.2020 013017353 07.04.2020 SEPA Überweisung Gutschrift 10.000,00 EUR
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA .berweisung Gutschrift [\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note1", "note2", "amount", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note1>[\\d]+) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note2>SEPA .berweisung Gutschrift) " //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(v.get("note2") + " | Ref.-Nr.: " + v.get("note1"));
+                        })
+
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 12.12.2022 020739500 12.12.2022 SEPA Lastschrift Einzug 200,00 EUR
