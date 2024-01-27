@@ -77,7 +77,7 @@ public class DataSeriesSet
             
             for (Portfolio portfolio : client.getPortfolios())
             {
-                var instance = new GroupedDataSeries(portfolio, entry.getKey());
+                var instance = new GroupedDataSeries(portfolio, entry.getKey(), DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
                 instance.setIsPortfolioPlusReferenceAccount(true);
 
                 var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
@@ -90,7 +90,7 @@ public class DataSeriesSet
             
             for (Portfolio portfolio : client.getPortfolios())
             {
-                var instance = new GroupedDataSeries(portfolio, entry.getKey());
+                var instance = new GroupedDataSeries(portfolio, entry.getKey(), DataSeries.Type.PORTFOLIO);
 
                 var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, portfolio.getName(), instance,
                                 entry.getValue(), wheel.next());
@@ -100,7 +100,7 @@ public class DataSeriesSet
 
             for (Account account : client.getAccounts())
             {
-                var instance = new GroupedDataSeries(account, entry.getKey());
+                var instance = new GroupedDataSeries(account, entry.getKey(), DataSeries.Type.ACCOUNT);
 
                 var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, account.getName(), instance,
                                 entry.getValue(), wheel.next());
@@ -120,7 +120,8 @@ public class DataSeriesSet
 
                         Object[] groups = { taxonomy, classification.getPathName(false) };
 
-                        var instance = new GroupedDataSeries(classification, entry.getKey());
+                        var instance = new GroupedDataSeries(classification, entry.getKey(),
+                                        DataSeries.Type.CLASSIFICATION);
 
                         var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, groups, instance, entry.getValue(),
                                         wheel.next());
@@ -134,7 +135,7 @@ public class DataSeriesSet
 
             for (ClientFilterMenu.Item item : menu.getCustomItems())
             {
-                var instance = new GroupedDataSeries(item, entry.getKey());
+                var instance = new GroupedDataSeries(item, entry.getKey(), DataSeries.Type.CLIENT_FILTER);
 
                 var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, item.getLabel(), instance,
                                 entry.getValue(), wheel.next());

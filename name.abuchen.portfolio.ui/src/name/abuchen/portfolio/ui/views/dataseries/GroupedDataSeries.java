@@ -17,12 +17,15 @@ public class GroupedDataSeries
 {
     private Object parentObject;
     private ClientDataSeries clientDataSeries;
+    private DataSeries.Type parentObjectDataSeriesType;
     private Boolean isPortfolioPlusReferenceAccount = false;
 
-    public GroupedDataSeries(Object parentObject, ClientDataSeries clientDataSeries)
+    public GroupedDataSeries(Object parentObject, ClientDataSeries clientDataSeries,
+                    DataSeries.Type parentObjectDataSeriesType)
     {
         this.parentObject = parentObject;
         this.clientDataSeries = clientDataSeries;
+        this.parentObjectDataSeriesType = parentObjectDataSeriesType;
     }
 
     public void setIsPortfolioPlusReferenceAccount(Boolean value)
@@ -72,8 +75,7 @@ public class GroupedDataSeries
 
     public String getId()
     {
-        return parentObject.getClass().getTypeName() + " + " + parentObject.toString() + "-" //$NON-NLS-1$ //$NON-NLS-2$
-                        + isPortfolioPlusReferenceAccount + "-" + clientDataSeries.name(); //$NON-NLS-1$
+        return this.parentObjectDataSeriesType.buildUUID(parentObject).concat(this.clientDataSeries.name());
     }
 
     public Object getParentObject()
