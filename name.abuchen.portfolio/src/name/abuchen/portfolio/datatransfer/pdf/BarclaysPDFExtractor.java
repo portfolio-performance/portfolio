@@ -53,13 +53,13 @@ public class BarclaysPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>.{1,36}).+ +" //
+                                        + "(?<note>.{31,36})(.+)? +" //
                                         + "(?<amount>[\\.,\\d]+)\\+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note").trim());
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -78,7 +78,7 @@ public class BarclaysPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>.{1,36}).+ +" //
+                                        + "(?<note>.{36}) [A-Z]{2} Visa( B)?( A)? +" //
                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));

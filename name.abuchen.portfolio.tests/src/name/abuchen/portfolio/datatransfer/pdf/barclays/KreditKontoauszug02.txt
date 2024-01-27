@@ -68,7 +68,7 @@ Sonstige Umsätze
 06.01.2024 06.01.2024 Per Lastschrift dankend erhalten            671,99+
 P200000000000000
 DE04ZZZ00000001740
-08.01.2024 08.01.2024 Vorname Nachname              1,00+
+08.01.2024 08.01.2024 Vorname Nachname                1,00+
 Gutschrift Überweisung
 Ubertrag Barclays Visa
 08.01.2024 08.01.2024 Gutschrift Manuelle Lastschrift              0,50+
