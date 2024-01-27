@@ -27,12 +27,12 @@ public class PaymentsViewInput
     private boolean useGrossValue;
     private boolean useConsolidateRetired;
 
-    public PaymentsViewInput(int tab, int year, Optional<String> filterIdent, Mode mode, boolean useGrossValue,
+    public PaymentsViewInput(int tab, int year, Optional<String> clientFilterId, Mode mode, boolean useGrossValue,
                     boolean useConsolidateRetired)
     {
         this.tab = tab;
         this.year = year;
-        this.clientFilterId = filterIdent;
+        this.clientFilterId = clientFilterId;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;

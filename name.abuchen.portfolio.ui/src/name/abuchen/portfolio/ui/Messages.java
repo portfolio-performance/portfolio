@@ -781,10 +781,12 @@ public class Messages extends NLS
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
+    public static String LabelHeatmapFees;
     public static String LabelHeatmapInvestments;
     public static String LabelHeatmapInvestmentsDirect;
     public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
+    public static String LabelHeatmapTaxes;
     public static String LabelHide;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelJSONPathHint;

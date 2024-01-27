@@ -27,8 +27,10 @@ import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
 public enum WidgetFactory
 {
@@ -260,6 +262,12 @@ public enum WidgetFactory
                                     .withColoredValues(false).build()),
 
     HEATMAP_INVESTMENTS(Messages.LabelHeatmapInvestments, Messages.LabelTrades, InvestmentHeatmapWidget::new),
+
+    HEATMAP_TAXES(Messages.LabelHeatmapTaxes, Messages.LabelTrades,
+                    (widget, data) -> new CostHeatmapWidget(widget, data, PaymentsViewModel.Mode.TAXES)),
+
+    HEATMAP_FEES(Messages.LabelHeatmapFees, Messages.LabelTrades,
+                    (widget, data) -> new CostHeatmapWidget(widget, data, PaymentsViewModel.Mode.FEES)),
 
     PORTFOLIO_TAX_RATE(Messages.LabelPortfolioTaxRate, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> new PortfolioTaxOrFeeRateWidget(widget, data, s -> {
