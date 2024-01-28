@@ -160,6 +160,7 @@ public class Messages extends NLS
     public static String ColumnDeltaPercentRelative_Description;
     public static String ColumnDeltaShares;
     public static String ColumnRebalanceAmount;
+    public static String ColumnRebalanceSavingPlan;
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
     public static String ColumnDeltaValue;
@@ -1147,6 +1148,9 @@ public class Messages extends NLS
     public static String PresetsPrefPageStartOfDay;
     public static String PresetsPrefPageTime;
     public static String PresetsPrefPageTitle;
+    public static String RebalancingSavingPlansSum;
+    public static String RebalancingSavingPlansExecutionsTextBefore;
+    public static String RebalancingSavingPlansExecutionsTextAfter;
     public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
