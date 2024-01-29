@@ -414,6 +414,232 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5800)));
     }
 
+    @Test
+    public void testKontoauszug8()
+    {
+        RenaultBankDirektPDFExtractor extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("renaultBankDirektKontoauszug8.txt"), errors);
+
+        assertThat(errors, empty());
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(3L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-10T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-29T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.60)));
+    }
+
+    @Test
+    public void testKontoauszug9()
+    {
+        RenaultBankDirektPDFExtractor extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("renaultBankDirektKontoauszug9.txt"), errors);
+
+        assertThat(errors, empty());
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(4L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-13T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(616)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-04T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-07T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(250)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-10T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(400)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.82)));
+    }
+
+    @Test
+    public void testKontoauszug10()
+    {
+        RenaultBankDirektPDFExtractor extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(loadFile("renaultBankDirektKontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
+                        .count(), is(1L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST)
+                        .count(), is(2L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
+                        .count(), is(4L));
+
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.INTEREST_CHARGE)
+                        .count(), is(1L));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item item = iter.next();
+
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-12T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4250)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-01T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(600)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-23T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3500)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.62)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-31T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.82)));
+
+        item = iter.next();
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.59)));
+    }
+
     private List<InputFile> loadFile(String filename)
     {
         return PDFInputFile.loadTestCase(getClass(), filename);
