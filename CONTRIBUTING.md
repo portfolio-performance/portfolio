@@ -25,6 +25,7 @@
     - [Naming conventions for detected elements](#naming-conventions-for-detected-elements)
     - [Test cases](#test-cases)
   - [PDF importer](#pdf-importer)
+    - [Debug information](#debug-information)
     - [Source location](#source-location-1)
     - [Imported transactions](#imported-transactions-1)
     - [Anatomy of a PDF importer](#anatomy-of-a-pdf-importer)
@@ -310,6 +311,15 @@ Importers are created for each supported bank and/or broker. The process works l
 
 If you want to add an importer for a new bank or a new transaction type, check out the existing importers for naming conventions, structure, formatting, etc.
 
+
+### Debug information
+
+There is a quick way to generate the required debug information from a pdf file:
+
+`File` => `Import` => `Debug: Create text from PDF...`
+
+Make sure to remove all personal data.
+However, make also sure that you do not insert any new lines, line breaks, spaces or similar.
 
 ### Source location
 
