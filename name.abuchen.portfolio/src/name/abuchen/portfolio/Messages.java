@@ -248,6 +248,7 @@ public class Messages extends NLS
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
+    public static String MsgErrorCSFeedOldURL;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;
@@ -257,6 +258,7 @@ public class Messages extends NLS
     public static String MsgErrorDuplicateTicker;
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
+    public static String MsgErrorFeedCurrencyMismatch;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorInvalidURL;
     public static String MsgErrorInvalidWKN;
