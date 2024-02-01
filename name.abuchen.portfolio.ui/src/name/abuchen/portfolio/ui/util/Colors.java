@@ -21,8 +21,8 @@ public final class Colors
         private Color defaultForeground = Colors.BLACK;
         private Color defaultBackground = Colors.WHITE;
         private Color warningBackground = getColor(254, 223, 107); // FEDF6B
-        private Color redBackground = Colors.GREEN;
-        private Color greenBackground = Colors.RED;
+        private Color redBackground = Colors.RED;
+        private Color greenBackground = Colors.GREEN;
         private Color redForeground = Colors.DARK_RED;
         private Color greenForeground = Colors.DARK_GREEN;
         private Color grayForeground = getColor(112, 112, 112); // 707070
@@ -225,8 +225,8 @@ public final class Colors
     {
         // http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 
-        double luminance = 1 - (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
-        return luminance < 0.4 ? BLACK : WHITE;
+        double luminance = (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
+        return luminance > 0.55 ? BLACK : WHITE;
     }
 
     public static Color brighter(Color base)

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -103,10 +104,11 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
 
         // determine colors
         LimitPriceSettings settings = new LimitPriceSettings(item.attributeType.getProperties());
-        price.setBackdropColor(item.limit.getRelationalOperator().isGreater()
+        Color bgColor = item.limit.getRelationalOperator().isGreater()
                         ? settings.getLimitExceededPositivelyColor(Colors.theme().greenBackground())
-                        : settings.getLimitExceededNegativelyColor(Colors.theme().redBackground()));
-
+                        : settings.getLimitExceededNegativelyColor(Colors.theme().redBackground());
+        price.setBackdropColor(bgColor);
+        price.setForeground(Colors.getTextColor(bgColor));
         price.setText(Values.Quote.format(item.getSecurity().getCurrencyCode(), item.price.getValue()));
 
         Label limit = new Label(composite, SWT.NONE);
