@@ -226,7 +226,6 @@ public final class Colors
         // http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 
         double luminance = (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
-        System.out.println(luminance);
         return luminance > 0.55 ? BLACK : WHITE;
     }
 
