@@ -39,6 +39,24 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.67.2" date="2024-01-28">
+      <description>
+        <ul>
+          <li>New: 2 new widgets with the heatmap of monthly taxes or fees</li>
+          <li>New: PDF importer for Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li>Improvement of the PDF importer: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li>Fix: Fixes a problem with deleting widgets of the type "Description"</li>
+          <li>Fix: Updates the CoinGecko call frequency to avoid hitting the limit of the free plan</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: 2 neue Widgets mit der Heatmap der monatlichen Steuern bzw. Gebühren</li>
+          <li>Neu: PDF-Importer für Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li>Verbesserung der PDF-Importers: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li>Fix: Behebt ein Problem beim Löschen von Widgets vom Typ "Beschreibung"</li>
+          <li>Fix: Aktualisiert die CoinGecko-Aufrufhäufigkeit, um ein Überschreiten des Limits für die kostenlose Stufe zu vermeiden</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.67.1" date="2024-01-08">
       <description>
         <ul>

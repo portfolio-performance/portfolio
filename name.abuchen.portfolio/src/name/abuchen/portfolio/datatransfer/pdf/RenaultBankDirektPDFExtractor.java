@@ -174,7 +174,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
             transaction.setDateTime(asDate(date));
             transaction.setAmount(asAmount(matcherMap.get("amount")));
-            transaction.setCurrencyCode(context.get(RenaultBankDirektPDFExtractor.CONTEXT_KEY_CURRENCY));
+            transaction.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
         };
     }
 
@@ -184,8 +184,10 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Pattern yearPattern = Pattern.compile("(.*)(KONTOAUSZUG  Nr. )(\\d+)\\/(?<year>\\d{4})");
             Pattern currencyPattern = Pattern
                             .compile("(.*)(Summe Zinsen\\/Kontoführung)(\\s*)                (?<currency>[\\w]{3})(.*)");
+          Pattern currencyPattern2 = Pattern
+                            .compile("^.*N.*E.*U.*E.*R.*K.*O.*N.*T.*O.*S.*T.*A.*N.*D.*V.*O.*M.*I.*N.*(?<currency>[A-Z_]{5,}).*$");
 
-            contextProviderCommon(context, lines, yearPattern, currencyPattern);
+            contextProviderCommon(context, lines, yearPattern, currencyPattern, currencyPattern2);
         };
     }
 
@@ -195,7 +197,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Pattern yearPattern = Pattern.compile("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})");
             Pattern currencyPattern = Pattern
                             .compile("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)");
-            contextProviderCommon(context, lines, yearPattern, currencyPattern);
+            contextProviderCommon(context, lines, yearPattern, currencyPattern, null);
         };
     }
 
@@ -205,14 +207,15 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Pattern currencyPattern = Pattern
                             .compile("(.*) Betrag in (?<currency>[\\w]{3}) (.*)");
             context.put(CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE, CONTEXT_VALUE_TRUE);
-            contextProviderCommon(context, lines, null, currencyPattern);
+            contextProviderCommon(context, lines, null, currencyPattern, null);
         };
     }
 
     private void contextProviderCommon(Map<String, String> context,
                     String[] lines,
                     Pattern yearPattern,
-                    Pattern currencyPattern)
+                    Pattern currencyPattern,
+                    Pattern currencyPattern2)
     {
         for (String line : lines)
         {
@@ -228,7 +231,16 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             Matcher currencyMatcher = currencyPattern.matcher(line);
             if (currencyMatcher.matches())
             {
-                context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency"));
+                context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency").replaceAll("_", ""));
+            }
+            
+            if (currencyPattern2 != null && context.get(CONTEXT_KEY_CURRENCY) == null)
+            {
+                currencyMatcher = currencyPattern2.matcher(line);
+                if (currencyMatcher.matches())
+                {
+                    context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency").replaceAll("_", ""));
+                }
             }
         }
     }

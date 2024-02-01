@@ -119,4 +119,117 @@ public class BarclaysPDFExtractorTest
         assertThat(transaction.getNote(), is("Tegut Filiale 0000     LangOrtsnamen"));
 
     }
+    
+    @Test
+    public void testKreditKontoauszug02()
+    {
+        BarclaysPDFExtractor extractor = new BarclaysPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(10));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(10L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-12-28T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(60.78)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Lidl sagt Danke        Ort"));
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-08T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("PAYPAL *VODAFONE       0000000000"));
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(671.99)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Per Lastschrift dankend erhalten"));
+        item = iter.next();
+        
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-08T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Vorname Nachname"));
+        item = iter.next();
+        
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-08T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(.5)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Gutschrift Manuelle Lastschrift"));
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-04T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("TooGoodToG xxxxxxxxxxx toogoodtogo.d"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2024-01-05T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("PAYPAL *IONOS SE       00000000000"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-12-25T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(60.78)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Lidl sagt Danke        Ort"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-12-25T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(60.78)));
+        assertThat(transaction.getSource(), is("KreditKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is("Lidl sagt Danke        Ort"));
+    }
 }

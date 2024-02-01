@@ -1,0 +1,100 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+305 200 37
+Renault BRanekn daiurelktt B   a   n  k    d  i  r e   k  t                                                   
+                                                                                             
+                                KONTOAUSZUG  Nr. 6/2020
+                                                Seite 1
+                                                       
+                                                                            Kontonummer: 480 800 200
+                                                                            Bankleitzahl: 305 200 37
+                                                                   IBAN: DE38 3052 0037 0480 8002 00
+                                                                                    BIC: RCIDDE3NPAY
+Herrn                                                                                               
+Max Muster                                                                             Kontokorrent
+Musterstr. 4                                                                   erstellt am 20.11.2020
+06440 Musterhausen                                                                                      
+                                                       ___________________________________
+                                                             _ _  __  __IH_R__ _KO_N__T_OS__T_AN__D _A_U_F_ _E__I_N_E_N _B__L_IC__K
+                                                 
+                                                       alt (30.10.2020)         10.156,23+
+                                         FIL:000       neu (20.11.2020)         12.472,23+
+                                                                 
+_ _ _ _ _ _  __  __  __ _ _ _ _ _  __ _  __  __  __  _ __ _ _  __  _ __  _ _ _ __ _ _ _ _  __ _ _  __ _ _  __ _  _ _ __  __  __ _ _ _  _ __ _ _ _  __ _  _ _ __  __  __ _ _ _ _ _  __  __  _ _ __ _ _ _                                 FA0724339500SL         00  
+D_A__TU_M_ __ _ B__UC_H_U_N_G__SV__O_R_G_A_N_G_ _  __ _ _ _ _ _ _ _  __ _  __ _  _ _ __ _ _ _ _  __  _ __ _ _ _ _ _  _ __ _ _ _ _ _  _ _ __  _ __  __ _  _ _ _ _S_O__LL_ _ _ _ __  _ _ _ _ _ __H_AB__EN_ 
+ __ _  __  _ _ __A_L_T_E_R_ _K_ON_T_O__S_T_AN__D __VO_M_ _3_0_.__1_0.__2_02_0_ _I_N__ _E_UR__ _  _ _ _ _ _ _ __  _ _ _ _ _ __ _ _ _  _ _ __ _ _  _ _ _ _ _ __ _ _ _ _ _ _  _ __  _ __1_0_.1_5_6_,__23__+
+                                                                                                    
+03.11.  Internet-Euro-Überweisung                                          2.300,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000017775084                                      
+        Datum: 03.11.20 Zeit: 11:11UFT 0004808002 TAN 923485                                        
+        Auszahlung 014 RenaultBank                                                                  
+04.11.  Internet-Euro-Überweisung                                          2.200,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000017775084                                      
+        Datum: 04.11.20 Zeit: 10:53UFT 0004808002 TAN 537957                                        
+        Auszahlung 015 RenaultBank                                                                  
+13.11.  Dauerauftrag-Gutschrift                                                              616,00+
+        Max Muster                                                                                 
+        PKW Abschlag                                                                       
+13.11.  Internet-Euro-Überweisung                                            400,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000017775084                                      
+        Datum: 13.11.20 Zeit: 11:30UFT 0004808002 TAN 206835                                        
+        Auszahlung 016 RenaultBank                                                                  
+16.11.  Überweisungs-Gutschrift                                                            7.000,00+
+        Max Muster                                                                                 
+        Einzahlung 005 RenaultBank                                                                  
+17.11.  Internet-Euro-Überweisung                                          5.800,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000017775084                                      
+        Datum: 17.11.20 Zeit: 09:18UFT 0004808002 TAN 184408                                        
+        Auszahlung 017 RenaultBank                                                                  
+20.11.  Überweisungs-Gutschrift                                                            5.400,00+
+        Max Muster                                                                                 
+_ _  _ __ _ _  _E__i_n_z_a_hl_u__ng__ _00_6__ R_e_n__a_u_lt__B_a_n_k _ __ _ _ _  _ __  _ _ _ __ _  __  __ _  __ _ _  __ _ _ _ _  _ __ _  _ _ _ _ __  __  __  _ _ _ _ __ _ _ _  __ _ _ _  _ _ __  _ _ _ _
+        GESAMTUMSATZ                                                      10.700,00-      13.016,00+
+_  _ __ _  __  _N_E_U_E__R_ K__O_NT__O_S_T_A_N_D_ _VO_M__ 2_0_._1__1_._2_0_20__ I__N_ _E_U_R _ __  _ _ _ __  __ _ _ _ _  _ __ _  __  _ __  _ _ _ __  _ _ __  __ _ _  _ _ _ _ __  _ __1_2._4_7__2,_2_3_+_
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                     
+Sehr geehrte Kundin, sehr geehrter Kunde, 
+bitte prüfen Sie die vorstehenden Angaben auf ihre Vollständigkeit und Richtigkeit des Saldos und beachten
+Sie dabei die nachfolgenden Anmerkungen.
+Für die Zinsabrechnung verwenden wir, wie für alle Umsätze, das Datum der Wertstellung. Wird keine
+Wertstellung ausgewiesen, so gilt das Buchungsdatum als Wertstellungsdatum.
+Gegebenenfalls ausgewiesene Bankdienstleistungen sind steuerfrei, sofern nichts Abweichendes angegeben
+ist.
+Soweit die vorstehende Aufstellung mit dem Hinweis "Rechnungsabschluss" gekennzeichnet ist, haben wir für
+Ihr Konto einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum ggf. 
+entstandenen beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach
+dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraums
+auswirken, werden erst in der folgenden Abrechnung berücksichtigt. Korrekturen, die sich auf Zinsen beziehen,
+werden entsprechend gekennzeichnet.
+Einwendungen gegen Angaben im Kontoauszug oder den ausgewiesenen Saldo sind unverzüglich, spätestens
+jedoch innerhalb von sechs Wochen nach Zugang des Kontoauszugs ausschließlich der Innenrevision der
+Renault Bank direkt (Postfach 269, 45952 Gladbeck) schriftlich zur Kenntnis zu geben. Nach Ablauf dieser Frist
+gehen wir davon aus, dass Sie mit der Vollständigkeit und Richtigkeit der Angaben und des Saldos
+einverstanden sind.
+Vom Kunden erteilte Einzugsaufträge betreffend Lastschriften von seinem Referenzkonto werden unter dem
+Vorbehalt des Eingangs gutgeschrieben.
+Bitte beachten Sie: Kapitalerträge sind einkommensteuerpflichtig.
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der
+Einlagen (Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem
+französischen Einlagensicherungsfonds angeschlossen. Die französische Einlagensicherung sichert Einlagen in
+derselben Höhe ab wie die gesetzliche deutsche Einlagensicherung: Bis 100.000 EURO pro Person sind zu 100
+Prozent abgesichert.
+Nähere Informationen können Sie dem "Informationsbogen für den Einleger" entnehmen. Diesen finden sie auf
+unserer Webseite unter dem Menüpunkt: AGB.
+
+```
