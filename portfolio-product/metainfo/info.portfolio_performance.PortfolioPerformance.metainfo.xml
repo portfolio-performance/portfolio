@@ -39,6 +39,18 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.67.3" date="2024-02-01">
+      <description>
+        <ul>
+          <li>Fix: Adjustment of the Credit Suisse price feed to the new server API for historical prices</li>
+          <li>Improvement: Minor adjustment in determining the font color based on the background to improve readability</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Korrektur: Anpassung des Credit Suisse Kurslieferanten an die neue Server-API für historische Kurse</li>
+          <li>Verbesserung: Geringfügige Anpassung zur Bestimmung der Schriftfarbe basierend auf dem Hintergrund, um die Lesbarkeit zu verbessern</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.67.2" date="2024-01-28">
       <description>
         <ul>
