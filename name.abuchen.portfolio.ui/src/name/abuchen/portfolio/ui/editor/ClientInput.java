@@ -557,30 +557,31 @@ public class ClientInput
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
             Predicate<Security> onlyActive = s -> !s.isRetired();
+            Client c = getClient();
 
-            Job initialQuoteUpdate = new UpdateQuotesJob(client, onlyActive,
+            Job initialQuoteUpdate = new UpdateQuotesJob(c, onlyActive,
                             EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
-            CreateInvestmentPlanTxJob checkInvestmentPlans = new CreateInvestmentPlanTxJob(client,
+            CreateInvestmentPlanTxJob checkInvestmentPlans = new CreateInvestmentPlanTxJob(c,
                             exchangeRateProviderFacory);
             checkInvestmentPlans.startAfter(initialQuoteUpdate);
             checkInvestmentPlans.schedule(1100);
 
             int thirtyMinutes = 1000 * 60 * 30;
-            Job job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.LATEST))
+            Job job = new UpdateQuotesJob(c, onlyActive, EnumSet.of(UpdateQuotesJob.Target.LATEST))
                             .repeatEvery(thirtyMinutes);
             job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;
-            job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.HISTORIC))
+            job = new UpdateQuotesJob(c, onlyActive, EnumSet.of(UpdateQuotesJob.Target.HISTORIC))
                             .repeatEvery(sixHours);
             job.schedule(sixHours);
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(5000);
-            new UpdateDividendsJob(getClient()).schedule(7000);
+            new SyncOnlineSecuritiesJob(c).schedule(5000);
+            new UpdateDividendsJob(c).schedule(7000);
         }
     }
 
