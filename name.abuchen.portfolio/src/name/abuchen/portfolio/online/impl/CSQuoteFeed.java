@@ -114,7 +114,7 @@ public class CSQuoteFeed implements QuoteFeed
         Matcher m = OLDURLPATTERN.matcher(oldURL);
         if (!m.find() || m.groupCount() != 1)
         {
-            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorCSFeedOldURLWrongPattern,
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorSecurityHasMalformedURL,
                             security.getName(), oldURL));
         }
 

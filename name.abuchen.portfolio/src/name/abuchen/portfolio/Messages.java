@@ -248,7 +248,6 @@ public class Messages extends NLS
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
-    public static String MsgErrorCSFeedOldURLWrongPattern;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDownloadEurostatHICP;
@@ -278,6 +277,7 @@ public class Messages extends NLS
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
     public static String MsgErrorOrderCancellationUnsupported;
+    public static String MsgErrorSecurityHasMalformedURL;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
