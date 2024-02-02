@@ -2,9 +2,14 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.Map;
+import java.util.function.BiConsumer;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -13,19 +18,48 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 {
 
+    private static final String ACCOUNT_DEPOSIT = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (GUTSCHRIFT|DAUERAUFTRAG|Neuanlage) (PN:\\d+)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
+    private static final String ACCOUNT_REMOVAL = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*BERWEISUNG.*|FESTGELDANLAGE) (PN:\\d+)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
+
+    private static final String CONTEXT_KEY_YEAR = "year";
+    private static final String CONTEXT_KEY_CURRENCY = "currency";
+
     public MerkurPrivatBankPDFExtractor(Client client)
     {
         super(client);
 
         addBankIdentifier("Umsatzsteuer-ID DE198159260");
+        addBankIdentifier("MERKUR PRIVATBANK KGaA");
 
         addBuySellTransaction();
+        addAccountTransaction();
     }
 
     @Override
     public String getLabel()
     {
         return "MERKUR PRIVATBANK KGaA";
+    }
+
+    private void addAccountTransaction()
+    {
+        final DocumentType type = new DocumentType(".*-Konto Kontonummer", //
+                        documentContext -> documentContext //
+                                        .section("year").match("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})")
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        .section("currency").match("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)")
+                                        .assign((ctx, v) -> ctx.put(CONTEXT_KEY_CURRENCY,
+                                                        asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        Block depositBlock = new Block(ACCOUNT_DEPOSIT);
+        depositBlock.set(depositTransaction(type, ACCOUNT_DEPOSIT));
+        type.addBlock(depositBlock);
+
+        Block removalBlock = new Block(ACCOUNT_REMOVAL);
+        removalBlock.set(removalTransaction(type, ACCOUNT_REMOVAL));
+        type.addBlock(removalBlock);
     }
 
     private void addBuySellTransaction()
@@ -123,5 +157,38 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
 
+    }
+
+    private Transaction<AccountTransaction> depositTransaction(DocumentType type, String regex)
+    {
+        return new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DEPOSIT);
+            return entry;
+        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
+    }
+
+    private Transaction<AccountTransaction> removalTransaction(DocumentType type, String regex)
+    {
+        return new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.REMOVAL);
+            return entry;
+        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
+    }
+
+    private BiConsumer<AccountTransaction, ParsedData> assignmentsProvider(DocumentType type)
+    {
+        return (transaction, matcherMap) -> {
+            Map<String, String> context = type.getCurrentContext();
+
+            String date = matcherMap.get("date");
+
+            date += context.get(CONTEXT_KEY_YEAR);
+
+            transaction.setDateTime(asDate(date));
+            transaction.setAmount(asAmount(matcherMap.get("amount")));
+            transaction.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
+        };
     }
 }
