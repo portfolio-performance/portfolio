@@ -799,7 +799,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite valueArea = new Composite(details, SWT.NONE);
             glf.applyTo(valueArea);
             label = new Label(valueArea, SWT.NONE);
-            label.setText(Messages.CSVImportLabelFormat);
+            label.setText(Messages.LabelDecimalSeparator);
             final ComboViewer valueFormats = new ComboViewer(valueArea, SWT.READ_ONLY);
             valueFormats.setContentProvider(ArrayContentProvider.getInstance());
             valueFormats.getCombo().select(0);

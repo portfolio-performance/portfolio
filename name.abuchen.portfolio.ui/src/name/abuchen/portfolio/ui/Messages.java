@@ -609,6 +609,7 @@ public class Messages extends NLS
     public static String LabelDataSeries;
     public static String LabelDateExclusive;
     public static String LabelDateXToY;
+    public static String LabelDecimalSeparator;
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;

@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.MessageFormat;
@@ -403,24 +402,76 @@ public final class CSVImporter
         }
     }
 
+    public static class AmountFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+
+        private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.ENGLISH);
+        private static final String VALID_CHARS = "0123456789-eE"; //$NON-NLS-1$
+
+        private final char decimalSeparator;
+
+        public AmountFormat(char decimalSeparator)
+        {
+            this.decimalSeparator = decimalSeparator;
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            return toAppendTo.append(NUMBER_FORMAT.format(obj));
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            if (source == null)
+                throw new NullPointerException();
+            if (pos == null)
+                throw new NullPointerException();
+
+            var input = new StringBuilder();
+
+            for (int ii = 0; ii < source.length(); ii++)
+            {
+                var c = source.charAt(ii);
+
+                if (c == decimalSeparator)
+                {
+                    input.append('.');
+                }
+                else if (VALID_CHARS.indexOf(c) >= 0)
+                {
+                    input.append(c);
+                }
+            }
+
+            if (input.isEmpty())
+            {
+                pos.setErrorIndex(0);
+                return null;
+            }
+
+            try
+            {
+                var number = NUMBER_FORMAT.parseObject(input.toString());
+                pos.setIndex(source.length());
+                return number;
+            }
+            catch (ParseException e)
+            {
+                pos.setErrorIndex(0);
+                return null;
+            }
+        }
+    }
+
     public static class AmountField extends CSVImporter.Field
     {
-        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
-                        new FieldFormat("0.000,00", Messages.CSVFormatNumberGermany, //$NON-NLS-1$
-                                        NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
-                                        NumberFormat.getInstance(Locale.US)),
-                        new FieldFormat("0 000,00", Messages.CSVFormatNumberFrance, () -> { //$NON-NLS-1$
-                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.FRANCE);
-                            unusualSymbols.setDecimalSeparator(',');
-                            unusualSymbols.setGroupingSeparator(' ');
-                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
-                        }), //
-                        new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
-                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                            unusualSymbols.setGroupingSeparator('\'');
-                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
-                        })));
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList( //
+                        new FieldFormat("0.000,00", ",", new AmountFormat(',')), //$NON-NLS-1$ //$NON-NLS-2$
+                        new FieldFormat("0,000.00", ".", new AmountFormat('.')) //$NON-NLS-1$ //$NON-NLS-2$
+        ));
 
         /* package */ AmountField(String code, String... name)
         {
@@ -436,14 +487,6 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
-            // pre-configured based on locale; as PP currently does not allow
-            // arbitrary number format patterns, map it to the available FORMAT
-            // objects
-
-            if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
-                return FORMATS.get(2);
-            if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
-                return FORMATS.get(3);
             if (TextUtil.DECIMAL_SEPARATOR == ',')
                 return FORMATS.get(0);
             if (TextUtil.DECIMAL_SEPARATOR == '.')
