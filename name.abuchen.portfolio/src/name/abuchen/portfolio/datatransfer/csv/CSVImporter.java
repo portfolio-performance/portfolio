@@ -402,12 +402,50 @@ public final class CSVImporter
         }
     }
 
+    public static class AnnotatedParsePosition extends ParsePosition
+    {
+        private boolean isTrimmed = false;
+
+        public AnnotatedParsePosition(int index)
+        {
+            super(index);
+        }
+
+        public boolean isTrimmed()
+        {
+            return isTrimmed;
+        }
+
+        public void setTrimmed(boolean isTrimmed)
+        {
+            this.isTrimmed = isTrimmed;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(getIndex(), getErrorIndex(), isTrimmed);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (!super.equals(obj))
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            AnnotatedParsePosition other = (AnnotatedParsePosition) obj;
+            return isTrimmed == other.isTrimmed;
+        }
+    }
+
     public static class AmountFormat extends Format
     {
         private static final long serialVersionUID = 1L;
 
         private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.ENGLISH);
-        private static final String VALID_CHARS = "0123456789-eE"; //$NON-NLS-1$
 
         private final char decimalSeparator;
 
@@ -430,6 +468,15 @@ public final class CSVImporter
             if (pos == null)
                 throw new NullPointerException();
 
+            // track if we found a digit, because 'e' is okay after the first
+            // digit ("2.12e-6") but must be stripped at the start ("EUR 42")
+            boolean foundDigit = false;
+
+            // track if we trimmed the string in a meaningful way, i.e.
+            // something besides number-related characters and whitespace
+            // in order to provide a color indicator to the user
+            boolean isTrimmed = false;
+
             var input = new StringBuilder();
 
             for (int ii = 0; ii < source.length(); ii++)
@@ -440,10 +487,28 @@ public final class CSVImporter
                 {
                     input.append('.');
                 }
-                else if (VALID_CHARS.indexOf(c) >= 0)
+                else if ((c == 'e' || c == 'E') && foundDigit)
+                {
+                    input.append('E');
+                }
+                else if ("0123456789-".indexOf(c) >= 0) //$NON-NLS-1$
                 {
                     input.append(c);
+                    foundDigit = true;
                 }
+                else if (",.' ".indexOf(c) >= 0 || TextUtil.isWhitespace(c)) //$NON-NLS-1$
+                {
+                    // do nothing
+                }
+                else
+                {
+                    isTrimmed = true;
+                }
+            }
+
+            if (pos instanceof AnnotatedParsePosition annotated && isTrimmed)
+            {
+                annotated.setTrimmed(true);
             }
 
             if (input.isEmpty())
@@ -452,17 +517,20 @@ public final class CSVImporter
                 return null;
             }
 
-            try
-            {
-                var number = NUMBER_FORMAT.parseObject(input.toString());
-                pos.setIndex(source.length());
-                return number;
-            }
-            catch (ParseException e)
+            var p = new ParsePosition(0);
+            var number = NUMBER_FORMAT.parseObject(input.toString(), p);
+
+            if (p.getIndex() == 0)
             {
                 pos.setErrorIndex(0);
                 return null;
             }
+            else
+            {
+                pos.setIndex(source.length());
+                return number;
+            }
+
         }
     }
 

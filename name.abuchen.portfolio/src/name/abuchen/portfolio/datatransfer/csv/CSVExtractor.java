@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import static name.abuchen.portfolio.util.TextUtil.stripNonNumberCharacters;
-
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -102,11 +100,7 @@ public abstract class CSVExtractor implements Extractor
 
         try
         {
-            // to toUpperCase is needed to support scientific notation which can
-            // only be parsed with an upper case 'E'
-
-            Number num = (Number) field2column.get(name).getFormat().getFormat()
-                            .parseObject(stripNonNumberCharacters(value).toUpperCase());
+            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
             return Long.valueOf(Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)
