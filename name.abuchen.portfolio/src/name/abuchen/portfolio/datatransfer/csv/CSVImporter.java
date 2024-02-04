@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -414,7 +415,7 @@ public final class CSVImporter
                             unusualSymbols.setDecimalSeparator(',');
                             unusualSymbols.setGroupingSeparator(' ');
                             return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
-                        }),
+                        }), //
                         new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');
@@ -849,7 +850,7 @@ public final class CSVImporter
                 mapToImportDefinition();
             }
         }
-        catch (IllegalStateException e)
+        catch (IllegalStateException | UncheckedIOException e)
         {
             PortfolioLog.error(e);
 
