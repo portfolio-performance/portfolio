@@ -38,6 +38,8 @@ public class AttributeTypeTest
     {
         DEFAULT_LOCALE = Locale.getDefault();
         Locale.setDefault(Locale.GERMANY);
+        ValuesBuilder.initQuoteValuesDecimalFormat();
+        AttributeType.initPatterns();
     }
 
     @After
