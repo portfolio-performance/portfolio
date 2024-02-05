@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,8 +27,25 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AttributeType implements Named
 {
-    private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
-    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
+    private static Pattern PATTERN;
+    private static Pattern LIMIT_PRICE_PATTERN;
+
+    static
+    {
+        initPatterns();
+    }
+
+    @SuppressWarnings("nls")
+    static void initPatterns()
+    {
+        DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.getDefault(Locale.Category.FORMAT));
+
+        // e.g. \\-?(\\d+\\.)*\\d+(\\,\\d+)?
+        String numberRegex = "\\" + dfs.getMinusSign() + "?(\\d+\\" + dfs.getGroupingSeparator() + ")*\\d+(\\"
+                        + dfs.getDecimalSeparator() + "\\d+)?";
+        PATTERN = Pattern.compile("^\\s*" + numberRegex + "\\s*$");
+        LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*(" + numberRegex + ")\\s*$");
+    }
 
     /* protobuf only */ interface ProtoConverter
     {
@@ -90,11 +109,11 @@ public class AttributeType implements Named
         }
 
         @Override
-        public Object fromString(String value)
+        public LimitPrice fromString(String value)
         {
             try
             {
-                if (value.length() == 0)
+                if (value.isBlank())
                     return null;
 
                 Matcher m = LIMIT_PRICE_PATTERN.matcher(value);
@@ -156,7 +175,7 @@ public class AttributeType implements Named
         }
     }
 
-    private static class LongConverter implements Converter, ProtoConverter
+    static class LongConverter implements Converter, ProtoConverter
     {
         private final DecimalFormat full;
 
@@ -179,22 +198,22 @@ public class AttributeType implements Named
         @Override
         public Object fromString(String value)
         {
+            if (value.isBlank())
+                return null;
+
+            Matcher m = PATTERN.matcher(value);
+            if (!m.matches())
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
             try
             {
-                if (value.trim().length() == 0)
-                    return null;
 
-                Matcher m = PATTERN.matcher(value);
-                if (!m.matches())
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
-
-                BigDecimal v = (BigDecimal) full.parse(value);
+                BigDecimal v = (BigDecimal) full.parse(value.trim());
 
                 return v.multiply(BigDecimal.valueOf(values.factor())).longValue();
             }
             catch (ParseException e)
             {
-                throw new IllegalArgumentException(e);
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value), e);
             }
         }
 
@@ -246,7 +265,7 @@ public class AttributeType implements Named
         }
     }
 
-    private static class DoubleConverter implements Converter, ProtoConverter
+    static class DoubleConverter implements Converter, ProtoConverter
     {
         private final NumberFormat full = new DecimalFormat("#,###.##"); //$NON-NLS-1$
 
@@ -266,20 +285,18 @@ public class AttributeType implements Named
         @Override
         public Object fromString(String value)
         {
+            if (value.isBlank())
+                return null;
+            Matcher m = PATTERN.matcher(value);
+            if (!m.matches())
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
             try
             {
-                if (value.trim().length() == 0)
-                    return null;
-
-                Matcher m = PATTERN.matcher(value);
-                if (!m.matches())
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
-
-                return Double.valueOf(full.parse(value).doubleValue());
+                return Double.valueOf(full.parse(value.trim()).doubleValue());
             }
             catch (ParseException e)
             {
-                throw new IllegalArgumentException(e);
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value), e);
             }
         }
 

@@ -45,6 +45,7 @@ public class LimitPrice implements Comparable<LimitPrice>
 
     private RelationalOperator operator = null;
     private long value;
+    private transient Values<Long> values = Values.Quote;
 
     public LimitPrice(RelationalOperator operator, long value)
     {
@@ -101,7 +102,7 @@ public class LimitPrice implements Comparable<LimitPrice>
     @Override
     public String toString()
     {
-        return operator.getOperatorString() + " " + Values.Quote.format(value); //$NON-NLS-1$
+        return operator.getOperatorString() + " " + values.format(value); //$NON-NLS-1$
     }
 
     public boolean isExceeded(SecurityPrice price)

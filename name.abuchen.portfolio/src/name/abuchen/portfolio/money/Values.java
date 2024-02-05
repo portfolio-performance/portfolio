@@ -64,9 +64,9 @@ public abstract class Values<E>
 
     public static final class QuoteValues extends Values<Long>
     {
-        private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
+        static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
 
-        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
+        static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat(QUOTE_PATTERN));
 
         private final BigDecimal factorToMoney;
@@ -454,7 +454,7 @@ public abstract class Values<E>
     private final int precision;
     private final BigDecimal bdFactor;
 
-    private Values(String pattern, int precision)
+    Values(String pattern, int precision)
     {
         this.pattern = pattern;
         this.factor = BigInteger.TEN.pow(precision).intValue();
