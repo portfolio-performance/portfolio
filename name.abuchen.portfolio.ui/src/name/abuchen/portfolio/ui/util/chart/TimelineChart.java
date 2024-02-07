@@ -110,7 +110,7 @@ public class TimelineChart extends Chart // NOSONAR
         y2Axis.getTick().setVisible(false);
         y2Axis.getGrid().setStyle(LineStyle.NONE);
         y2Axis.setPosition(Position.Primary);
-        
+
         // 3rd y axis (percentage)
         int axisId3rd = getAxisSet().createYAxis();
         IAxis y3Axis = getAxisSet().getYAxis(axisId3rd);
@@ -275,19 +275,21 @@ public class TimelineChart extends Chart // NOSONAR
         {
             int x = xAxis.getPixelCoordinate(marker.getTimeMillis());
 
-            String label = marker.label != null ? marker.label : ""; //$NON-NLS-1$
-
-            Point textExtent = e.gc.textExtent(label);
-            boolean flip = x + 5 + textExtent.x > e.width;
-            int textX = flip ? x - 5 - textExtent.x : x + 5;
-            labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
-            labelExtentX = x + 5 + textExtent.x;
-
             e.gc.setLineStyle(SWT.LINE_SOLID);
             e.gc.setForeground(marker.color);
             e.gc.setLineWidth(2);
             e.gc.drawLine(x, 0, x, e.height);
-            e.gc.drawText(label, textX, e.height - 20 - labelStackY, true);
+
+            if (marker.label != null)
+            {
+                Point textExtent = e.gc.textExtent(marker.label);
+                boolean flip = x + 5 + textExtent.x > e.width;
+                int textX = flip ? x - 5 - textExtent.x : x + 5;
+                labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
+                labelExtentX = x + 5 + textExtent.x;
+
+                e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
+            }
 
             if (marker.value != null)
             {
