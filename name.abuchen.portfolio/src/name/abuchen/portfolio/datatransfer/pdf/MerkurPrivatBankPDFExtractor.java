@@ -3,13 +3,12 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -18,8 +17,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    private static final String ACCOUNT_DEPOSIT = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (GUTSCHRIFT|DAUERAUFTRAG|Neuanlage) (PN:\\d+)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    private static final String ACCOUNT_REMOVAL = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*BERWEISUNG.*|FESTGELDANLAGE) (PN:\\d+)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
+    private static final String ACCOUNT_DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (\\w+) (PN:\\d+)(\\s*)(?<amount>[\\.,\\d]+) (?<type>[H|S])";
 
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -53,13 +51,9 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                                                         asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block(ACCOUNT_DEPOSIT);
-        depositBlock.set(depositTransaction(type, ACCOUNT_DEPOSIT));
-        type.addBlock(depositBlock);
-
-        Block removalBlock = new Block(ACCOUNT_REMOVAL);
-        removalBlock.set(removalTransaction(type, ACCOUNT_REMOVAL));
-        type.addBlock(removalBlock);
+        Block depositRemovalBlock = new Block(ACCOUNT_DEPOSIT_REMOVAL);
+        depositRemovalBlock.set(depositRemovalTransaction(type, ACCOUNT_DEPOSIT_REMOVAL));
+        type.addBlock(depositRemovalBlock);
     }
 
     private void addBuySellTransaction()
@@ -159,36 +153,24 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
     }
 
-    private Transaction<AccountTransaction> depositTransaction(DocumentType type, String regex)
+    private Transaction<AccountTransaction> depositRemovalTransaction(DocumentType type, String regex)
     {
         return new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DEPOSIT);
             return entry;
-        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
-    }
-
-    private Transaction<AccountTransaction> removalTransaction(DocumentType type, String regex)
-    {
-        return new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.REMOVAL);
-            return entry;
-        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
-    }
-
-    private BiConsumer<AccountTransaction, ParsedData> assignmentsProvider(DocumentType type)
-    {
-        return (transaction, matcherMap) -> {
+        }).section("date", "amount", "type").match(regex).assign((t, v) -> {
+            if ("S".equals(v.get("type")))
+                t.setType(Type.REMOVAL);
             Map<String, String> context = type.getCurrentContext();
 
-            String date = matcherMap.get("date");
+            String date = v.get("date");
 
             date += context.get(CONTEXT_KEY_YEAR);
 
-            transaction.setDateTime(asDate(date));
-            transaction.setAmount(asAmount(matcherMap.get("amount")));
-            transaction.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
-        };
+            t.setDateTime(asDate(date));
+            t.setAmount(asAmount(v.get("amount")));
+            t.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
+        }).wrap(TransactionItem::new);
     }
 }

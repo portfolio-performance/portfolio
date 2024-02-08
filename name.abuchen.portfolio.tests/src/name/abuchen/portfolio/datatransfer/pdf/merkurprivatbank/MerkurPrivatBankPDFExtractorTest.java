@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.merkurprivatbank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -187,13 +188,13 @@ public class MerkurPrivatBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-19"), hasAmount("EUR", 900.00), //
-                        hasSource("Kontoauszug01.txt"))));
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug01.txt"))));
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug01.txt"))));
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
 
     @Test
@@ -213,7 +214,7 @@ public class MerkurPrivatBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug02.txt"))));
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
 
     }
 }
