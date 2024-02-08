@@ -1249,11 +1249,17 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
             transactions.forEach(t -> {
-                String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
-                double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
-                                / Values.Quote.divider();
-                chart.addMarkerLine(t.getDateTime().toLocalDate(), color, label, value);
+                if (showLabels)
+                {
+                    String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
+                    double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                                    .getAmount() / Values.Quote.divider();
+                    chart.addMarkerLine(t.getDateTime().toLocalDate(), color, label, value);
+                }
+                else
+                    chart.addMarkerLine(t.getDateTime().toLocalDate(), color, null);
             });
         }
         else
@@ -1340,8 +1346,9 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
             dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
-                            getDividendLabel(t)));
+                            showLabels ? getDividendLabel(t) : null));
         }
         else
         {
@@ -1468,15 +1475,21 @@ public class SecuritiesChart
     private void addExtremeMarker(SecurityPrice price, PlotSymbolType plotSymbolType, String seriesLabel, Color color)
     {
         LocalDate eventDate = price.getDate();
-        String valueFormat = Values.Quote.format(price.getValue());
         double value = price.getValue() / Values.Quote.divider();
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            chart.addMarkerLine(eventDate, color, valueFormat);
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            {
+                String valueFormat = Values.Quote.format(price.getValue());
+                chart.addMarkerLine(eventDate, color, valueFormat, value);
+            }
+            else
+                chart.addMarkerLine(eventDate, color, null, value);
         }
         else
         {
+            String valueFormat = Values.Quote.format(price.getValue());
             Date zonedDate = Date.from(eventDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
             ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
