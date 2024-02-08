@@ -13,14 +13,14 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String DEPOSIT_2019 = "^(?<date>\\d+.\\d+.)  (.*-Gutschrift)(\\s*)(?<amount>[\\d\\s,.]*)[+](\\s*)$";
-    private static final String REMOVAL_2019 = "^(?<date>\\d+.\\d+.)  (Wertstellung: \\d+.\\d+. )?(Internet-Euro-Überweisung)(\\s*)(?<amount>[\\d\\s,.]*)[-](\\s*)$";
-    private static final String INTEREST_2019 = "^(?<date>\\d+.\\d+.)  (.*)(Zinsen\\/Kontoführung)(\\s*)(?<amount>[\\d\\s,.]*)[+](\\s*)$";
+    private static final String DEPOSIT_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (.*-Gutschrift)(\\s*)(?<amount>[\\.,\\d]+)[+](\\s*)$";
+    private static final String REMOVAL_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (Wertstellung: \\d+.\\d+. )?(Internet-Euro-Überweisung)(\\s*)(?<amount>[\\.,\\d]+)[-](\\s*)$";
+    private static final String INTEREST_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (.*)(Zinsen\\/Kontoführung)(\\s*)(?<amount>[\\.,\\d]+)[+](\\s*)$";
 
-    private static final String DEPOSIT_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*gutschr\\.?)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    private static final String REMOVAL_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Umbuchung|.*berweisungsauftrag)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
-    private static final String INTEREST_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Abschluss)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    private static final String INTEREST_CHARGE_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Storno Abschluss)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
+    private static final String DEPOSIT_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s*)(?<amount>[\\.,\\d]+) [H]";
+    private static final String REMOVAL_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Umbuchung|.*berweisungsauftrag)(\\s*)(?<amount>[\\.,\\d]+) [S]";
+    private static final String INTEREST_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [H]";
+    private static final String INTEREST_CHARGE_2021 = "^(?<date>\\d+.\\d+.) ([\\d]{2}\\.[\\d]{2}\\.) (Storno Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [S]";
 
     private static final String DEPOSIT_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\.,\\d]+) (.*)$";
     private static final String REMOVAL_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
