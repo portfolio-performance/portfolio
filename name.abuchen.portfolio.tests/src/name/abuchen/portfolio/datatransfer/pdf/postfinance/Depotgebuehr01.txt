@@ -1,0 +1,20 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 4153465 - TRADING
+Herrn FQFqjolti IDadLB hhoFH
+DfQCOixQvWUSRt 59
+du-3846 Vhist
+Bern, 01.01.2024
+Depotgebühr Unsere Referenz: 464973467 
+Wir haben Ihrem Konto folgende Beträge belastet:
+Kontonummer 078447066
+Valutadatum 01.01.2024
+Bruttobetrag CHF 18.00
+Betrag belastet CHF 18.00
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-18.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542
