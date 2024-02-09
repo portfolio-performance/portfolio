@@ -20,9 +20,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -54,6 +56,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -468,6 +471,74 @@ public class DkbPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
     }
 
+    @Test
+    public void testWertpapierKauf09()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88080T1043"), hasWkn("A3C9C7"), hasTicker(null), //
+                        hasName("TERAWULF INC. REGISTERED SHARES DL -,10"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-31T19:46:30"), hasShares(2300), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Limit 1,80 USD"), //
+                        hasAmount("EUR", 3884.81), hasGrossValue("EUR", 3848.30), //
+                        hasForexGrossValue("USD", 4140.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.51 + 20.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf09WithSecurityInEUR()
+    {
+        Security security = new Security("TERAWULF INC. REGISTERED SHARES DL -,10", CurrencyUnit.EUR);
+        security.setIsin("US88080T1043");
+        security.setWkn("A3C9C7");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DkbPDFExtractor extractor = new DkbPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-31T19:46:30"), hasShares(2300), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Limit 1,80 USD"), //
+                        hasAmount("EUR", 3884.81), hasGrossValue("EUR", 3848.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.51 + 20.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
 
     @Test
     public void testWertpapierVerkauf01()
@@ -2295,7 +2366,7 @@ public class DkbPDFExtractorTest
     }
 
     @Test
-    public void testVorabsteuerpauschale()
+    public void testVorabpauschale01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
@@ -2335,6 +2406,39 @@ public class DkbPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1CUAY0"), hasWkn("A1CUAY"), hasTicker(null), //
+                        hasName("WERTGRUND WOHNSELECT D INHABER-ANTEILE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        taxes( //
+                                        hasDate("2024-01-15T00:00"), hasShares(9.6469), //
+                                        hasSource("Vorabpauschale02.txt"), //
+                                        hasNote("Abrechnungsnr. 123456789"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
