@@ -13,8 +13,8 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class Bank11PDFExtractor extends AbstractPDFExtractor
 {
-    private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s*)(?<amount>[\\.,\\d]+) [H]";
-    private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Umbuchung|.*berweisungsauftrag)(\\s*)(?<amount>[\\.,\\d]+) [S]";
+    private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s+)(?<amount>[\\.,\\d]+) [H]";
+    private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Umbuchung|.*berweisungsauftrag)(\\s+)(?<amount>[\\.,\\d]+) [S]";
     private static final String INTEREST = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss.*)(\\s+)(?<amount>[\\.,\\d]+) [H]";
 
     private static final String CONTEXT_KEY_YEAR = "year";
@@ -26,7 +26,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Bank11 für Privatkunden und Handel GmbH");
 
-        addTransaction();
+        addTransactions();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
         return "Bank11 für Privatkunden und Handel GmbH";
     }
 
-    private void addTransaction()
+    private void addTransactions()
     {
         final DocumentType type = new DocumentType(".*-Konto Kontonummer", //
                         documentContext -> documentContext //

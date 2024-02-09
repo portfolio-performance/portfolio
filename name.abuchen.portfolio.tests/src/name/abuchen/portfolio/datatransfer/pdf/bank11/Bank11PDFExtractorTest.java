@@ -115,6 +115,9 @@ public class Bank11PDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2023-03-16"), hasAmount("EUR", 4200.00), //
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
 
+        assertThat(results, hasItem(deposit(hasDate("2023-04-28"), hasAmount("EUR", 17500.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
         assertThat(results, hasItem(removal(hasDate("2023-01-02"), hasAmount("EUR", 3500.00), //
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
 
