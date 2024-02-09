@@ -2,8 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.util.Map;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -13,14 +11,12 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
+
 @SuppressWarnings("nls")
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 {
 
     private static final String ACCOUNT_DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (\\w+) (PN:\\d+)(\\s*)(?<amount>[\\.,\\d]+) (?<type>[H|S])";
-
-    private static final String CONTEXT_KEY_YEAR = "year";
-    private static final String CONTEXT_KEY_CURRENCY = "currency";
 
     public MerkurPrivatBankPDFExtractor(Client client)
     {
@@ -47,8 +43,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("year", v.get("year")))
 
                                         .section("currency").match("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)")
-                                        .assign((ctx, v) -> ctx.put(CONTEXT_KEY_CURRENCY,
-                                                        asCurrencyCode(v.get("currency")))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
         Block depositRemovalBlock = new Block(ACCOUNT_DEPOSIT_REMOVAL);
@@ -159,18 +154,12 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
             AccountTransaction entry = new AccountTransaction();
             entry.setType(AccountTransaction.Type.DEPOSIT);
             return entry;
-        }).section("date", "amount", "type").match(regex).assign((t, v) -> {
+        }).section("date", "amount", "type").documentContext("currency", "year").match(regex).assign((t, v) -> {
             if ("S".equals(v.get("type")))
                 t.setType(Type.REMOVAL);
-            Map<String, String> context = type.getCurrentContext();
-
-            String date = v.get("date");
-
-            date += context.get(CONTEXT_KEY_YEAR);
-
-            t.setDateTime(asDate(date));
+            t.setDateTime(asDate(v.get("date") + v.get("year")));
             t.setAmount(asAmount(v.get("amount")));
-            t.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
+            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
         }).wrap(TransactionItem::new);
     }
 }
