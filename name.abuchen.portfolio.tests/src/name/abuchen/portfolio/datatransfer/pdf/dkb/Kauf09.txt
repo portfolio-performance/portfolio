@@ -1,0 +1,40 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2
+-----------------------------------------
+10919 Berlin
+Depotnummer 000000000
+Kundennummer 00000000
+Max Mustermann
+Auftragsnummer 600000/00.00
+Herrn Datum 01.02.2024
+Max Musterman Rechnungsnummer W00000-0000000000/00
+Münchner Str. 22 Umsatzsteuer-ID DE000000000
+00000 Dresden
+Wertpapier Abrechnung Kauf
+Auftrag vom 31.01.2024 16:00:17 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.300 TERAWULF INC. US88080T1043 (A3C9C7)
+REGISTERED SHARES DL -,10
+Handels-/Ausführungsplatz NY Nasdaq (SM) (gemäß Weisung)
+Börsensegment XNCM
+Limit-Order
+Limit 1,80 USD
+Schlusstag/-Zeit 31.01.2024 19:46:30 Auftraggeber Max Mustermann
+Ortszeit 31.01.2024 13:46:30 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 1,80 USD
+Wertpapierrechnung Lagerland USA
+Devisenkurs (EUR/USD) 1,0758 vom 01.02.2024
+Kurswert 3.848,30- EUR
+Provision 10,00- EUR
+Fremde Auslagen 6,51- EUR
+Eigene Spesen 20,00- EUR
+Ausmachender Betrag 3.884,81- EUR
+Den Gegenwert buchen wir mit Valuta 02.02.2024 zu Lasten des Kontos 00000000 (IBAN DE55 1203 0000 0010 0000 00),
+BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Die Orderänderung wurde von der Börse aufgrund ihrer Vorhandelskontrollen abgelehnt.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.02011611.0000093OR07

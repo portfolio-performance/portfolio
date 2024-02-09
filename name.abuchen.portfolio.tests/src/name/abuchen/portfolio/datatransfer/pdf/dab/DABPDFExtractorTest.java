@@ -3180,7 +3180,7 @@ public class DABPDFExtractorTest
                         hasName("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividends transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2024-01-15T00:00"), hasShares(50.00), //
                         hasSource("Vorabpauschale01.txt"), //
