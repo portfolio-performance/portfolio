@@ -37,7 +37,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) .*$");
+        Block firstRelevantLine = new Block("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) (?!Automatische .berweisung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
@@ -61,8 +61,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         + "|Withdrawal)" //
                                         + ") .*$") //
                         .assign((t, v) -> {
-                            if ("Überweisen".equals(v.get("type")) || "Transfer".equals(v.get("type"))
-                                            || "SEPA-Banküberweisung".equals(v.get("type")))
+                            if ("Überweisen".equals(v.get("type")) || "Transfer".equals(v.get("type")) || "SEPA-Banküberweisung".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
                             else if ("Abheben".equals(v.get("type")) || "Withdrawal".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
@@ -174,6 +173,6 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 
-                .wrap(TransactionItem::new);
+                        .wrap(TransactionItem::new);
     }
 }
