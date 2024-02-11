@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.ebase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -17,8 +18,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -46,6 +49,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.EbasePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -60,6 +64,77 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class EbasePDFExtractorTest
 {
+    @Test
+    public void testDividende01()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US36829G1076"), hasWkn("A0J4TC"), hasTicker(null), //
+                        hasName("GAZPROM NEFT PJSC REG. SHS (SP.ADRS)/5 RL-,0016"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-26T00:00"), hasShares(180), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 70418365490"), //
+                        hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
+                        hasForexGrossValue("USD", 120.92), //
+                        hasTaxes("EUR", 15.37), hasFees("EUR", 3.05))));
+    }
+
+    @Test
+    public void testDividende01WithSecurityInEUR()
+    {
+        Security security = new Security("GAZPROM NEFT PJSC REG. SHS (SP.ADRS)/5 RL-,0016", CurrencyUnit.EUR);
+        security.setIsin("US36829G1076");
+        security.setWkn("A0J4TC");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        EbasePDFExtractor extractor = new EbasePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-26T00:00"), hasShares(180), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 70418365490"), //
+                        hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
+                        hasTaxes("EUR", 15.37), hasFees("EUR", 3.05), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
     @Test
     public void testUmsatzabrechnung01()
     {
@@ -5278,6 +5353,67 @@ public class EbasePDFExtractorTest
     }
 
     @Test
+    public void testUmsatzabrechnung32()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung32.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(6));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0328476410"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.S&P Select Frontier Swap Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-04T00:00"), hasShares(2.959297), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 400014734/03052021 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-31T00:00"), hasShares(2.885220), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 400012542/28052021 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-06-18T00:00"), hasShares(2.043934), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021 | Ausgang externer Übertrag"), //
+                        hasAmount("EUR", 28.64), hasGrossValue("EUR", 28.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check delivery outbound transaction
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2021-06-18T00:00"), hasShares(266), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021"), //
+                        hasAmount("EUR", 3736.08), hasGrossValue("EUR", 3736.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check delivery outbound transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-06-16T00:00"), hasShares(266), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021 | Depotführungsentgelt | VL-Vertragsentgelt"), //
+                        hasAmount("EUR", 12.00 + 7.50), hasGrossValue("EUR", 12.00 + 7.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotStatement01()
     {
         EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
@@ -5351,5 +5487,30 @@ public class EbasePDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2020-04-07"), hasAmount("EUR", 10000.00), //
                         hasSource("DepotStatement03.txt"), hasNote("SEPA Überweisung Gutschrift | Ref.-Nr.: 013017353"))));
+    }
+
+    @Test
+    public void testDepotstatement04()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-06-21"), hasAmount("EUR", 1231.37), //
+                        hasSource("DepotStatement04.txt"), hasNote("SEPA Überweisung | Ref.-Nr.: 014852180"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2021-06-21"), hasAmount("EUR", 2.50), //
+                        hasSource("DepotStatement04.txt"), hasNote("Entgeltbuchung | Ref.-Nr.: 014852181"))));
     }
 }

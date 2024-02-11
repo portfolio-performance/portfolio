@@ -26,11 +26,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("FNZ Bank AG");
         addBankIdentifier("FNZ Bank SE");
 
-        addBuySellTransaction();
         addDividendeTransaction();
-        addAdvanceTaxTransaction();
-        addFeesWithSecurityTransaction();
-        addDeliveryInOutBoundTransaction();
+        addDepotStatement_BuySellTransaction();
+        addDepotStatement_DividendeTransaction();
+        addDepotStatement_AdvanceTaxTransaction();
+        addDepotStatement_DeliveryInOutBoundTransaction();
+        addDepotStatement_FeesWithSecurityTransaction();
+        addDepotStatement_FeesWithDeliveryInOutBoundTransaction();
         addAccountStatementTransaction();
     }
 
@@ -40,32 +42,110 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         return "European Bank for Financial Services / FNZ Group";
     }
 
-    private void addBuySellTransaction()
+    private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf" //
-                        + "|Ansparplan" //
-                        + "|Fondsertrag" //
-                        + "|Verkauf" //
-                        + "|Entgelt Verkauf" //
-                        + "|Entgeltbelastung Verkauf" //
-                        + "|Entnahmeplan" //
-                        + "|Fondsumschichtung" //
-                        + "|Wiederanlage Fondsertrag" //
-                        + "|Wiederanlage Ertragsaussch.ttung)");
+        DocumentType type = new DocumentType("Dividendengutschrift");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Postfach.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                        // St}ck 180 GAZPROM NEFT PJSC US36829G1076 (A0J4TC)
+                        // REG. SHS (SP.ADRS)/5 RL-,0016
+                        // Zahlbarkeitstag 22.07.2021 Dividende pro St}ck 0,671769 USD
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "nameContinued", "currency") //
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // St}ck 180 GAZPROM NEFT PJSC US36829G1076 (A0J4TC)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Den Betrag buchen wir mit Wertstellung 26.07.2021 zu Gunsten des Kontos 3267126501, BLZ 700 130 00.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag 84,05+ EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Devisenkurs EUR / USD  1,1800
+                        // Dividendengutschrift 120,92 USD 102,47+ EUR
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
+                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        //  Abrechnungsnr. 70418365490
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDepotStatement_BuySellTransaction()
+    {
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Kauf" //
-                        + "|Ansparplan" //
-                        + "|Fondsertrag" //
-                        + "|Verkauf" //
-                        + "|Entgelt Verkauf" //
-                        + "|Entgeltbelastung Verkauf" //
-                        + "|Entnahmeplan" //
+        Block firstRelevantLine = new Block("^(Kauf .*" //
+                        + "|Ansparplan .*" //
+                        + "|Fondsertrag .*"
+                        + "|Ausgang externer Übertrag .*" //
+                        + "|Verkauf .*" //
+                        + "|Entgelt Verkauf .*" //
+                        + "|Entgeltbelastung Verkauf .*" //
+                        + "|Entnahmeplan .*" //
                         + "|Fondsumschichtung \\((Abgang|Zugang)\\) .*" //
                         + "|Wiederanlage Fondsertrag [\\.,\\d]+ .*" //
-                        + "|\\(Anteilpreis\\))( .*)?$");
+                        + "|\\(Anteilpreis\\))$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -81,7 +161,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^(?<type>(Kauf" //
                                         + "|Ansparplan" //
-                                        + "|Fondsertrag" //
+                                        + "|Fondsertrag"
+                                        + "|Ausgang externer Übertrag" //
                                         + "|Verkauf" //
                                         + "|Entgelt Verkauf" //
                                         + "|Entgeltbelastung Verkauf" //
@@ -95,7 +176,8 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             || "Entgelt Verkauf".equals(v.get("type")) //
                                             || "Entgeltbelastung Verkauf".equals(v.get("type")) //
                                             || "Entnahmeplan".equals(v.get("type")) //
-                                            || "Fondsumschichtung (Abgang)".equals(v.get("type"))) //
+                                            || "Fondsumschichtung (Abgang)".equals(v.get("type"))
+                                            || "Ausgang externer Übertrag".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
                             }
@@ -124,6 +206,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .find("(Kauf" //
                                                                         + "|Ansparplan" //
                                                                         + "|Fondsertrag" //
+                                                                        + "|Ausgang externer .bertrag" //
                                                                         + "|Verkauf" //
                                                                         + "|Entgelt Verkauf" //
                                                                         + "|Entgeltbelastung Verkauf" //
@@ -135,7 +218,6 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 444444.09 iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile (ISIN DE000A0F5UH1)
-                                        // @formatter:on
                                         // Wiederanlage Ertragsausschüttung
                                         // 400023594/2001 18.01.2016 23,550000
                                         // 0,082378 1,94 EUR
@@ -239,6 +321,20 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
+                                        // ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+                                        // LU0328476410 -2,043934 16,736500 USD 1,194600 28,64 EUR
+                                        // Verkauf
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("ISIN Anteile Abrechnungskurs Devisenkurs Betrag") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ [\\w]{3}( [\\.,\\d]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^Verkauf$")
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
                                         // Abwicklung über IBAN Institut Zahlungsbetrag
                                         // DE49XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX 300,00 EUR
                                         // @formatter:on
@@ -313,6 +409,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
+                                        // Ausgang externer Übertrag Gesamtbestand mit Kursdatum 17.06.2021 aus Depotposition 99132671257.01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Ausgang externer .bertrag) .*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                        // @formatter:off
                                         // Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
                                         // @formatter:on
                                         section -> section //
@@ -375,9 +478,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDepotStatement_DividendeTransaction()
     {
-        DocumentType type = new DocumentType("Fondsertrag");
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -524,7 +627,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addAdvanceTaxTransaction()
+    private void addDepotStatement_AdvanceTaxTransaction()
     {
         // @formatter:off
         // The advance tax payment is always paid in local currency.
@@ -553,7 +656,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
         // @formatter:on
 
-        DocumentType type = new DocumentType("Vorabpauschale zum Stichtag");
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -618,9 +721,102 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addFeesWithSecurityTransaction()
+    private void addDepotStatement_DeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("(Entgelt|Entgeltbelastung) Verkauf");
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Gegenwert der Anteile: .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Is type --> "Eingang" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>(Eingang|Ausgang)) externer .bertrag .*$") //
+                        .assign((t, v) -> {
+                            if ("Eingang".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Eingang externer Übertrag 10,000000 Anteile mit Kursdatum 27.09.2019 in Depotposition 1234567890.24
+                                        // ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N.
+                                        // LU0378453376 10,000000
+                                        // Gegenwert der Anteile: 202,64 EU
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Eingang externer .bertrag .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+$") //
+                                                        .match("^Gegenwert der Anteile: [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Ausgang externer Übertrag Gesamtbestand mit Kursdatum 17.06.2021 aus Depotposition 99132671257.01
+                                        // Xtr.S&P Select Frontier Swap Inhaber-Anteile 1C o.N.
+                                        // LU0328476410 -2,043934 16,736500 USD 1,194600 28,64 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Ausgang externer .bertrag .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // LU0378453376 10,000000
+                        // LU0328476410 -266,000000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Gegenwert der Anteile: 202,64 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Gegenwert der Anteile: (?<amount>[\\,.\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Ref\\. Nr\\. (?<note>.*), .*$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDepotStatement_FeesWithSecurityTransaction()
+    {
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -723,83 +919,115 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addDeliveryInOutBoundTransaction()
+    private void addDepotStatement_FeesWithDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Eingang externer .bertrag");
+        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Eingang externer .bertrag .*$", "^Gegenwert der Anteile: .*$");
+        Block firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Summe der belasteten Entgelte .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                            return portfolioTransaction;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
-                        // @formatter:on
-                        .section("type").optional() //
-                        .match("^(?<type>Eingang) externer .bertrag .*$") //
-                        .assign((t, v) -> {
-                            if ("Eingang".equals(v.get("type")))
-                                t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Eingang externer Übertrag 10,000000 Anteile mit Kursdatum 27.09.2019 in Depotposition 1234567890.24
+                                        // ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N.
+                                        // LU0378453376 10,000000
+                                        // Gegenwert der Anteile: 202,64 EU
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Eingang externer .bertrag .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+$") //
+                                                        .match("^Gegenwert der Anteile: [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Ausgang externer Übertrag Gesamtbestand mit Kursdatum 17.06.2021 aus Depotposition 99132671257.01
+                                        // Xtr.S&P Select Frontier Swap Inhaber-Anteile 1C o.N.
+                                        // LU0328476410 -2,043934 16,736500 USD 1,194600 28,64 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Ausgang externer .bertrag .*") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})( [\\.,\\d]+)? [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
-                        // Eingang externer Übertrag 10,000000 Anteile mit Kursdatum 27.09.2019 in Depotposition 1234567890.24
-                        // ComStage-Nikkei 225 UCITS ET99133507781F Inhaber-Anteile I o.N.
-                        // LU0378453376 10,000000
-                        // Gegenwert der Anteile: 202,64 EU
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^Eingang externer .bertrag .*$") //
-                        .match("^(?<name>.*)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+$") //
-                        .match("^Gegenwert der Anteile: [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
-                        // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
+                        // zum 16.06.2021
                         // @formatter:on
                         .section("date") //
-                        .match("^.* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^zum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // LU0378453376 10,000000
+                        // LU0328476410 -266,000000
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (?<shares>[\\.,\\d]+)$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?(?<shares>[\\.,\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // Gegenwert der Anteile: 202,64 EUR
+                        // Summe der belasteten Entgelte 19,50 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Gegenwert der Anteile: (?<amount>[\\,.\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Summe der belasteten Entgelte (?<amount>[\\,.\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         // @formatter:off
-                        // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 30.09.2019
+                        // IE00B4L5Y983 -0,167976 71,243400 USD 1,227400 9,75 EUR
+                        // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
+                        // @formatter:on
+                        .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019
                         // @formatter:on
                         .section("note").optional() //
                         .match("^Ref\\. Nr\\. (?<note>.*), .*$") //
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
-                        .wrap(TransactionItem::new);
+                        // @formatter:off
+                        // Depotführungsentgelt inkl. 19% USt 12,00 EUR
+                        // Depotführungsentgelt inkl. 19 %
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Depotf.hrungsentgelt) inkl\\. .*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
+                        // @formatter:off
+                        // VL-Vertragsentgelt inkl. 16 % USt 9,75 EUR
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>VL\\-Vertragsentgelt) inkl\\. .*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addAccountStatementTransaction()
@@ -831,7 +1059,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote(v.get("note2") + " | Ref.-Nr.: " + v.get("note1"));
+                            t.setNote(concatenate(v.get("note2"), v.get("note1"), " | Ref.-Nr.: "));
                         })
 
                         .wrap(TransactionItem::new));
@@ -839,8 +1067,9 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 12.12.2022 020739500 12.12.2022 SEPA Lastschrift Einzug 200,00 EUR
         // 14.04.2020 123456 14.04.2020 SEPA Lastschrift Einzug 15,00 EUR
+        // 21.06.2021 014852180 21.06.2021 SEPA Überweisung -1.231,37 EUR
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA Lastschrift Einzug [\\.,\\d]+ [\\w]{3}$");
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA (Lastschrift|.berweisung)( Einzug)? (\\-)?[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -854,13 +1083,41 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note1>[\\d]+) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<note2>SEPA Lastschrift Einzug) " //
-                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                        + "(?<note2>SEPA (Lastschrift|.berweisung)( Einzug)?) " //
+                                        + "(\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote(v.get("note2") + " | Ref.-Nr.: " + v.get("note1"));
+                            t.setNote(concatenate(v.get("note2"), v.get("note1"), " | Ref.-Nr.: "));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 21.06.2021 014852181 21.06.2021 Entgeltbuchung -2,50 EUR
+        // @formatter:on
+        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgeltbuchung \\-[\\.,\\d]+ [\\w]{3}$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note1", "note2", "amount", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note1>[\\d]+) " //
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note2>Entgeltbuchung) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(concatenate(v.get("note2"), v.get("note1"), " | Ref.-Nr.: "));
                         })
 
                         .wrap(TransactionItem::new));
@@ -898,7 +1155,21 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .find(".* Kirchensteuer .*") //
                         .match("^[\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$") //
                         .match("^(Zahlungsbetrag|Abwicklung) .*$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltene Quellensteuer 15 % auf 120,92 USD 15,37- EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Anrechenbare Quellensteuer 15 % auf 102,47 EUR 15,37 EUR
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+ .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -939,6 +1210,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Additional Trading Costs \\(ATC\\) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .match("^(Zahlungsbetrag nach|Zahlungsbetrag(?! in)|Die Auszahlung|Abwicklung|Summe der belasteten) .*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Spesen 3,05- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Fremde Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
