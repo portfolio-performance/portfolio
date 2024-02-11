@@ -851,7 +851,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.56))));
         assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Gebühr Kapitaltransaktion Ausland"));
+        assertThat(transaction.getNote(), is("Gebühr Kapitaltransaktion Ausland ISIN12345678"));
 
         item = iter.next();
 
@@ -907,7 +907,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2013-02-14"), hasAmount("EUR", 1.50), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("Gebühr Kapitaltransaktion Ausland"))));
+                        hasSource("biwAGKontoauszug03.txt"), hasNote("Gebühr Kapitaltransaktion Ausland US0378331005"))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2013-03-01"), hasAmount("EUR", 10.00), //
@@ -5904,6 +5904,39 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKontoauszug05()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-10-25"), hasAmount("EUR", 5.90), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Gebühr Kapitaltransaktion Ausland US17275R1023"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-11-09"), hasAmount("EUR", 10000.00), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-11-10"), hasAmount("EUR", 10000.00), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-12-01"), hasAmount("EUR", 5.90), //
+                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"))));
+    }
+
+    @Test
     public void testFlatExDeGiroSammelabrechnung01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -6233,5 +6266,38 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVorabpauschale01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0009909999"), hasWkn("A39999"), hasTicker(null), //
+                        hasName("AM S&P XXXXXXX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        taxes( //
+                                        hasDate("2024-01-29T00:00"), hasShares(265.851), //
+                                        hasSource("FlatExDegiroVorabpauschale01.txt"), //
+                                        hasNote("Transaktion-Nr.: 3583072052"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
