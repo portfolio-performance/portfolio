@@ -1527,6 +1527,37 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf12()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0434032149"), hasWkn("A0X82B"), hasTicker(null), //
+                        hasName("Stuttgarter Energiefonds Inhaber-Anteile o.N."), //
+                        hasCurrencyCode(CurrencyUnit.EUR))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-02-09T15:40:06"), hasShares(100.00), //
+                        hasSource("Verkauf12.txt"), //
+                        hasNote("Ordernummer 323268877.001 | Limit: 40,00 EUR"), //
+                        hasAmount("EUR", 3747.06), hasGrossValue("EUR", 4000.00), //
+                        hasTaxes("EUR", 219.85 + 12.09), hasFees("EUR", 3.20 + 2.90 + 14.90))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());

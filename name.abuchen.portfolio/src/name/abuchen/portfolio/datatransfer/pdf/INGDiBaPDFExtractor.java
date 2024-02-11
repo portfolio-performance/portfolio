@@ -812,6 +812,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
+                        // Courtage EUR 3,20
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Courtage (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
                         // Kurswert EUR 52,63
                         // Rabatt EUR - 2,63
                         // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
