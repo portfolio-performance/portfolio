@@ -1534,16 +1534,34 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
                                                                         + "(?<note>Depotservicegeb.hr .*" //
                                                                         + "|flatex trader [\\d]\\.[\\d] Basis" //
-                                                                        + "|Geb.hr .*)" //
+                                                                        + "|Geb.hr Tax Voucher.*)" //
                                                                         + "[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
-                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 26.10.     25.10.  Gebühr Kapitaltransaktion Ausland                     5,90-
+                                        //               US17275R1023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "isin") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Geb.hr Kapitaltransaktion Ausland)" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^.*(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(concatenate(v.get("note"), v.get("isin"), " "));
                                                         }))
-
                         .wrap(t -> {
                             TransactionItem item = new TransactionItem(t);
 
@@ -1993,7 +2011,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Buchungsdatum .*$");
+        Block firstRelevantLine = new Block("^Kundenservice:$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2021,9 +2039,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Buchungsdatum        11.01.2020
+                        // 99999 Stadt Buchungsdatum        29.01.2024
                         // @formatter:on
                         .section("date") //
-                        .match("Buchungsdatum ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^.*Buchungsdatum ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -2110,7 +2129,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note1", "note2")
                 .match("^.* (?<note1>Depotservicegebühr) .* ISIN (?<note2>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " ")))
 
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);

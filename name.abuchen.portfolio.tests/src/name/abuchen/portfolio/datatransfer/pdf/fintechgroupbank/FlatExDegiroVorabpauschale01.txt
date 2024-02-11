@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0602282000003799999970
+Max Muster
+z. H. der gesetzlichen V treter Frankfurt, 29.01.2024er
+Strasse
+Strasse Str. 8
+99999 Stadt Buchungsdatum        29.01.2024
+Zuflussdatum         02.01.2024
+Wertpapierabrechnung Vorabpauschale gem. § 18 InvStG
+Ihre Depotnummer: 9999999999
+Depotinhaber:     Max Muster
+AM S&P XXXXXXX                   IE0009909999/A39999                       
+Gesamtbestand       265,851000 St.  zum                             30.12.2023
+Vorabpauschale                      Vorabpauschale
+pro Stück          0,151728570 EUR  nach Teilfreistellung            16,47 EUR
+Teilfrei-                30,00 %    Bemessungs-
+stellung                  7,06 EUR  grundlage                         0,00 EUR
+                                 ** Einbeh. Steuer                    0,00 EUR
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer                  0,00 EUR
+                                 Solidaritätszuschlag                 0,00 EUR
+                                 Kirchensteuer                        0,00 EUR
+   Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+   3583072052.
+Anschaffung   zugrundeliegende   Faktor besitzanteilige        besitzanteilige
+               Bestände in St.           Vorabpauschale  Vorabpauschale in EUR
+Vorjahr(e)            0,000000                    12/12                   0,00
+Januar                0,000000                    12/12                   0,00
+Februar               0,000000                    11/12                   0,00
+März                  0,000000                    10/12                   0,00
+April                 0,000000                     9/12                   0,00
+Mai                   0,000000                     8/12                   0,00
+Juni                265,851000                     7/12                  23,53
+Juli                  0,000000                     6/12                   0,00
+August                0,000000                     5/12                   0,00
+September             0,000000                     4/12                   0,00
+Oktober               0,000000                     3/12                   0,00
+November              0,000000                     2/12                   0,00
+Dezember              0,000000                     1/12                   0,00
+Kumulierte                                                                    
+besitzanteilige Vorabpauschale vor Teilfreistellung                      23,53
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+2000003736172099999999280000101
