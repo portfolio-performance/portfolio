@@ -5,7 +5,13 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -31,6 +37,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         addDividendsTransaction();
         addPaymentTransaction();
         addInterestTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -343,6 +350,119 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .wrap(TransactionItem::new);
     }
 
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
+            Pattern pTransactionPeriod = Pattern.compile("^KONTOAUSZUG in (?<baseCurrency>[\\w]{3})$");
+
+            PeriodicHelper periodicHelper = new PeriodicHelper();
+            context.putType(periodicHelper);
+
+            for (int i = 0; i < lines.length; i++)
+            {
+                Matcher mTransactionPeriod = pTransactionPeriod.matcher(lines[i]);
+                if (mTransactionPeriod.matches())
+                {
+                    PeriodicItem item = new PeriodicItem();
+                    item.periodicStartLine = i;
+                    item.baseCurrency = asCurrencyCode(mTransactionPeriod.group("baseCurrency"));
+
+                    periodicHelper.items.add(item);
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 31.03.2023 Depotgebühren 20.00 31.03.2023 -20.00
+        // 29.09.2023 Depotgebühren 20.00 29.09.2023 -5'791.30
+        // @formatter:on
+        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Depotgeb.hren [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.'\\d]+$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "date") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>Depotgeb.hren) "
+                                        + "(?<amount>[\\.,\\d]+) "
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(\\-)?[\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            DocumentContext context = type.getCurrentContext();
+
+                            PeriodicHelper periodicHelper = context.getType(PeriodicHelper.class)
+                                            .orElseGet(PeriodicHelper::new);
+
+                            Optional<PeriodicItem> item = periodicHelper.findItem(v.getStartLineNumber());
+
+                            if (item.isPresent())
+                            {
+                                t.setDateTime(asDate(v.get("date")));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(asCurrencyCode(item.get().baseCurrency));
+                                t.setNote(v.get("note"));
+                            }
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(PeriodicItem.class);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 29.12.2023 Sollzinsen 127.85 31.12.2023 -7'589.89
+        // @formatter:on
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Sollzinsen [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.'\\d]+$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "date") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>Sollzinsen) "
+                                        + "(?<amount>[\\.,\\d]+) "
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(\\-)?[\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            DocumentContext context = type.getCurrentContext();
+
+                            PeriodicHelper periodicHelper = context.getType(PeriodicHelper.class)
+                                            .orElseGet(PeriodicHelper::new);
+
+                            Optional<PeriodicItem> item = periodicHelper.findItem(v.getStartLineNumber());
+
+                            if (item.isPresent())
+                            {
+                                t.setDateTime(asDate(v.get("date")));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(asCurrencyCode(item.get().baseCurrency));
+                                t.setNote(v.get("note"));
+                            }
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(PeriodicItem.class);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction
@@ -398,6 +518,41 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 .section("currency", "fee").optional()
                 .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private static class PeriodicHelper
+    {
+        private List<PeriodicItem> items = new ArrayList<>();
+
+        public Optional<PeriodicItem> findItem(int lineNumber)
+        {
+            // search backwards for the first items _before_ the given line
+            // number
+
+            for (int ii = items.size() - 1; ii >= 0; ii--) // NOSONAR
+            {
+                PeriodicItem item = items.get(ii);
+                if (item.periodicStartLine > lineNumber)
+                    continue;
+                else
+                    return Optional.of(item);
+            }
+
+            return Optional.empty();
+        }
+    }
+
+    private static class PeriodicItem
+    {
+        int periodicStartLine;
+
+        String baseCurrency;
+
+        @Override
+        public String toString()
+        {
+            return "PeriodicItem [periodicStartLine=" + periodicStartLine + ", baseCurrency=" + baseCurrency + "]";
+        }
     }
 
     @Override
