@@ -112,7 +112,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // Aktienanleihe v.23(24)ZAL
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "wkn", "name", "nameContinued", "currency") //
+                                                        .attributes("isin", "wkn", "currency", "name", "nameContinued") //
                                                         .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) (Kurs|Bezugspreis|Barabfindung|Price|R.ckzahlung).*$") //
                                                         .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
                                                         .match("^(?<name>.*)$") //
@@ -357,7 +357,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Fund Distribution" //
                         + "|Dividend Statement" //
                         + "|Dividende" //
-                        + "|Reklassifizierung)", "(Kontoauszug|Account Statement)");
+                        + "|Reklassifizierung"
+                        + "|Zinsabrechnung)", "(Kontoauszug|Account Statement)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -403,34 +404,62 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .match("^((Dividendenabrechnung|Fondsaussch.ttung) )?(?<type>(STORNO|Reklassifizierung))$") //
                         .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
-                        // @formatter:off
-                        // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
-                        // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
-                        // Zahlungszeitraum: 17.06.2021 - 30.06.2021
-                        // @formatter:on
-                        .section("isin", "wkn", "name", "name1", "currency") //
-                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}) .*$") //
-                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
-                        .match("^(?<name1>.*)$") //
-                        .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Zahlungszeitraum") && !v.get("name1").startsWith("Payment")
-                                            && !v.get("name1").startsWith("Bruttobetrag"))
-                                v.put("name", v.get("name") + " " + v.get("name1"));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nominale ISIN: FR0000130577 WKN: 859386 Ausschüttung
+                                        // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
+                                        // Zahlungszeitraum: 17.06.2021 - 30.06.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "name1", "currency") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Zahlungszeitraum") && !v.get("name1").startsWith("Payment")
+                                                                            && !v.get("name1").startsWith("Bruttobetrag"))
+                                                                v.put("name", v.get("name") + " " + v.get("name1"));
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Nominale ISIN: US698299AW45 WKN: A0GMJZ Zinsertrag
+                                        // USD   1.000,00 6,70 % 3,35 %
+                                        // Panama, Republik
+                                        // DL-Bonds 2006(34-36)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "currency", "name", "nameContinued") //
+                                                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+ [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
-                        // @formatter:on
-                        .section("local", "shares") //
-                        .match("^(?<local>(STK|Units)) (?<shares>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> {
-                            if ("Units".equals(v.get("local")))
-                                t.setShares(asShares(v.get("shares"), "en", "US"));
-                            else
-                                t.setShares(asShares(v.get("shares")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // STK 57 Publicis Groupe S.A. EUR 2,00 p.STK
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("local", "shares") //
+                                                        .match("^(?<local>(STK|Units)) (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            if ("Units".equals(v.get("local")))
+                                                                t.setShares(asShares(v.get("shares"), "en", "US"));
+                                                            else
+                                                                t.setShares(asShares(v.get("shares")));
+                                                        }),
+                                        // @formatter:off
+                                        // USD   1.000,00 6,70 % 3,35 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\w]{3}[\\s]{1,}(?<shares>[\\.,\\d]+) [\\.,\\d]+ % [\\.,\\d]+ %$") //
+                                                        .assign((t, v) -> {
+                                                            // Percentage quotation, workaround for bonds
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -536,8 +565,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale", //
-                        "(Wertpapierabrechnung|Transaction Statement)");
+        DocumentType type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
+                        "(Wertpapierabrechnung|Steuerausgleichsrechnung|Transaction Statement)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -557,10 +586,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Nominale ISIN: IE00BWBXM385 WKN: A14QBZ
                         // STK 112 SPDR S+P US Con.Sta.Sel.S.UETF
+                        //
+                        // Quantity ISIN: IE00BKM4GZ66 WKN: A111X9
+                        // Units 418 iShs Core MSCI EM IMI U.ETF
+                        // Registered Shares o.N.
                         // @formatter:on
                         .section("isin", "wkn", "name", "name1") //
-                        .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^STK [\\.,\\d]+ (?<name>.*)$") //
+                        .match("^(Nominale|Quantity) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6})$") //
+                        .match("^(STK|Units) [\\.,\\d]+ (?<name>.*)$") //
                         .match("^(?<name1>.*)$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Zahlungszeitraum"))
@@ -571,17 +604,32 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // STK 112 SPDR S+P US Con.Sta.Sel.S.UETF
+                        // Units 418 iShs Core MSCI EM IMI U.ETF
                         // @formatter:on
                         .section("shares") //
-                        .match("^STK (?<shares>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .match("^(STK|Units) (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            if ("Units".equals(v.get("local")))
+                                t.setShares(asShares(v.get("shares"), "en", "US"));
+                            else
+                                t.setShares(asShares(v.get("shares")));
+                        })
 
-                        // @formatter:off
-                        // Zahltag: 04.01.2021
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Zahltag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zahltag: 04.01.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zahltag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Payday: 2024-01-02
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Payday: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -590,6 +638,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .match("^Zu Lasten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Amount debited to account 4345818561 Value: 2024-01-02 EUR 3.12
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Amount debited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -614,9 +672,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Zahlungszeitraum: 01.01.2020 - 31.12.2020
+                        // Payment Period: 2023-01-01 - 2023-12-31
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Zahlungszeitraum: .*)$") //
+                        .match("^(?<note>(Zahlungszeitraum|Payment Period): .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(t -> {
@@ -648,6 +707,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
+                        // Is type --> "Nachbelastung" change from TAX_REFUND to TAXES
+                        .section("type").optional() //
+                        .match("^(?<type>(Erstattung|Nachbelastung)) [\\w]{3} [\\.,\\d]+( \\-)?$") //
+                        .assign((t, v) -> {
+                            if ("Nachbelastung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAXES);
+                        })
+
                         // @formatter:off
                         // Unterschleißheim, 22.06.2017
                         // 26.06.2020
@@ -656,15 +723,27 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        // @formatter:off
-                        // Erstattung EUR 9,01
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Erstattung (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Erstattung EUR 9,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Erstattung (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Nachbelastung EUR 59,38 -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Nachbelastung (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Vorgangs-Nr.: 184714818
@@ -676,10 +755,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
-                        // wir haben für Sie eine Steuerausgleichsrechnung durchgeführt, die der Optimierung der Steuerbelastung
+                        // Vorgangs-Nr.: 48132680 Fondsfusion
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.* (?<note>Steuerausgleichsrechnung) .*$") //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .* Fondsfusion)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
+
+                        // @formatter:off
+                        // Nominale ISIN: LU1861134382
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Nominale ISIN: (?<note>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
@@ -1050,12 +1136,12 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTransferOutTransaction()
     {
-        DocumentType type = new DocumentType("Ablauf der Optionsfrist");
+        DocumentType type = new DocumentType("(Ablauf der Optionsfrist|Obligatorische Barabfindung)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Referenz\\-Nr\\.: .*$");
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1108,11 +1194,38 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Ablauf der Optionsfrist
+                        // Umrechnungskurs: EUR/USD 1,09084
+                        // Bruttobetrag USD 232,00
+                        // Bruttobetrag EUR 212,68
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional()//
+                        .match("^(Umrechnungskurs|Exchange Rate): (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
+                        .match("^(Bruttobetrag|Gross Amount) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Vorgangs-Nr.: 25742277
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Ablauf der Optionsfrist)$") //
-                        .assign((t, v) -> t.setNote(v.get("note")))
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Ablauf der Optionsfrist
+                        // Obligatorische Barabfindung
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>(Ablauf der Optionsfrist|Obligatorische Barabfindung))$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
