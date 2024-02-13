@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -113,6 +114,9 @@ public class CrossEntryTest
         assertThat(pA.getDateTime(), is(date));
         assertThat(pB.getDateTime(), is(date));
 
+        assertThat(accountA.getCurrentAmount(LocalDateTime.now().plusMinutes(1)), is(-1000L * Values.Amount.factor()));
+        assertThat(accountB.getCurrentAmount(LocalDateTime.now().plusMinutes(1)), is(1000L * Values.Amount.factor()));
+
         // check cross entity identification
         assertThat(entry.getCrossOwner(pA), is((Object) accountB));
         assertThat(entry.getCrossTransaction(pA), is((Transaction) pB));
@@ -133,6 +137,110 @@ public class CrossEntryTest
         accountA.deleteTransaction(pA, client);
         assertThat(accountA.getTransactions().size(), is(0));
         assertThat(accountB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testAccountTransferEntryWithExchange()
+    {
+        Account accountA = client.getAccounts().get(0);
+        Account accountB = client.getAccounts().get(1);
+        accountB.setCurrencyCode("CHF");
+
+        AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
+        entry.getSourceTransaction().setCurrencyCode("EUR");
+        entry.getTargetTransaction().setCurrencyCode("CHF");
+        entry.getSourceTransaction().setAmount(1000 * Values.Amount.factor());
+        Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE,
+                        Money.of("EUR", 1000 * Values.Amount.factor()), Money.of("CHF", 750 * Values.Amount.factor()),
+                        new BigDecimal("1.33333333"));
+        entry.getSourceTransaction().addUnit(forex);
+        entry.getTargetTransaction().setAmount(750 * Values.Amount.factor());
+        entry.insert();
+
+        assertThat(accountA.getTransactions().size(), is(1));
+        assertThat(accountB.getTransactions().size(), is(1));
+
+        AccountTransaction pA = accountA.getTransactions().get(0);
+        AccountTransaction pB = accountB.getTransactions().get(0);
+
+        assertThat(pA.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(pB.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+
+        assertThat(pA.getSecurity(), nullValue());
+        assertThat(pB.getSecurity(), nullValue());
+        assertThat(pA.getAmount(), is(1000L * Values.Amount.factor()));
+        assertThat(pB.getAmount(), is(750L * Values.Amount.factor()));
+        assertThat(pA.getDateTime(), is(date));
+        assertThat(pB.getDateTime(), is(date));
+
+        assertThat(accountA.getCurrentAmount(date.plusMinutes(1)), is(-1000L * Values.Amount.factor()));
+        assertThat(accountB.getCurrentAmount(date.plusMinutes(1)), is(750L * Values.Amount.factor()));
+
+        // check cross entity identification
+        assertThat(entry.getCrossOwner(pA), is((Object) accountB));
+        assertThat(entry.getCrossTransaction(pA), is((Transaction) pB));
+
+        assertThat(entry.getCrossOwner(pB), is((Object) accountA));
+        assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
+
+        // check cross editing
+        pA.setNote("Test"); //$NON-NLS-1$
+        entry.updateFrom(pA);
+        assertThat(pB.getNote(), is(pA.getNote()));
+
+        pB.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
+        entry.updateFrom(pB);
+        assertThat(pA.getDateTime(), is(pB.getDateTime()));
+
+        // check deletion
+        accountA.deleteTransaction(pA, client);
+        assertThat(accountA.getTransactions().size(), is(0));
+        assertThat(accountB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testAccountTransferEntryWithFees()
+    {
+        Account accountA = client.getAccounts().get(0);
+        Account accountB = client.getAccounts().get(1);
+
+        AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
+        entry.getSourceTransaction().setAmount(1000 * Values.Amount.factor());
+        entry.getSourceTransaction().addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE,
+                        Money.of("EUR", 100L * Values.Amount.factor())));
+        entry.getTargetTransaction().setAmount(850 * Values.Amount.factor());
+        entry.getTargetTransaction().addUnit(
+                        new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of("EUR", 50L * Values.Amount.factor())));
+        entry.insert();
+
+        assertThat(accountA.getTransactions().size(), is(1));
+        assertThat(accountB.getTransactions().size(), is(1));
+
+        AccountTransaction pA = accountA.getTransactions().get(0);
+        AccountTransaction pB = accountB.getTransactions().get(0);
+
+        assertThat(pA.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(pB.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+
+        assertThat(pA.getSecurity(), nullValue());
+        assertThat(pB.getSecurity(), nullValue());
+        assertThat(pA.getDateTime(), is(date));
+        assertThat(pB.getDateTime(), is(date));
+
+        assertThat(accountA.getCurrentAmount(date.plusMinutes(1)), is(-1000L * Values.Amount.factor()));
+        assertThat(accountB.getCurrentAmount(date.plusMinutes(1)), is(850L * Values.Amount.factor()));
+
+        // check cross entity identification
+        assertThat(entry.getCrossOwner(pA), is((Object) accountB));
+        assertThat(entry.getCrossTransaction(pA), is((Transaction) pB));
+
+        assertThat(entry.getCrossOwner(pB), is((Object) accountA));
+        assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
     }
 
     @Test
