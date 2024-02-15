@@ -2,10 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
@@ -16,18 +13,19 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String DEPOSIT_2019 = "^(?<date>\\d+.\\d+.)  (.*-Gutschrift)(\\s*)(?<amount>[\\d\\s,.]*)(\\+$)";
-    private static final String REMOVAL_2019 = "^(?<date>\\d+.\\d+.)  (Internet-Euro-Überweisung)(\\s*)(?<amount>[\\d\\s,.]*)(\\-)(.*)";
-    private static final String INTEREST_2019 = "^(?<date>\\d+.\\d+.)  (.*)(Zinsen\\/Kontoführung)(\\s*)(?<amount>[\\d\\s,.]*)(\\+$)";
+    private static final String DEPOSIT_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (.*-Gutschrift)(\\s*)(?<amount>[\\.,\\d]+)[+](\\s*)$";
+    private static final String REMOVAL_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (Wertstellung: \\d+.\\d+. )?(Internet-Euro-Überweisung)(\\s*)(?<amount>[\\.,\\d]+)[-](\\s*)$";
+    private static final String INTEREST_2019 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.)  (.*)(Zinsen\\/Kontoführung)(\\s*)(?<amount>[\\.,\\d]+)[+](\\s*)$";
 
-    private static final String DEPOSIT_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (.*gutschr\\.?)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
-    private static final String REMOVAL_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Umbuchung)(\\s*)(?<amount>[\\d\\s,.]*) [S]";
-    private static final String INTEREST_2021 = "^(?<date>\\d+.\\d+.) (\\d+.\\d+.) (Abschluss)(\\s*)(?<amount>[\\d\\s,.]*) [H]";
+    private static final String DEPOSIT_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (.*gutschr\\.?)(\\s*)(?<amount>[\\.,\\d]+) [H]";
+    private static final String REMOVAL_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Umbuchung|.*berweisungsauftrag)(\\s*)(?<amount>[\\.,\\d]+) [S]";
+    private static final String INTEREST_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [H]";
+    private static final String INTEREST_CHARGE_2021 = "^(?<date>\\d+.\\d+.) ([\\d]{2}\\.[\\d]{2}\\.) (Storno Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [S]";
 
-    private static final String DEPOSIT_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\d\\s,.]*?) (.*)";
-    private static final String REMOVAL_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\d\\s,.]*?) (.*)";
-    private static final String INTEREST_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\w+zinsen) (\\w+) (?<amount>[\\d\\s,.]*?) (.*)";
-    private static final String TAXES_2022 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\d\\s,.]*?) (.*)";
+    private static final String DEPOSIT_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\.,\\d]+) (.*)$";
+    private static final String REMOVAL_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
+    private static final String INTEREST_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\w+zinsen) (\\w+) (?<amount>[\\.,\\d]+) (.*)";
+    private static final String TAXES_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
 
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";
@@ -43,7 +41,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
         addTransactionWith2019Format();
         addTransactionWith2021Format();
-        addTransactionWith2022Format();
+        addTransactionWithATFormat();
     }
 
     @Override
@@ -54,7 +52,28 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
     private void addTransactionWith2019Format()
     {
-        DocumentType type = new DocumentType("305 200 37", contextProvider2019());
+        final DocumentType type = new DocumentType("305 200 37", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        .section("year")
+                                        .match("(.*)(KONTOAUSZUG  Nr. )(\\d+)\\/(?<year>\\d{4})")
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+                                        
+                                        .oneOf(
+                                                section -> section
+                                                .attributes("currency")
+                                                .match("(.*)(Summe Zinsen\\/Kontoführung)(\\s*)(?<currency>[\\w]{3})(.*)")
+                                                .assign((ctx, v) -> ctx.put(CONTEXT_KEY_CURRENCY, asCurrencyCode(v.get("currency"))))
+                                        ,
+                                                section -> section
+                                                .attributes("currency")
+                                                .match("^.*N.*E.*U.*E.*R.*K.*O.*N.*T.*O.*S.*T.*A.*N.*D.*V.*O.*M.*I.*N.*(?<currency>[A-Z_]{5,}).*$")
+                                                .assign((t, v) -> {
+                                                    t.put(CONTEXT_KEY_CURRENCY, asCurrencyCode(v.get("currency").replace("_", ""))); //
+                                                })
+                                         )
+                        // @formatter:on
+                        );
         this.addDocumentTyp(type);
 
         Block depositBlock = new Block(DEPOSIT_2019);
@@ -72,7 +91,16 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
     private void addTransactionWith2021Format()
     {
-        DocumentType type = new DocumentType("Renault Bank direkt", contextProvider2021());
+        final DocumentType type = new DocumentType(".*-Konto Kontonummer", //
+                        documentContext -> documentContext //
+                                        .section("year")
+                                        .match("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})")
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+                                        
+                                        .section("currency")
+                                        .match("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)")
+                                        .assign((ctx, v) -> ctx.put(CONTEXT_KEY_CURRENCY, asCurrencyCode(v.get("currency")))
+                                        ));
         this.addDocumentTyp(type);
 
         Block depositBlock = new Block(DEPOSIT_2021);
@@ -86,27 +114,38 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         Block interestBlock = new Block(INTEREST_2021);
         interestBlock.set(interestTransaction(type, INTEREST_2021));
         type.addBlock(interestBlock);
+
+        Block interestChargeBlock = new Block(INTEREST_CHARGE_2021);
+        interestChargeBlock.set(interestChargeTransaction(type, INTEREST_CHARGE_2021));
+        type.addBlock(interestChargeBlock);
     }
 
-    private void addTransactionWith2022Format()
+    private void addTransactionWithATFormat()
     {
-        DocumentType type = new DocumentType("Renault Bank direkt", contextProvider2022());
+        final DocumentType type = new DocumentType("IBAN AT.*", //
+                        documentContext -> documentContext //
+                                        .section("currency")
+                                        .match("(.*) Betrag in (?<currency>[\\w]{3}) (.*)")
+                                        .assign((t, v) -> {
+                                            t.put(CONTEXT_KEY_CURRENCY, asCurrencyCode(v.get("currency").replace("_", ""))); //
+                                            t.put(CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE, CONTEXT_VALUE_TRUE);
+                                        }));
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block(DEPOSIT_2022);
-        depositBlock.set(depositTransaction(type, DEPOSIT_2022));
+        Block depositBlock = new Block(DEPOSIT_AT);
+        depositBlock.set(depositTransaction(type, DEPOSIT_AT));
         type.addBlock(depositBlock);
 
-        Block removalBlock = new Block(REMOVAL_2022);
-        removalBlock.set(removalTransaction(type, REMOVAL_2022));
+        Block removalBlock = new Block(REMOVAL_AT);
+        removalBlock.set(removalTransaction(type, REMOVAL_AT));
         type.addBlock(removalBlock);
 
-        Block interestBlock = new Block(INTEREST_2022);
-        interestBlock.set(interestTransaction(type, INTEREST_2022));
+        Block interestBlock = new Block(INTEREST_AT);
+        interestBlock.set(interestTransaction(type, INTEREST_AT));
         type.addBlock(interestBlock);
 
-        Block taxesBlock = new Block(TAXES_2022);
-        taxesBlock.set(taxesTransaction(type, TAXES_2022));
+        Block taxesBlock = new Block(TAXES_AT);
+        taxesBlock.set(taxesTransaction(type, TAXES_AT));
         type.addBlock(taxesBlock);
     }
 
@@ -132,6 +171,15 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         .match(regex)
                         .assign(assignmentsProvider(type))
                         .wrap(TransactionItem::new);
+    }
+
+    private Transaction<AccountTransaction> interestChargeTransaction(DocumentType type, String regex)
+    {
+        return new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.INTEREST_CHARGE);
+            return entry;
+        }).section("date", "amount").match(regex).assign(assignmentsProvider(type)).wrap(TransactionItem::new);
     }
 
     private Transaction<AccountTransaction> removalTransaction(DocumentType type, String regex)
@@ -176,72 +224,5 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
             transaction.setAmount(asAmount(matcherMap.get("amount")));
             transaction.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
         };
-    }
-
-    private BiConsumer<DocumentContext, String[]> contextProvider2019()
-    {
-        return (context, lines) -> {
-            Pattern yearPattern = Pattern.compile("(.*)(KONTOAUSZUG  Nr. )(\\d+)\\/(?<year>\\d{4})");
-            Pattern currencyPattern = Pattern
-                            .compile("(.*)(Summe Zinsen\\/Kontoführung)(\\s*)                (?<currency>[\\w]{3})(.*)");
-          Pattern currencyPattern2 = Pattern
-                            .compile("^.*N.*E.*U.*E.*R.*K.*O.*N.*T.*O.*S.*T.*A.*N.*D.*V.*O.*M.*I.*N.*(?<currency>[A-Z_]{5,}).*$");
-
-            contextProviderCommon(context, lines, yearPattern, currencyPattern, currencyPattern2);
-        };
-    }
-
-    private BiConsumer<DocumentContext, String[]> contextProvider2021()
-    {
-        return (context, lines) -> {
-            Pattern yearPattern = Pattern.compile("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})");
-            Pattern currencyPattern = Pattern
-                            .compile("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)");
-            contextProviderCommon(context, lines, yearPattern, currencyPattern, null);
-        };
-    }
-
-    private BiConsumer<DocumentContext, String[]> contextProvider2022()
-    {
-        return (context, lines) -> {
-            Pattern currencyPattern = Pattern
-                            .compile("(.*) Betrag in (?<currency>[\\w]{3}) (.*)");
-            context.put(CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE, CONTEXT_VALUE_TRUE);
-            contextProviderCommon(context, lines, null, currencyPattern, null);
-        };
-    }
-
-    private void contextProviderCommon(Map<String, String> context,
-                    String[] lines,
-                    Pattern yearPattern,
-                    Pattern currencyPattern,
-                    Pattern currencyPattern2)
-    {
-        for (String line : lines)
-        {
-            if (yearPattern != null)
-            {
-                Matcher yearMatcher = yearPattern.matcher(line);
-                if (yearMatcher.matches())
-                {
-                    context.put(CONTEXT_KEY_YEAR, yearMatcher.group("year"));
-                }
-            }
-
-            Matcher currencyMatcher = currencyPattern.matcher(line);
-            if (currencyMatcher.matches())
-            {
-                context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency").replaceAll("_", ""));
-            }
-            
-            if (currencyPattern2 != null && context.get(CONTEXT_KEY_CURRENCY) == null)
-            {
-                currencyMatcher = currencyPattern2.matcher(line);
-                if (currencyMatcher.matches())
-                {
-                    context.put(CONTEXT_KEY_CURRENCY, currencyMatcher.group("currency").replaceAll("_", ""));
-                }
-            }
-        }
     }
 }
