@@ -5,27 +5,50 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
+
 @SuppressWarnings("nls")
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 {
+
+    private static final String ACCOUNT_DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (\\w+) (PN:\\d+)(\\s*)(?<amount>[\\.,\\d]+) (?<type>[H|S])";
 
     public MerkurPrivatBankPDFExtractor(Client client)
     {
         super(client);
 
         addBankIdentifier("Umsatzsteuer-ID DE198159260");
+        addBankIdentifier("MERKUR PRIVATBANK KGaA");
 
         addBuySellTransaction();
+        addAccountTransaction();
     }
 
     @Override
     public String getLabel()
     {
         return "MERKUR PRIVATBANK KGaA";
+    }
+
+    private void addAccountTransaction()
+    {
+        final DocumentType type = new DocumentType(".*-Konto Kontonummer", //
+                        documentContext -> documentContext //
+                                        .section("year").match("(.*)(Kontoauszug Nr\\.)(\\s*)(\\d+)\\/(?<year>\\d{4})")
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        .section("currency").match("(?<currency>[\\w]{3})(-Konto Kontonummer)(.*)")
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        Block depositRemovalBlock = new Block(ACCOUNT_DEPOSIT_REMOVAL);
+        depositRemovalBlock.set(depositRemovalTransaction(type, ACCOUNT_DEPOSIT_REMOVAL));
+        type.addBlock(depositRemovalBlock);
     }
 
     private void addBuySellTransaction()
@@ -123,5 +146,20 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
 
+    }
+
+    private Transaction<AccountTransaction> depositRemovalTransaction(DocumentType type, String regex)
+    {
+        return new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DEPOSIT);
+            return entry;
+        }).section("date", "amount", "type").documentContext("currency", "year").match(regex).assign((t, v) -> {
+            if ("S".equals(v.get("type")))
+                t.setType(Type.REMOVAL);
+            t.setDateTime(asDate(v.get("date") + v.get("year")));
+            t.setAmount(asAmount(v.get("amount")));
+            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+        }).wrap(TransactionItem::new);
     }
 }
