@@ -20,7 +20,7 @@ public class StockSplitWarning
         if (evt.isPresent())
         {
             SecurityEvent event = evt.get();
-            return MessageFormat.format(Messages.MsgPreviousStockSplit, event.getDate(), event.getDetails());
+            return MessageFormat.format(Messages.MsgPreviousStockSplit, event.getDetails(), event.getDate());
         }
         else
         {
