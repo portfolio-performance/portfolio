@@ -1,47 +1,55 @@
 package name.abuchen.portfolio.math;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.util.Interval;
 
 public class AllTimeHigh
 {
-    private Security security;
-    private Interval interval;
+    private List<LocalDate> dates = new ArrayList<>();
+    private List<Long> values = new ArrayList<>();
     private Long athValue;
     private LocalDate athDate;
-    private Double athDistanceInPercent;
+
+    public AllTimeHigh(LocalDate[] dates, long[] values)
+    {
+        this.dates = Arrays.stream(dates).toList();
+        this.values = Arrays.stream(values).boxed().toList();
+
+        this.calculate();
+    }
+
+    public AllTimeHigh(PerformanceIndex index)
+    {
+        this(index.getDates(), index.getTotals());
+    }
 
     public AllTimeHigh(Security security, Interval interval)
     {
-        this.security = security;
-        this.interval = Objects.requireNonNull(interval);
+        security.getPricesIncludingLatest().stream().filter(price -> interval.contains(price.getDate()))
+                        .forEach(price -> {
+            this.dates.add(price.getDate());
+            this.values.add(price.getValue());
+        });
 
         this.calculate();
     }
 
     private void calculate()
     {
-        if (security == null || interval == null)
+        if (this.values.isEmpty() || this.dates.isEmpty() || this.dates.size() != this.values.size())
             return;
 
-        Optional<SecurityPrice> max = security.getPricesIncludingLatest().stream() //
-                        .filter(p -> interval.contains(p.getDate())) //
-                        .max(Comparator.comparing(SecurityPrice::getValue));
+        this.athValue = Collections.max(this.values);
 
-        if (!max.isPresent())
-            return;
-
-        SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
-
-        this.athValue = max.get().getValue();
-        this.athDate = max.get().getDate();
-        this.athDistanceInPercent = (latest.getValue() - max.get().getValue()) / (double) max.get().getValue();
+        int index = this.values.indexOf(this.athValue);
+        this.athDate = this.dates.get(index);
     }
 
     public Long getValue()
@@ -49,9 +57,17 @@ public class AllTimeHigh
         return this.athValue;
     }
 
+    public Long getLatestValue()
+    {
+        return this.values.get(this.values.size() - 1);
+    }
+
     public Double getDistance()
     {
-        return this.athDistanceInPercent;
+        if (this.athValue == null)
+            return null;
+        
+        return (this.getLatestValue() - this.athValue) / (double) this.athValue;
     }
     
     public LocalDate getDate()

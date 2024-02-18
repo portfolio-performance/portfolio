@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
+import java.util.function.LongFunction;
 import java.util.stream.LongStream;
 
 import name.abuchen.portfolio.math.AllTimeHigh;
@@ -318,40 +319,29 @@ public enum WidgetFactory
 
     WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
 
-    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
+    DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
-                                        if (!(ds.getInstance() instanceof Security))
-                                            return (double) 0;
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        AllTimeHigh ath = new AllTimeHigh(index);
 
-                                        Security security = (Security) ds.getInstance();
-
-                                        Double distance = new AllTimeHigh(security, period).getDistance();
-                                        if (distance == null)
-                                            return (double) 0;
-
-                                        return distance;
+                                        return (ath.getValue() != null) ? ath.getDistance() : 0;
                                     }) //
-                                    .withBenchmarkDataSeries(false) //
-                                    .with(ds -> ds.getInstance() instanceof Security) //
+                                    .withBenchmarkDataSeries(true) //
                                     .withColoredValues(false) //
                                     .withTooltip((ds, period) -> {
-                                        if (!(ds.getInstance() instanceof Security))
-                                            return null;
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        AllTimeHigh ath = new AllTimeHigh(index);
 
-                                        Security security = (Security) ds.getInstance();
-                                        AllTimeHigh ath = new AllTimeHigh(security, period);
-                                        if (ath.getValue() == null)
-                                            return null;
+                                        LongFunction<String> formatter = s -> ds.isBenchmark() ? Values.Quote.format(s)
+                                                        : Values.Money.format(Money.of(index.getCurrency(), s));
 
                                         return MessageFormat.format(Messages.TooltipAllTimeHigh, period.getDays(),
                                                         Values.Date.format(ath.getDate()),
-                                                        ath.getValue() / Values.Quote.divider(),
-                                                        security.getSecurityPrice(LocalDate.now()).getValue()
-                                                                        / Values.Quote.divider(),
-                                                        Values.Date.format(security.getSecurityPrice(LocalDate.now())
-                                                                        .getDate()));
+                                                        formatter.apply(ath.getValue()),
+                                                        formatter.apply(ath.getLatestValue()),
+                                                        Values.Date.format(period.getEnd()));
                                     }) //
                                     .build()),
 
