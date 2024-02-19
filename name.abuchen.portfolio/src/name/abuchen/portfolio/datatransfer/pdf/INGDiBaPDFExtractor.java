@@ -549,10 +549,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 27.06.2016 Gutschrift Max Mustermann 10.000,00
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
+        // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift" //
-                        + "|Gutschrift\\/Dauerauftrag) " //
+                        + "|Gutschrift\\/Dauerauftrag"
+                        + "|Gehalt\\/Rente) " //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -567,7 +569,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>Gutschrift" //
-                                        + "|Gutschrift\\/Dauerauftrag) " //
+                                        + "|Gutschrift\\/Dauerauftrag"
+                                        + "|Gehalt\\/Rente) " //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -636,6 +639,30 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.05.2023 Entgelt EgumoUc -0,99
+        // @formatter:on
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgelt .* \\-[\\.,\\d]+$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Entgelt .* \\-(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
