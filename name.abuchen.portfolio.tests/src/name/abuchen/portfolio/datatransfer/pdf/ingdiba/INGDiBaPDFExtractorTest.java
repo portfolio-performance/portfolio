@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.ingdiba;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -3494,5 +3496,49 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.11)));
         assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kirchensteuer"));
+    }
+
+    @Test
+    public void testKGiroKontoauszug03()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-05-03"), hasAmount("EUR", 0.99), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKGiroKontoauszug04()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-04-29"), hasAmount("EUR", 806.83), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Gehalt/Rente"))));
     }
 }
