@@ -1808,6 +1808,126 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung14()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn("A2AFCZ"), hasTicker(null), //
+                        hasName("iShs IV-Sust.MSCI Em.Mkts SRI Registered Shares USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-12-27T00:00"), hasShares(0.227), //
+                        hasSource("VerkaufMitSteuerbehandlung14.txt"), //
+                        hasNote("Ord.-Nr.: 123456789012 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", 1.40), hasGrossValue("EUR", 1.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2023-12-27T00:00"), hasShares(0.227), //
+                        hasSource("VerkaufMitSteuerbehandlung14.txt"), //
+                        hasNote("Ref.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung15()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009809566"), hasWkn("980956"), hasTicker(null), //
+                        hasName("Deka-ImmobilienEuropa Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-02-06T14:25"), hasShares(157), //
+                        hasSource("VerkaufMitSteuerbehandlung15.txt"), //
+                        hasNote("Ord.-Nr.: 600779868664-001 | R.-Nr.: 901203817830RNX5"), //
+                        hasAmount("EUR", 6945.97), hasGrossValue("EUR", 6970.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 22.33 + 2.50))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-02-06T00:00"), hasShares(157), //
+                        hasSource("VerkaufMitSteuerbehandlung15.txt"), //
+                        hasNote("Ref.-Nr.: 2AIKQNCYMSG00012"), //
+                        hasAmount("EUR", 23.32), hasGrossValue("EUR", 23.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung16()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYWQWR46"), hasWkn("A2PLDF"), hasTicker(null), //
+                        hasName("VanEck Vid eSports UC. ETF Reg. Shares A USD Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-07-10T17:09"), hasShares(24), //
+                        hasSource("VerkaufMitSteuerbehandlung16.txt"), //
+                        hasNote("Ord.-Nr.: 047475193414-001 | R.-Nr.: 619811576270VuY2"), //
+                        hasAmount("EUR", 741.54), hasGrossValue("EUR", 756.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90 + 2.50))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2023-07-10T00:00"), hasShares(24), //
+                        hasSource("VerkaufMitSteuerbehandlung16.txt"), //
+                        hasNote("Ref.-Nr.: 5VvxslUgtiM4592Q"), //
+                        hasAmount("EUR", 23.19), hasGrossValue("EUR", 23.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkaufSteuerbehandlung01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
