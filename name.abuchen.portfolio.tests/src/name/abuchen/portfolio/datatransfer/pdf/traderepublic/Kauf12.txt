@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+vdKvP VUBCnscro SEITE 1 von 1
+pCVMWiOWE-WSyybgJqJ-CJHPRJ 44 DATUM 09.02.2024
+79325 NmxfEe AUSFÜHRUNG 8f44-fdf5
+ROUND UP 42c2-50a7
+DEPOT 4814460061
+WERTPAPIERABRECHNUNG ROUND UP
+ÜBERSICHT
+Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+iSh.ST.Gl.Sel.Div.100 U.ETF DE 0,09351 Stk. 26,735 EUR 2,50 EUR
+Inhaber-Anteile
+ISIN: DE000A0F5UH1
+GESAMT 2,50 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE85XXXXXXXXXXXXXXXXXX 13.02.2024 -2,50 EUR
+iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 09.02.2024 / 56127006 / f122-a87c
