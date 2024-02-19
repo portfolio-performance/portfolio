@@ -54,6 +54,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
                         + "|WERTPAPIERABRECHNUNG SPARPLAN" //
+                        + "|WERTPAPIERABRECHNUNG ROUND UP" //
                         + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
                         + "|SECURITIES SETTLEMENT" //
                         + "|REINVESTIERUNG" //
@@ -183,6 +184,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
 
                                         // @formatter:off
+                                        // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^Ausf.hrung von Round up .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+
+                                        // @formatter:off
                                         // This is for the reinvestment of dividends
                                         //
                                         // DE40110101001234567890 06.08.2021 0,44 GBP
@@ -190,7 +198,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section.attributes("date") //
                                                         .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
-
                         // @formatter:off
                         // If the type of transaction is "SELL" and the amount
                         // is negative, then the gross amount set.
