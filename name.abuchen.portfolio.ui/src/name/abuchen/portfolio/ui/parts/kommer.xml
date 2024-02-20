@@ -11266,7 +11266,7 @@
           <weight>1</weight>
           <widgets>
             <widget type="HEADING">
-              <label>Kennzahlen</label>
+              <label>${Messages.LabelKeyIndicators}</label>
             </widget>
             <widget type="TTWROR">
               <label>True Time-Weighted Rate of Return</label>
@@ -11285,7 +11285,7 @@
               <configuration/>
             </widget>
             <widget type="HEADING">
-              <label>Letzter Tag</label>
+              <label>${Messages.LabelTTWROROneDay}</label>
             </widget>
             <widget type="TTWROR">
               <label>True Time-Weighted Rate of Return</label>
@@ -11315,7 +11315,7 @@
           <weight>1</weight>
           <widgets>
             <widget type="HEADING">
-              <label>Risikokennzahlen</label>
+              <label>${Messages.LabelRiskIndicators}</label>
             </widget>
             <widget type="MAXDRAWDOWN">
               <label>Maximaler Drawdown</label>
@@ -11339,7 +11339,7 @@
           <weight>1</weight>
           <widgets>
             <widget type="HEADING">
-              <label>Berechnung</label>
+              <label>${Messages.PerformanceTabCalculation}</label>
             </widget>
             <widget type="CALCULATION">
               <label>Performance-Berechnung</label>
@@ -11349,7 +11349,7 @@
         </column>
       </columns>
     </dashboard>
-    <dashboard name="Jahresübersicht">
+    <dashboard name="${Kommer_YearlyOverview}">
       <configuration>
         <entry>
           <string>REPORTING_PERIOD</string>
@@ -11400,7 +11400,7 @@
               </configuration>
             </widget>
             <widget type="HEADING">
-              <label>Weltportfolio</label>
+              <label>${Kommer_RiskBasedPart}</label>
               <configuration/>
             </widget>
             <widget type="TTWROR">
@@ -11461,7 +11461,7 @@
               </configuration>
             </widget>
             <widget type="HEADING">
-              <label>Weltportfolio</label>
+              <label>${Kommer_RiskBasedPart}</label>
               <configuration/>
             </widget>
             <widget type="TTWROR">
@@ -11518,7 +11518,7 @@
               </configuration>
             </widget>
             <widget type="HEADING">
-              <label>Weltportfolio</label>
+              <label>${Kommer_RiskBasedPart}</label>
               <configuration/>
             </widget>
             <widget type="TTWROR">
@@ -11536,9 +11536,180 @@
             </widget>
           </widgets>
         </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>2022</label>
+              <configuration/>
+            </widget>
+            <widget type="CHART">
+              <label>Performance-Diagramm</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2022</string>
+                </entry>
+                <entry>
+                  <string>CONFIG_UUID</string>
+                  <string>8bca0451-2846-4612-85dd-3943642ef68d</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2022</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2022</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>${Kommer_RiskBasedPart}</label>
+              <configuration/>
+            </widget>
+            <widget type="TTWROR">
+              <label>Risikobehafteter Portfolioteil</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2022</string>
+                </entry>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>Classification6c3f0511-3f9b-4951-9432-641ffd3a4993</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>2023</label>
+              <configuration/>
+            </widget>
+            <widget type="CHART">
+              <label>Performance-Diagramm</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2023</string>
+                </entry>
+                <entry>
+                  <string>CONFIG_UUID</string>
+                  <string>8bca0451-2846-4612-85dd-3943642ef68d</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2023</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2023</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>${Kommer_RiskBasedPart}</label>
+              <configuration/>
+            </widget>
+            <widget type="TTWROR">
+              <label>Risikobehafteter Portfolioteil</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2023</string>
+                </entry>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>Classification6c3f0511-3f9b-4951-9432-641ffd3a4993</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>2024</label>
+              <configuration/>
+            </widget>
+            <widget type="CHART">
+              <label>Performance-Diagramm</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2024</string>
+                </entry>
+                <entry>
+                  <string>CONFIG_UUID</string>
+                  <string>8bca0451-2846-4612-85dd-3943642ef68d</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2024</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2024</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>${Kommer_RiskBasedPart}</label>
+              <configuration/>
+            </widget>
+            <widget type="TTWROR">
+              <label>Risikobehafteter Portfolioteil</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2024</string>
+                </entry>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>Classification6c3f0511-3f9b-4951-9432-641ffd3a4993</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
       </columns>
     </dashboard>
-    <dashboard name="Erträge">
+    <dashboard name="${Messages.LabelEarnings}">
       <configuration>
         <entry>
           <string>REPORTING_PERIOD</string>

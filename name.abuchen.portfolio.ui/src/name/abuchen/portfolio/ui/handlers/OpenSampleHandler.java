@@ -32,13 +32,16 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetFactory;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TokenReplacingReader;
 import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
@@ -77,6 +80,7 @@ public class OpenSampleHandler
                         final Client client = ClientFactory.load(replacingReader);
 
                         fixTaxonomyLabels(client);
+                        fixDashboardLabels(client);
 
                         sync.asyncExec(() -> {
                             String label = sampleFile.substring(sampleFile.lastIndexOf('/') + 1);
@@ -159,14 +163,42 @@ public class OpenSampleHandler
         });
     }
 
+    protected void fixDashboardLabels(Client client)
+    {
+        client.getDashboards().forEach(dashboard -> {
+            for (Dashboard.Column column : dashboard.getColumns())
+            {
+                for (Dashboard.Widget widget : column.getWidgets())
+                {
+                    WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
+                    if (factory == null)
+                        continue;
+                    if (factory == WidgetFactory.HEADING)
+                        continue;
+                    widget.setLabel(factory.getLabel());
+                }
+            }
+        });
+    }
+
     private static ITokenResolver buildResourcesTokenResolver()
     {
+        var bundlePrefix = "Messages."; //$NON-NLS-1$
+
         return tokenName -> {
             try
             {
-                return RESOURCES.getString(tokenName);
+                if (tokenName.startsWith(bundlePrefix))
+                {
+                    return Messages.class.getField(tokenName.substring(bundlePrefix.length())).get(null).toString();
+                }
+                else
+                {
+                    return RESOURCES.getString(tokenName);
+                }
             }
-            catch (MissingResourceException e)
+            catch (MissingResourceException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException
+                            | SecurityException e)
             {
                 return tokenName;
             }
