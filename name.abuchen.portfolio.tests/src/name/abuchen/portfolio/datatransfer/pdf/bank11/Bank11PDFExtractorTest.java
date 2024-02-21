@@ -34,6 +34,7 @@ public class Bank11PDFExtractorTest
     public void testKontoauszug01()
     {
         Bank11PDFExtractor extractor = new Bank11PDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
@@ -46,40 +47,40 @@ public class Bank11PDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2022-10-19"), hasAmount("EUR", 18500.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2022-11-14"), hasAmount("EUR", 4500.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2022-11-22"), hasAmount("EUR", 1500.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2022-12-08"), hasAmount("EUR", 2000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-10-31"), hasAmount("EUR", 3000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-11-07"), hasAmount("EUR", 350.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-11-15"), hasAmount("EUR", 200.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-11-21"), hasAmount("EUR", 200.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Umbuchung"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-11-30"), hasAmount("EUR", 3000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-12-05"), hasAmount("EUR", 2000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-12-16"), hasAmount("EUR", 150.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2022-12-30"), hasAmount("EUR", 1250.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(interest(hasDate("2022-12-30"), hasAmount("EUR", 52.66), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
@@ -89,6 +90,7 @@ public class Bank11PDFExtractorTest
     public void testKontoauszug02()
     {
         Bank11PDFExtractor extractor = new Bank11PDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
@@ -101,55 +103,55 @@ public class Bank11PDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2023-01-05"), hasAmount("EUR", 1300.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2023-01-16"), hasAmount("EUR", 4600.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2023-01-24"), hasAmount("EUR", 500.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2023-02-15"), hasAmount("EUR", 4200.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
-        
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
+
         assertThat(results, hasItem(deposit(hasDate("2023-03-16"), hasAmount("EUR", 4200.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(deposit(hasDate("2023-04-28"), hasAmount("EUR", 17500.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsgutschrift"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-01-02"), hasAmount("EUR", 3500.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-01-09"), hasAmount("EUR", 100.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-01-17"), hasAmount("EUR", 100.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-01-25"), hasAmount("EUR", 17500.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-01-30"), hasAmount("EUR", 4000.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-02-13"), hasAmount("EUR", 150.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-02-28"), hasAmount("EUR", 3000.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-03-08"), hasAmount("EUR", 800.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-03-09"), hasAmount("EUR", 1100.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-03-30"), hasAmount("EUR", 6900.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(removal(hasDate("2023-05-02"), hasAmount("EUR", 17600.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         assertThat(results, hasItem(interest(hasDate("2023-03-31"), hasAmount("EUR", 56.88), //
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
@@ -160,6 +162,5 @@ public class Bank11PDFExtractorTest
         assertThat(results, hasItem(interest(hasDate("2023-12-29"), hasAmount("EUR", 29.52), //
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
-
 
 }
