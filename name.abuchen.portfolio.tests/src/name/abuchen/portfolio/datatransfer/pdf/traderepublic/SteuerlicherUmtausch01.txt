@@ -1,0 +1,31 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 07.12.2023
+12345 Ort DEPOT 0000000000
+STEUERLICHER UMTAUSCH
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung AMUN.GOV.BD EO BR.IG 1-3 U.ETF 50 Stk.
+Actions au Porteur o.N.
+FR0010754135
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Kapitalertragsteuer -21,87 EUR
+Solidaritätszuschlag -1,20 EUR
+GESAMT -23,07 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE00000000000000000000 01.12.2023 -23,07 EUR
+AMUN.GOV.BD EO BR.IG 1-3 U.ETF Actions au Porteur o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 07.12.2023 / 74506130 / 07a4-7fa8
+
+```

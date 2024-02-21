@@ -37,11 +37,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAccountStatementTransaction();
         addTaxStatementTransaction();
+        addUSTaxStatementTransaction();
         addDepositStatementTransaction();
         addInterestStatementTransaction();
         addAdvanceTaxTransaction();
         addCaptialReductionTransaction();
         addDeliveryInOutBoundTransaction();
+        addTaxInOutBoundTransaction();
     }
 
     @Override
@@ -868,10 +870,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(UMTAUSCH\\/BEZUG"
                         + "|FUSION"
+                        + "|SPIN\\-OFF"
                         + "|KAPITALERH.HUNG GEGEN BAR"
                         + "|VERGLEICHSVERFAHREN"
                         + "|DEPOTÜBERTRAG EINGEHEND"
-                        + "|TITELUMTAUSCH)", (context, lines) -> {
+                        + "|TITELUMTAUSCH"
+                        + "|ZWANGS.BERNAHME)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSkipTransaction = Pattern.compile("^ABRECHNUNG$");
             Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$");
@@ -1044,7 +1048,128 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction2, type);
         addFeesSectionsTransaction(pdfTransaction2, type);
     }
+    
+    private void addTaxInOutBoundTransaction()
+    {
+        final DocumentType type = new DocumentType("STEUERLICHER UMTAUSCH", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Straße 1 DATUM 07.12.2023
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+        this.addDocumentTyp(type);
 
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("(^|^[\\d] )(Einbuchung"
+                        + "|Ausbuchung) .* "
+                        + "([\\.,\\d]+ Stk\\.)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                .subject(() -> {
+                    PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                    portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                    return portfolioTransaction;
+                })
+
+                // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
+                .section("type")
+                .match("(^|^[\\d] )(?<type>"
+                                + "(Einbuchung|Ausbuchung)"
+                                + ") .* ([\\.,\\d]+ Stk\\.)$")
+                .assign((t, v) -> {
+                    if ("Einbuchung".equals(v.get("type")))
+                    {
+                        t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                        t.setNote("Einstandskurs fehlt");
+                    }
+                })
+
+                // @formatter:off
+                // 1 Ausbuchung AMUN.GOV.BD EO BR.IG 1-3 U.ETF 50 Stk.
+                // Actions au Porteur o.N.
+                // FR0010754135
+                //
+                // 1 Einbuchung MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. 67,541 Stk.
+                // Nam.-An. Acc o.N.
+                // LU1650487413
+                // @formatter:on
+                .section("position", "name", "shares", "nameContinued", "isin")
+                .documentContext("date") //
+                .match("^(?<position>[\\d]) (Einbuchung|Ausbuchung) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
+                .match("^(?<nameContinued>.*)$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                .assign((t, v) -> {
+                    Map<String, String> context = type.getCurrentContext();
+                    context.put("PositionEinAusbuchung", v.get("position"));
+                    t.setDateTime(asDate(v.get("date")));
+                    t.setShares(asShares(v.get("shares")));
+                    t.setSecurity(getOrCreateSecurity(v));
+                    t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                    t.setAmount(0L);
+
+                    context.put("name", v.get("name"));
+                    context.put("nameContinued", v.get("nameContinued"));
+                    context.put("isin", v.get("isin"));
+                    context.put("shares", v.get("shares"));
+                })
+
+                .wrap(TransactionItem::new);
+        
+        Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
+
+        firstRelevantLine = new Block("^ABRECHNUNG$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction2);
+
+        pdfTransaction2 //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+                                                
+                        // @formatter:off
+                        // 1 Kapitalertragsteuer -21,87 EUR
+                        // Solidaritätszuschlag -1,20 EUR
+                        // GESAMT -23,07 EUR
+                        // @formatter:on
+                        .section("position", "amount", "currency", "date") //
+                        .match("^(?<position>[\\d]) Kapitalertragsteuer \\-[\\.,\\d]+ ([\\w]{3})$") //
+                        .find("^VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
+                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            context.put("PositionAbrechnung", v.get("position"));
+
+                            v.put("name", context.get("name"));
+                            v.put("nameContinued", context.get("nameContinued"));
+                            v.put("isin", context.get("isin"));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setShares(asShares(context.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+                        
+                        .wrap(t -> {
+                            // If we have a "ABRECHNUNG", then this is not a
+                            // delivery in/outbound. We skip this transaction.
+                            if (type.getCurrentContext().get("PositionAbrechnung").equals(type.getCurrentContext().get("PositionEinAusbuchung")))
+                                return new TransactionItem(t);
+                            
+                            else
+                                return null;
+                        });
+    }
+    
     private void addAccountStatementTransaction()
     {
         final DocumentType type = new DocumentType("KONTOAUSZUG", //
@@ -1194,7 +1319,57 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
     }
+    
+    private void addUSTaxStatementTransaction()
+    {
+        DocumentType type = new DocumentType("STEUERKORREKTUR");
+        this.addDocumentTyp(type);
 
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^STEUERKORREKTUR$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // W.P. Carey Inc. 38,4597 Stk.
+                        // Registered Shares DL -,01
+                        // ISIN: US92936U1097
+                        // @formatter:on
+                        .section("name", "shares", "nameContinued", "isin") //
+                        .match("^(?<name>.*) (?<shares>[\\.,\\d]+) (Stk\\.|St.ck)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                                                
+                        // @formatter:off
+                        // Quellensteuer für US-Emittent -6,94 USD
+                        // @formatter:on
+                        .section("amount", "currency", "date") //
+                        .find("^Quellensteuer f.r US\\-Emittent \\-[\\.,\\d]+ ([\\w]{3})$") //
+                        .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
+                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+    
+    
     private void addDepositStatementTransaction()
     {
         DocumentType type = new DocumentType("ABRECHNUNG EINZAHLUNG");
