@@ -1,0 +1,23 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 07.12.2023
+12345 Ort DEPOT 0000000000
+STEUERLICHER UMTAUSCH
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Einbuchung MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. 67,541 Stk.
+Nam.-An. Acc o.N.
+LU1650487413
+MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. Nam.-An. Acc o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+DUAN / 07.12.2023 / 13749381 / feec-00ec
+
+```
