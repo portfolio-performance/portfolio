@@ -1,349 +1,258 @@
 package name.abuchen.portfolio.datatransfer.pdf.akfbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.AkfBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class AkfBankPDFExtractorTest
 {
     @Test
-    public void testTagesgeldKontoauzug01()
+    public void testKontoauszug01()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug01.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
-                        .count(), is(3L));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2011-04-08"), hasAmount("EUR", 29000.12), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2011-04-21"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2011-04-29"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-04-08T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(29000.12)));
-        
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-04-21T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2500)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-04-29T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2500)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-04-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(44.20)));
-    }
-    
-    @Test
-    public void testTagesgeldKontoauzug02()
-    {
-        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug02.txt"), errors);
-
-        assertThat(errors, empty());
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DEPOSIT)
-                        .count(), is(1L));
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(2L));
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-03T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(150)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-05T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1660.89)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.09)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.33)));
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2011-04-30"), hasAmount("EUR", 44.20), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
 
     @Test
-    public void testTagesgeldKontoauzug03()
+    public void testKontoauszug02()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug03.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(1L));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2012-12-03"), hasAmount("EUR", 150.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Gutschrift"))));
 
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2012-12-05"), hasAmount("EUR", 1660.89), //
+                        hasSource("Kontoauszug02.txt"), hasNote("DTA Überweisung"))));
 
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-13T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.24)));
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2012-12-31"), hasAmount("EUR", 0.09), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2012-12-31"), hasAmount("EUR", 0.33), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
 
     @Test
-    public void testTagesgeldKontoauzug04()
+    public void testKontoauszug03()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug04.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-07-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
-    }
-    
-    @Test
-    public void testTagesgeldKontoauzug05()
-    {
-        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug05.txt"), errors);
-
-        assertThat(errors, empty());
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-12-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2015-04-13"), hasAmount("EUR", 1.24), //
+                        hasSource("Kontoauszug03.txt"), hasNote("SEPA Überweisung online"))));
     }
 
     @Test
-    public void testTagesgeldKontoauzug06()
+    public void testKontoauszug04()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug06.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.DEPOSIT)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(755.00)));
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-07-31"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug04.txt"), hasNote(null))));
     }
 
     @Test
-    public void testTagesgeldKontoauzug07()
+    public void testKontoauszug05()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("TagesgeldKontoauzug07.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.FEES)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-14T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.00)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.71)));
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug05.txt"), hasNote(null))));
     }
 
     @Test
-    public void testFestgeldKontoauzug01()
+    public void testKontoauszug06()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("FestgeldKontoauzug01.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
-
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-12T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4446.66)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-12T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.66)));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-08-16"), hasAmount("EUR", 755.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("SEPA Gutschrift Bank"))));
     }
 
     @Test
-    public void testAnlagekontoKontoauzug01()
+    public void testKontoauszug07()
     {
         AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("AnlagekontoKontoauzug01.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject())
-                                        .getType() == AccountTransaction.Type.INTEREST)
-                        .count(), is(1L));
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2012-11-14"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
 
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> i.getSubject() instanceof AccountTransaction)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(1L));
-
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        Item item = iter.next();
-
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-01T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5742.27)));
-
-        item = iter.next();
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.05)));
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2012-11-30"), hasAmount("EUR", 2.71), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
     }
 
-    private List<InputFile> loadFile(String filename)
+    @Test
+    public void testKontoauszug08()
     {
-        return PDFInputFile.loadTestCase(getClass(), filename);
+        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2021-09-12"), hasAmount("EUR", 6.66), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-09-12"), hasAmount("EUR", 4446.66), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Festgeld Anlage"))));
+    }
+
+    @Test
+    public void testKontoauszug09()
+    {
+        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-11-01"), hasAmount("EUR", 5742.27), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Sparkonto Kündigung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2022-11-30"), hasAmount("EUR", 0.05), //
+                        hasSource("Kontoauszug09.txt"), hasNote(null))));
     }
 }
