@@ -706,11 +706,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         setTitle(extractor.getLabel());
 
-        if (!doExtractBeforeEveryPageDisplay
-                        && (!allEntries.isEmpty() || errorTableViewer.getTable().getItemCount() > 0))
-            return;
+        // run the extraction job either if we have to run them every time (in
+        // the case of CSV) or the first time around because we do not have any
+        // entries nor error messages
+        if (doExtractBeforeEveryPageDisplay
+                        || (allEntries.isEmpty() && errorTableViewer.getTable().getItemCount() == 0))
+        {
+            runExtractionJob();
 
-        runExtractionJob();
+        }
     }
 
     private void runExtractionJob()
@@ -738,6 +742,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
                     try
                     {
+                        // for PDF documents, the extraction job does not
+                        // actually do an extraction because we the extractor
+                        // is created in ImportExtractedItemsWizard and just
+                        // returns the items
+
+                        // for CSV documents, we actually have to parse the
+                        // original file again
+
+                        // in both cases, we have a fresh list to which we can
+                        // apply the checks inside setResults again
 
                         List<ExtractedEntry> entries = extractor //
                                         .extract(files, errors).stream() //
