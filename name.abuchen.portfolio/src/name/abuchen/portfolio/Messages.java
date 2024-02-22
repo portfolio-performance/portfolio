@@ -100,6 +100,8 @@ public class Messages extends NLS
     public static String FixDeleteTransaction;
     public static String FixDeleteTransactionDone;
     public static String FixReferenceAccountNameProposal;
+    public static String FixSetDateToToday;
+    public static String FixSetDateToTodayDone;
     public static String FixSetSecurity;
     public static String FixSetSecurityDone;
     public static String IBXML_Label;
@@ -117,6 +119,7 @@ public class Messages extends NLS
     public static String IssueMissingPortfolioTransfer;
     public static String IssueMissingReferenceAccount;
     public static String IssueTransactionMissingCurrencyCode;
+    public static String IssueTransactionWithoutDate;
     public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
     public static String LabelCreditSuisseHTMLTable;
