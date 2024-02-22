@@ -1,16 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -149,8 +144,7 @@ public class PDFImportAssistant
                 if (!extracted)
                 {
                     Predicate<? super Exception> isNotUnsupportedOperation = e -> !(e instanceof UnsupportedOperationException);
-                    List<Exception> meaningfulExceptions = warnings.stream().filter(isNotUnsupportedOperation)
-                                    .collect(Collectors.toList());
+                    List<Exception> meaningfulExceptions = warnings.stream().filter(isNotUnsupportedOperation).toList();
 
                     errors.put(inputFile.getFile(), meaningfulExceptions.isEmpty() ? warnings : meaningfulExceptions);
                 }
@@ -164,61 +158,10 @@ public class PDFImportAssistant
         }
 
         // post processing
-        itemsByExtractor.entrySet().stream() //
-                        .collect(Collectors.toMap(Entry<Extractor, List<Item>>::getKey,
-                                        e -> e.getKey().postProcessing(e.getValue())));
+        itemsByExtractor.entrySet().forEach(e -> e.getKey().postProcessing(e.getValue()));
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return itemsByExtractor;
     }
-
-    public List<Item> runWithPlainText(File file, List<Exception> errors) throws FileNotFoundException
-    {
-        String extractedText = null;
-        try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.name()))
-        {
-            extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-        }
-        PDFInputFile inputFile = new PDFInputFile(file, extractedText);
-
-        return runWithInputFile(inputFile, errors);
-    }
-
-    public List<Item> runWithInputFile(PDFInputFile file, List<Exception> errors) throws FileNotFoundException
-    {
-        SecurityCache securityCache = new SecurityCache(client);
-
-        List<Item> items = null;
-        for (Extractor extractor : extractors)
-        {
-            List<Exception> warnings = new ArrayList<>();
-            items = extractor.extract(securityCache, file, warnings);
-
-            if (!items.isEmpty())
-            {
-                // we extracted items; remove all errors from all other
-                // extractors that
-                // did not find any transactions in this text
-                errors.clear();
-                errors.addAll(warnings);
-
-                items = extractor.postProcessing(items);
-
-                break;
-            }
-
-            errors.addAll(warnings);
-        }
-
-        if (items == null || items.isEmpty())
-            return Collections.emptyList();
-
-        Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
-        itemsByExtractor.put(extractors.get(0), items);
-        securityCache.addMissingSecurityItems(itemsByExtractor);
-
-        return items;
-    }
-
 }

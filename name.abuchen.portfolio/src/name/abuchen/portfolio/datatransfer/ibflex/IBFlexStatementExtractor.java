@@ -957,7 +957,7 @@ public class IBFlexStatementExtractor implements Extractor
      * @formatter:on
      */
     @Override
-    public List<Item> postProcessing(List<Item> items)
+    public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes treatment's
         List<Item> taxesTreatmentList = items.stream() //
@@ -1006,8 +1006,6 @@ public class IBFlexStatementExtractor implements Extractor
                 items.remove(pair.tax());
             }
         }
-
-        return items;
     }
 
     /**

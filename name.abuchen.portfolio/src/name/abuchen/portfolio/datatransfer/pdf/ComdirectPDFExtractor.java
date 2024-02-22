@@ -1804,7 +1804,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
      * @formatter:on
      */
     @Override
-    public List<Item> postProcessing(List<Item> items)
+    public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes treatment's
         List<Item> taxesTreatmentList = items.stream() //
@@ -1920,8 +1920,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
             }
         }
-
-        return items;
     }
 
     /**
