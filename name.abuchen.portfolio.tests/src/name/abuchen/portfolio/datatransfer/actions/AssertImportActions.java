@@ -60,7 +60,8 @@ public class AssertImportActions
     }
 
     private static final ImportAction[] actions = new ImportAction[] { //
-                    new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction(),
+                    new CheckTransactionDateAction(), new CheckValidTypesAction(),
+                    new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction(),
                     new CheckForexGrossValueAction() };
 
     public void check(List<Extractor.Item> items, String... currencyCode)

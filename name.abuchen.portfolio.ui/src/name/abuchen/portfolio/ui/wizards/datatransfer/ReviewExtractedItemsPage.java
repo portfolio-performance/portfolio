@@ -57,6 +57,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.model.Account;
@@ -852,6 +853,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private void checkEntries(List<ExtractedEntry> entries)
     {
         List<ImportAction> actions = new ArrayList<>();
+        actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
         actions.add(new DetectDuplicatesAction(client));
@@ -873,14 +875,29 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             {
                 for (ImportAction action : actions)
                 {
-                    ImportAction.Status actionStatus = entry.getItem().apply(action, this);
-                    entry.addStatus(actionStatus);
-                    if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                    try
                     {
-                        allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
-                                        + entry.getItem().toString()));
+                        ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                        entry.addStatus(actionStatus);
+                        if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                        {
+                            allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
+                                            + entry.getItem().toString()));
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        // if any of the import action fails to due unexpected
+                        // error, we must not abort but mark the item as not
+                        // importable and continue
 
+                        entry.addStatus(new ImportAction.Status(ImportAction.Status.Code.ERROR, e.getMessage()));
+                        allErrors.add(e);
+
+                        // write to application log as this is most likely than
+                        // not a programming error
+                        PortfolioPlugin.log(e);
+                    }
                 }
             }
         }
