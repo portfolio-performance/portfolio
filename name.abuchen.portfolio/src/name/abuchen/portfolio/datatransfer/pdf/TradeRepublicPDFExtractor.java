@@ -867,7 +867,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|KAPITALERH.HUNG GEGEN BAR"
                         + "|VERGLEICHSVERFAHREN"
                         + "|DEPOTÜBERTRAG EINGEHEND"
-                        + "|TITELUMTAUSCH)", (context, lines) -> {
+                        + "|TITELUMTAUSCH"
+                        + "|ZWANGS.BERNAHME)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSkipTransaction = Pattern.compile("^ABRECHNUNG$");
             Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$");
@@ -1043,18 +1044,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     
     private void addTaxInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("(STEUERLICHER UMTAUSCH)", (context, lines) -> {
-            Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
-            context.put("transactionPosition", "0");
-
-            for (String line : lines)
-            {
-                Matcher mDate = pDate.matcher(line);
-                if (mDate.matches())
-                    context.put("date", mDate.group("date"));
-
-            }
-        });
+        final DocumentType type = new DocumentType("STEUERLICHER UMTAUSCH", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Straße 1 DATUM 07.12.2023
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -1096,13 +1093,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // LU1650487413
                 // @formatter:on
                 .section("position", "name", "shares", "nameContinued", "isin")
+                .documentContext("date") //
                 .match("^(?<position>[\\d]) (Einbuchung|Ausbuchung) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
-                    context.put("position", v.get("position"));
-                    t.setDateTime(asDate(context.get("date")));
+                    context.put("PositionEinAusbuchung", v.get("position"));
+                    t.setDateTime(asDate(v.get("date")));
                     t.setShares(asShares(v.get("shares")));
                     t.setSecurity(getOrCreateSecurity(v));
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
@@ -1114,9 +1112,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     context.put("shares", v.get("shares"));
                 })
 
-                .wrap(t -> {
-                    return new TransactionItem(t);
-                });
+                .wrap(TransactionItem::new);
         
         Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
 
@@ -1143,6 +1139,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
+                            context.put("PositionAbrechnung", v.get("position"));
 
                             v.put("name", context.get("name"));
                             v.put("nameContinued", context.get("nameContinued"));
@@ -1154,8 +1151,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
                         })
-
-                        .wrap(TransactionItem::new);
+                        
+                        .wrap(t -> {
+                            // If we have a "ABRECHNUNG", then this is not a
+                            // delivery in/outbound. We skip this transaction.
+                            if (type.getCurrentContext().get("PositionAbrechnung").equals(type.getCurrentContext().get("PositionEinAusbuchung")))
+                                return new TransactionItem(t);
+                            
+                            else
+                                return null;
+                        });
     }
     
     private void addAccountStatementTransaction()
