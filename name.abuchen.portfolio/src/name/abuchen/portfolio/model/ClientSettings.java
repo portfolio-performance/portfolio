@@ -66,7 +66,7 @@ public class ClientSettings
         answer.add(new Bookmark("extraETF.com (ETF)", //$NON-NLS-1$
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("alleaktien.de (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                        "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
+                        "https://www.alleaktien.de/data/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("comdirect.de (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("comdirect.de (ETF)", //$NON-NLS-1$
@@ -81,7 +81,10 @@ public class ClientSettings
                         "https://www.cnbc.com/quotes/{tickerSymbolPrefix}")); //$NON-NLS-1$
         answer.add(new Bookmark("nasdaq.com (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         "https://www.nasdaq.com/market-activity/stocks/{tickerSymbolPrefix}")); //$NON-NLS-1$
-
+        answer.add(new Bookmark("aktienfinder.net (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        "https://aktienfinder.net/aktien-profil/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("aktien.guide (" + Messages.LabelSearchShare + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        "http://aktien.guide/isin/aktien/{isin}")); //$NON-NLS-1$
         return answer;
     }
 
