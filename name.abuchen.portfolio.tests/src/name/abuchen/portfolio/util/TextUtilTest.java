@@ -30,6 +30,73 @@ public class TextUtilTest
     {
         String text = Strings.repeat("t ", 40) + "(test)";
         assertThat(TextUtil.wordwrap(text), is(endsWith("\n(test)")));
+
+        // check if words longer than 80 characters are kept
+        text = Strings.repeat("1234567890", 10) + " (test)";
+        assertThat(TextUtil.wordwrap(text),
+                        is(Strings.repeat("1234567890", 8) + "\n" + Strings.repeat("1234567890", 2) + " (test)"));
+
+    }
+
+    @Test
+    public void testWordwrapForTrailingSpaces()
+    {
+        // check breaking a long text - line should have no trailing spaces
+        var text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        assertThat(TextUtil.wordwrap(text), is("""
+                        Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute
+                        iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                        pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui
+                        officia deserunt mollit anim id est laborum."""));
+    }
+
+    @Test
+    public void testWordwrapWithSingleLineBreak()
+    {
+        var text = """
+                        Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud""";
+        assertThat(TextUtil.wordwrap(text), is("""
+                        Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud"""));
+
+    }
+
+    @Test
+    public void testWordwrapWithMultipleLineBreaks()
+    {
+        // check that multiple line breaks are kept
+        var text = """
+                        Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+
+                        Ut enim ad minim veniam, quis nostrud""";
+        assertThat(TextUtil.wordwrap(text), is("""
+                        Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua.
+
+                        Ut enim ad minim veniam, quis nostrud"""));
+
+    }
+
+    @Test
+    public void testWordwrapWithAmpersand()
+    {
+        // check that the & is doubled
+        var text = "Lorem ipsum dolor sit amet & consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.";
+        assertThat(TextUtil.wordwrap(text), is("""
+                        Lorem ipsum dolor sit amet && consectetur adipisici elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua."""));
+
+    }
+
+    @Test
+    public void testWordwrapWithEmptyLinesAtTheEnd()
+    {
+        var text = "Lorem ipsum dolor\n\n";
+        assertThat(TextUtil.wordwrap(text), is("Lorem ipsum dolor\n\n"));
     }
 
     @Test
