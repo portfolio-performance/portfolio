@@ -80,6 +80,22 @@ public final class TextUtil
     }
 
     /**
+     * Convert, and sanitize, multi-line text into single-line text, by
+     * replacing consecutive line breaks with spaces, to fit into table cells
+     * without expanding them. Appropriate to, for instance, fit into table
+     * cells without expanding them (notes, etc).
+     */
+    public static final String toSingleLine(String text)
+    {
+        // Replace all (consecutive) line boundaries by (one) space/separator
+        // Maybe consider downleftwards_arrow+space ("intro"+sp) as separator to
+        // make it consistent with inline editing: "\u21B2 "
+        return text == null ? null
+                        : Pattern.compile("([ \\t]*?(\\r\\n|[\\n\\r\\f\\u000B\\u0085\\u2028\\u2029])+?)++") //$NON-NLS-1$
+                                        .matcher(text).replaceAll(" "); //$NON-NLS-1$
+    }
+
+    /**
      * Creates a tooltip text by escaping '&' characters to ensure correct
      * display in graphical user interfaces.
      */

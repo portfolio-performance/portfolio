@@ -42,6 +42,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class SecurityEventsPane implements InformationPanePage
 {
@@ -155,7 +156,8 @@ public class SecurityEventsPane implements InformationPanePage
             @Override
             public String getText(Object element)
             {
-                return ((SecurityEvent) element).getDetails();
+                String event = ((SecurityEvent) element).getDetails();
+                return event == null || event.isEmpty() ? null : TextUtil.toSingleLine(event);
             }
         });
         column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> ((SecurityEvent) e).getDetails()));

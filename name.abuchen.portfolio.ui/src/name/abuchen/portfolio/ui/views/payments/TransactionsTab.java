@@ -325,23 +325,30 @@ public class TransactionsTab implements PaymentsTab
         column = new Column(Messages.ColumnNote, SWT.None, 200);
         column.setLabelProvider(new ColumnLabelProvider()
         {
-            @Override
-            public String getText(Object element)
+            private String getRawText(Object element)
             {
                 return ((TransactionPair<?>) element).getTransaction().getNote();
             }
 
             @Override
+            public String getText(Object element)
+            {
+                String note = getRawText(element);
+                return note == null || note.isEmpty() ? null : TextUtil.toSingleLine(note);
+            }
+
+            @Override
             public Image getImage(Object element)
             {
-                String note = ((TransactionPair<?>) element).getTransaction().getNote();
+                String note = getRawText(element);
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
 
             @Override
             public String getToolTipText(Object e)
             {
-                return TextUtil.wordwrap(getText(e));
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column);
