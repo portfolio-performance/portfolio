@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -20,6 +22,11 @@ import java.util.regex.Pattern;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction;
+import name.abuchen.portfolio.datatransfer.ImportAction.Context;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.model.Annotated;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TypedMap;
 
 /* package */ final class PDFParser
@@ -31,8 +38,10 @@ import name.abuchen.portfolio.model.TypedMap;
 
         private List<Block> blocks = new ArrayList<>();
         private DocumentContext context = new DocumentContext();
+
         private BiConsumer<DocumentContext, String[]> contextProvider;
         private Consumer<Transaction<DocumentContext>> contextBuilder;
+        private Block[] contextRanges;
 
         public DocumentType(String mustInclude)
         {
@@ -43,6 +52,12 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             this.mustInclude.add(Pattern.compile(mustInclude));
             this.contextBuilder = contextBuilder;
+        }
+
+        public DocumentType(String mustInclude, Block... contextRanges)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
+            this.contextRanges = contextRanges;
         }
 
         public DocumentType(String mustInclude, String mustNotInclude,
@@ -148,6 +163,19 @@ import name.abuchen.portfolio.model.TypedMap;
                 contextBuilder.accept(builder);
                 builder.parse(filename, context, Collections.emptyList(), lines, 0, lines.length - 1);
             }
+
+            if (contextRanges != null)
+            {
+                var items = new ArrayList<Item>();
+
+                for (int ii = 0; ii < contextRanges.length; ii++)
+                {
+                    var block = contextRanges[ii];
+                    block.parse(filename, context, items, lines);
+                }
+
+                context.putType(new RangeAttributes(items.stream().map(i -> ((RangeItem) i).properties).toList()));
+            }
         }
     }
 
@@ -182,6 +210,28 @@ import name.abuchen.portfolio.model.TypedMap;
         public void set(Transaction<?> transaction)
         {
             this.transaction = transaction;
+        }
+
+        public Block asRange(Consumer<Section<Map<String, Object>>> builder)
+        {
+            Transaction<Map<String, Object>> tx = new Transaction<>();
+            tx.subject(() -> new HashMap<String, Object>());
+            tx.wrap((t, c) -> new RangeItem(t));
+
+            var section = tx.section();
+            builder.accept(section);
+            section.assign((t, v) -> {
+                t.putAll(v);
+
+                // we need to remember the start and end line numbers of the
+                // block, but those are only available within the assign method.
+                // Therefore we save them in the map as well.
+                t.put(RangeAttributes.START, v.getStartLineNumber());
+                t.put(RangeAttributes.END, v.getEndLineNumber());
+            });
+
+            this.transaction = tx;
+            return this;
         }
 
         public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines)
@@ -487,6 +537,8 @@ import name.abuchen.portfolio.model.TypedMap;
         private String[] attributes;
         /** attributes mixed in from the document context */
         private String[] documentAttributes;
+        /** attributes mixed in from the document matched in the given range */
+        private String[] rangeAttributes;
 
         private List<Pattern> pattern = new ArrayList<>();
         private BiConsumer<T, ParsedData> assignment;
@@ -506,6 +558,12 @@ import name.abuchen.portfolio.model.TypedMap;
         public Section<T> documentContext(String... documentAttributes)
         {
             this.documentAttributes = documentAttributes;
+            return this;
+        }
+
+        public Section<T> documentRange(String... rangeAttributes)
+        {
+            this.rangeAttributes = rangeAttributes;
             return this;
         }
 
@@ -586,6 +644,26 @@ import name.abuchen.portfolio.model.TypedMap;
                             }
                         }
 
+                        // enrich extracted values with range values
+                        if (rangeAttributes != null)
+                        {
+                            RangeAttributes ranges = documentContext.getType(RangeAttributes.class)
+                                            .orElseThrow(() -> new IllegalArgumentException(
+                                                            "In order to use range attribute, you must add range blocks to the document type")); //$NON-NLS-1$
+                            for (String attribute : rangeAttributes)
+                            {
+                                var value = ranges.find(attribute, lineNo);
+                                if (value.isEmpty())
+                                {
+                                    throw new IllegalArgumentException(MessageFormat.format(
+                                                    Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
+                                                    attribute, filename, lineNo + 1, lineNoEnd + 1));
+                                }
+
+                                values.put(attribute, value.get());
+                            }
+                        }
+
                         assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
 
                         // if there might be multiple occurrences that match,
@@ -626,6 +704,96 @@ import name.abuchen.portfolio.model.TypedMap;
                 }
             }
         }
+    }
+
+    /**
+     * Helper class injected into the document context that keeps a list of
+     * attribute maps including the start and end line number. Used to find
+     * attributes which are valid in the given range.
+     */
+    private static class RangeAttributes
+    {
+        private static final String START = "$start"; //$NON-NLS-1$
+        private static final String END = "$end"; //$NON-NLS-1$
+
+        private List<Map<String, Object>> items;
+
+        public RangeAttributes(List<Map<String, Object>> items)
+        {
+            this.items = items;
+        }
+
+        public Optional<String> find(String property, int lineNumber)
+        {
+            for (Map<String, Object> item : items)
+            {
+                Object value = item.get(property);
+                if (value == null)
+                    continue;
+
+                int start = (int) item.get(START);
+                int end = (int) item.get(END);
+
+                if (lineNumber >= start && lineNumber <= end)
+                    return Optional.of(value.toString());
+            }
+
+            return Optional.empty();
+        }
+
+    }
+
+    private static class RangeItem extends Item
+    {
+        private Map<String, Object> properties;
+
+        public RangeItem(Map<String, Object> properties)
+        {
+            this.properties = properties;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     private PDFParser()
