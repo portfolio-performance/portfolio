@@ -481,6 +481,7 @@ public class Messages extends NLS
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdateStackedLineChart;
+    public static String JobLabelUpdateStackedLineActualValueChart;
     public static String JobLabelUpdating;
     public static String JobLabelUpdatingDividendEvents;
     public static String JobMsgCheckingForUpdates;
@@ -861,6 +862,7 @@ public class Messages extends NLS
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
     public static String LabelViewStackedChart;
+    public static String LabelViewStackedChartActualValue;
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;

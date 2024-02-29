@@ -66,7 +66,8 @@ public enum Images
     VIEW_PIECHART("view_piechart.png"), //$NON-NLS-1$
     VIEW_DONUT("view_donut.png"), //$NON-NLS-1$
     VIEW_REBALANCING("view_rebalancing.png"), //$NON-NLS-1$
-    VIEW_STACKEDCHART("view_stackedchart.png"), //$NON-NLS-1$
+    VIEW_STACKEDCHART("view_stackedchart_percentage.png"), //$NON-NLS-1$
+    VIEW_STACKEDCHART_ACTUALVALUE("view_stackedchart.png"), //$NON-NLS-1$
     VIEW_BARCHART("view_barchart.png"), //$NON-NLS-1$
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 

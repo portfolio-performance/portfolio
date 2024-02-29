@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.ISeries;
-import org.swtchart.Range;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -37,10 +35,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.ui.util.chart.StackedTimelineActualValueChart;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.util.Interval;
 
-public class StackedChartViewer extends AbstractChartPage implements ReportingPeriodListener
+public class StackedChartActualValueViewer extends AbstractChartPage implements ReportingPeriodListener
 {
     private static class VehicleBuilder
     {
@@ -100,7 +99,7 @@ public class StackedChartViewer extends AbstractChartPage implements ReportingPe
                 if (totals[ii] == 0)
                     answer[ii] = 0d;
                 else
-                    answer[ii] = values[ii] / (double) totals[ii];
+                    answer[ii] = values[ii] / 100d;
             }
             return answer;
         }
@@ -114,14 +113,14 @@ public class StackedChartViewer extends AbstractChartPage implements ReportingPe
         }
     }
 
-    private StackedTimelineChart chart;
+    private StackedTimelineActualValueChart chart;
     private boolean isVisible = false;
     private boolean isDirty = true;
 
     private PortfolioPart part;
 
     @Inject
-    public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public StackedChartActualValueViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
         this.part = part;
@@ -134,13 +133,13 @@ public class StackedChartViewer extends AbstractChartPage implements ReportingPe
         composite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         composite.setLayout(new FillLayout());
 
-        chart = new StackedTimelineChart(composite, getDates());
+        chart = new StackedTimelineActualValueChart(composite, getDates());
         chart.getTitle().setVisible(false);
 
         chart.getLegend().setPosition(SWT.BOTTOM);
         chart.getLegend().setVisible(true);
 
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
 
         return composite;
     }
@@ -204,7 +203,7 @@ public class StackedChartViewer extends AbstractChartPage implements ReportingPe
 
     private void asyncUpdateChart()
     {
-        new Job(Messages.JobLabelUpdateStackedLineChart)
+        new Job(Messages.JobLabelUpdateStackedLineActualValueChart)
         {
             @Override
             protected IStatus run(IProgressMonitor monitor)
@@ -310,12 +309,11 @@ public class StackedChartViewer extends AbstractChartPage implements ReportingPe
                                 getRenderer().getColorFor(serie.node));
             }
 
-            chart.getAxisSet().adjustRange();
-            chart.getAxisSet().getYAxis(0).setRange(new Range(-0.025, 1.025));
         }
         finally
         {
             chart.suspendUpdate(false);
+            chart.getAxisSet().adjustRange();
             chart.redraw();
         }
 

@@ -42,8 +42,8 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
-import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -244,7 +244,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewDonutChart, Images.VIEW_DONUT, 3);
         addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 4);
         addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 5);
-
+        addView(toolBar, Messages.LabelViewStackedChartActualValue, Images.VIEW_STACKEDCHART_ACTUALVALUE, 6);
         toolBar.add(new Separator());
 
         addReportingPeriodDropDown(toolBar);
@@ -373,7 +373,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                         make(PieChartViewer.class, model, renderer), //
                         make(DonutViewer.class, model, renderer), //
                         make(TreeMapViewer.class, model, renderer), //
-                        make(StackedChartViewer.class, model, renderer) };
+                        make(StackedChartViewer.class, model, renderer),
+                        make(StackedChartActualValueViewer.class, model, renderer) };
 
         for (Page page : pages)
         {
