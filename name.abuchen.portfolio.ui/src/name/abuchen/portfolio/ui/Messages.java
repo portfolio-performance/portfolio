@@ -860,6 +860,7 @@ public class Messages extends NLS
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
     public static String LabelViewStackedChart;
+    public static String LabelViewStackedChartActualValue;
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;

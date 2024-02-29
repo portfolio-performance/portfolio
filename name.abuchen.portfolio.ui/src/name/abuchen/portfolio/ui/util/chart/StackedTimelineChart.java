@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,7 +65,6 @@ public class StackedTimelineChart extends Chart // NOSONAR
         toolTip = new TimelineChartToolTip(this);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
-        toolTip.setDefaultValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
 
         new ChartContextMenu(this);
     }
