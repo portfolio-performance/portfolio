@@ -1,18 +1,16 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.text.DecimalFormat;
-
 import jakarta.inject.Inject;
 
-import org.swtchart.Range;
-
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
-public class StackedChartViewer extends AbstractStackedChartViewer
+public class StackedChartActualValueViewer extends AbstractStackedChartViewer
 {
     @Inject
-    public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public StackedChartActualValueViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(part, model, renderer);
     }
@@ -20,8 +18,7 @@ public class StackedChartViewer extends AbstractStackedChartViewer
     @Override
     protected void configureChart(StackedTimelineChart chart)
     {
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
-        chart.getToolTip().setDefaultValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
     }
 
     @Override
@@ -35,7 +32,7 @@ public class StackedChartViewer extends AbstractStackedChartViewer
             if (totals[ii] == 0)
                 answer[ii] = 0d;
             else
-                answer[ii] = values[ii] / (double) totals[ii];
+                answer[ii] = values[ii] / Values.Amount.divider();
         }
         return answer;
     }
@@ -44,6 +41,5 @@ public class StackedChartViewer extends AbstractStackedChartViewer
     protected void adjustRange(StackedTimelineChart chart)
     {
         chart.getAxisSet().adjustRange();
-        chart.getAxisSet().getYAxis(0).setRange(new Range(-0.025, 1.025));
     }
 }
