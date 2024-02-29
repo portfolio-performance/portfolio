@@ -491,9 +491,6 @@ public class Messages extends NLS
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
     public static String LabelAbout;
-    public static String JurisdictionFilesDownloadExplanation;
-    public static String JurisdictionFilesDownloadMessage;
-    public static String JurisdictionFilesDownloadTitle;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
