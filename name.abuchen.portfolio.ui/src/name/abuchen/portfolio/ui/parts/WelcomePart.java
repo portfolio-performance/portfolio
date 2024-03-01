@@ -125,7 +125,6 @@ public class WelcomePart
 
         addSectionLabel(links, Messages.IntroLabelSamples);
         addLink(links, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
-        addLink(links, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
     }
 
     private void createRecentFilesComposite(Composite actions)
@@ -228,12 +227,6 @@ public class WelcomePart
             executeCommand("name.abuchen.portfolio.ui.command.openSample", //$NON-NLS-1$
                             UIConstants.Parameter.SAMPLE_FILE, //
                             "/" + getClass().getPackage().getName().replace('.', '/') + "/kommer.xml"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        else if ("action:daxsample".equals(target)) //$NON-NLS-1$
-        {
-            executeCommand("name.abuchen.portfolio.ui.command.openSample", //$NON-NLS-1$
-                            UIConstants.Parameter.SAMPLE_FILE, //
-                            "/" + getClass().getPackage().getName().replace('.', '/') + "/dax.xml"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else if (target.startsWith(OPEN_PREFERENCES))
         {

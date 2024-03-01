@@ -448,8 +448,6 @@ public class Messages extends NLS
     public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
-    public static String IntroOpenDaxSample;
-    public static String IntroOpenDaxSampleText;
     public static String IntroOpenFAQ;
     public static String IntroOpenFAQText;
     public static String IntroOpenFile;
