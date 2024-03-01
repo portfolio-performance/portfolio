@@ -379,7 +379,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         QuoteFeedData data = internalGetQuotes(security, feedURL, false, false);
 
         if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+            PortfolioLog.abbreviated(data.getErrors());
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())

@@ -58,6 +58,33 @@ public class PortfolioLog
     }
 
     /**
+     * Logs the messages of the given errors but without the full stack trace.
+     * Instead, the message will include the calling class name only. This is
+     * useful for common error messages which occur as part of the price
+     * updates.
+     */
+    public static void abbreviated(List<? extends Throwable> errors)
+    {
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        Class<?> callerClass = walker.getCallerClass();
+
+        ILog log = Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class));
+        for (Throwable t : errors)
+            log.log(new Status(IStatus.ERROR, PLUGIN_ID, "[" + callerClass.getSimpleName() + "] " + t.getMessage())); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Logs the message of the given error but without the full stack trace.
+     * Instead, the message will include the calling class name only. This is
+     * useful for common error messages which occur as part of the price
+     * updates.
+     */
+    public static void abbreviated(Throwable error)
+    {
+        abbreviated(List.of(error));
+    }
+
+    /**
      * Logs the given error message to the application log.
      * 
      * @param message

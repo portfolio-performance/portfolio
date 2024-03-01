@@ -45,7 +45,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
 
         if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+            PortfolioLog.abbreviated(data.getErrors());
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
