@@ -71,6 +71,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.ReportingPeriod.LastXYears;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
@@ -748,6 +749,26 @@ public class StatementOfAssetsViewer
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
+        support.addColumn(column);
+
+        // dividend yield on costs
+        column = new Column("yocdiv", Messages.ColumnDividendYieldOnCost, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendYieldOnCost + " {0}", // $NON-NLS-1$ //$NON-NLS-1$
+                        List.of(new LastXYears(1))));
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setDescription(Messages.ColumnDividendYieldOnCost_Description);
+        column.setVisible(false);
+        Function<SecurityPerformanceRecord, Object> valueProvider = new Function<SecurityPerformanceRecord, Object>()
+        {
+            @Override
+            public Object apply(SecurityPerformanceRecord t)
+            {
+                return t.getDividendYieldOnCost();
+            }
+        };
+        labelProvider = new ReportingPeriodLabelProvider(valueProvider, null, false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         support.addColumn(column);
     }
 

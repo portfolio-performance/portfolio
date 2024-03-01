@@ -14,6 +14,10 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.util.FormatHelper;
 
+/**
+ * @deprecated class do unexpected things
+ */
+@Deprecated
 public abstract class Values<E>
 {
     public static final MathContext MC = new MathContext(10, RoundingMode.HALF_UP);

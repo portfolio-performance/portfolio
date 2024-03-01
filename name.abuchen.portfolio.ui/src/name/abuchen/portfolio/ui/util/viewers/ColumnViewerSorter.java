@@ -160,7 +160,7 @@ public final class ColumnViewerSorter
                 catch (NoSuchMethodException e1)
                 {
                     PortfolioPlugin.log(Arrays.asList(e, e1));
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException(e.getMessage());
                 }
             }
         }

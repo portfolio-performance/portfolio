@@ -205,7 +205,9 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     /**
      * rate of return per year {@link #calculateDividends()}
      */
-    private double rateOfReturnPerYear;
+    private double dividendRateOfReturnPerYear;
+
+    private double dividendYieldOnCost;
 
     /**
      * market value - fifo cost of shares held
@@ -405,7 +407,7 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
      */
     public double getRateOfReturnPerYear()
     {
-        return this.rateOfReturnPerYear;
+        return this.dividendRateOfReturnPerYear;
     }
 
     public double getTotalRateOfReturnDiv()
@@ -416,6 +418,11 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     public double getTotalRateOfReturnDivMovingAverage()
     {
         return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) movingAverageCost.getAmount() : 0;
+    }
+
+    public double getDividendYieldOnCost()
+    {
+        return dividendYieldOnCost;
     }
 
     public CapitalGainsRecord getRealizedCapitalGains()
@@ -594,7 +601,8 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
-        this.rateOfReturnPerYear = dividends.getRateOfReturnPerYear();
+        this.dividendRateOfReturnPerYear = dividends.getRateOfReturnPerYear();
+        this.dividendYieldOnCost = dividends.getYieldOnCost();
     }
 
     private void calculatePeriodicity(Client client, CurrencyConverter converter)
