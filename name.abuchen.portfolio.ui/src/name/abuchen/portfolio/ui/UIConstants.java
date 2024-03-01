@@ -29,6 +29,11 @@ public interface UIConstants
             String SAVED = "file/saved"; //$NON-NLS-1$
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
+        
+        interface RecentFiles // NOSONAR
+        {
+            String UPDATED = "recent/updated"; //$NON-NLS-1$
+        }
 
         interface ExchangeRates // NOSONAR
         {

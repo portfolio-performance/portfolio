@@ -269,7 +269,7 @@ public class WelcomePart
 
     @Inject
     @Optional
-    public void subscribeFileTopic(@UIEventTopic(UIConstants.Event.File.ALL_SUB_TOPICS) String file)
+    public void subscribeFileTopic(@UIEventTopic(UIConstants.Event.RecentFiles.UPDATED) Object event)
     {
         if (recentFilesComposite == null)
             return;
