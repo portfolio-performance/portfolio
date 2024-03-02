@@ -55,8 +55,8 @@ public class MovingAverageConvergenceDivergenceTest
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
         ChartLineSeriesAxes macdLine = macd.getMacdLine();
         ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), is(nullValue()));
-        assertThat(signalLine.getDates(), is(nullValue()));
+        assertThat(macdLine.getDates(), is(null));
+        assertThat(signalLine.getDates(), is(null));
     }
 
     @SuppressWarnings("unchecked")
@@ -96,10 +96,10 @@ public class MovingAverageConvergenceDivergenceTest
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
         ChartLineSeriesAxes macdLine = macd.getMacdLine();
         ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), is(nullValue()));
-        assertThat(signalLine.getDates(), is(nullValue()));
-        assertThat(macdLine.getValues().length, is(nullValue()));
-        assertThat(signalLine.getValues().length, is(nullValue()));
+        assertThat(macdLine.getDates(), is(null));
+        assertThat(signalLine.getDates(), is(null));
+        assertThat(macdLine.getValues().length, 0);
+        assertThat(signalLine.getValues().length, 0);
     }
 
     @Test
