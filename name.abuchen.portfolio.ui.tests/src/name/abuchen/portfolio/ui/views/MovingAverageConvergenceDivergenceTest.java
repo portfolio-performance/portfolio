@@ -98,8 +98,8 @@ public class MovingAverageConvergenceDivergenceTest
         ChartLineSeriesAxes signalLine = macd.getSignalLine();
         assertThat(macdLine.getDates(), Matchers.arrayWithSize(0));
         assertThat(signalLine.getDates(), Matchers.arrayWithSize(0));
-        assertThat(macdLine.getValues().length, is(0));
-        assertThat(signalLine.getValues().length, is(0));
+        assertThat(macdLine.getValues().length, is(null));
+        assertThat(signalLine.getValues().length, is(null));
     }
 
     @Test
