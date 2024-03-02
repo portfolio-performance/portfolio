@@ -95,12 +95,12 @@ public class MovingAverageConvergenceDivergence
             }
         }
 
-        if (valuesMacd.length >= MAX_MACD_PERIOD)
+        if (valuesMacd.size() >= MAX_MACD_PERIOD)
         {
             macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
             macd.setValues(Doubles.toArray(valuesMacd));
         }
-        if (valuesSignal.length >= SIGNAL_LINE_START)
+        if (valuesSignal.size() >= SIGNAL_LINE_START)
         {
             signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
             signalLine.setValues(Doubles.toArray(valuesSignal));
