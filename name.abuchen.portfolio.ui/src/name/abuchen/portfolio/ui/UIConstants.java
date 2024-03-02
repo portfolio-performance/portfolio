@@ -250,6 +250,12 @@ public interface UIConstants
 
     }
 
+    interface Theme // NOSONAR
+    {
+        String LIGHT = "name.abuchen.portfolio.light"; //$NON-NLS-1$
+        String DARK = "name.abuchen.portfolio.dark"; //$NON-NLS-1$
+    }
+
     interface CSS // NOSONAR
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$

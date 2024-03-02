@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 @SuppressWarnings("restriction")
@@ -41,7 +42,6 @@ public final class ThemePreferencePage extends PreferencePage
     private IThemeEngine engine;
     private ComboViewer themeIdCombo;
     private ITheme currentTheme;
-    private String defaultTheme = "name.abuchen.portfolio.light"; //$NON-NLS-1$
 
     private int currentFontSize = -1;
     private ComboViewer fontSizeCombo;
@@ -186,7 +186,7 @@ public final class ThemePreferencePage extends PreferencePage
     @Override
     protected void performDefaults()
     {
-        engine.setTheme(defaultTheme, true);
+        engine.setTheme(UIConstants.Theme.LIGHT, true);
         if (engine.getActiveTheme() != null)
         {
             themeIdCombo.setSelection(new StructuredSelection(engine.getActiveTheme()));
