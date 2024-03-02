@@ -96,7 +96,7 @@ public class MovingAverageConvergenceDivergence
         }
 
         if (valuesMacd.length > 0)
-            {
+        {
             macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
             macd.setValues(Doubles.toArray(valuesMacd));
         }
