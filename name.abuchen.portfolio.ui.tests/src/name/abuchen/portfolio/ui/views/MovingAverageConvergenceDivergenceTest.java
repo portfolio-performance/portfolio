@@ -96,8 +96,8 @@ public class MovingAverageConvergenceDivergenceTest
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
         ChartLineSeriesAxes macdLine = macd.getMacdLine();
         ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), Matchers.arrayWithSize(0));
-        assertThat(signalLine.getDates(), Matchers.arrayWithSize(0));
+        assertThat(macdLine.getDates(), null);
+        assertThat(signalLine.getDates(), null);
         assertThat(macdLine.getValues().length, is(null));
         assertThat(signalLine.getValues().length, is(null));
     }
