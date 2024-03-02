@@ -95,10 +95,16 @@ public class MovingAverageConvergenceDivergence
             }
         }
 
-        macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
-        signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
-        macd.setValues(Doubles.toArray(valuesMacd));
-        signalLine.setValues(Doubles.toArray(valuesSignal));
+        if (valuesMacd.length > 0)
+            {
+            macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
+            macd.setValues(Doubles.toArray(valuesMacd));
+        }
+        if (valuesSignal.length > 0)
+        {
+            signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
+            signalLine.setValues(Doubles.toArray(valuesSignal));
+        }
     }
 
     private static final class ExponentialMovingAverageCalculator
