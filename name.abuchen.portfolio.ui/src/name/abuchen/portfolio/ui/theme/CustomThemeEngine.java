@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.ui.theme;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.css.swt.internal.theme.ThemeEngine;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.ui.UIConstants;
 
@@ -30,14 +28,13 @@ public class CustomThemeEngine extends ThemeEngine
         // dark theme is hard-coded to eclipse theme which is missing relevant
         // CSS directory, for example for the charts
 
-        var preferences = InstanceScope.INSTANCE.getNode(FrameworkUtil.getBundle(ThemeEngine.class).getSymbolicName());
-        String prefThemeId = preferences != null ? preferences.get("themeid", null) : null; //$NON-NLS-1$
+        var prefThemeId = ThemePreferences.getConfiguredThemeId();
 
-        if (prefThemeId != null)
+        if (prefThemeId.isPresent())
         {
             for (ITheme t : getThemes())
             {
-                if (prefThemeId.equals(t.getId()))
+                if (prefThemeId.get().equals(t.getId()))
                 {
                     setTheme(t, false);
                     return;
@@ -46,7 +43,7 @@ public class CustomThemeEngine extends ThemeEngine
         }
 
         boolean isDark = Display.isSystemDarkTheme();
-        setTheme(isDark ? UIConstants.Theme.DARK : alternateTheme, false);
+        setTheme(isDark ? UIConstants.Theme.DARK : UIConstants.Theme.LIGHT, false);
     }
 
 }
