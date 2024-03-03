@@ -445,6 +445,7 @@ public class Messages extends NLS
     public static String IntroLabelRecentlyUsedFiles;
     public static String IntroLabelSamples;
     public static String IntroLabelTranslation;
+    public static String IntroMobileApp;
     public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
@@ -806,6 +807,7 @@ public class Messages extends NLS
     public static String LabelMetricDaysFormatter;
     public static String LabelMetricYears;
     public static String LabelMetricYearsFormatter;
+    public static String LabelMobileApp;
     public static String LabelPNTransfers;
     public static String LabelPreviousTradingDay;
     public static String LabelStartTyping;
@@ -1233,6 +1235,8 @@ public class Messages extends NLS
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTrades;
     public static String SecurityTabTransactions;
+    public static String SiteAppLandingpage;
+    public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
     public static String SplitWizardErrorNewAndOldMustNotBeEqual;

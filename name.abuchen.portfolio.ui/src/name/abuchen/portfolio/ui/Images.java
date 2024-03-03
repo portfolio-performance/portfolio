@@ -137,7 +137,18 @@ public enum Images
         this.file = file;
     }
 
-    public ImageDescriptor descriptor()
+    public static Image resolve(String file)
+    {
+        Image image = imageRegistry.get(file);
+        if (image == null)
+        {
+            descriptor(file); // lazy loading
+            image = imageRegistry.get(file);
+        }
+        return image;
+    }
+
+    private static ImageDescriptor descriptor(String file)
     {
         ImageDescriptor descriptor = imageRegistry.getDescriptor(file);
         if (descriptor == null)
@@ -151,15 +162,14 @@ public enum Images
         return descriptor;
     }
 
+    public ImageDescriptor descriptor()
+    {
+        return descriptor(file);
+    }
+
     public Image image()
     {
-        Image image = imageRegistry.get(file);
-        if (image == null)
-        {
-            descriptor(); // lazy loading
-            image = imageRegistry.get(file);
-        }
-        return image;
+        return resolve(file);
     }
 
     public String getImageURI()
