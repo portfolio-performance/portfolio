@@ -1063,7 +1063,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("(^|^[\\d] )(Einbuchung"
+        Block firstRelevantLine = new Block("^\\d (Einbuchung"
                         + "|Ausbuchung) .* "
                         + "([\\.,\\d]+ Stk\\.)$");
         type.addBlock(firstRelevantLine);
@@ -1079,7 +1079,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                 // Is type --> "Einbuchung" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
                 .section("type")
-                .match("(^|^[\\d] )(?<type>"
+                .match("^\\d (?<type>"
                                 + "(Einbuchung|Ausbuchung)"
                                 + ") .* ([\\.,\\d]+ Stk\\.)$")
                 .assign((t, v) -> {
@@ -1101,7 +1101,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("position", "name", "shares", "nameContinued", "isin")
                 .documentContext("date") //
-                .match("^(?<position>[\\d]) (Einbuchung|Ausbuchung) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
+                .match("^(?<position>\\d) (Einbuchung|Ausbuchung) (?<name>.*) (?<shares>[\\.,\\d]+) Stk\\.$")
                 .match("^(?<nameContinued>.*)$")
                 .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                 .assign((t, v) -> {
@@ -1327,7 +1327,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^STEUERKORREKTUR$");
+        Block firstRelevantLine = new Block("^(STORNO )?STEUERKORREKTUR$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1338,7 +1338,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
-
+                        
+                        // Is type --> "STORNO" change from TAXES to TAX_REFUND
+                        .section("type")
+                        .match("^(?<type>(STORNO )?STEUERKORREKTUR)$")
+                        .assign((t, v) -> {
+                            if ("STORNO STEUERKORREKTUR".equals(v.get("type")))
+                            {
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+                            }
+                        })
+                        
                         // @formatter:off
                         // W.P. Carey Inc. 38,4597 Stk.
                         // Registered Shares DL -,01
@@ -1357,10 +1367,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // Quellensteuer für US-Emittent -6,94 USD
                         // @formatter:on
                         .section("amount", "currency", "date") //
-                        .find("^Quellensteuer f.r US\\-Emittent \\-[\\.,\\d]+ ([\\w]{3})$") //
+                        .find("^Quellensteuer f.r US\\-Emittent \\-?[\\.,\\d]+ ([\\w]{3})$") //
                         .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
-                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
+                            if ("-".equals(v.get("sign")))
+                            {
+                                t.setType(AccountTransaction.Type.TAXES);
+                            }
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
