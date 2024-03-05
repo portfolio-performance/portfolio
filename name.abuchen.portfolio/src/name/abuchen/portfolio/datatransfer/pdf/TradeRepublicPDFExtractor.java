@@ -1369,12 +1369,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "currency", "date") //
                         .find("^Quellensteuer f.r US\\-Emittent \\-?[\\.,\\d]+ ([\\w]{3})$") //
                         .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
-                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) \\-?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            if ("-".equals(v.get("sign")))
-                            {
-                                t.setType(AccountTransaction.Type.TAXES);
-                            }
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
