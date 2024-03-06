@@ -36,6 +36,7 @@ import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.online.impl.EurostatHICPLabels;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -184,14 +185,19 @@ public class OpenSampleHandler
 
     private static ITokenResolver buildResourcesTokenResolver()
     {
-        var bundlePrefix = "Messages."; //$NON-NLS-1$
+        var messagesPrefix = "Messages."; //$NON-NLS-1$
+        var hcpiPrefix = "EurostatHICPLabels."; //$NON-NLS-1$
 
         return tokenName -> {
             try
             {
-                if (tokenName.startsWith(bundlePrefix))
+                if (tokenName.startsWith(messagesPrefix))
                 {
-                    return Messages.class.getField(tokenName.substring(bundlePrefix.length())).get(null).toString();
+                    return Messages.class.getField(tokenName.substring(messagesPrefix.length())).get(null).toString();
+                }
+                else if (tokenName.startsWith(hcpiPrefix))
+                {
+                    return EurostatHICPLabels.getString(tokenName.substring(hcpiPrefix.length()));
                 }
                 else
                 {

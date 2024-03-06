@@ -382,7 +382,7 @@
     </security>
     <security>
       <uuid>66e58ab5-ad42-4588-b512-9d144b8aea4a</uuid>
-      <name>Germany (Harmonized Consumer Priced Index)</name>
+      <name>${Messages.PerformanceChartLabelCPI} (${EurostatHICPLabels.region.DE})</name>
       <tickerSymbol>DE</tickerSymbol>
       <calendar>empty</calendar>
       <feed>EUROSTATHICP</feed>
@@ -11808,34 +11808,6 @@
         <label>justETF</label>
         <pattern>https://www.justetf.com/de/etf-profile.html?isin={isin}</pattern>
       </bookmark>
-      <bookmark>
-        <label>OnVista</label>
-        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&amp;SELECTED_TOOL=ALL_TOOLS</pattern>
-      </bookmark>
-      <bookmark>
-        <label>-</label>
-        <pattern></pattern>
-      </bookmark>
-      <bookmark>
-        <label>Finanzen.net</label>
-        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
-      </bookmark>
-      <bookmark>
-        <label>finanztreff.de</label>
-        <pattern>http://www.finanztreff.de/kurse_einzelkurs_suche.htn?suchbegriff={isin}</pattern>
-      </bookmark>
-      <bookmark>
-        <label>Ariva.de Fundamentaldaten</label>
-        <pattern>http://www.ariva.de/{isin}/bilanz-guv</pattern>
-      </bookmark>
-      <bookmark>
-        <label>fondsweb.de</label>
-        <pattern>http://www.fondsweb.de/{isin}</pattern>
-      </bookmark>
-      <bookmark>
-        <label>Morningstar.de</label>
-        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
-      </bookmark>
     </bookmarks>
     <attributeTypes>
       <attribute-type>
@@ -11934,7 +11906,7 @@
           <configurations>
             <config>
               <uuid>1b341ae1-994f-4498-b7d6-7ef9bada8566</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>Client-totals;#0432ff;SOLID;false,Client-transferals;#808080;SOLID;false,Client-absolute_invested_capital;#c0c0c0;DASH;true,Classification6c3f0511-3f9b-4951-9432-641ffd3a4993;#ff9300;SOLID;false,Client-absolute_delta_all_records;#c0c0c0;SOLID;true</data>
             </config>
           </configurations>
@@ -11946,7 +11918,7 @@
           <configurations>
             <config>
               <uuid>9586d02b-7ee0-4bb3-bbc3-fc276e6d5772</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>Client-totals;#000000;SOLID;false,ClassificationEQUITY;#5757ff;SOLID;false,Classification6c3f0511-3f9b-4951-9432-641ffd3a4993;#448bdf;SOLID;false,Classificationf7d7dc4c-6748-4475-8db6-ca25ad50d018;#df9844;SOLID;false</data>
             </config>
           </configurations>
@@ -11958,7 +11930,7 @@
           <configurations>
             <config>
               <uuid>7b0ff435-5b35-43a4-8d2a-473edf89f127</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>shares=80;name=300;pv=75;pp=75;quote=75;mv=75;sumdiv=80;twror=80;izf=80;delta=80;assetallocation=2|142;</data>
             </config>
           </configurations>
@@ -11970,12 +11942,12 @@
           <configurations>
             <config>
               <uuid>cb645d68-1166-407b-b902-7fe1e3c58e9e</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;sortDirection&quot;:128,&quot;width&quot;:400},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:33},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:100},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:92},{&quot;id&quot;:&quot;9&quot;,&quot;width&quot;:88},{&quot;id&quot;:&quot;10&quot;,&quot;width&quot;:154}]}</data>
             </config>
             <config>
               <uuid>23e2b19d-d134-4eda-bd94-bf927f146b44</uuid>
-              <name>Attribute</name>
+              <name>${Messages.GroupLabelAttributes}</name>
               <data>0=1024$321;note=22;1=100;attribute$1b18ecaa-4ff2-4cea-adf1-d6fdbba0ec67=57;attribute$fe77e0c2-ee87-46cd-a764-f635c94ac1da=56;attribute$be9fde11-889c-4b4c-bd23-76fb206649f3=80;attribute$ba578065-ad52-41df-83c2-07848550504a=104;attribute$917882a8-2574-4900-b39b-50f5673dc09b=125;attribute$c1c24e1e-0901-4cf1-a9af-9d13d50ef63e=49;attribute$fcb8490a-0121-4fa7-950c-a06cdd6ac4f9=241;</data>
             </config>
           </configurations>
@@ -11987,12 +11959,12 @@
           <configurations>
             <config>
               <uuid>dd303339-12e5-4aa3-bb12-86ebe1278279</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>Client-totals;#000000;SOLID;false,Client-delta_percentage;#808080;SOLID;false,ClassificationEQUITY;#5757ff;SOLID;false,[b]Security66e58ab5-ad42-4588-b512-9d144b8aea4a;#e2a079;SOLID;false</data>
             </config>
             <config>
               <uuid>8bca0451-2846-4612-85dd-3943642ef68d</uuid>
-              <name>Einfach (Dashboard)</name>
+              <name>${Kommer_DiagramConfigurationSimple}</name>
               <data>Client-totals;#0432ff;SOLID;false,Client-delta_percentage;#808080;SOLID;false,Classification6c3f0511-3f9b-4951-9432-641ffd3a4993;#ff9300;SOLID;false</data>
             </config>
             <config>
@@ -12015,7 +11987,7 @@
           <configurations>
             <config>
               <uuid>6c528024-05df-4f02-9ca0-ded4a4395556</uuid>
-              <name>Standard</name>
+              <name>${Messages.ConfigurationStandard}</name>
               <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:300},{&quot;id&quot;:&quot;3&quot;,&quot;width&quot;:100},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;8&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;6&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:33}]}</data>
             </config>
           </configurations>
