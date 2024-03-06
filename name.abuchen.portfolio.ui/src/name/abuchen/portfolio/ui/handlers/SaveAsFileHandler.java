@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -14,7 +11,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.SaveFlag;
+import name.abuchen.portfolio.model.ClientFileType;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -42,46 +39,30 @@ public class SaveAsFileHandler
         if (type == null)
             throw new IllegalArgumentException("Missing file extension parameter"); //$NON-NLS-1$
 
-        Set<SaveFlag> flags = EnumSet.noneOf(SaveFlag.class);
-        String extension = null;
+        ClientFileType fileType;
 
         switch (type)
         {
             case "xml":
-                flags.add(SaveFlag.XML);
-                extension = "xml";
+                fileType = ClientFileType.XML;
                 break;
             case "xml+zip":
-                flags.add(SaveFlag.XML);
-                flags.add(SaveFlag.COMPRESSED);
-                extension = "zip";
+                fileType = ClientFileType.XML_ZIP;
                 break;
             case "xml+aes256":
-                flags.add(SaveFlag.XML);
-                flags.add(SaveFlag.ENCRYPTED);
-                flags.add(SaveFlag.AES256);
-                extension = "portfolio";
+                fileType = ClientFileType.XML_AES256;
                 break;
             case "xml+aes128":
-                flags.add(SaveFlag.XML);
-                flags.add(SaveFlag.ENCRYPTED);
-                flags.add(SaveFlag.AES128);
-                extension = "portfolio";
+                fileType = ClientFileType.XML_AES128;
                 break;
             case "binary":
-                flags.add(SaveFlag.BINARY);
-                flags.add(SaveFlag.COMPRESSED);
-                extension = "portfolio";
+                fileType = ClientFileType.BINARY;
                 break;
             case "binary+aes256":
-                flags.add(SaveFlag.BINARY);
-                flags.add(SaveFlag.ENCRYPTED);
-                flags.add(SaveFlag.AES256);
-                extension = "portfolio";
+                fileType = ClientFileType.BINARY_AES256;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown file type " + type); //$NON-NLS-1$
-
         }
 
         // trigger part to save file
@@ -89,11 +70,11 @@ public class SaveAsFileHandler
         {
             if (Boolean.parseBoolean(doCreateCopy))
             {
-                ((PortfolioPart) part.getObject()).doExportAs(shell, extension, flags);
+                ((PortfolioPart) part.getObject()).doExportAs(shell, fileType.getExtension(), fileType.getFlags());
             }
             else
             {
-                ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, flags);
+                ((PortfolioPart) part.getObject()).doSaveAs(shell, fileType.getExtension(), fileType.getFlags());
             }
         }
         catch (RuntimeException e)

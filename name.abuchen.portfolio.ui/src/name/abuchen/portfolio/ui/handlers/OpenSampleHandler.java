@@ -84,6 +84,7 @@ public class OpenSampleHandler
 
                         sync.asyncExec(() -> {
                             String label = sampleFile.substring(sampleFile.lastIndexOf('/') + 1);
+                            label = label.substring(0, label.lastIndexOf('.'));
                             ClientInput clientInput = clientInputFactory.create(label, client);
 
                             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);

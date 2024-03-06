@@ -29,10 +29,10 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_Ks4qYPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menuseparator.3"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_NkTjcPOjEeOtWc3KvKMOyw" elementId="name.abuchen.portfolio.ui.menu.file.save" label="%command.save.name" tooltip="" mnemonics="%command.save.mnemonic" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
         <children xsi:type="menu:Menu" xmi:id="_MdglYPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs" label="%command.saveAs.name">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_KeMT4P0KEeuEto77o9qFWg" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.passwordProtected" label="%command.saveAs.passwordProtected" tooltip="" command="_48Q94POhEeOtWc3KvKMOyw">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_KeMT4P0KEeuEto77o9qFWg" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.passwordProtected" label="%command.saveAs.passwordProtected" tooltip="%command.saveAs.passwordProtected.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
             <parameters xmi:id="_KeMT4v0KEeuEto77o9qFWg" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="binary+aes256"/>
           </children>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_REyEIPHXEeuopduiCvRhUQ" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.binary" label="%command.saveAs.binary" tooltip="" command="_48Q94POhEeOtWc3KvKMOyw">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_REyEIPHXEeuopduiCvRhUQ" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.binary" label="%command.saveAs.binary" tooltip="%command.saveAs.binary.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
             <parameters xmi:id="_REyEIfHXEeuopduiCvRhUQ" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="binary"/>
           </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_Hhy5UPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.xml" label="%command.saveAs.xml" tooltip="%command.saveAs.xml.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
