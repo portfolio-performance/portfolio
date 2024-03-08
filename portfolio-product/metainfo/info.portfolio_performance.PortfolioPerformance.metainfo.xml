@@ -39,6 +39,40 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.68.0" date="2024-03-07">
+      <description>
+        <ul>
+          <li>New: Stacked area chart with the valuation of individual categories of a taxonomy</li>
+          <li>New: Bank11 PDF Importer</li>
+          <li>Improvement: Simplified definition of the number format in CSV import by simply selecting the decimal separator</li>
+          <li>Improvement: New bookmarks for aktien.guide and aktienfinder.net</li>
+          <li>Improvement of the PDF importers: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li>Improvement: "Save" and "Save as" with simplified options</li>
+          <li>Fix: Fixes an issue with the display of the MACD when insufficient historical prices are available for calculation</li>
+          <li>Fix: Fixes a problem with the dark theme when the app starts in the operating system's dark mode</li>
+          <li>Fix: Fixes translation issues with terms containing an apostrophe</li>
+          <li>Fix: Fixes a problem with the line break of notes at 80 characters for display in the tooltip</li>
+          <li>Fix: Fixes an issue where transactions without a date were saved in the file</li>
+          <li>Fix: Respects the "Show labels" flag even when using vertical marker lines in the price chart</li>
+          <li>Fix: Improved localization of the Kommer example file</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Gestapeltes Flächendiagramm mit dem Wert der einzelnen Kategorien einer Klassifikation</li>
+          <li>Neu: Bank11 PDF-Importer</li>
+          <li>Verbesserung: Vereinfachte Definition des Zahlenformats beim CSV-Import durch einfache Auswahl des Dezimaltrennzeichens</li>
+          <li>Verbesserung: Neue Bookmarks für aktien.guide und aktienfinder.net</li>
+          <li>Verbesserung der PDF-Importer: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li>Verbesserung: "Speichern" und "Speichern unter" mit vereinfachten Optionen</li>
+          <li>Fix: Behebt ein Problem bei der Anzeige vom MACD, wenn nicht genügend Kurse zur Berechnung zur Verfügung stehen</li>
+          <li>Fix: Behebt ein Problem mit dem dunklen Erscheinungsbild, wenn die App im Dunkelmodus des Betriebssystems startet</li>
+          <li>Fix: Behebt Probleme in der Übersetzung mit Begriffen, die ein Apostroph enthalten</li>
+          <li>Fix: Behebt ein Problem beim Umbruch von Notizen auf 80 Zeichen zur Darstellung im Tooltip</li>
+          <li>Fix: Behebt ein Problem, bei dem Buchungen ohne Datum in der Datei gespeichert wurden</li>
+          <li>Fix: Beachtet das Flag "Beschriftungen anzeigen" auch bei der Verwendung von vertikalen Markierungslinien im Kursdiagramm</li>
+          <li>Fix: Verbesserte Lokalisierung der Kommer-Beispieldatei</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.67.3" date="2024-02-01">
       <description>
         <ul>
