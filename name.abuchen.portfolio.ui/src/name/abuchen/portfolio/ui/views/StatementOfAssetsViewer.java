@@ -351,7 +351,7 @@ public class StatementOfAssetsViewer
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        assets = new TableViewer(container, SWT.FULL_SELECTION);
+        assets = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
         CopyPasteSupport.enableFor(assets);
