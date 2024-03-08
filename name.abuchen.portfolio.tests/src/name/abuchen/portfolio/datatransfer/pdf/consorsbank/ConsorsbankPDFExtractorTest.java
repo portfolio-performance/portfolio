@@ -3616,6 +3616,38 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testDividendeNeuabrechnung01()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeNeuabrechnung01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0292096186"), hasWkn("DBX1DG"), hasTicker(null), //
+                        hasName("Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-07T00:00"), hasShares(100.4205), //
+                        hasSource("DividendeNeuabrechnung01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.68), hasGrossValue("EUR", 56.02), //
+                        hasTaxes("EUR", 9.8 + 0.54), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testStornoDividende01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
