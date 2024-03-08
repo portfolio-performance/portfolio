@@ -467,6 +467,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     private void onConfigExport()
     {
         FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
+        dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
+        dialog.setFilterExtensions(new String[] { "*.json" }); //$NON-NLS-1$
 
         String proposal = TextUtil.sanitizeFilename(currentConfigLabel != null ? currentConfigLabel : "csv-config"); //$NON-NLS-1$
         dialog.setFileName(proposal + ".json");//$NON-NLS-1$

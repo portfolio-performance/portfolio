@@ -309,6 +309,11 @@ public class ClientInput
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setOverwrite(true);
 
+        // set filter names and extension to make sure the file name keeps the
+        // right extension.
+        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
+        dialog.setFilterExtensions(new String[] { "*." + extension }); //$NON-NLS-1$
+
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog
         if (extension != null && !fileNameProposal.endsWith('.' + extension))

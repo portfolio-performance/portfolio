@@ -480,6 +480,9 @@ public class AllTransactionsView extends AbstractFinanceView
     {
         return action -> {
             FileDialog dialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+            dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
+            dialog.setFilterExtensions(new String[] { "*.json" }); //$NON-NLS-1$
+
             dialog.setFileName(TextUtil.sanitizeFilename(filename));
             dialog.setOverwrite(true);
             String name = dialog.open();

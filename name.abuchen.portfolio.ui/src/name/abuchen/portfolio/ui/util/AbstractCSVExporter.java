@@ -22,7 +22,7 @@ public abstract class AbstractCSVExporter
 
     protected abstract Shell getShell();
 
-    private static final String[] FILTER_NAMES = { "CSV (*.csv)" }; //$NON-NLS-1$
+    private static final String[] FILTER_NAMES = { Messages.CSVImportLabelFileCSV };
     private static final String[] FILTER_EXTS = { "*.csv" }; //$NON-NLS-1$
 
     protected abstract void writeToFile(File file) throws IOException;

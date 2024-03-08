@@ -219,6 +219,9 @@ public class QuotesContextMenu
             public void run()
             {
                 FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+                fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV });
+                fileDialog.setFilterExtensions(new String[] { "*.csv" }); //$NON-NLS-1$
+
                 fileDialog.setFileName(TextUtil.sanitizeFilename(security.getName() + ".csv")); //$NON-NLS-1$
                 fileDialog.setOverwrite(true);
                 String fileName = fileDialog.open();

@@ -179,6 +179,8 @@ public class ExportWizard extends Wizard
                 name = string;
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+            dialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV });
+            dialog.setFilterExtensions(new String[] { "*.csv" }); //$NON-NLS-1$
             dialog.setOverwrite(true);
             if (name != null)
                 dialog.setFileName(TextUtil.sanitizeFilename(name + ".csv")); //$NON-NLS-1$
