@@ -39,6 +39,18 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.68.1" date="2024-03-09">
+      <description>
+        <ul>
+          <li>Fix: Reverts the color changes in the dark theme back to the previous colors with better contrast.</li>
+          <li>Fix: Consorsbank PDF-Importer</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Macht die Farbänderungen im Dunkelmodus wieder zu den vorherigen Farben mit besserem Kontrast rückgängig.</li>
+          <li>Fix: Consorsbank PDF-Importer</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.68.0" date="2024-03-07">
       <description>
         <ul>
