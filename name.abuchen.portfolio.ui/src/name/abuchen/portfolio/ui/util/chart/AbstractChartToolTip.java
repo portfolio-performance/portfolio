@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swtchart.Chart;
 
 import name.abuchen.portfolio.ui.UIConstants;
 
@@ -19,8 +20,7 @@ public abstract class AbstractChartToolTip implements Listener
 {
     public static final int PADDING = 5;
 
-    private org.swtchart.Chart chartV10 = null;
-    private org.eclipse.swtchart.Chart chartV13 = null;
+    private Chart chart = null;
 
     private Shell tip = null;
     private Object focus = null;
@@ -29,22 +29,11 @@ public abstract class AbstractChartToolTip implements Listener
     private boolean showToolTip = false;
     private boolean isAltPressed = false;
 
-    protected AbstractChartToolTip(org.swtchart.Chart chart)
+    protected AbstractChartToolTip(Chart chart)
     {
-        this(chart, null);
-    }
+        this.chart = chart;
 
-    protected AbstractChartToolTip(org.eclipse.swtchart.Chart chart)
-    {
-        this(null, chart);
-    }
-
-    private AbstractChartToolTip(org.swtchart.Chart chartV10, org.eclipse.swtchart.Chart chartV13)
-    {
-        this.chartV10 = chartV10;
-        this.chartV13 = chartV13;
-
-        Composite plotArea = getPlotArea();
+        Control plotArea = chart.getPlotArea().getControl();
         plotArea.addListener(SWT.MouseDown, this);
         plotArea.addListener(SWT.MouseMove, this);
         plotArea.addListener(SWT.MouseUp, this);
@@ -60,14 +49,9 @@ public abstract class AbstractChartToolTip implements Listener
 
     protected abstract void createComposite(Composite parent);
 
-    protected org.swtchart.Chart getChart()
+    protected Chart getChart()
     {
-        return chartV10;
-    }
-
-    protected org.eclipse.swtchart.Chart getSWTChart()
-    {
-        return chartV13;
+        return chart;
     }
 
     protected Object getFocusedObject()
@@ -202,10 +186,8 @@ public abstract class AbstractChartToolTip implements Listener
 
     protected final Composite getPlotArea()
     {
-        if (chartV10 != null)
-            return chartV10.getPlotArea();
-        else if (chartV13 != null)
-            return (Composite) chartV13.getPlotArea();
+        if (chart != null)
+            return (Composite) chart.getPlotArea();
         else
             throw new IllegalArgumentException("no plot area found"); //$NON-NLS-1$
     }

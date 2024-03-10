@@ -10,7 +10,7 @@ import org.eclipse.e4.ui.internal.css.swt.definition.IFontDefinitionOverridable;
 import org.eclipse.e4.ui.internal.css.swt.definition.IThemesExtension;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;

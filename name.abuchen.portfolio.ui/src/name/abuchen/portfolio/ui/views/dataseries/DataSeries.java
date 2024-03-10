@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;

@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;

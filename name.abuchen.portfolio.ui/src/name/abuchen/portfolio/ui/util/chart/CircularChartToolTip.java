@@ -53,7 +53,7 @@ public class CircularChartToolTip extends AbstractChartToolTip
     @Override
     protected Object getFocusObjectAt(Event event)
     {
-        Optional<Node> node = ((CircularChart) getSWTChart()).getNodeAt(event.x, event.y);
+        Optional<Node> node = ((CircularChart) getChart()).getNodeAt(event.x, event.y);
         return node.isPresent() ? node.get() : null;
     }
 

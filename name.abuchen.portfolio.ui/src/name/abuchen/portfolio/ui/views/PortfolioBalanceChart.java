@@ -25,9 +25,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.ILegend;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ILegend;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries;
 
 import com.google.common.base.Objects;
 

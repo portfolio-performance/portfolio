@@ -4,8 +4,8 @@ import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
 import static name.abuchen.portfolio.util.ArraysUtil.add;
 import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;

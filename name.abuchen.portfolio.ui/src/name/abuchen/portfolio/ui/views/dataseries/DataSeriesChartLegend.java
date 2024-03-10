@@ -37,10 +37,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swtchart.LineStyle;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;

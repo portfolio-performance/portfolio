@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;

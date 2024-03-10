@@ -20,17 +20,16 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.IBarSeries;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
+import org.eclipse.swtchart.Range;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -120,7 +119,7 @@ public class TimelineChart extends Chart // NOSONAR
         y3Axis.getGrid().setStyle(LineStyle.NONE);
         y3Axis.setPosition(Position.Primary);
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
@@ -136,7 +135,7 @@ public class TimelineChart extends Chart // NOSONAR
             }
         });
 
-        getPlotArea().addPaintListener(this::paintMarkerLines);
+        getPlotArea().getControl().addPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
 
@@ -145,7 +144,7 @@ public class TimelineChart extends Chart // NOSONAR
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
-        getPlotArea().addTraverseListener(event -> event.doit = true);
+        getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }
@@ -184,7 +183,7 @@ public class TimelineChart extends Chart // NOSONAR
 
     public void addPlotPaintListener(PaintListener listener)
     {
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
@@ -386,7 +385,7 @@ public class TimelineChart extends Chart // NOSONAR
     @Override
     public boolean setFocus()
     {
-        return getPlotArea().setFocus();
+        return getPlotArea().getControl().setFocus();
     }
 
     public IAxis getOrCreateAxis(Object key, Supplier<IAxis> axisFactory)
