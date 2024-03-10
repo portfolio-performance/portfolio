@@ -17,9 +17,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swtchart.ISeries;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
@@ -228,7 +228,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         getDashboardData().getStylingEngine().style(chart);
 
-        HoverButton.build(title, container, chart, chart.getPlotArea()).withListener(new HyperlinkAdapter()
+        HoverButton.build(title, container, chart, chart.getPlotArea().getControl()).withListener(new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)

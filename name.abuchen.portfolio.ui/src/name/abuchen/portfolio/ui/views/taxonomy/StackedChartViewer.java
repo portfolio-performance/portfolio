@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 
 import jakarta.inject.Inject;
 
-import org.swtchart.Range;
+import org.eclipse.swtchart.Range;
 
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;

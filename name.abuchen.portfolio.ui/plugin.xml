@@ -184,7 +184,7 @@
                class="name.abuchen.portfolio.ui.editor.Sidebar">
          </widget>
          <widget
-               class="org.swtchart.Chart">
+               class="org.eclipse.swtchart.Chart">
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.Colors$Theme">

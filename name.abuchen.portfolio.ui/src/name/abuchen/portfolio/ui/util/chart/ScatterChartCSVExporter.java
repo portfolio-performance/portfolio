@@ -10,7 +10,7 @@ import java.text.NumberFormat;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;

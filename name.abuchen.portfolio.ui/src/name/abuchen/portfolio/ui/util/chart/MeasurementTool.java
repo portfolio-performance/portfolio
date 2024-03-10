@@ -8,6 +8,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 
 import name.abuchen.portfolio.money.Values;
@@ -119,7 +120,7 @@ class MeasurementTool implements ChartTool
             var text = buffer.toString();
 
             Point txtExtend = e.gc.textExtent(text);
-            Rectangle plotArea = chart.getPlotArea().getClientArea();
+            Rectangle plotArea = ((Composite) chart.getPlotArea().getControl()).getClientArea();
 
             e.gc.setBackground(Colors.brighter(color));
             e.gc.setForeground(Colors.getTextColor(color));
