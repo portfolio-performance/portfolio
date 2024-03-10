@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 
 public class PlainChart extends Chart // NOSONAR
 {
@@ -21,6 +21,6 @@ public class PlainChart extends Chart // NOSONAR
 
         // fix: never force focus on the legend but focus the plot area instead
 
-        return getPlotArea().setFocus();
+        return getPlotArea().getControl().setFocus();
     }
 }

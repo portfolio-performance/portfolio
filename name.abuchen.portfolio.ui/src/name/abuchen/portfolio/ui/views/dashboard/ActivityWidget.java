@@ -20,15 +20,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.IBarSeries;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -42,7 +41,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.PlainChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTipSWT;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.util.Interval;
@@ -196,7 +195,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
     private Label title;
     private Chart chart;
-    private TimelineChartToolTip toolTip;
+    private TimelineChartToolTipSWT toolTip;
 
     private CurrencyConverter converter;
 
@@ -238,7 +237,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
         chart.getLegend().setVisible(false);
 
-        toolTip = new TimelineChartToolTip(chart);
+        toolTip = new TimelineChartToolTipSWT(chart);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
         toolTip.setDefaultValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
@@ -266,8 +265,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         yAxis.getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
         yAxis.setPosition(Position.Secondary);
 
-        chart.getPlotArea().addTraverseListener(event -> event.doit = true);
-        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new TimeGridPaintListener(chart));
+        chart.getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
+        chart.getPlotArea().addCustomPaintListener(new TimeGridPaintListener(chart));
 
         container.layout();
 

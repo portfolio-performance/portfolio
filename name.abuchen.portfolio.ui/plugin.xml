@@ -72,6 +72,20 @@
          </property-name>
       </handler>
       <handler
+            adapter="name.abuchen.portfolio.ui.theme.ChartSWTElementAdapter"
+            composite="false"
+            handler="name.abuchen.portfolio.ui.theme.ChartSWTCSSHandler">
+         <property-name
+               name="background-color">
+         </property-name>
+         <property-name
+               name="axis-color">
+         </property-name>
+         <property-name
+               name="grid-color">
+         </property-name>
+      </handler>
+      <handler
             adapter="name.abuchen.portfolio.ui.theme.ColorsThemeElementAdapter"
             handler="name.abuchen.portfolio.ui.theme.ColorsThemeCSSHandler">
          <property-name
@@ -185,6 +199,9 @@
          </widget>
          <widget
                class="org.swtchart.Chart">
+         </widget>
+         <widget
+               class="org.eclipse.swtchart.Chart">
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.Colors$Theme">
