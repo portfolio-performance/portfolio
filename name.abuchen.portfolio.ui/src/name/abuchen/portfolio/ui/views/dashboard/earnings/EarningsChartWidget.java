@@ -12,11 +12,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ISeries;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -118,11 +118,11 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         int yHint = get(ChartHeightConfig.class).getPixel();
         GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
 
-        chart.getPlotArea().addTraverseListener(event -> event.doit = true);
+        chart.getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         container.layout();
 
-        HoverButton.build(title, container, chart, chart.getPlotArea()).withListener(new HyperlinkAdapter()
+        HoverButton.build(title, container, chart, chart.getPlotArea().getControl()).withListener(new HyperlinkAdapter()
         {
             @Override
             public void linkActivated(HyperlinkEvent e)

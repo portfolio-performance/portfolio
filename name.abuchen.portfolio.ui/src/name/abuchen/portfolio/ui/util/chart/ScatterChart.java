@@ -5,14 +5,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.ILineSeries;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -34,7 +33,7 @@ public class ScatterChart extends Chart // NOSONAR
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.setPosition(Position.Secondary);
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
@@ -65,7 +64,7 @@ public class ScatterChart extends Chart // NOSONAR
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
-        getPlotArea().addTraverseListener(event -> event.doit = true);
+        getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }
@@ -121,6 +120,6 @@ public class ScatterChart extends Chart // NOSONAR
     @Override
     public boolean setFocus()
     {
-        return getPlotArea().setFocus();
+        return getPlotArea().getControl().setFocus();
     }
 }

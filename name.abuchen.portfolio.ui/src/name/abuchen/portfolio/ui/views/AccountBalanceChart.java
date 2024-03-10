@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;

@@ -20,15 +20,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.IBarSeries;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -266,8 +265,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         yAxis.getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
         yAxis.setPosition(Position.Secondary);
 
-        chart.getPlotArea().addTraverseListener(event -> event.doit = true);
-        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new TimeGridPaintListener(chart));
+        chart.getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
+        chart.getPlotArea().addCustomPaintListener(new TimeGridPaintListener(chart));
 
         container.layout();
 

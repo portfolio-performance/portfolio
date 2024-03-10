@@ -7,7 +7,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
-import org.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;

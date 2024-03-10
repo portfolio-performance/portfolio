@@ -19,7 +19,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;

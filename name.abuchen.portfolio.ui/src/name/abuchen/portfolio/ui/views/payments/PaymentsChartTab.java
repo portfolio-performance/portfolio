@@ -9,11 +9,11 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ISeries;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import com.google.common.primitives.Doubles;
 

@@ -106,11 +106,11 @@ public class ChartToolsManager
     public ChartToolsManager(TimelineChart chart)
     {
         this.chart = chart;
-        chart.getPlotArea().addListener(SWT.MouseDown, this::onMouseDown);
-        chart.getPlotArea().addListener(SWT.MouseMove, this::onMouseMove);
-        chart.getPlotArea().addListener(SWT.MouseUp, this::onMouseUp);
+        chart.getPlotArea().getControl().addListener(SWT.MouseDown, this::onMouseDown);
+        chart.getPlotArea().getControl().addListener(SWT.MouseMove, this::onMouseMove);
+        chart.getPlotArea().getControl().addListener(SWT.MouseUp, this::onMouseUp);
 
-        chart.getPlotArea().addPaintListener(this::paintControl);
+        chart.getPlotArea().getControl().addPaintListener(this::paintControl);
     }
 
     private void onMouseDown(Event e)
