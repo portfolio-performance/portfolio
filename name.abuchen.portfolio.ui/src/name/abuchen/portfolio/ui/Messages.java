@@ -964,7 +964,7 @@ public class Messages extends NLS
     public static String MenuTaxonomyMakeAssignment;
     public static String MenuTaxonomyRename;
     public static String MenuTaxonomySortByName;
-    public static String MenuTaxonomySortByTypName;
+    public static String MenuTaxonomySortByType;
     public static String MenuTaxonomySortTreeBy;
     public static String MenuTaxonomyWeightFix;
     public static String MenuTransactionDelete;
