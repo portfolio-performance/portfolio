@@ -280,6 +280,9 @@ import name.abuchen.portfolio.util.TextUtil;
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
+    private final int CRITERION_ACTUAL = 0;
+    private final int CRITERION_NAME = 1;
+
     @Inject
     private SelectionService selectionService;
 
@@ -849,8 +852,12 @@ import name.abuchen.portfolio.util.TextUtil;
             manager.add(new Separator());
 
             MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, true)));
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, false)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypActual,
+                            a -> doSort(node, CRITERION_ACTUAL, true)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, CRITERION_NAME, true)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, CRITERION_NAME, false)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByActual,
+                            a -> doSort(node, CRITERION_ACTUAL, false)));
 
             manager.add(sorting);
 
@@ -995,7 +1002,7 @@ import name.abuchen.portfolio.util.TextUtil;
         // do not fire model change -> called within modification listener
     }
 
-    private void doSort(TaxonomyNode node, final boolean byType) // NOSONAR
+    private void doSort(TaxonomyNode node, int criterion, final boolean byType) // NOSONAR
     {
         Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
             // unassigned category always stays at the end of the list
@@ -1009,7 +1016,15 @@ import name.abuchen.portfolio.util.TextUtil;
             if (byType && !node1.isClassification() && node2.isClassification())
                 return 1;
 
-            return TextUtil.compare(node1.getName(), node2.getName());
+            if (criterion == CRITERION_ACTUAL)
+            {
+                return node2.getActual().compareTo(node1.getActual());
+            }
+            else
+            {
+                return TextUtil.compare(node1.getName(), node2.getName());
+            }
+
         });
 
         int rank = 0;
