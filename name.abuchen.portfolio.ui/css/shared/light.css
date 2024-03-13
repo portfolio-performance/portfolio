@@ -27,7 +27,7 @@ CTabFolder {
     swt-tab-outline: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTLINE_COLOR';
     swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
     swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
-    swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END';
+    swt-selected-tab-fill: white;
     swt-shadow-visible: false;
 }
 
