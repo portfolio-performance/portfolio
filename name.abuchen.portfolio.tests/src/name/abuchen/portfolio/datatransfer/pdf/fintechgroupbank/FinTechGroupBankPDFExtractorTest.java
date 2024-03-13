@@ -3199,7 +3199,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5)));
         assertThat(entry.getSource(), is("FlatExVerkauf04.txt"));
-        assertThat(entry.getNote(), is("Spitzenregulierung in CA05156X1087"));
+        assertThat(entry.getNote(), is("Spitzenregulierung in CA05156X1087 | Transaktions-Nr. 1942669999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.86))));
@@ -4179,15 +4179,48 @@ public class FinTechGroupBankPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-05-25T00:00"), hasShares(0.385884), //
-                        hasSource("FlatExDegiroVerkauf02.txt"), hasNote("Transaktion-Nr.: 3333333333"), //
+                        hasSource("FlatExDegiroVerkauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 3333333333"), //
                         hasAmount("EUR", 3.48), hasGrossValue("EUR", 3.51), //
                         hasTaxes("EUR", 0.03), hasFees("EUR", 0.00))));
 
         // check fee transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2023-05-25T00:00"), hasShares(0.385884), //
-                        hasSource("FlatExDegiroVerkauf02.txt"), hasNote("Transaktion-Nr.: 3333333333"), //
+                        hasSource("FlatExDegiroVerkauf02.txt"), //
+                        hasNote("Transaktion-Nr.: 3333333333"), //
                         hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf03()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000009538"), hasWkn("940602"), hasTicker(null), //
+                        hasName("ROY.PHILIPS BR RG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-05-23T00:00"), hasShares(0.384510), //
+                        hasSource("FlatExDegiroVerkauf03.txt"), //
+                        hasNote("Spitzenregulierung in NL0000009538 | Transaktions-Nr. 3291805526"), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
