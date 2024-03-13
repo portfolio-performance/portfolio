@@ -4603,7 +4603,53 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
-    public void testTageskontoauszug1()
+    public void testPeriodenauszug09()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 25.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 100.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 25.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 25.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 35.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 40.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 50.00), //
+                        hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
+    }
+
+    @Test
+    public void testTageskontoauszug01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
 
