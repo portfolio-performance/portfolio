@@ -541,6 +541,75 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf10()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US75629F1093"), hasWkn("A1XFAV"), hasTicker(null), //
+                        hasName("SOCIETAL CDMO INC. REGISTERED SHARES DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-02-27T19:42:48"), hasShares(2000), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Auftragsnummer 123456/31.01 | Limit 0,54 USD"), //
+                        hasAmount("EUR", 1037.14), hasGrossValue("EUR", 1000.65), //
+                        hasForexGrossValue("USD", 1079.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.49 + 20.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf10WithSecurityInEUR()
+    {
+        Security security = new Security("SOCIETAL CDMO INC. REGISTERED SHARES DL -,01", CurrencyUnit.EUR);
+        security.setIsin("US75629F1093");
+        security.setWkn("A1XFAV");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DkbPDFExtractor extractor = new DkbPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-02-27T19:42:48"), hasShares(2000), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Auftragsnummer 123456/31.01 | Limit 0,54 USD"), //
+                        hasAmount("EUR", 1037.14), hasGrossValue("EUR", 1000.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.49 + 20.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
