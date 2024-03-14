@@ -609,7 +609,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|Auszahlung" //
                                         + "|LOHN\\/GEHALT" //
                                         + "|.berweisung SEPA" //
-                                        + "|UEBERWEISUNG) " //
+                                        + "|UEBERWEISUNG" //
+                                        + "|RETOUREN" //
+                                        + "|UEBERTRAG) " //
                                         + ".* " //
                                         + "(?<amount>[\\.,\\d]+) " //
                                         + "(?<sign>[S|H])$") //
@@ -653,6 +655,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                             if ("UEBERWEISUNG".equals(v.get("note")))
                                 v.put("note", "Überweisung");
+
+                            if ("RETOUREN".equals(v.get("note")))
+                                v.put("note", "Retouren");
+
+                            if ("UEBERTRAG".equals(v.get("note")))
+                                v.put("note", "Übertrag");
 
                             t.setNote(v.get("note"));
                         })
