@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,5 +81,10 @@ public class ClientInputFactory
 
             selectionService.getSelection(clientInput.getClient()).ifPresent(s -> selectionService.setSelection(null));
         }
+    }
+
+    public synchronized List<ClientInput> listOpenClients()
+    {
+        return cache.keySet().stream().filter(ci -> ci.getClient() != null).toList();
     }
 }
