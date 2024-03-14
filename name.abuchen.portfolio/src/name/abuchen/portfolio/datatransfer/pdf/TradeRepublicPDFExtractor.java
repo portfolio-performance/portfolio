@@ -870,6 +870,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(UMTAUSCH\\/BEZUG"
                         + "|FUSION"
+                        + "|SPLIT"
                         + "|SPIN\\-OFF"
                         + "|KAPITALERH.HUNG GEGEN BAR"
                         + "|VERGLEICHSVERFAHREN"

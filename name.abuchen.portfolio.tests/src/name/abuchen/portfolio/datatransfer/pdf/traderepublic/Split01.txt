@@ -1,0 +1,24 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3.qualifier
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 04.06.2022
+12345 Ort DEPOT 0000000000
+SPLIT
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Einbuchung Amazon.com Inc. 17,4743 Stk.
+Registered Shares DL -,01
+US0231351067
+Amazon.com Inc. Registered Shares DL -,01 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Torner
+10435 Berlin USt-ID DE307510626 Gernot Mittendorfer
+DUAN / 20.05.2022 / 70966568 / 8e07-38a1
+
+```
