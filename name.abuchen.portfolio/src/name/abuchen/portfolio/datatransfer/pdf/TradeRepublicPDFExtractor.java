@@ -870,6 +870,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(UMTAUSCH\\/BEZUG"
                         + "|FUSION"
+                        + "|SPLIT"
                         + "|SPIN\\-OFF"
                         + "|KAPITALERH.HUNG GEGEN BAR"
                         + "|VERGLEICHSVERFAHREN"
@@ -878,8 +879,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|ZWANGS.BERNAHME)", (context, lines) -> {
             Pattern pDate = Pattern.compile("^(.*) DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$");
             Pattern pSkipTransaction = Pattern.compile("^ABRECHNUNG$");
+            Pattern pIsSplit = Pattern.compile("^SPLIT$");
             Pattern pTransactionPosition = Pattern.compile("^(?<transactionPosition>[\\d]) (Barausgleich|Kurswert) (\\-)?[\\.,\\d]+ [\\w]{3}$");
             context.putBoolean("skipTransaction", false);
+            context.putBoolean("isSplit", false);
             context.put("transactionPosition", "0");
 
             for (String line : lines)
@@ -893,6 +896,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 Matcher mSkipTransaction = pSkipTransaction.matcher(line);
                 if (mSkipTransaction.matches())
                     context.putBoolean("skipTransaction", true);
+
+                Matcher mIsSplit = pIsSplit.matcher(line);
+                if (mIsSplit.matches())
+                    context.putBoolean("isSplit", true);
 
                 Matcher mTransactionPosition = pTransactionPosition.matcher(line);
                 if (mTransactionPosition.matches() && context.getBoolean("skipTransaction"))
@@ -981,13 +988,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(t -> {
+                    TransactionItem item = new TransactionItem(t);
+
+                    // If we have a SPLIT document mark as NonImportable
+                    if (type.getCurrentContext().getBoolean("isSplit"))
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
                     // If we have a "ABRECHNUNG", then this is not a
                     // delivery in/outbond. We skip this transaction.
                     if (type.getCurrentContext().getBoolean("skipTransaction")
                                     && type.getCurrentContext().get("transactionPosition").equals(type.getCurrentContext().get("position")))
                         return null;
                     else
-                        return new TransactionItem(t);
+                        return item;
                 });
 
         // If we have a "ABRECHNUNG".
