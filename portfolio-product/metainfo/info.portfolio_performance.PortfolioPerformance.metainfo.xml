@@ -39,6 +39,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.68.2" date="2024-03-14">
+      <description>
+        <ul>
+          <li>Fix: Fixes an issue where the 'source' information for purchase transactions was lost in the binary format.</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Behebt ein Problem, bei dem die Informationen zur 'Quelle' von Kaufbuchungen im binären Format verloren gehen konnten.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.68.1" date="2024-03-09">
       <description>
         <ul>
