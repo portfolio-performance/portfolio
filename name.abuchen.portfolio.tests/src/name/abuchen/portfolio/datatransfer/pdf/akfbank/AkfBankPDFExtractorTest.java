@@ -199,7 +199,7 @@ public class AkfBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2012-11-14"), hasAmount("EUR", 5.00), //
-                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+                        hasSource("Kontoauszug07.txt"), hasNote("Einzelüberweisung"))));
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2012-11-30"), hasAmount("EUR", 2.71), //
@@ -254,5 +254,59 @@ public class AkfBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2022-11-30"), hasAmount("EUR", 0.05), //
                         hasSource("Kontoauszug09.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug10()
+    {
+        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2013-12-03"), hasAmount("EUR", 150.00), //
+                        hasSource("Kontoauszug10.txt"), hasNote("SEPA Gutschrift Bank"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2013-12-19"), hasAmount("EUR", 1824.71), //
+                        hasSource("Kontoauszug10.txt"), hasNote("Einzelüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2013-12-31"), hasAmount("EUR", 1.24), //
+                        hasSource("Kontoauszug10.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug12()
+    {
+        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-02-29"), hasAmount("EUR", 2.29), //
+                        hasSource("Kontoauszug12.txt"), hasNote("SEPA Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-02-29"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug12.txt"), hasNote(null))));
     }
 }
