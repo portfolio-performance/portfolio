@@ -1925,6 +1925,158 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug07()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(41L));
+        assertThat(results.size(), is(41));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-02"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-09"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-12"), hasAmount("EUR", 300.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-12"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-12"), hasAmount("EUR", 1111.11), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Lohn/Gehalt"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-15"), hasAmount("EUR", 900.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-16"), hasAmount("EUR", 900.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Retouren"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-23"), hasAmount("EUR", 10975.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-24"), hasAmount("EUR", 15.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 228.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 300.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 1167.18), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 11001.58), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 12049.12), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-05"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-09"), hasAmount("EUR", 141.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-12"), hasAmount("EUR", 4.99), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-12"), hasAmount("EUR", 19.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-12"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Übertrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-12"), hasAmount("EUR", 5550.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-15"), hasAmount("EUR", 900.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-16"), hasAmount("EUR", 3.53), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-19"), hasAmount("EUR", 900.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-24"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-24"), hasAmount("EUR", 10074.36), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-26"), hasAmount("EUR", 63.27), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-30"), hasAmount("EUR", 752.88), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 77.91), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 189.76), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 650.51), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 1516.78), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Basislastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+    }
+
+    @Test
     public void testDepotauszug01()
     {
         RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
