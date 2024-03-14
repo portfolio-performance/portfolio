@@ -314,6 +314,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         buysell.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        buysell.setSource(newTransaction.getSource());
 
                     buysell.setShares(newTransaction.getShares());
 
@@ -347,6 +349,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         transfer.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        transfer.setSource(newTransaction.getSource());
 
                     transfer.setShares(newTransaction.getShares());
 
@@ -397,6 +401,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         cashTransfer.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        cashTransfer.setSource(newTransaction.getSource());
 
                     loadTransactionUnits(newTransaction, sourceATx);
 
