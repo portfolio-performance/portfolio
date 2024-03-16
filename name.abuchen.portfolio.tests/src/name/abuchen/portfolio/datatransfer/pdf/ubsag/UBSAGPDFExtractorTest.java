@@ -1,5 +1,26 @@
 package name.abuchen.portfolio.datatransfer.pdf.ubsag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -794,6 +815,78 @@ public class UBSAGPDFExtractorTest
         account.setCurrencyCode("CHF");
         Status s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BP6MXD84"), hasWkn("115606002"), hasTicker("SHEL"), //
+                        hasName("N-AKT SHELL PLC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 155.64), hasGrossValue("CHF", 158.26), //
+                        hasForexGrossValue("EUR", 170.44), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.62))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInCHF()
+    {
+        Security security = new Security("N-AKT SHELL PLC", "CHF");
+        security.setIsin("GB00BP6MXD84");
+        security.setWkn("115606002");
+        security.setTickerSymbol("SHEL");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 155.64), hasGrossValue("CHF", 158.26), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 2.62), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
