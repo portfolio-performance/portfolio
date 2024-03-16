@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+PURI-00111111
+Tel. +41-44-234 11 11
+UBS Wertschriftendepot CHF
+Herr  Depot-Nr. 206-111111.S2
+Vorname Nachname Kunden-Nr. 206-111111
+Musterstraße 1
+11111 Musterstadt
+Deutschland
+Auftrags-Nr. 4083256
+Eingang unter Vorbehalt
+Dest 3800
+Anzeige / Abrechnung Erstellt am 21. Dezember 2023
+Gutschrift
+DIVIDENDENZAHLUNG
+VERFALL 20.12.2023 EX-TAG 16.11.2023 DIVIDENDE
+STUECKZAHL VALOR 115606002 ISIN GB00BP6MXD84 ANSATZ
+546 N-AKT SHELL PLC BRUTTO
+(SHEL)
+EUR 0.307
+BRUTTO EUR 167.62
+TOTAL EUR 167.62
+UMRECHNUNGSKURS EUR/CHF 0.928528
+FX-Marge von CHF 2.62 inbegriffen
+GUTSCHRIFT KONTO 206-111111.M2L VALUTA 20.12.2023 CHF 155.64
+Freundliche Grüsse
+UBS Switzerland AG
+Formular ohne Unterschrift Seite 1 / 1
+KE642L04 / 021630 / WK9B4SA7DZCV3BYA00001 20.12.2023
