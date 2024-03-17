@@ -816,6 +816,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
                                         + "|Rechnung" //
                                         + "|Gutschrift.berweisung" //
+                                        + "|Gutschrift .berw\\." //
                                         + "|SEPA GUTSCHRIFT" //
                                         + "|Dauerauftrag" //
                                         + "|Scheckeinzug" //
@@ -857,6 +858,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
 
                             if ("GutschriftÜberweisung".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
+
+                            if ("Gutschrift Überw.".equals(v.get("note")))
                                 v.put("note", "Gutschrift (Überweisung)");
 
                             if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
