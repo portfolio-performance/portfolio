@@ -48,7 +48,11 @@
         <children xsi:type="menu:Menu" xmi:id="_z1i4EIFWEeqj-NUx6jxeHA" elementId="name.abuchen.portfolio.bootstrap.menu.whrung" label="%command.switchCurrency.name">
           <children xsi:type="menu:DynamicMenuContribution" xmi:id="_1w5xgIFWEeqj-NUx6jxeHA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.4" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectReportingCurrencyMenuContribution"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_B_nS4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.consistencychecks" label="%command.consistencyChecks.name" tooltip="%command.consistencyChecks.tooltip" command="_D9tYMBiPEeOR1rNFCzC82A"/>
+        <children xsi:type="menu:Menu" xmi:id="_zEQasOIVEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.bootstrap.menu.tools" label="%command.tools.name">
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_B_nS4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.consistencychecks" label="%command.consistencyChecks.name" tooltip="%command.consistencyChecks.tooltip" command="_D9tYMBiPEeOR1rNFCzC82A"/>
+          <children xsi:type="menu:MenuSeparator" xmi:id="__mE8gOIVEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.bootstrap.menuseparator.9"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_AR9yIOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.menu.file.restoresourceattribute" label="%command.fix.restoresourceattribute" command="_FunoEOIWEe6pEIPYaDGzWA"/>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_O_UqkBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.1"/>
         <children xsi:type="menu:Menu" xmi:id="_mF9JAEYQEeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.menu.file.import" label="%command.import.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/import_file.png">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.import-pdf" tooltip="" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
@@ -197,6 +201,7 @@
   <handlers xmi:id="_epQgkO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.handler.activateDiscreetMode" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler" command="_oL7wsO8hEeyrZdV12xoNqg"/>
   <handlers xmi:id="_ytClQNoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.handler.uploadToMyDividends24" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToMyDividends24Handler" command="_61mn0NoAEe2p9IMNrIn2tQ"/>
   <handlers xmi:id="_pXfGIBJeEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.handler.newDomainElement" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementHandler" command="_bzKa8BJdEe6zcsTRWurRkg"/>
+  <handlers xmi:id="_WsrrsOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.handler.restoresourceattribute" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RestoreSourceAttributeHandler" command="_FunoEOIWEe6pEIPYaDGzWA"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
@@ -300,6 +305,7 @@
   <commands xmi:id="_bzKa8BJdEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.command.newDomainElement" commandName="newDomainElement">
     <parameters xmi:id="_gu244BJdEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.param.type" name="type" optional="false"/>
   </commands>
+  <commands xmi:id="_FunoEOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.command.restoresourceattribute" commandName="restoresourceattribute"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
