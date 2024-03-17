@@ -1,0 +1,56 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.2
+-----------------------------------------
+Kreissparkasse
+S
+Kreissparkasse Ludwigsburg
+Ludwigsburg
+Herrn
+Vorname Nachname
+Straße 1
+12345 Ort
+1. März 2024
+Kontoauszug 1/2024 Seite 1 von 1
+Kinderkonto 0000000000, DE18 6045 0050 0000 0000 00 
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+                0,00
+Kontostand am 29.12.2023, Auszug Nr.    1
+               60,00
+13.02.2024 Gutschrift Überw.
+Handelskrankenkasse (hkk) Auszahlung bonusaktiv 60.00 
+0000000000000000
+              -60,00
+15.02.2024 Überweisung online
+Vorname Nachname übertrag ing DATUM 15.02.2024, 11.20 
+UHR -1609370256-20240215112048
+              161,59
+22.02.2024 Gutschrift Überw.
+Handelskrankenkasse (hkk) Erstattung Satzungsleistungen 
+vom 2 1.02.2024 161.59 0000000000000000
+              161,59
+Kontostand am 29.02.2024 um 20:04 Uhr
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Hinweise zum Kontoauszug:
+l Einwendungen gegen den Kontoauszug teilen Sie uns bitte unverzüglich mit.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben. 
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige 
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der 
+Einlösung.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als 
+Rechnung im Sinne des UStG.
+Bitte beachten Sie: Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere 
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Postanschrift der Hauptstelle: Sitz: Ludwigsburg Vorstand: Vorsitzender des Verwaltungsrates:
+Postfach 620, 71606 Ludwigsburg Anstalt des öffentlichen Rechts Dr. Heinz-Werner Schulte, Landrat Dietmar Allgaier
+BIC-Code: SOLADES1LBG Handelsregister: HRA 202687 Vorsitzender
+Internet: www.ksklb.de Amtsgericht Stuttgart Thomas Raab
+USt-IDNr. DE146128350 Thomas Geiger
+
+```

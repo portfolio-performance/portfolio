@@ -4329,6 +4329,36 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug37()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-02-13"), hasAmount("EUR", 60.00), //
+                        hasSource("GiroKontoauszug37.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-02-15"), hasAmount("EUR", 60.00), //
+                        hasSource("GiroKontoauszug37.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-02-22"), hasAmount("EUR", 161.59), //
+                        hasSource("GiroKontoauszug37.txt"), hasNote("Gutschrift (Überweisung)"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
