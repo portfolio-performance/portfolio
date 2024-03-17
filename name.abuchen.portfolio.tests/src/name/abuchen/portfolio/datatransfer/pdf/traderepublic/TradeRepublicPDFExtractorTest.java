@@ -4008,7 +4008,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
 
-        assertThat(errors, empty());
+        assertThat(errors.size(), is(1));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -4022,6 +4022,13 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
+        // check cancellation (Import by deposit statement transaction) transaction
+        TransactionItem cancellation = (TransactionItem) results.stream() //
+                        .filter(i -> i.isFailure()) //
+                        .filter(TransactionItem.class::isInstance) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+
         PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 

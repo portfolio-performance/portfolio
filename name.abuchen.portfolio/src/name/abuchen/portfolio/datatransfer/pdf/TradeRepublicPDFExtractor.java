@@ -981,6 +981,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                     t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
                 })
 
+                .section("type").optional()
+                .match("^(?<type>(SPLIT))$")
+                .assign((t, v) -> v.getTransactionContext().put(FAILURE,
+                                Messages.MsgErrorTransactionTypeNotSupported))
+
                 .wrap(t -> {
                     // If we have a "ABRECHNUNG", then this is not a
                     // delivery in/outbond. We skip this transaction.
