@@ -1,0 +1,60 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 5183199012
+1123118830/00
+Vermerk der Bank: 1000
+2
+XnaUrg cfEaN
+nMpPFMdVcm dmU 83 Datum: 04.03.2024
+88661 IwlylfRcgk Seite: 1 von 2
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+Reaves Utility Income Fund Reg. Shs of Benef. Int. DL-,01 A0YCXM US7561581015
+Bestand
+70 Stück
+Ertragsausschüttung je Anteil 0,19 USD Schlusstag 14.02.2024
+Brutto in USD 13,30 USD
+abzgl. Quellensteuer 15,00 % von 13,30 USD 2,00 USD
+Netto in USD 11,30 USD
+Devisenkurs 1,088600 USD / EUR
+Brutto in EUR 12,22 EUR
+Quellensteuer in EUR 1,84 EUR
+Netto zugunsten IBAN DE08 3889 8780 4217 8412 71 10,38 EUR
+Valuta 29.02.2024 BIC CSDBDE71XXX
+Anrechenbare Quellensteuer 0,0285 USD pro Stück 1,84 EUR
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE2C681-3A05-35C5-B6BA-8842F16EEE61
+Depotnummer: 3717769106
+1123118830/00
+Vermerk der Bank: 1000
+2
+Datum: 04.03.2024
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 12,22 EUR
+abzgl. Teilfreistellung 0,00 % von 12,22 EUR 0,00 EUR
+Ertragsausschüttung mit Teilfreistellung 12,22 EUR
+Steuerpflichtiger Gesamtertrag 12,22 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet -12,22 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 642,31 EUR
+Mit Sparerpauschbetrag verrechnet -12,22 EUR
+Sparerpauschbetrag nach der Abrechnung 630,09 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 15,32 EUR
+Änderung Verrechnungstopf "Quellensteuer" 1,84 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 17,16 EUR

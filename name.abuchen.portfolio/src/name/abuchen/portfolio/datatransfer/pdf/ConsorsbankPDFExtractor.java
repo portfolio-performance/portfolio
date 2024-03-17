@@ -336,15 +336,19 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType(
-                        "(?i)(Dividendengutschrift|Ertragsgutschrift|ERTRAGSTHESAURIERUNG)(\\s*/\\s*Neuabrechnung)?",
+        DocumentType type = new DocumentType("(?i)(Dividendengutschrift" //
+                        + "|Ertragsgutschrift" //
+                        + "|ERTRAGSTHESAURIERUNG)" //
+                        + "( \\/ Neuabrechnung)?", //
                         isJointAccount);
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block(
-                        "^(?i)(Dividendengutschrift|Ertragsgutschrift|ERTRAGSTHESAURIERUNG)(\\s*/\\s*Neuabrechnung)?([\\s]+)?$");
+        Block firstRelevantLine = new Block("^(?i)(Dividendengutschrift" //
+                        + "|Ertragsgutschrift" //
+                        + "|ERTRAGSTHESAURIERUNG)" //
+                        + "( \\/ Neuabrechnung)?([\\s]+)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
