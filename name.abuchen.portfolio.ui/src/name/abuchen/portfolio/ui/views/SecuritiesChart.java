@@ -1357,7 +1357,12 @@ public class SecuritiesChart
                             .toArray(size -> new Date[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * (1 - 2 * 0.08), 0.00001);
+
+            // factor converges to 0.84 for large ranges
+            // and to 1 for small ranges to prevent dividend markers being drawn
+            // to far below the chart
+            double factor = 1 - (1 - (Math.max(yAxis1st.getRange().lower, 0) / yAxis1st.getRange().upper)) / 6.25;
+            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * factor, 0.00001);
 
             double[] values = new double[dates.length];
             Arrays.fill(values, yAxis1stAxisPrice);
