@@ -1357,7 +1357,14 @@ public class SecuritiesChart
                             .toArray(size -> new Date[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * (1 - 2 * 0.08), 0.00001);
+
+            // Factor should be between 0.84 (for wide range charts) and 1 (for
+            // small range charts) and based on ratio of lower and upper range.
+            // RangeRatio can be between 0 and 1 so parameters of linear
+            // function "f = a * rangeRatio + b" are a = 0.16 and b = 0.84
+            var rangeRatio = Math.max(yAxis1st.getRange().lower, 0) / yAxis1st.getRange().upper;
+            double factor = 0.16 * rangeRatio + 0.84;
+            double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * factor, 0.00001);
 
             double[] values = new double[dates.length];
             Arrays.fill(values, yAxis1stAxisPrice);
