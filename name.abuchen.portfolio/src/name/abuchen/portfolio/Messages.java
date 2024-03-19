@@ -277,6 +277,7 @@ public class Messages extends NLS
     public static String MsgErrorQuandlMissingCode;
     public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorSecurityHasMalformedURL;
+    public static String MsgErrorSplitTransactionsNotSupported;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;

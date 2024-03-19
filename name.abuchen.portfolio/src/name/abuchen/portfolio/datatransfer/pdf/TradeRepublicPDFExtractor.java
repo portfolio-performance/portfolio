@@ -992,7 +992,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                     // If we have a SPLIT document mark as NonImportable
                     if (type.getCurrentContext().getBoolean("isSplit"))
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                        item.setFailureMessage(Messages.MsgErrorSplitTransactionsNotSupported);
 
                     // If we have a "ABRECHNUNG", then this is not a
                     // delivery in/outbond. We skip this transaction.

@@ -4024,7 +4024,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
                         inboundDelivery( //
                                         hasDate("2022-06-04T00:00"), hasShares(17.4743), //
                                         hasSource("Split01.txt"), //
