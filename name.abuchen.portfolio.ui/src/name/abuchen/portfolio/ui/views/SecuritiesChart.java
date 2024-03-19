@@ -1358,10 +1358,12 @@ public class SecuritiesChart
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
 
-            // factor converges to 0.84 for large ranges
-            // and to 1 for small ranges to prevent dividend markers being drawn
-            // to far below the chart
-            double factor = 1 - (1 - (Math.max(yAxis1st.getRange().lower, 0) / yAxis1st.getRange().upper)) / 6.25;
+            // Factor should be between 0.84 (for wide range charts) and 1 (for
+            // small range charts) and based on ratio of lower and upper range.
+            // RangeRatio can be between 0 and 1 so parameters of linear
+            // function "f = a * rangeRatio + b" are a = 0.16 and b = 0.84
+            var rangeRatio = Math.max(yAxis1st.getRange().lower, 0) / yAxis1st.getRange().upper;
+            double factor = 0.16 * rangeRatio + 0.84;
             double yAxis1stAxisPrice = Math.max(yAxis1st.getRange().lower * factor, 0.00001);
 
             double[] values = new double[dates.length];
