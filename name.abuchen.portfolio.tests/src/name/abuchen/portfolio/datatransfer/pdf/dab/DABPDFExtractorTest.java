@@ -3043,54 +3043,37 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testEinbuchung02()
+    public void testSplit01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"),
+                        errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU1291106356"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP o.N"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1291106356"), hasWkn(null), hasTicker(null), //
+                        hasName("BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP o.N"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check delivery inbound (Einlieferung) transaction
-        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2018-12-04T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(1.5884)));
-        assertThat(entry.getSource(), is("Einbuchung02.txt"));
-        assertThat(entry.getNote(), is("Ausführungs-Nr. 12345678"));
-
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        //  check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupported, //
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
                         inboundDelivery( //
-                                hasDate("2018-12-04T00:00"), hasShares(1.5884), //
-                                hasSource("Einbuchung02.txt"), hasNote("Ausführungs-Nr. 12345678"), //
-                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                hasTaxes("EUR", 0), hasFees("EUR", 0.00)))));
+                                        hasDate("2018-12-04T00:00"), hasShares(1.5884), //
+                                        hasSource("Split01.txt"), //
+                                        hasNote("Ausführungs-Nr. 12345678"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
