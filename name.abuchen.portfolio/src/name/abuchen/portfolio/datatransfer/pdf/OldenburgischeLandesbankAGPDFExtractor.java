@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -24,6 +25,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAdvanceTaxTransaction();
         addAccountStatementTransaction();
     }
 
@@ -103,8 +105,8 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         // @formatter:off
@@ -187,8 +189,8 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         // @formatter:off
@@ -210,6 +212,85 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        DocumentType type = new DocumentType("VORABPAUSCHALE");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // DE000A0H0785 (A0H078) iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile 26,634225
+                        // Vorabpauschale pro Stück 1,257654000 EUR
+                        // @formatter:on
+                        .section("isin", "wkn", "name", "currency") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) (?<name>.*) [\\.,\\d]+$") //
+                        .match("^Vorabpauschale pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                        })
+
+                        // @formatter:off
+                        // DE000A0H0785 (A0H078) iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile 26,634225
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<name>.*) (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Die angefallenen Steuern werden am 05.03.2024 von Ihrem Konto DE1234567890 eingezogen.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Die angefallenen Steuern werden am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Zahltag 02.01.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zahltag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Summe Steuern 8,81 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^Summe Steuern (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -253,6 +334,32 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Kapitalertragsteuer 1,40 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional()
+                        .match("Kapitalertrags(s)?teuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 0,07 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional()
+                        .match("^Solidarit.tszuschlag (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional()
+                        .match("^Kirchensteuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
