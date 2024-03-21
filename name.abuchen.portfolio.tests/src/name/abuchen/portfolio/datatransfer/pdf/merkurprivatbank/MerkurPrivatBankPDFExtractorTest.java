@@ -188,13 +188,13 @@ public class MerkurPrivatBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-19"), hasAmount("EUR", 900.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Dauerauftrag"))));
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
         assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+                        hasSource("Kontoauszug01.txt"), hasNote("Festgeldanlage"))));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class MerkurPrivatBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(deposit(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+                        hasSource("Kontoauszug02.txt"), hasNote("Neuanlage"))));
 
     }
 }
