@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class SunrisePDFExtractor extends AbstractPDFExtractor
 {
 
@@ -119,8 +120,9 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
                         // Fondsname: Standortfonds Österreich
                         // WKN/ISIN: AT0000A1QA38 Datum des Ertrags: 15.12.2023
-                        .section("name", "isin").match("^Fondsname: (?<name>.*)$")//
-                        .match("^WKN\\/ISIN: (?<isin>[\\w]{12}) Datum des.*$")
+                        .section("name", "isin") //
+                        .match("^Fondsname: (?<name>.*)$") //
+                        .match("^WKN\\/ISIN: (?<isin>[\\w]{12}) Datum des.*$") //
                         .assign((t, v) -> {
                             v.put("currency", CurrencyUnit.EUR);
                             t.setSecurity(getOrCreateSecurity(v));
@@ -132,9 +134,10 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
                         // Ausschüttung je Anteil: 2.71
                         // Ausschüttung gesamt: 17.58
-                        .section("amountPerShare", "gross")
-                        .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$")
-                        .match("^Aussch.ttung gesamt: (?<gross>['\\.\\d]+)$").assign((t, v) -> {
+                        .section("amountPerShare", "gross") //
+                        .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
+                        .match("^Aussch.ttung gesamt: (?<gross>['\\.\\d]+)$") //
+                        .assign((t, v) -> {
                             BigDecimal amountPerShare = asExchangeRate(v.get("amountPerShare"));
                             BigDecimal amountTotal = asExchangeRate(v.get("gross"));
 
@@ -146,20 +149,21 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         })
 
                         // WKN/ISIN: AT0000A1QA38 Datum des Ertrags: 15.12.2023
-                        .section("date")
-                        .match("^WKN.*Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
+                        .section("date") //
+                        .match("^WKN.*Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // Zur Auszahlung kommender Betrag: 0.00
-                        .section("amount")
-                        .match("^ Zur Auszahlung kommender Betrag: (?<amount>['\\.\\d]+)$")
+                        .section("amount") //
+                        .match("^ Zur Auszahlung kommender Betrag: (?<amount>['\\.\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
                         })
 
                         // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
-                        .section("note").optional().match("^.* (?<note>Turnus: .*)$")
+                        .section("note").optional() //
+                        .match("^.* (?<note>Turnus: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
@@ -173,12 +177,13 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
     {
         transaction
                         // abgeführte Kapitalertragsteuer: 31.61 €
-                        .section("tax").optional()
-                        .match("^abgef.hrte Kapitalertragsteuer: (?<tax>['\\.\\d]+) \\p{Sc}$")
+                        .section("tax").optional() //
+                        .match("^abgef.hrte Kapitalertragsteuer: (?<tax>['\\.\\d]+) \\p{Sc}$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // Kapitalertragsteuer (KESt) gesamt: 4.28
-                        .section("tax").optional().match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>['\\.\\d]+)$")
+                        .section("tax").optional() //
+                        .match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>['\\.\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
