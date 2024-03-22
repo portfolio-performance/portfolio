@@ -584,8 +584,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
         // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
+        // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* Zins [\\.,\\d]+$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -598,7 +599,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "date", "note2", "amount") //
                         .documentContext("currency") //
                         .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
-                                        + "(?<note2>[\\,\\d]+%) .* Zins " //
+                                        + "(?<note2>[\\,\\d]+%) .* " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
