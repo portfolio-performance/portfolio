@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -3540,5 +3541,29 @@ public class INGDiBaPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2021-04-29"), hasAmount("EUR", 806.83), //
                         hasSource("GiroKontoauszug04.txt"), hasNote("Gehalt/Rente"))));
+    }
+
+    @Test
+    public void testExtraKontoauszug01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ExtraKontoauszug01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-12-28"), hasAmount("EUR", 40.00), //
+                        hasSource("ExtraKontoauszug01.txt"), hasNote("Gutschrift"))));
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
+                        hasSource("ExtraKontoauszug01.txt"), hasNote("16.12.2023 bis 31.12.2023 (3,750%)"))));
     }
 }
