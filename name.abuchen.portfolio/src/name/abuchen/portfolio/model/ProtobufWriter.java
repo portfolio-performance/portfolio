@@ -100,7 +100,7 @@ import name.abuchen.portfolio.money.Money;
         if (read != SIGNATURE.length)
             throw new IOException();
         if (!Arrays.equals(signature, SIGNATURE))
-            throw new IOException(Messages.MsgNotAPortflioFile);
+            throw new IOException(Messages.MsgNotAPortfolioFile);
 
         PClient newClient = PClient.parseFrom(input);
 
