@@ -41,7 +41,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Abrechnung (Kauf|Verkauf|Zeichnung).*$");
+        Block firstRelevantLine = new Block("^Abrechnung (Kauf|Verkauf|Zeichnung).*$", "^Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -109,6 +109,13 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "time") //
                                                         .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Abschlussdatum 04.07.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zeichnungstag (NAV) 08.06.2023
                                         // @formatter:on
@@ -257,26 +264,34 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-        
+
                         // @formatter:off
                         // Courtage  DKK 1'534.90
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Courtage[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^Courtage[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // SIX Meldegebühr  CHF 0.20
+                        // SIX Meldegebühr  CHF -0.20
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.* Meldegeb.hr[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^.* Meldegeb.hr[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // SIX Börsengebühr  CHF -8.80
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* B.rsengeb.hr[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Broker Kommission  DKK 12.12
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Broker Kommission[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^Broker Kommission[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
