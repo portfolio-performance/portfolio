@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+tygkI HBjkt mdySPWKNNou SEITE 1 von 1
+MZAKzhzG. 08B DATUM 05.03.2024
+23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
+SAVEBACK B2C4-n64q
+DEPOT 5652696149
+WERTPAPIERABRECHNUNG SAVEBACK
+ÜBERSICHT
+Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+MUL Amundi MSCI AC World 0,032743 Stk. 420,85 EUR 13,78 EUR
+UCITS ETF Inh.Anteile Acc
+ISIN: LU1829220216
+GESAMT 13,78 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE2123456789012345678 06.03.2024 -13,78 EUR
+MUL Amundi MSCI AC World UCITS ETF Inh.Anteile Acc in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 05.03.2024 / 32549613 / DR37-6Z5F
