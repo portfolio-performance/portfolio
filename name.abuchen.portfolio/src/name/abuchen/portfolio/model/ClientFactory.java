@@ -272,7 +272,7 @@ public class ClientFactory
                 if (read != SIGNATURE.length)
                     throw new IOException();
                 if (!Arrays.equals(signature, SIGNATURE))
-                    throw new IOException(Messages.MsgNotAPortflioFile);
+                    throw new IOException(Messages.MsgNotAPortfolioFile);
 
                 // read encryption method
                 int method = input.read();
