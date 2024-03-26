@@ -27,6 +27,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -334,6 +335,65 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("Steuerpflichtige Fondsfusion", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Vom 02.02.2024
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Steuerpflichtige Fondsfusion$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Steuerpflichtige Fondsfusion
+                        // AIS-AM.WORLD SRI PAB Act.Nom. UCITS ETF DR (C)o.N.
+                        // ISIN LU1861134382
+                        // Anzahl/Nominale 255,212216
+                        // @formatter:on
+                        .section("name", "isin", "shares") //
+                        .documentContext("date") //
+                        .find("Steuerpflichtige Fondsfusion")
+                        .match("^(?<name>.*)$")
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^Anzahl\\/Nominale (?<shares>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
