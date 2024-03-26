@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
@@ -51,11 +52,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Bewertet in: .*" //
-                        + "|Ihr (Kauf|Verkauf)" //
-                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN" //
-                        + "|FUSION" //
-                        + "|FRAKTIONS\\-ABRECHNUNG)$");
+        Block firstRelevantLine = new Block("^.*(Depot|Portfolio)\\-Nr\\..*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -351,6 +348,13 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
+                        // @formatter:off
+                        // Auftrags-Nr. 4083256
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Auftrags\\-Nr\\. .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(t -> {
@@ -372,7 +376,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^DIVIDENDENZAHLUNG$");
+        Block firstRelevantLine = new Block("^.*(Depot|Portfolio)\\-Nr\\..*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -442,7 +446,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
                         .match("^BRUTTO [\\w]{3} (?<fxGross>[\\.'\\d\\s]+)$") //
                         .match("^UMRECHNUNGSKURS (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d\\s]+)$") //
-                        .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\w]{3} [\\.'\\d\\s]+$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -452,6 +455,20 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
+
+                        // @formatter:off
+                        // Auftrags-Nr. 4083256
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Auftrags\\-Nr\\. .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // FX-Marge von CHF 2.62 inbegriffen
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .match("^FX\\-Marge von (?<note1>[\\w]{3}) (?<note2>[\\.'\\d\\s]+) inbegriffen.*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note2") + " " + v.get("note1"), " | FX-Marge: ")))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
@@ -579,13 +596,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Externe Geb.hren (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+)$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
-                        // FX-Marge von CHF 2.62 inbegriffen
-                        // @formatter:on
-                        .section("currency", "fee").optional() //
-                        .match("^FX-Marge von (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.,'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
