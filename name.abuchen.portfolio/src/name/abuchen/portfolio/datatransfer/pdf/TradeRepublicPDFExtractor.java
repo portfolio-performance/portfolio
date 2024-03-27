@@ -129,6 +129,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d] (Barausgleich|Kurswert) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+                                        // Bundesobl.Ser.180 v.2019(24)
+                                        // ISIN: DE0001141802
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "nameContinued", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
+                                                        .match("^(?<nameContinued>.*)$")
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // This is for the reinvestment of dividends
                                         // We pick the second
                                         //
@@ -173,6 +184,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^[\\d] (Ausbuchung|Tilgung) .* (?<shares>[\\.,\\d]+) Stk\\.$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // 2 Reinvestierung Vodafone Group PLC 22 Stk.
@@ -1656,6 +1680,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d] (Barausgleich|Kurswert) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+                                        // Bundesobl.Ser.180 v.2019(24)
+                                        // ISIN: DE0001141802
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "nameContinued", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
+                                                        .match("^(?<nameContinued>.*)$")
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // This is for the reinvestment of dividends
                                         // We pick the second
                                         //
@@ -1700,6 +1735,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^[\\d] (Ausbuchung|Tilgung) .* (?<shares>[\\.,\\d]+) Stk\\.$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // 2 Reinvestierung Vodafone Group PLC 22 Stk.

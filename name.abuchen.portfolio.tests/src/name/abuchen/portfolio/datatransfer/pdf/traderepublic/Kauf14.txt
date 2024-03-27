@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+CRwazW CVGYx oATxGhG SEITE 1 von 1
+AtehMW-fYEnfbmPd-ApeaZD 33 DATUM 26.03.2024
+23949 VEjt ORDER 20f0-0026
+AUSFÜHRUNG 761d-19e4
+DEPOT 0706195861
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 26.03.2024, um 15:53 Uhr (Europe/Berlin).
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION NOMINALE PREIS BETRAG
+Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+Bundesobl.Ser.180 v.2019(24)
+ISIN: DE0001141802
+GESAMT 999,13 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -1.000,13 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE58120700700122500000 28.03.2024 -1.000,13 EUR
+Bundesrep.Deutschland Bundesobl.Ser.180 v.2019(24) in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 26.03.2024 / 63960219 / 46a8-f932
