@@ -46,15 +46,15 @@ public class BigbankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-03-20"), hasAmount("EUR", 10.00), //
+        assertThat(results, hasItem(deposit(hasDate("2024-03-20"), hasAmount("EUR", 10.12), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-03-21"), hasAmount("EUR", 1500.00), //
+        assertThat(results, hasItem(deposit(hasDate("2024-03-21"), hasAmount("EUR", 1500.34), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2024-03-25"), hasAmount("EUR", 10.00), //
+        assertThat(results, hasItem(removal(hasDate("2024-03-25"), hasAmount("EUR", 10.12), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
 }
