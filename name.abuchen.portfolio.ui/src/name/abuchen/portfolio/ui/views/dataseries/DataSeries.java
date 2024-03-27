@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Image;
@@ -40,6 +43,32 @@ public final class DataSeries implements Adaptable
         EARNINGS, EARNINGS_ACCUMULATED, FEES, FEES_ACCUMULATED;
     }
 
+    public static final Map<ClientDataSeries, String> statementOfAssetsDataSeriesLabels = new EnumMap<>(ClientDataSeries.class)
+    {
+        private static final long serialVersionUID = 1319016001158914537L;
+
+        {
+            put(ClientDataSeries.TOTALS, Messages.LabelTotalSum);
+            put(ClientDataSeries.TRANSFERALS, Messages.LabelTransferals);
+            put(ClientDataSeries.INVESTED_CAPITAL, Messages.LabelInvestedCapital);
+            put(ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL, Messages.LabelAbsoluteInvestedCapital);
+            put(ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelDelta);
+            put(ClientDataSeries.ABSOLUTE_DELTA_ALL_RECORDS, Messages.LabelAbsoluteDelta);
+            put(ClientDataSeries.TAXES, Messages.ColumnTaxes);
+            put(ClientDataSeries.TAXES_ACCUMULATED, Messages.LabelAccumulatedTaxes);
+            put(ClientDataSeries.DIVIDENDS, Messages.LabelDividends);
+            put(ClientDataSeries.DIVIDENDS_ACCUMULATED, Messages.LabelAccumulatedDividends);
+            put(ClientDataSeries.INTEREST, Messages.LabelInterest);
+            put(ClientDataSeries.INTEREST_ACCUMULATED, Messages.LabelAccumulatedInterest);
+            put(ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge);
+            put(ClientDataSeries.INTEREST_CHARGE_ACCUMULATED, Messages.LabelAccumulatedInterestCharge);
+            put(ClientDataSeries.EARNINGS, Messages.LabelEarnings);
+            put(ClientDataSeries.EARNINGS_ACCUMULATED, Messages.LabelAccumulatedEarnings);
+            put(ClientDataSeries.FEES, Messages.LabelFees);
+            put(ClientDataSeries.FEES_ACCUMULATED, Messages.LabelFeesAccumulated);
+        }
+    };
+
     /**
      * Type of objects for which the PerformanceIndex is calculated.
      */
@@ -52,6 +81,7 @@ public final class DataSeries implements Adaptable
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        TYPE_PARENT("Type-Parent-", i -> ((GroupedDataSeries) i).getId()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
@@ -75,7 +105,7 @@ public final class DataSeries implements Adaptable
     }
 
     private Type type;
-    private Object group;
+    private Object[] groups;
     private Object instance;
     private String label;
     private boolean isLineChart = true;
@@ -98,10 +128,19 @@ public final class DataSeries implements Adaptable
         this(type, null, instance, label, color);
     }
 
+    /* package */ DataSeries(Type type, Object[] groups, Object instance, String label, RGB color)
+    {
+        this.type = type;
+        this.groups = groups;
+        this.instance = instance;
+        this.label = label;
+        this.color = color;
+    }
+
     /* package */ DataSeries(Type type, Object group, Object instance, String label, RGB color)
     {
         this.type = type;
-        this.group = group;
+        this.groups = group != null ? Arrays.asList(group).toArray() : null;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -112,9 +151,9 @@ public final class DataSeries implements Adaptable
         return type;
     }
 
-    public Object getGroup()
+    public Object[] getGroups()
     {
-        return group;
+        return groups;
     }
 
     public Object getInstance()
@@ -124,6 +163,9 @@ public final class DataSeries implements Adaptable
 
     public String getLabel()
     {
+        if (instance instanceof GroupedDataSeries c && groups.length > 0)
+            return groups[groups.length - 1] + " - " + label; //$NON-NLS-1$
+
         return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
 

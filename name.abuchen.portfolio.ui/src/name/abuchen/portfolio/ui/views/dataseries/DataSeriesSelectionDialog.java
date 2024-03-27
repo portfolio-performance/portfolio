@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -32,7 +34,6 @@ import org.eclipse.swt.widgets.Tree;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
 {
@@ -138,18 +139,48 @@ public class DataSeriesSelectionDialog extends Dialog
             Node child = new Node(series.getSearchLabel());
             child.dataSeries = series;
 
-            Node parent = type2node.computeIfAbsent(map(series.getType()), Node::new);
+            Node parent = type2node.computeIfAbsent(map(series), Node::new);
 
-            if (series.getGroup() != null)
+            if (series.getGroups() != null)
             {
-                Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
-                    Node n = new Node(g.toString());
-                    n.parent = parent;
-                    parent.children.add(n);
-                    return n;
-                });
-                child.parent = group;
-                group.children.add(child);
+                Node lastParentTracker = parent;
+                int index = 0;
+
+                for (Object groupGiven : series.getGroups())
+                {
+                    final Node lastParent = lastParentTracker;
+                    
+                    String groupPath = Arrays.asList(series.getGroups())
+                        .stream()
+                        .map(Object::toString)
+                        .limit(index + 1)
+                        .collect(Collectors.joining("|")); //$NON-NLS-1$
+
+                    groupPath = map(series) + "|" + groupPath; //$NON-NLS-1$
+
+                    Node group = group2node.computeIfAbsent(groupPath, g -> {
+                        Node n = new Node(groupGiven.toString());
+                        n.parent = lastParent;
+                        lastParent.children.add(n);
+                        return n;
+                    });
+
+                    // If there are no more nested groups to go through
+                    // we set the data series as the children
+                    if (series.getGroups().length == (index + 1))
+                    {
+                        group.children.add(child);
+                        child.parent = group;
+                    }
+                    else
+                    {
+                        // If there are nested groups, we just set the current
+                        // node ready to be the parent
+                        lastParentTracker = group;
+                    }
+
+                    index++;
+                }
             }
             else
             {
@@ -165,10 +196,13 @@ public class DataSeriesSelectionDialog extends Dialog
      * Reduce number of first-level folders to a meaningful set for the
      * end-user.
      */
-    private String map(Type type)
+    private String map(DataSeries dataSeries)
     {
-        switch (type)
+        
+        switch (dataSeries.getType())
         {
+            case TYPE_PARENT:
+                return ((GroupedDataSeries) dataSeries.getInstance()).getTopLevelLabel();
             case SECURITY:
                 return Messages.LabelSecurities;
             case SECURITY_BENCHMARK:
@@ -268,8 +302,6 @@ public class DataSeriesSelectionDialog extends Dialog
         treeViewer.setComparator(new ViewerComparator());
 
         hookListener();
-
-        treeViewer.expandAll();
 
         return composite;
     }
