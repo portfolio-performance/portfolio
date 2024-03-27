@@ -92,6 +92,6 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "et", "EE");
     }
 }
