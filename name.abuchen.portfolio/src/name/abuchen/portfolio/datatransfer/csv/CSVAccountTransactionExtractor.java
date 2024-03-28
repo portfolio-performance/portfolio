@@ -236,6 +236,17 @@ import name.abuchen.portfolio.money.Money;
                 type = amount.isNegative() ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DIVIDENDS;
             else
                 type = amount.isNegative() ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT;
+        } else {
+            if (amount.isNegative()) {
+                if (type == AccountTransaction.Type.DEPOSIT)
+                    type = AccountTransaction.Type.REMOVAL;
+                else if (type == AccountTransaction.Type.REMOVAL)
+                    type = AccountTransaction.Type.DEPOSIT;
+                else if (type == AccountTransaction.Type.BUY)
+                    type = AccountTransaction.Type.SELL;
+                else if (type == AccountTransaction.Type.SELL)
+                    type = AccountTransaction.Type.BUY;
+            }
         }
         return type;
     }
