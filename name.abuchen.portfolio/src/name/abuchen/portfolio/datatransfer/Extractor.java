@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.datatransfer;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
@@ -680,19 +681,19 @@ public interface Extractor
 
         List<Item> result = file.stream() //
                         .flatMap(f -> extract(securityCache, f, errors).stream()) //
-                        .collect(Collectors.toList());
+                        .collect(toMutableList());
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
-        itemsByExtractor.put(this, postProcessing(result));
+        postProcessing(result);
+        itemsByExtractor.put(this, result);
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return result;
     }
 
-    default List<Item> postProcessing(List<Item> result)
+    default void postProcessing(List<Item> result)
     {
-        return result;
     }
 
 }

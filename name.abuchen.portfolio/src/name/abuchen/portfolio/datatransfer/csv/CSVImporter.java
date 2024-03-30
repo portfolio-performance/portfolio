@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.MessageFormat;
@@ -402,24 +402,144 @@ public final class CSVImporter
         }
     }
 
+    public static class AnnotatedParsePosition extends ParsePosition
+    {
+        private boolean isTrimmed = false;
+
+        public AnnotatedParsePosition(int index)
+        {
+            super(index);
+        }
+
+        public boolean isTrimmed()
+        {
+            return isTrimmed;
+        }
+
+        public void setTrimmed(boolean isTrimmed)
+        {
+            this.isTrimmed = isTrimmed;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(getIndex(), getErrorIndex(), isTrimmed);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (!super.equals(obj))
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            AnnotatedParsePosition other = (AnnotatedParsePosition) obj;
+            return isTrimmed == other.isTrimmed;
+        }
+    }
+
+    public static class AmountFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+
+        private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.ENGLISH);
+
+        private final char decimalSeparator;
+
+        public AmountFormat(char decimalSeparator)
+        {
+            this.decimalSeparator = decimalSeparator;
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            return toAppendTo.append(NUMBER_FORMAT.format(obj));
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            if (source == null)
+                throw new NullPointerException();
+            if (pos == null)
+                throw new NullPointerException();
+
+            // track if we found a digit, because 'e' is okay after the first
+            // digit ("2.12e-6") but must be stripped at the start ("EUR 42")
+            boolean foundDigit = false;
+
+            // track if we trimmed the string in a meaningful way, i.e.
+            // something besides number-related characters and whitespace
+            // in order to provide a color indicator to the user
+            boolean isTrimmed = false;
+
+            var input = new StringBuilder();
+
+            for (int ii = 0; ii < source.length(); ii++)
+            {
+                var c = source.charAt(ii);
+
+                if (c == decimalSeparator)
+                {
+                    input.append('.');
+                }
+                else if ((c == 'e' || c == 'E') && foundDigit)
+                {
+                    input.append('E');
+                }
+                else if ("0123456789-".indexOf(c) >= 0) //$NON-NLS-1$
+                {
+                    input.append(c);
+                    foundDigit = true;
+                }
+                else if (",.' ".indexOf(c) >= 0 || TextUtil.isWhitespace(c)) //$NON-NLS-1$
+                {
+                    // do nothing
+                }
+                else
+                {
+                    isTrimmed = true;
+                }
+            }
+
+            if (pos instanceof AnnotatedParsePosition annotated && isTrimmed)
+            {
+                annotated.setTrimmed(true);
+            }
+
+            if (input.isEmpty())
+            {
+                pos.setErrorIndex(0);
+                return null;
+            }
+
+            var p = new ParsePosition(0);
+            var number = NUMBER_FORMAT.parseObject(input.toString(), p);
+
+            if (p.getIndex() == 0)
+            {
+                pos.setErrorIndex(0);
+                return null;
+            }
+            else
+            {
+                pos.setIndex(source.length());
+                return number;
+            }
+
+        }
+    }
+
     public static class AmountField extends CSVImporter.Field
     {
-        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
-                        new FieldFormat("0.000,00", Messages.CSVFormatNumberGermany, //$NON-NLS-1$
-                                        NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
-                                        NumberFormat.getInstance(Locale.US)),
-                        new FieldFormat("0 000,00", Messages.CSVFormatNumberFrance, () -> { //$NON-NLS-1$
-                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.FRANCE);
-                            unusualSymbols.setDecimalSeparator(',');
-                            unusualSymbols.setGroupingSeparator(' ');
-                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
-                        }),
-                        new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
-                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                            unusualSymbols.setGroupingSeparator('\'');
-                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
-                        })));
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList( //
+                        new FieldFormat("0.000,00", ",", new AmountFormat(',')), //$NON-NLS-1$ //$NON-NLS-2$
+                        new FieldFormat("0,000.00", ".", new AmountFormat('.')) //$NON-NLS-1$ //$NON-NLS-2$
+        ));
 
         /* package */ AmountField(String code, String... name)
         {
@@ -435,14 +555,6 @@ public final class CSVImporter
         @Override
         public FieldFormat guessFormat(Client client, String value)
         {
-            // pre-configured based on locale; as PP currently does not allow
-            // arbitrary number format patterns, map it to the available FORMAT
-            // objects
-
-            if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
-                return FORMATS.get(2);
-            if ("CH".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
-                return FORMATS.get(3);
             if (TextUtil.DECIMAL_SEPARATOR == ',')
                 return FORMATS.get(0);
             if (TextUtil.DECIMAL_SEPARATOR == '.')
@@ -849,7 +961,7 @@ public final class CSVImporter
                 mapToImportDefinition();
             }
         }
-        catch (IllegalStateException e)
+        catch (IllegalStateException | UncheckedIOException e)
         {
             PortfolioLog.error(e);
 

@@ -31,6 +31,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         addDividendsTransaction();
         addPaymentTransaction();
         addInterestTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -341,6 +342,87 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                 })
 
                 .wrap(TransactionItem::new);
+    }
+    
+    record Data(String currency) {
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        var baseCurrencyRange = new Block("^KONTOAUSZUG in (?<baseCurrency>[\\w]{3})$") //
+                        .asRange(section -> section //
+                                        .attributes("baseCurrency") //
+                                        .match("^KONTOAUSZUG in (?<baseCurrency>[\\w]{3})$"));
+
+        final DocumentType type = new DocumentType("KONTOAUSZUG", baseCurrencyRange);
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 31.03.2023 Depotgebühren 20.00 31.03.2023 -20.00
+        // 29.09.2023 Depotgebühren 20.00 29.09.2023 -5'791.30
+        // @formatter:on
+        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Depotgeb.hren [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.'\\d]+$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "date") //
+                        .documentRange("baseCurrency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>Depotgeb.hren) "
+                                        + "(?<amount>[\\.,\\d]+) "
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(\\-)?[\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 29.12.2023 Sollzinsen 127.85 31.12.2023 -7'589.89
+        // @formatter:on
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Sollzinsen [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?[\\.'\\d]+$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "date") //
+                        .documentRange("baseCurrency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>Sollzinsen) "
+                                        + "(?<amount>[\\.,\\d]+) "
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(\\-)?[\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

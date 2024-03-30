@@ -445,11 +445,10 @@ public class Messages extends NLS
     public static String IntroLabelRecentlyUsedFiles;
     public static String IntroLabelSamples;
     public static String IntroLabelTranslation;
+    public static String IntroMobileApp;
     public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
-    public static String IntroOpenDaxSample;
-    public static String IntroOpenDaxSampleText;
     public static String IntroOpenFAQ;
     public static String IntroOpenFAQText;
     public static String IntroOpenFile;
@@ -491,9 +490,6 @@ public class Messages extends NLS
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
     public static String LabelAbout;
-    public static String JurisdictionFilesDownloadExplanation;
-    public static String JurisdictionFilesDownloadMessage;
-    public static String JurisdictionFilesDownloadTitle;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
@@ -517,6 +513,7 @@ public class Messages extends NLS
     public static String LabelAllInboundTransactions;
     public static String LabelAllOutboundTransactions;
     public static String LabelAssetChart;
+    public static String LabelAutomaticDarkLightTheme;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
     public static String LabelBackupModeAbsoluteDirectory;
@@ -574,6 +571,7 @@ public class Messages extends NLS
     public static String LabelChartDetailSettingsShowPercentageAxis;
     public static String LabelChartShowLabels;
     public static String LabelChartType;
+    public static String LabelChooseFileToImportFrom;
     public static String LabelCleanHTML;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
@@ -609,6 +607,7 @@ public class Messages extends NLS
     public static String LabelDataSeries;
     public static String LabelDateExclusive;
     public static String LabelDateXToY;
+    public static String LabelDecimalSeparator;
     public static String LabelDefaultFontSize;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
@@ -705,6 +704,8 @@ public class Messages extends NLS
     public static String LabelPerformanceChart;
     public static String LabelPerformanceIRR;
     public static String LabelPerformanceMetric;
+    public static String LabelPickFile;
+    public static String LabelPickFileFormat;
     public static String LabelPortfolioFeeRate;
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
@@ -781,10 +782,12 @@ public class Messages extends NLS
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
+    public static String LabelHeatmapFees;
     public static String LabelHeatmapInvestments;
     public static String LabelHeatmapInvestmentsDirect;
     public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
+    public static String LabelHeatmapTaxes;
     public static String LabelHide;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelJSONPathHint;
@@ -807,6 +810,7 @@ public class Messages extends NLS
     public static String LabelMetricDaysFormatter;
     public static String LabelMetricYears;
     public static String LabelMetricYearsFormatter;
+    public static String LabelMobileApp;
     public static String LabelPNTransfers;
     public static String LabelPreviousTradingDay;
     public static String LabelStartTyping;
@@ -858,6 +862,7 @@ public class Messages extends NLS
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
     public static String LabelViewStackedChart;
+    public static String LabelViewStackedChartActualValue;
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;
@@ -959,7 +964,7 @@ public class Messages extends NLS
     public static String MenuTaxonomyMakeAssignment;
     public static String MenuTaxonomyRename;
     public static String MenuTaxonomySortByName;
-    public static String MenuTaxonomySortByTypName;
+    public static String MenuTaxonomySortByType;
     public static String MenuTaxonomySortTreeBy;
     public static String MenuTaxonomyWeightFix;
     public static String MenuTransactionDelete;
@@ -1024,6 +1029,7 @@ public class Messages extends NLS
     public static String MsgRestartRequired;
     public static String MsgSecurityHasNoQuotes;
     public static String MsgThemeRestartRequired;
+    public static String MsgUpdatedXEntries;
     public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateNoWritePermissions;
     public static String MsgUpdateRequiresLatestJavaVersion;
@@ -1234,6 +1240,8 @@ public class Messages extends NLS
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTrades;
     public static String SecurityTabTransactions;
+    public static String SiteAppLandingpage;
+    public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
     public static String SplitWizardErrorNewAndOldMustNotBeEqual;

@@ -1,0 +1,55 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+J&T Tagesgeld
+EUR-Konto Kontonummer 6480010
+J&T Direktbank - Postfach 232
+45952 Gladbeck Kontoauszug Nr.  1/2023
+erstellt am 31.03.2023 21:57 Blatt  1 von 1
+IBAN: DE55 5001 5001 0006 4800 10 BIC: JTBPDEFFXXX
+Herrn
+Max Muster
+Musterstr. 4
+06448 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand  0,00 H
+31.03. 31.03. Überweisungsgutschr. 3.000,00 H
+ Max Muster
+ Einzahlung 001 JT Direktbank
+ neuer Kontostand vom 31.03.2023 3.000,00 H
+0189
+000
+K00002656
+5M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns schriftlich zu informieren. Sonst gilt der Rechnungsabschluss als genehmigt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank
+
+```

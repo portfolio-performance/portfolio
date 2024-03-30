@@ -50,6 +50,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
@@ -199,7 +200,16 @@ public class ClientInput
     {
         if (clientFile == null)
         {
-            doSaveAs(shell, null, EnumSet.of(SaveFlag.XML));
+            PickFileFormatDialog dialog = new PickFileFormatDialog(shell);
+            ContextInjectionFactory.inject(dialog, context);
+
+            if (dialog.open() != Window.OK)
+                return;
+
+            var type = dialog.getSelectedType();
+
+            doSaveAs(shell, type.getExtension(), type.getFlags());
+
             return;
         }
 
@@ -298,6 +308,11 @@ public class ClientInput
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setOverwrite(true);
+
+        // set filter names and extension to make sure the file name keeps the
+        // right extension.
+        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
+        dialog.setFilterExtensions(new String[] { "*." + extension }); //$NON-NLS-1$
 
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog

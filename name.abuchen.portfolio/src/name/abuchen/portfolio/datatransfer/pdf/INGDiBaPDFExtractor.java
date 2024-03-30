@@ -311,16 +311,23 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // Nominale 1.000,00 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "wkn", "name", "name1", "currency") //
+                                                        .attributes("isin", "wkn", "name", "nameContinued", "currency") //
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
-                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
                                                         .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // ISIN (WKN) DE000A3MP4P9 (A3MP4P)
+                                        // Wertpapierbezeichnung 4,00000% PCC SE Inh.-Teilschuldv. v.21(22/26)
+                                        // Nominale 5.000,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "currency") //
+                                                        .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Nominale 66,00 Stück
@@ -456,16 +463,18 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Valuta 04.01.2021
+                        // Zahltag 02.01.2024
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(Valuta|Zahltag) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Gesamtbetrag zu Ihren Lasten EUR - 0,16
+                        // Gesamtbetrag zu Ihren Gunsten EUR 0,00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[.,\\d]+)$") //
+                        .match("^Gesamtbetrag zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (\\- )?(?<amount>[.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -540,10 +549,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 27.06.2016 Gutschrift Max Mustermann 10.000,00
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
+        // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift" //
-                        + "|Gutschrift\\/Dauerauftrag) " //
+                        + "|Gutschrift\\/Dauerauftrag"
+                        + "|Gehalt\\/Rente) " //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -558,7 +569,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>Gutschrift" //
-                                        + "|Gutschrift\\/Dauerauftrag) " //
+                                        + "|Gutschrift\\/Dauerauftrag"
+                                        + "|Gehalt\\/Rente) " //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -572,8 +584,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
         // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
+        // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* Zins [\\.,\\d]+$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -586,7 +599,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "date", "note2", "amount") //
                         .documentContext("currency") //
                         .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
-                                        + "(?<note2>[\\,\\d]+%) .* Zins " //
+                                        + "(?<note2>[\\,\\d]+%) .* " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -627,6 +640,30 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.05.2023 Entgelt EgumoUc -0,99
+        // @formatter:on
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgelt .* \\-[\\.,\\d]+$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Entgelt .* \\-(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -800,6 +837,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Variables Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Courtage EUR 3,20
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Courtage (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off

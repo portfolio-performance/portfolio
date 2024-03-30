@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Doubles;
@@ -31,20 +32,18 @@ public class MovingAverageConvergenceDivergence
     {
         this.security = Objects.requireNonNull(security);
         this.interval = Objects.requireNonNull(interval);
-        this.macd = new ChartLineSeriesAxes();
-        this.signalLine = new ChartLineSeriesAxes();
 
         calculateMacd();
     }
 
-    public ChartLineSeriesAxes getMacdLine()
+    public Optional<ChartLineSeriesAxes> getMacdLine()
     {
-        return macd;
+        return Optional.ofNullable(macd);
     }
 
-    public ChartLineSeriesAxes getSignalLine()
+    public Optional<ChartLineSeriesAxes> getSignalLine()
     {
-        return signalLine;
+        return Optional.ofNullable(signalLine);
     }
 
     private void calculateMacd()
@@ -95,10 +94,19 @@ public class MovingAverageConvergenceDivergence
             }
         }
 
-        macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
-        signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
-        macd.setValues(Doubles.toArray(valuesMacd));
-        signalLine.setValues(Doubles.toArray(valuesSignal));
+        if (valuesMacd.size() >= MAX_MACD_PERIOD)
+        {
+            macd = new ChartLineSeriesAxes();
+            macd.setDates(TimelineChart.toJavaUtilDate(datesMacd.toArray(new LocalDate[0])));
+            macd.setValues(Doubles.toArray(valuesMacd));
+        }
+
+        if (valuesSignal.size() >= SIGNAL_LINE_START)
+        {
+            signalLine = new ChartLineSeriesAxes();
+            signalLine.setDates(TimelineChart.toJavaUtilDate(datesSignal.toArray(new LocalDate[0])));
+            signalLine.setValues(Doubles.toArray(valuesSignal));
+        }
     }
 
     private static final class ExponentialMovingAverageCalculator

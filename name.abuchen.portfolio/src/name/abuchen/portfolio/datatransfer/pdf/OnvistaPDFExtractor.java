@@ -996,6 +996,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Fusion"
                         + "|Freier Erhalt"
+                        + "|Freie Lieferung"
                         + "|Einbuchung von Rechten"
                         + "|Wertlose Ausbuchung"
                         + "|Kapitalerh.hung"
@@ -1014,7 +1015,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Dividendengutschrift).*$");
+        Block firstRelevantLine = new Block("^(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Wir lieferten zu Lasten Ihres Depots|Dividendengutschrift).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1030,9 +1031,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Ausbuchung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^.*(?<type>(Einbuchung|Ausbuchung|Ausbuchung der Rechte)).*$") //
+                        .match("^.*(?<type>(Einbuchung|Ausbuchung|Wir lieferten zu Lasten Ihres Depots|Ausbuchung der Rechte)).*$") //
                         .assign((t, v) -> {
-                            if ("Ausbuchung".equals(v.get("type")) || "Ausbuchung der Rechte".equals(v.get("type")))
+                            if ("Ausbuchung".equals(v.get("type")) || "Wir lieferten zu Lasten Ihres Depots".equals(v.get("type")) || "Ausbuchung der Rechte".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                         })
 
@@ -1043,7 +1044,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "name1") //
                         .documentContext("date") //
-                        .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Dividendengutschrift).*") //
+                        .find("(Einbuchung:|Ausbuchung:|Wir erhielten zu Gunsten Ihres Depots|Wir lieferten zu Lasten Ihres Depots|Dividendengutschrift).*") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(?<name1>.*)") //

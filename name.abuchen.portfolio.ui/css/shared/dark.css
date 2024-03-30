@@ -48,28 +48,28 @@ CustomColors {
 	red-background: #960000;
 	green-background: #004B00;
 
-	red-foreground: #FE2B05;
-	green-foreground: #02F500;
+	red-foreground: #fe2b05;
+	green-foreground: #02f500;
 	gray-foreground: #808080;
 	
 	hyperlink: #6FC5EE;
 }
 
 SecuritiesChart {
-	quote-color: #4DDAFF;
+	quote-color: #4ddaff;
 	quote-area-positive-color: #23b0d7;
-	quote-area-negative-color: #ff9d4d;
+	quote-area-negative-color: #e25b5a;
 
-	purchase-event-color: #1FD127;
-	sale-event-color: #FF2B30;
+	purchase-event-color: #1fd127;
+	sale-event-color: #ff2b30;
 	dividend-event-color: #8063A8;
 
-	extreme-marker-high-color: #1AAD21;
+	extreme-marker-high-color: #1aad21;
 	extreme-marker-low-color: #A8272A;
 
-	non-trading-color: #542E1F;
+	non-trading-color: #8c4b31;
 	
-	shares-held-color: #FFAF4D
+	shares-held-color: #ffaf4d;
 }
 
 * {

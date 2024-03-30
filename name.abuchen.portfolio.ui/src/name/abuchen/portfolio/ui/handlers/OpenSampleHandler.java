@@ -32,13 +32,17 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
+import name.abuchen.portfolio.online.impl.EurostatHICPLabels;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetFactory;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TokenReplacingReader;
 import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
@@ -77,9 +81,11 @@ public class OpenSampleHandler
                         final Client client = ClientFactory.load(replacingReader);
 
                         fixTaxonomyLabels(client);
+                        fixDashboardLabels(client);
 
                         sync.asyncExec(() -> {
                             String label = sampleFile.substring(sampleFile.lastIndexOf('/') + 1);
+                            label = label.substring(0, label.lastIndexOf('.'));
                             ClientInput clientInput = clientInputFactory.create(label, client);
 
                             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
@@ -159,14 +165,47 @@ public class OpenSampleHandler
         });
     }
 
+    protected void fixDashboardLabels(Client client)
+    {
+        client.getDashboards().forEach(dashboard -> {
+            for (Dashboard.Column column : dashboard.getColumns())
+            {
+                for (Dashboard.Widget widget : column.getWidgets())
+                {
+                    WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
+                    if (factory == null)
+                        continue;
+                    if (factory == WidgetFactory.HEADING)
+                        continue;
+                    widget.setLabel(factory.getLabel());
+                }
+            }
+        });
+    }
+
     private static ITokenResolver buildResourcesTokenResolver()
     {
+        var messagesPrefix = "Messages."; //$NON-NLS-1$
+        var hcpiPrefix = "EurostatHICPLabels."; //$NON-NLS-1$
+
         return tokenName -> {
             try
             {
-                return RESOURCES.getString(tokenName);
+                if (tokenName.startsWith(messagesPrefix))
+                {
+                    return Messages.class.getField(tokenName.substring(messagesPrefix.length())).get(null).toString();
+                }
+                else if (tokenName.startsWith(hcpiPrefix))
+                {
+                    return EurostatHICPLabels.getString(tokenName.substring(hcpiPrefix.length()));
+                }
+                else
+                {
+                    return RESOURCES.getString(tokenName);
+                }
             }
-            catch (MissingResourceException e)
+            catch (MissingResourceException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException
+                            | SecurityException e)
             {
                 return tokenName;
             }

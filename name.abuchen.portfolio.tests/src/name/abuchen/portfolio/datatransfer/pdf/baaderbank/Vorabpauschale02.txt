@@ -1,0 +1,58 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+17.01.2024
+$Vorname $Nachname
+$Straße $Hausnummer $Name $Nachname
+$PLZ $Stadt Stamm-Nr.: $Stammnummer    Portfolio: 1
+Depot-Nr.: $Depotnummer
+Vorgangs-Nr.: $Vorgangsnummer
+Referenz-Nr.: $Referenznummer
+Vorabpauschale
+Ex-Tag: 02.01.2024
+Nominale ISIN: IE00BD1F4L37 WKN: A2AP34
+STK 220 iShsIV-Edge MSCI USA Q.F.U.ETF
+Zahlungszeitraum: 01.01.2023 - 31.12.2023 
+Zahltag: 02.01.2024
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Vorabpauschale
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Vorabpauschale Aktienfonds nach Teilfreistellung ab Jan
+Freistellungsauftrag (FSA) EUR 333,25 EUR 24,17 - EUR 309,08
+Vorabpauschale Aktienfonds nach Teilfreistellung ab Jan
+Verrechnung FSA mit allg. Erträgen EUR 105,75 - EUR 24,17 - EUR 129,92 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Vorabpauschale Aktienfonds vor Teilfreistellung ab Jan EUR 34,53 EUR 34,53
+Vorabpauschale Aktienfonds nach Teilfreistellung ab Jan EUR 24,17 EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 24,17 EUR 0,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

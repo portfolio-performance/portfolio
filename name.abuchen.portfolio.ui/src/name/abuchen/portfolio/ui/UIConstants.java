@@ -29,6 +29,11 @@ public interface UIConstants
             String SAVED = "file/saved"; //$NON-NLS-1$
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
+        
+        interface RecentFiles // NOSONAR
+        {
+            String UPDATED = "recent/updated"; //$NON-NLS-1$
+        }
 
         interface ExchangeRates // NOSONAR
         {
@@ -243,6 +248,12 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+    }
+
+    interface Theme // NOSONAR
+    {
+        String LIGHT = "name.abuchen.portfolio.light"; //$NON-NLS-1$
+        String DARK = "name.abuchen.portfolio.dark"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

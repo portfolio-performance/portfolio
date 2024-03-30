@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+European Bank for Financial Services GmbH, Postfach 200252, 80002 M}nchen    
+Depotnummer
+ 99132734493
+ Kundennummer 20003225759
+OTIj mQmvlBy
+ Abrechnungsnr. 70418365490
+Herrn Datum 23.07.2021
+YqAb CIEpmjN Rechnungsnummer 70418365490
+XYRMjxG 26 Umsatzsteuer-ID DE813330104         
+22839 exWnWyZME
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+St}ck 180 GAZPROM NEFT PJSC US36829G1076 (A0J4TC)
+REG. SHS (SP.ADRS)/5 RL-,0016
+Zahlbarkeitstag 22.07.2021 Dividende pro St}ck 0,671769 USD
+Bestandsstichtag 23.06.2021 Herkunftsland Russland
+Ex-Tag 24.06.2021 Art der Dividende Schlussdividende
+Gesch{ftsjahr 01.01.2020 - 31.12.2020
+Devisenkurs EUR / USD  1,1800
+Devisenkursdatum 23.07.2021
+Dividendengutschrift 120,92 USD 102,47+ EUR
+Umrechnung in EUR 102,47 EUR
+Einbehaltene Quellensteuer 15 % auf 120,92 USD 15,37- EUR
+Anrechenbare Quellensteuer 15 % auf 102,47 EUR 15,37 EUR
+Kapitalertragsteuerpflichtige Dividende 102,47 EUR
+Verrechnete anrechenbare ausl{ndische Quellensteuer
+(Verh{ltnis 100/25) auf 25,62 EUR 102,47 - EUR
+Berechnungsgrundlage f}r die Kapitalertragsteuer 0,00 EUR
+Fremde Spesen 3,05- EUR
+Ausmachender Betrag 84,05+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 26.07.2021 zu Gunsten des Kontos 3267126501, BLZ 700 130 00. 
+Keine Steuerbescheinigung. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. R}ckseite beachten.
+0841.07240100.0000044ER01

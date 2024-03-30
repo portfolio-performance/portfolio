@@ -1,0 +1,286 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.2
+-----------------------------------------
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 10 0754037
+Raiffeisenbank im Hochtaunus eG
+Postfach 2119, 61291 Bad Homburg v. d. Höhe Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:15 Blatt  1 von 5
+IBAN: DE48 5006 1741 0100 7540 37 13 BIC: GENODE51OBU
+Herrn
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand  0,00 H
+02.01. 02.01. UEBERWEISUNG PN:812 2.000,00 H
+ Max Muster
+ Auszahlung 0014 VR-HT MeineBank
+02.01. 02.01. BASISLASTSCHRIFT PN:931 124,40 S
+ Die xx VVaG
+ 52402442 / xx Beitrag 02.01.24 - meine-hk.de - Je
+ tzt anmelden und Rechnung herunterladen. EREF: HKBID47
+ 461277 MREF: MK-MN-52402442-02 CRED: DE73HK00000002020
+ 9 IBAN: DE10500100600003806608 BIC: PBNKDEFF
+02.01. 02.01. BASISLASTSCHRIFT PN:931 256,21 S
+ xx Versicherung Aktiengesellschaft
+ xx Kfz Beitrag 922059828K-XX 1010 EREF: 9290
+ 20494028 MREF: 3330629 CRED: DE22ZZZ00000028673 IBAN:
+ DE75370700600117654204 BIC: DEUTDEDK
+03.01. 03.01. BASISLASTSCHRIFT PN:931 5,00 S
+ Max Muster
+ Sparrate 4015194477 SPARKASSE xxxx
+ -xx H MREF: E401517447317.12.20230001 CRED
+ : DE85ZZZ00000056251 IBAN: DE59720518404025194499 BIC:
+ BYLADEM1GZK
+04.01. 04.01. BASISLASTSCHRIFT PN:931 155,42 S
+ Dxx xx GmbH
+ T290327601 PER 02.01.24 monatlich EREF: 09-0020272
+ 150100003-T2903276 MREF: T290327204 CRED: DE08DEU00000
+ 010360 IBAN: DE66500700100970704600 BIC: DEUTDEFF
+05.01. 05.01. BASISLASTSCHRIFT PN:931 24,09 S
+ abc 2 GmbH
+ ReNr 01-24-11111 KdNr 123123 EREF: 01-24-52488 MREF:
+ KUNDE123123 CRED: DE87ZZZ00002269636 IBAN: DE292007002
+ 40753950700 BIC: DEUTDEDBHAM ABWA: abc-s
+05.01. 05.01. BASISLASTSCHRIFT PN:931 125,00 S
+ ASSURANCE EUROPE PUBLIC LIMITED COMPANY
+ LGP-00009926 EREF: LGP-00009926 MREF: 00009926004 CRED
+ : DE43ZZZ00000651348 IBAN: DE22300308801928116007 BIC:
+ TUBDDEDD
+ Übertrag auf Blatt 2 1.309,88 H
+0636
+000
+K00015744
+5M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 10 0754037
+Max Muster
+Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:15 Blatt  2 von 5
+Bu-Tag Wert Vorgang
+ Übertrag von Blatt 1 1.309,88 H
+05.01. 05.01. UEBERWEISUNG PN:812 1.200,00 S
+ Max Muster
+ Einzahlung 0005 VR-HT MeineBank TAN1:011559 IBAN: DE48
+ 500617410100594015 BIC: GENODE51OBU
+09.01. 09.01. UEBERWEISUNG PN:932 50,00 H
+ Max Muster
+ Auszahlung 0015 VR-HT MeineBank
+09.01. 09.01. BASISLASTSCHRIFT PN:931 141,00 S
+ Novalnet- Strom GmbH
+ ABSCHLAG Strom 01/24 VK: 121000061563 xx xx
+ strom GmbH EREF: 2460355458 MREF: 121000085563-02-1 CR
+ ED: DE53ZZZ00000006251 IBAN: DE40700202700037566301 BI
+ C: HYVEDEMM ABWA: xx xx GmbH
+12.01. 12.01. UEBERWEISUNG PN:812 300,00 H
+ Max Muster
+ Auszahlung 0016 VR-HT MeineBank
+12.01. 12.01. UEBERWEISUNG PN:812 500,00 H
+ Max Muster
+ Auszahlung 0017 VR-HT MeineBank
+12.01. 12.01. LOHN/GEHALT PN:931 1.111,11 H
+ Mustermann GMBH
+ LOHN / GEHALT 01/24 EREF: 9401101526-0000027LG
+ 0000
+12.01. 12.01. UEBERWEISUNG PN:812 4,99 S
+ Max Muster
+ Auszahlung xx Giro 0001 TAN1:922298 IBAN: DE301203000
+ 00018886098 BIC: BYLADEM1001
+12.01. 12.01. UEBERWEISUNG PN:812 19,00 S
+ Marie Maier
+ xx - Max sagt danke TAN1:570756
+ IBAN: DE52370100500896204507 BIC: PBNKDEFFXXX
+12.01. 12.01. UEBERWEISUNG PN:812 291,95 S
+ Muster Payments
+ CXD-PVC-RVV-7ZF Hand TAN1:
+ 078066 IBAN: DE12201207003100990333 BIC: HSTBDEHHXXX
+12.01. 12.01. UEBERTRAG PN:29  500,00 S
+ Max Muster
+ Erwerb von 10 Geschäftsanteilen. IBAN: DE71500617410020
+ 374017 BIC: GENODE51OBU
+12.01. 12.01. UEBERWEISUNG PN:812 5.550,00 S
+ Max Muster
+ Einzahlung 0006 VR-HT MeineBank TAN1:057626 IBAN: DE48
+ 500617410100594015 BIC: GENODE51OBU
+15.01. 15.01. UEBERWEISUNG PN:932 900,00 H
+ Max Muster
+ Auszahlung 0018 VR-HT MeineBank
+ Übertrag auf Blatt 3 911,45 H
+0636
+000
+K00015744 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 10 0754037
+Max Muster
+Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:15 Blatt  3 von 5
+Bu-Tag Wert Vorgang
+ Übertrag von Blatt 2 911,45 H
+15.01. 15.01. DAUERAUFTRAG PN:900 900,00 S
+ Max Muster
+ PKW Abschlag /*DA-2* IBAN: DE7970130800000293
+ 5027 BIC: JTBPDEFFXXX
+16.01. 16.01. RETOUREN PN:931  900,00 H
+ Max Muster
+ Retoure SEPA Ueberweisung vom 15.01.2024, Rueckgabegru
+ nd: AC01 IBAN fehlerhaft und ungültig SVWZ: RETURN, Xx
+ xx PKW Abschlag IBAN: DE79701308000002715047 BIC:
+ JTBPDEFFXXX
+16.01. 16.01. UEBERWEISUNG PN:812 3,53 S
+ Muster-EDV
+ Kunden-Nr.. 10676 Rechnungs-Nr.. 12866 Domain xx
+ e vom 11.01.2024 bis 10.01.2025 TAN1:253133 IBAN: DE55
+ 500700240800481600 BIC: DEUTDEDBFRA
+19.01. 19.01. DAUERAUFTRAG PN:900 900,00 S
+ Max Muster
+ PKW Abschlag /*DA-2* IBAN: DE7970130800000293
+ 5049 BIC: GENODEF1M06
+23.01. 23.01. UEBERWEISUNG PN:812 10.975,00 H
+ Max Muster
+ Auszahlung 0019 VR-HT MeineBank
+24.01. 24.01. UEBERWEISUNG PN:931 15,00 H
+ EBAY S.A.R.L.
+ P.6205179602 EREF: RQHZKSTTT4CEP8F
+24.01. 24.01. DAUERAUFTRAG PN:900 25,00 S
+ Max Muster
+ Einzahlung DKV Sparplan 25 /*DA-3* IBAN: DE30120300000
+ 016884078 BIC: BYLADEM1001
+24.01. 24.01. BASISLASTSCHRIFT PN:931 10.074,36 S
+ Versicherung
+ Krankenversicherung/Vertrag 000174058V00 EREF: 0450027
+ 37976 MREF: 100000000542367 CRED: DE38ZZZ00002227959 I
+ BAN: DE70330500000000900070 BIC: WUPSDE33 ABWA: xx
+ S Krankenvers.
+26.01. 26.01. UEBERWEISUNG PN:812 63,27 S
+ Marvin Muster
+ Re. J-24-00143 / 11.01. Kd.Nr. 0094-000 Ue
+ berpruefung 2024 TAN1:110740 IBAN: DE27440100460115077
+ 480 BIC: PBNKDEFFXXX
+30.01. 30.01. BASISLASTSCHRIFT PN:931 752,88 S
+ S Krankenversicherung AG
+ Pflegepflichtversicherung/Vertrag 000174058V01 EREF: 0
+ 44902177566 MREF: 100000000542367 CRED: DE38ZZZ00002227959
+ 7957 IBAN: DE70330500000000900070 BIC: WUPSDE33 ABWA: xx
+ S Krankenvers.
+ Übertrag auf Blatt 4 82,41 H
+0636
+000
+K00015744 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 10 0754037
+Max Muster
+Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:15 Blatt  4 von 5
+Bu-Tag Wert Vorgang
+ Übertrag von Blatt 3 82,41 H
+31.01. 31.01. UEBERWEISUNG PN:931 228,00 H
+ COSMOS Versicherung Aktiengesellschaft
+ Zahlung Entschaedigung gem.Forderung EREF: 27005356124
+ 1 ABWE: JAeGS
+31.01. 31.01. UEBERWEISUNG PN:812 300,00 H
+ Max Muster
+ Auszahlung 0020 VR-HT MeineBank
+31.01. 31.01. UEBERWEISUNG PN:812 1.000,00 H
+ Max Muster
+ Auszahlung 0021 VR-HT MeineBank
+31.01. 31.01. UEBERWEISUNG PN:931 1.167,18 H
+ Max Muster
+ AG Giro Diba 2024 01
+31.01. 31.01. UEBERWEISUNG PN:812 2.000,00 H
+ Max Muster
+ Auszahlung 0021 VR-HT MeineBank
+31.01. 31.01. UEBERWEISUNG PN:931 11.001,58 H
+ Max Muster
+ Auszahlung 010 JT Direktbank
+31.01. 31.01. UEBERWEISUNG PN:931 12.049,12 H
+ Max Muster
+ Einzahlung 0001 VR-HT MeineBank Giro
+31.01. 31.01. UEBERWEISUNG PN:812 77,91 S
+ x Payments
+ CRZ-YFY-PTY-T82 ANVERS Kleber TA
+ N1:220606 IBAN: DE12201207003100990111 BIC: HSTBDEHHXX
+ X
+31.01. 31.01. BASISLASTSCHRIFT PN:931 189,76 S
+ UNICREDIT BANK GMBH
+ Kto.0020271899 PER 31.01.24 / ZINS EUR 27,14 / TILG.KA
+ P EUR 162,62 EREF: FNI-FNM240126042945DDI MREF: FNM-00
+ 0020271899-001 CRED: DE28FNI00000009670 IBAN: DE817002
+ 02700020271899 BIC: HYVEDEMM
+31.01. 31.01. UEBERWEISUNG PN:812 650,51 S
+ Max Muster
+ Kreditkartenabrechnung Bank 4146922051828243
+ 01/2024 TAN1:970407 IBAN: NB6093570236393 BIC: NORWNO
+ K1XXX
+31.01. 31.01. BASISLASTSCHRIFT PN:931 1.516,78 S
+ UNICREDIT BANK GMBH
+ Kto.0020251873 PER 31.01.24 / ZINS EUR 531,88 / TILG.K
+ AP EUR 984,90 EREF: FNI-FNM240126042944DDI MREF: FNM-0
+ 00020491873-001 CRED: DE28FNI00000009670 IBAN: DE38700
+ 202700020271857 BIC: HYVEDEMM
+31.01. 31.01. UEBERWEISUNG PN:812 25.000,00 S
+ Max Muster
+ Einzahlung 0001 MBank TAN1:763500 IBAN: DE7970130
+ 8000002915067 BIC: GENODEF1M06
+0636
+000
+K00015744 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 10 0754037
+Max Muster
+Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:15 Blatt  5 von 5
+Bu-Tag Wert Vorgang
+ neuer Kontostand vom 31.01.2024 3,33 H
+0636
+000
+K00015744 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B. per E-Mail oder Brief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank
+
+```

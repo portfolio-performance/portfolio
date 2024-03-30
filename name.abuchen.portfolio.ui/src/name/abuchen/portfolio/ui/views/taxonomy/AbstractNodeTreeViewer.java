@@ -276,6 +276,11 @@ import name.abuchen.portfolio.util.TextUtil;
         }
     }
 
+    private enum SortCriterion
+    {
+        TYPE, NAME, ACTUAL
+    }
+
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
@@ -849,8 +854,13 @@ import name.abuchen.portfolio.util.TextUtil;
             manager.add(new Separator());
 
             MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, true)));
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, false)));
+            sorting.add(new SimpleAction(
+                            String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
+                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.NAME)));
+            sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
+                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.ACTUAL)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, SortCriterion.NAME)));
+            sorting.add(new SimpleAction(Messages.ColumnActualValue, a -> doSort(node, SortCriterion.ACTUAL)));
 
             manager.add(sorting);
 
@@ -995,7 +1005,7 @@ import name.abuchen.portfolio.util.TextUtil;
         // do not fire model change -> called within modification listener
     }
 
-    private void doSort(TaxonomyNode node, final boolean byType) // NOSONAR
+    private void doSort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
     {
         Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
             // unassigned category always stays at the end of the list
@@ -1004,12 +1014,32 @@ import name.abuchen.portfolio.util.TextUtil;
             if (node2.isUnassignedCategory())
                 return -1;
 
-            if (byType && node1.isClassification() && !node2.isClassification())
-                return -1;
-            if (byType && !node1.isClassification() && node2.isClassification())
-                return 1;
+            for (int ii = 0; ii < criteria.length; ii++)
+            {
+                switch (criteria[ii])
+                {
+                    case TYPE:
+                        if (node1.isClassification() && !node2.isClassification())
+                            return -1;
+                        if (!node1.isClassification() && node2.isClassification())
+                            return 1;
+                        break;
+                    case NAME:
+                        int cn = TextUtil.compare(node1.getName(), node2.getName());
+                        if (cn != 0)
+                            return cn;
+                        break;
+                    case ACTUAL:
+                        int ca = node2.getActual().compareTo(node1.getActual());
+                        if (ca != 0)
+                            return ca;
+                        break;
+                    default:
 
-            return TextUtil.compare(node1.getName(), node2.getName());
+                }
+            }
+
+            return 0;
         });
 
         int rank = 0;

@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.osgi.service.prefs.BackingStoreException;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -32,19 +33,21 @@ public class RecentFilesCache
     @Preference
     IEclipsePreferences preferences;
 
+    @Inject
+    IEventBroker broker;
+
     private static final int MAXIMUM = 10;
 
-    private final Set<String> files = Collections
-                    .newSetFromMap(new LinkedHashMap<String, Boolean>(32, 0.7f, true)
-                    {
-                        private static final long serialVersionUID = 1L;
+    private final Set<String> files = Collections.newSetFromMap(new LinkedHashMap<String, Boolean>(32, 0.7f, true)
+    {
+        private static final long serialVersionUID = 1L;
 
-                        @Override
-                        protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest)
-                        {
-                            return size() > MAXIMUM;
-                        }
-                    });
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest)
+        {
+            return size() > MAXIMUM;
+        }
+    });
 
     @PostConstruct
     public void load()
@@ -72,21 +75,24 @@ public class RecentFilesCache
     @Optional
     public void onFileOpened(@EventTopic(UIConstants.Event.File.OPENED) String file)
     {
-        files.add(file);
+        if (files.add(file))
+            broker.post(UIConstants.Event.RecentFiles.UPDATED, true);
     }
 
     @Inject
     @Optional
     public void onFileSaved(@EventTopic(UIConstants.Event.File.SAVED) String file)
     {
-        files.add(file);
+        if (files.add(file))
+            broker.post(UIConstants.Event.RecentFiles.UPDATED, true);
     }
 
     @Inject
     @Optional
     public void onFileRemoved(@EventTopic(UIConstants.Event.File.REMOVED) String file)
     {
-        files.remove(file);
+        if (files.remove(file))
+            broker.post(UIConstants.Event.RecentFiles.UPDATED, true);
     }
 
     public List<String> getRecentFiles()
@@ -99,5 +105,6 @@ public class RecentFilesCache
     public void clearRecentFiles()
     {
         files.clear();
+        broker.post(UIConstants.Event.RecentFiles.UPDATED, true);
     }
 }

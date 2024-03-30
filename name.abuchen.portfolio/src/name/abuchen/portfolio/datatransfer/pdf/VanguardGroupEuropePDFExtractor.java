@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -34,21 +35,29 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung: Kauf");
+        DocumentType type = new DocumentType("Wertpapierabrechnung: (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Wertpapierabrechnung: Kauf$");
+        Block firstRelevantLine = new Block("^Wertpapierabrechnung: (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Wertpapierabrechnung: (?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         // @formatter:off
@@ -110,13 +119,22 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         // @formatter:off
+                        // Ordernummer 3403175
+                        // @formatter:on
+                        .section("note") //
+                        .match("^Ordernummer (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ord.-Nr.: " + trim(v.get("note"))))
+
+                        // @formatter:off
                         // Referenznummer 12345678
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Referenznummer .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .match("^Referenznummer (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + trim(v.get("note")), " | ")))
 
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendTransaction()
@@ -133,9 +151,9 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
                         })
 
                         // @formatter:off
@@ -217,23 +235,25 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kapitalertragsteuer EUR -5,78
+                        // Kapitalertragsteuer EUR 0,28
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertrag(s)?steuer (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag EUR -0,31
+                        // Solidaritätszuschlag EUR 0,01
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer EUR 0,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kirchensteuer (?<currency>[\\w]{3}) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^Kirchensteuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }

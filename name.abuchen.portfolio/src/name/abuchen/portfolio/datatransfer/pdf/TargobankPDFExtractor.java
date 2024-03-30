@@ -418,7 +418,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     }
 
     @Override
-    public List<Item> postProcessing(List<Item> items)
+    public void postProcessing(List<Item> items)
     {
         // Filter transactions by sell transactions
         List<Item> sellTransactionList = items.stream() //
@@ -607,7 +607,5 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                     iter.remove();
             }
         }
-
-        return items;
     }
 }

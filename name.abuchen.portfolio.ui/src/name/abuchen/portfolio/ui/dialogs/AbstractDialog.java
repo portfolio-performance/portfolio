@@ -22,7 +22,7 @@ public abstract class AbstractDialog extends Dialog
 
     private BindingHelper bindings;
 
-    public AbstractDialog(Shell parentShell, String title, Model model)
+    protected AbstractDialog(Shell parentShell, String title, Model model)
     {
         super(parentShell);
         this.title = title;

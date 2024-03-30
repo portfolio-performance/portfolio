@@ -1,5 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -922,5 +932,49 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.59))));
         assertThat(transaction.getSource(), is("Zinsabrechnung01.txt"));
         assertThat(transaction.getNote(), is("Zinsabrechnung 05.09.2022 - 31.12.2022"));
+    }
+
+    @Test
+    public void testKontoauszug01()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-03-31"), hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-06-30"), hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-09-29"), hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-12-29"), hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("CHF", 127.85), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 18.56), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
     }
 }

@@ -1,0 +1,168 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2
+-----------------------------------------
+305 200 37
+Renault BRanekn daiurelktt B   a   n  k    d  i  r e   k  t                                                   
+                                                                                             
+                                KONTOAUSZUG  Nr. 3/2020
+                                                Seite 1
+                                                       
+                                                                            Kontonummer: 470 700 100
+                                                                            Bankleitzahl: 305 200 37
+                                                                   IBAN: DE38 3052 0037 0480 8002 00
+                                                                                    BIC: RCIDDE3NPAY
+Herrn                                                                                               
+Max Muster                                                                             Kontokorrent
+Musterstr. 2                                                                   erstellt am 31.08.2020
+04668 Musterhausen                                                                                      
+                                                       ___________________________________
+                                                             _ _  __  __IH_R__ _KO_N__T_OS__T_AN__D _A_U_F_ _E__I_N_E_N _B__L_IC__K
+                                                 
+                                                       alt (31.07.2020)         13.242,85+
+                                         FIL:000       neu (31.08.2020)         11.214,67+
+                                                                 
+_ _ _ _ _ _  __  __  __ _ _ _ _ _  __ _  __  __  __  _ __ _ _  __  _ __  _ _ _ __ _ _ _ _  __ _ _  __ _ _  __ _  _ _ __  __  __ _ _ _  _ __ _ _ _  __ _  _ _ __  __  __ _ _ _ _ _  __  __  _ _ __ _ _ _                                 FA0724339500SL         00  
+D_A__TU_M_ __ _ B__UC_H_U_N_G__SV__O_R_G_A_N_G_ _  __ _ _ _ _ _ _ _  __ _  __ _  _ _ __ _ _ _ _  __  _ __ _ _ _ _ _  _ __ _ _ _ _ _  _ _ __  _ __  __ _  _ _ _ _S_O__LL_ _ _ _ __  _ _ _ _ _ __H_AB__EN_ 
+ __ _  __  _ _ __A_L_T_E_R_ _K_ON_T_O__S_T_AN__D __VO_M_ _3_1_.__0_7.__2_02_0_ _I_N__ _E_UR__ _  _ _ _ _ _ _ __  _ _ _ _ _ __ _ _ _  _ _ __ _ _  _ _ _ _ _ __ _ _ _ _ _ _  _ __  _ __1_3_.2_4_2_,__85__+
+                                                                                                    
+04.08.  Internet-Euro-Überweisung                                            500,00-                
+        Max Muster                                                                                 
+        IBAN:DE30120300000054446078Datum: 04.08.20 Zeit: 00:09                                      
+        UFT    4707001 TAN 133152  Anlagedatum : 30.07.20                                           
+        Uhrzeit: 00:14             Ausführungstermin: 04.08.20                                      
+        Auszahlung 001 RenaultBank                                                                  
+07.08.  Internet-Euro-Überweisung                                            250,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000054446078                                      
+        Datum: 07.08.20 Zeit: 00:08UFT 0004707001 TAN 149717                                        
+        Auszahlung 002 RenaultBank                                                                  
+10.08.  Internet-Euro-Überweisung                                            400,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000054446078                                      
+        Datum: 09.08.20 Zeit: 23:05UFT 0004707001 TAN 016767                                        
+        Auszahlung 003 RenaultBank                                                                  
+13.08.  Dauerauftrag-Gutschrift                                                              616,00+
+        Max Muster                                                                                 
+        Barmenia PKV Abschlag                                                                       
+31.08.  Wertstellung: 30.08. Internet-Euro-Überweisung                     1.500,00-                
+        Max Muster                                                                                 
+        BIC:BYLADEM1001            IBAN:DE30120300000054446078                                      
+        Datum: 30.08.20 Zeit: 23:02UFT 0004707001 TAN 490375                                        
+        Auszahlung 004 RenaultBank                                                                  
+31.08.  Wertstellung: 30.08. Zinsen/Kontoführung                                               5,82+
+ __  __ _ _  __ _A_br_e__ch__nu_n__g_ v_o__m _ _3_1__._08__._20_2__0 __  _ __ _ _ _  __  __ _ _ _ _ _ _ _ _  _ __  __  _ __ _ _  _ __ _ _ _ _  __ _  _ __ _ _  _ _ __  __  _ __ _ _  _ _ __ _  _ _ _ __ 
+        GESAMTUMSATZ                                                       2.650,00-         621,82+
+_  __ _ _  __  __N_E_U_E_R_ _K_O_NT__OS__TA_N__D_ V_O_M__ _31_._0_8__._2_0_20_ _I_N_ _E_U__R __  _ __ _  __  _ _ __ _  _ _ _ _ _ __ _ _  _ _ _ _ __ _ _ _ _ _ _ _  _ __ _ _ _ _ _ _ _1_1_.2_1__4_,_67__+
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                     
+305 200 37
+Renault BRanekn daiurelktt B   a   n  k    d  i  r e   k  t                                                   
+                                                                                             
+                                             MITTEILUNG
+                                                       
+                                                       
+                                                                            Kontonummer: 470 700 100
+                                                                            Bankleitzahl: 305 200 37
+                                                                   IBAN: DE38 3052 0037 0480 8002 00
+                                                                                    BIC: RCIDDE3NPAY
+Herrn                                                                                               
+Max Muster                                                                             Kontokorrent
+Musterstr. 2                                                                   erstellt am 31.08.2020
+04668 Musterhausen                                                                                      
+                                                                                          
+                                                                                                                                   
+                                                 
+                                                                                          
+                                         FIL:000                                          
+                                                                 
+                                                                                                                                    FA0724339500SL         00  
+                                                                                                                                    FA0724339500SL         00  
+                                                                                                     
+                                                                                                    
+ __ _  _ _ _ _ _ _ __  _ __  _ __ _  __ _  __ _ _ _  __ _ _  _ __ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  __ _ _ _ _ _ _ _ _ _ _ _ _  _ __ _ _ _ _ _ _ _ _  _ __ _ _ _ _  _
+                                                                                                    
+R E C H N U N G S A B S C H L U S S   (siehe Rückseite)                                             
+30.07.-30.08.   0,550% Habenzinsen                                              5,82+               
+                                                                ---------------------               
+                       Summe Zinsen/Kontoführung                EUR             5,82+               
+                       Abschlusssaldo am    31.08.2020: 11.214,67 EUR                               
+_  _ _ _ __  _ _ _ _ __  _ __  _ _ _ _ _ __  __H_ab_e__nz__i_n_se__n_ _si_n__d_ s__t_e_u_e_rp__f_l_ic_h__ti__g_ _! __  __  _ __  _ __ _  __ _ _ _ _  __  __ _ _ _ _  _ _ _ __  _ _ _ __  _ _ __  _ _ __ 
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+Sehr geehrte Kundin, sehr geehrter Kunde, 
+bitte prüfen Sie die vorstehenden Angaben auf ihre Vollständigkeit und Richtigkeit des Saldos und beachten
+Sie dabei die nachfolgenden Anmerkungen.
+Für die Zinsabrechnung verwenden wir, wie für alle Umsätze, das Datum der Wertstellung. Wird keine
+Wertstellung ausgewiesen, so gilt das Buchungsdatum als Wertstellungsdatum.
+Gegebenenfalls ausgewiesene Bankdienstleistungen sind steuerfrei, sofern nichts Abweichendes angegeben
+ist.
+Soweit die vorstehende Aufstellung mit dem Hinweis "Rechnungsabschluss" gekennzeichnet ist, haben wir für
+Ihr Konto einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum ggf. 
+entstandenen beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach
+dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraums
+auswirken, werden erst in der folgenden Abrechnung berücksichtigt. Korrekturen, die sich auf Zinsen beziehen,
+werden entsprechend gekennzeichnet.
+Einwendungen gegen Angaben im Kontoauszug oder den ausgewiesenen Saldo sind unverzüglich, spätestens
+jedoch innerhalb von sechs Wochen nach Zugang des Kontoauszugs ausschließlich der Innenrevision der
+Renault Bank direkt (Postfach 269, 45952 Gladbeck) schriftlich zur Kenntnis zu geben. Nach Ablauf dieser Frist
+gehen wir davon aus, dass Sie mit der Vollständigkeit und Richtigkeit der Angaben und des Saldos
+einverstanden sind.
+Vom Kunden erteilte Einzugsaufträge betreffend Lastschriften von seinem Referenzkonto werden unter dem
+Vorbehalt des Eingangs gutgeschrieben.
+Bitte beachten Sie: Kapitalerträge sind einkommensteuerpflichtig.
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der
+Einlagen (Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem
+französischen Einlagensicherungsfonds angeschlossen. Die französische Einlagensicherung sichert Einlagen in
+derselben Höhe ab wie die gesetzliche deutsche Einlagensicherung: Bis 100.000 EURO pro Person sind zu 100
+Prozent abgesichert.
+Nähere Informationen können Sie dem "Informationsbogen für den Einleger" entnehmen. Diesen finden sie auf
+unserer Webseite unter dem Menüpunkt: AGB.
+
+```

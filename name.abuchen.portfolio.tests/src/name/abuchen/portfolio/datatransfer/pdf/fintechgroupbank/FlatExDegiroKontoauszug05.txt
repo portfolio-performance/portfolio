@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+flatexDEGIRO Bank AG
+Kundenservice
+Opernring 1 / Top 736
+1010 Wien
+Tel.: +43 - (0)720 518 777
+Mail: info@flatex.at
+flatexDEGIRO Bank AG -  Opernring 1 / Top 736 -  A-1010 Wien
+                  Wien, 02.01.2024
+4408813853733108733847
+Herrn
+ZnEg NaHfBiUoN
+AYHqaLUKjzr 463k
+4528 FFLKTuHnK
+ÖSTERREICH
+Kontoauszug Nr:    004/2023                              Seite 1 von 7
+Kontonummer :     200000000007  dazugehörige IBAN:  AT54 0000 0000 0000 0042
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    30.09.2023                     in EUR            6.000,00+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+
+26.10.     25.10.  Gebühr Kapitaltransaktion Ausland                     5,90-
+                   US17275R1023                                               
+
+09.11.     09.11.  Überweisung                                      10.000,00+
+                   Code: SCOR - CreditorReference: ZnEg
+                   NaHfBiUoN 081123
+                   BAXXXXXXXXX
+                   AT000000000000000000
+                   ZnEg NaHfBiUoN
+                   KREF: PSSAAT091123000000000001591
+
+10.11.     10.11.  Überweisung                                      10.000,00+
+                   Code: SCOR - CreditorReference: ZnEg
+                   NaHfBiUoN 091123
+                   BAXXXXXXXXX
+                   AT000000000000000000
+                   ZnEg NaHfBiUoN
+                   KREF: PSSAAT101123000000000000072
+
+
+
+01.12.     01.12.  Gebühr Kapitaltransaktion Ausland                     5,90-
+                   JP3756600007

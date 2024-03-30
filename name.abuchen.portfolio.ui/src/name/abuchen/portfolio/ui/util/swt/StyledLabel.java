@@ -258,13 +258,11 @@ public class StyledLabel extends Canvas // NOSONAR
     private void handlePaint(Event e)
     {
         this.textLayout.draw(e.gc, 0, 0);
-        e.type = SWT.None;
     }
 
     private void handleDispose(Event e)
     {
         this.textLayout.dispose();
-        e.type = SWT.None;
     }
 
     private void openBrowser(Event event)

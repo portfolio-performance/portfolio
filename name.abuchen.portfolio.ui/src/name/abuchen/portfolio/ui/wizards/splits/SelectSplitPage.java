@@ -75,7 +75,7 @@ public class SelectSplitPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label labelSecurity = new Label(container, SWT.NONE);
+        Label labelSecurity = new Label(container, SWT.RIGHT);
         labelSecurity.setText(Messages.ColumnSecurity);
 
         List<Security> securities = model.getClient().getActiveSecurities();

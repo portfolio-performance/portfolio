@@ -22,6 +22,9 @@ public abstract class AbstractCSVExporter
 
     protected abstract Shell getShell();
 
+    private static final String[] FILTER_NAMES = { Messages.CSVImportLabelFileCSV };
+    private static final String[] FILTER_EXTS = { "*.csv" }; //$NON-NLS-1$
+
     protected abstract void writeToFile(File file) throws IOException;
 
     public void export(Object... labels)
@@ -48,6 +51,8 @@ public abstract class AbstractCSVExporter
     {
         FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
         dialog.setFileName(TextUtil.sanitizeFilename(fileName));
+        dialog.setFilterNames(FILTER_NAMES);
+        dialog.setFilterExtensions(FILTER_EXTS);
         dialog.setOverwrite(true);
         String name = dialog.open();
         if (name == null)

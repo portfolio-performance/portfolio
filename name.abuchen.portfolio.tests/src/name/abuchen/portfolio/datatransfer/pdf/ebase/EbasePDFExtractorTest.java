@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf.ebase;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -16,8 +18,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -45,6 +49,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.EbasePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -59,6 +64,77 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class EbasePDFExtractorTest
 {
+    @Test
+    public void testDividende01()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US36829G1076"), hasWkn("A0J4TC"), hasTicker(null), //
+                        hasName("GAZPROM NEFT PJSC REG. SHS (SP.ADRS)/5 RL-,0016"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-26T00:00"), hasShares(180), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 70418365490"), //
+                        hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
+                        hasForexGrossValue("USD", 120.92), //
+                        hasTaxes("EUR", 15.37), hasFees("EUR", 3.05))));
+    }
+
+    @Test
+    public void testDividende01WithSecurityInEUR()
+    {
+        Security security = new Security("GAZPROM NEFT PJSC REG. SHS (SP.ADRS)/5 RL-,0016", CurrencyUnit.EUR);
+        security.setIsin("US36829G1076");
+        security.setWkn("A0J4TC");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        EbasePDFExtractor extractor = new EbasePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-07-26T00:00"), hasShares(180), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 70418365490"), //
+                        hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
+                        hasTaxes("EUR", 15.37), hasFees("EUR", 3.05), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
     @Test
     public void testUmsatzabrechnung01()
     {
@@ -5173,6 +5249,171 @@ public class EbasePDFExtractorTest
     }
 
     @Test
+    public void testUmsatzabrechnung30()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung30.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(6));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0032077012"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYML9W36"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI S&P 500 ETF Reg.Shares Dist o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-26T00:00"), hasShares(0.047550), //
+                        hasSource("Umsatzabrechnung30.txt"), //
+                        hasNote("Ref.-Nr.: 0400010911/22092023 | Wiederanlage Fondsertrag"),
+                        hasAmount("USD", 17.05), hasGrossValue("USD", 17.05), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-26T00:00"), hasShares(0.130878), //
+                        hasSource("Umsatzabrechnung30.txt"), //
+                        hasNote("Ref.-Nr.: 0400010223/22092023 | Wiederanlage Fondsertrag"),
+                        hasAmount("EUR", 4.96), hasGrossValue("EUR", 4.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 1st dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-22T00:00"), hasShares(54.479737), //
+                        hasSource("Umsatzabrechnung30.txt"), //
+                        hasNote("Ref.-Nr.: 2210868091/45619741"), //
+                        hasAmount("USD", 17.05), hasGrossValue("USD", 20.91), //
+                        hasTaxes("USD", 3.86), hasFees("USD", 0.00))));
+
+        // check 2nd dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-22T00:00"), hasShares(38.873327), //
+                        hasSource("Umsatzabrechnung30.txt"), //
+                        hasNote("Ref.-Nr.: 0400008188/22092023"), //
+                        hasAmount("EUR", 4.96), hasGrossValue("EUR", 6.08), //
+                        hasTaxes("EUR", 1.07 + 0.05), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testUmsatzabrechnung31()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung31.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(4));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2023678282"), hasWkn(null), hasTicker(null), //
+                        hasName("Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-14T00:00"), hasShares(3.395511), //
+                        hasSource("Umsatzabrechnung31.txt"), //
+                        hasNote("Ref.-Nr.: 0400001111/13072023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-15T00:00"), hasShares(3.524447), //
+                        hasSource("Umsatzabrechnung31.txt"), //
+                        hasNote("Ref.-Nr.: 0400011111/14082023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-09-15T00:00"), hasShares(3.508340), //
+                        hasSource("Umsatzabrechnung31.txt"), //
+                        hasNote("Ref.-Nr.: 0400001111/14092023 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+    }
+
+    @Test
+    public void testUmsatzabrechnung32()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung32.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(6));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0328476410"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.S&P Select Frontier Swap Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-04T00:00"), hasShares(2.959297), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 400014734/03052021 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-31T00:00"), hasShares(2.885220), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 400012542/28052021 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-06-18T00:00"), hasShares(2.043934), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021 | Ausgang externer Übertrag"), //
+                        hasAmount("EUR", 28.64), hasGrossValue("EUR", 28.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check delivery outbound transaction
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2021-06-18T00:00"), hasShares(266), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021"), //
+                        hasAmount("EUR", 3736.08), hasGrossValue("EUR", 3736.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check delivery outbound transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-06-16T00:00"), hasShares(266), //
+                        hasSource("Umsatzabrechnung32.txt"), //
+                        hasNote("Ref.-Nr.: 708/17062021 | Depotführungsentgelt | VL-Vertragsentgelt"), //
+                        hasAmount("EUR", 12.00 + 7.50), hasGrossValue("EUR", 12.00 + 7.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotStatement01()
     {
         EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
@@ -5233,35 +5474,19 @@ public class EbasePDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement03.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(2L));
-        assertThat(countBuySell(results), is(2L));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results, hasItem(security( //
-                        hasIsin("IE0032077012"), hasWkn(null), hasTicker(null), //
-                        hasName("InvescoMI3 NASDAQ100 ETF Registered Shares Dis o.N."), //
-                        hasCurrencyCode("USD"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-04-06"), hasAmount("EUR", 5000.00), //
+                        hasSource("DepotStatement03.txt"), hasNote("SEPA Überweisung Gutschrift | Ref.-Nr.: 013015328"))));
 
-        assertThat(results, hasItem(dividend(hasDate("2023-09-22"), hasAmount("USD", 17.05), //
-                        hasTaxes("USD", 3.86), hasSource("DepotStatement03.txt"),
-                        hasNote("Ref.-Nr.: 2210868091/45619741"))));
-
-        assertThat(results, hasItem(purchase(hasDate("2023-09-26"), hasAmount("USD", 17.05), //
-                        hasShares(0.047550), hasSource("DepotStatement03.txt"),
-                        hasNote("Ref.-Nr.: 0400010911/22092023 | Wiederanlage Fondsertrag"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin("IE00BYML9W36"), hasWkn(null), hasTicker(null), //
-                        hasName("InvescoMI S&P 500 ETF Reg.Shares Dist o.N."), //
-                        hasCurrencyCode("USD"))));
-
-        assertThat(results, hasItem(dividend(hasDate("2023-09-22"), hasAmount("EUR", 4.96), //
-                        hasSource("DepotStatement03.txt"), hasNote("Ref.-Nr.: 0400008188/22092023"))));
-
-        assertThat(results, hasItem(purchase(hasDate("2023-09-26"), hasAmount("EUR", 4.96), //
-                        hasShares(0.130878), hasSource("DepotStatement03.txt"),
-                        hasNote("Ref.-Nr.: 0400010223/22092023 | Wiederanlage Fondsertrag"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-04-07"), hasAmount("EUR", 10000.00), //
+                        hasSource("DepotStatement03.txt"), hasNote("SEPA Überweisung Gutschrift | Ref.-Nr.: 013017353"))));
     }
 
     @Test
@@ -5274,38 +5499,18 @@ public class EbasePDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotStatement04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(3L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(4));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results, hasItem(security( //
-                        hasIsin("LU2023678282"), hasWkn(null), hasTicker(null), //
-                        hasName("Lyx.Idx Fd-Dis.Tech.(DR) U.ETF Act. Nom. USD Acc. oN"), //
-                        hasCurrencyCode("EUR"))));
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-06-21"), hasAmount("EUR", 1231.37), //
+                        hasSource("DepotStatement04.txt"), hasNote("SEPA Überweisung | Ref.-Nr.: 014852180"))));
 
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2023-07-14T00:00"), hasShares(3.395511), //
-                        hasSource("DepotStatement04.txt"), //
-                        hasNote("Ref.-Nr.: 0400001111/13072023 | vermögenswirksame Leistungen"), //
-                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-15T00:00"), hasShares(3.524447), //
-                        hasSource("DepotStatement04.txt"), //
-                        hasNote("Ref.-Nr.: 0400011111/14082023 | vermögenswirksame Leistungen"), //
-                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2023-09-15T00:00"), hasShares(3.508340), //
-                        hasSource("DepotStatement04.txt"), //
-                        hasNote("Ref.-Nr.: 0400001111/14092023 | vermögenswirksame Leistungen"), //
-                        hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2021-06-21"), hasAmount("EUR", 2.50), //
+                        hasSource("DepotStatement04.txt"), hasNote("Entgeltbuchung | Ref.-Nr.: 014852181"))));
     }
 }

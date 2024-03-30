@@ -1,0 +1,114 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+Tagesgeld Plus
+EUR-Konto Kontonummer 10 0754037
+Raiffeisenbank im Hochtaunus eG
+Postfach 2119, 61291 Bad Homburg v. d. Höhe Kontoauszug Nr.  6/2023
+erstellt am 29.12.2023 22:54 Blatt  1 von 2
+IBAN: DE48 5006 1741 0100 7540 37 BIC: GENODE51OBU
+Herrn
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.11.2023  29.500,00 H
+01.12. 01.12. UEBERWEISUNG PN:812 100,00 S
+ Max Muster
+ Auszahlung 0007 VR-HT MeineBank TAN1:038094 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+06.12. 06.12. UEBERWEISUNG PN:812 400,00 S
+ Max Muster
+ Auszahlung 0008 VR-HT MeineBank TAN1:153791 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+11.12. 11.12. UEBERWEISUNG PN:812 900,00 S
+ Max Muster
+ Auszahlung 0009 VR-HT MeineBank TAN1:750733 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+13.12. 13.12. UEBERWEISUNG PN:812 700,00 S
+ Max Muster
+ Auszahlung 0010 VR-HT MeineBank TAN1:542395 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+14.12. 14.12. UEBERWEISUNG PN:812 5.400,00 S
+ Max Muster
+ Auszahlung 0011 VR-HT MeineBank TAN1:174428 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+29.12. 31.12. Abschluss lt. Anlage 1 PN:905 534,59 H
+29.12. 31.12. Solid.-Zuschlag aus PN:905 0,46 S
+ EUR 8,46-KapSt per 29.12.2023 KT 100754038
+29.12. 31.12. Kirchensteuer aus PN:905 0,76 S
+ EUR 8,46-KapSt per 29.12.2023 KT 100754038
+29.12. 31.12. Kapitalertragsteuer aus PN:905 8,46 S
+ EUR 34,59 Habenzins per 29.12.2023 KT 100754038
+29.12. 29.12. UEBERWEISUNG PN:812 10.000,00 S
+ Max Muster
+ Auszahlung 0012 VR-HT MeineBank TAN1:299162 IBAN: DE30
+ 120300000054446078 BIC: BYLADEM1001
+ neuer Kontostand vom 29.12.2023 12.524,91 H
+0636
+000
+K00021339
+5M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+Tagesgeld Plus
+EUR-Konto Kontonummer 10 0754037
+Max Muster
+Kontoauszug Nr.  6/2023
+erstellt am 29.12.2023 22:54 Blatt  2 von 2
+Bu-Tag Wert Vorgang
+Anlage 1
+Buchungstag: 29.12.2023
+Wert: 31.12.2023
+Kontoabschluss vom 19.06.2023 bis 31.12.2023 für Konto 10 0754037
+ 3,55000% HABENZINSEN bis 19.12. 518,48 H
+ 2,50000% HABENZINSEN bis 31.12. 16,11 H
+Rechnung Nr. 0100754037.20231231.002
+USt. IdNr. - DE 114104564
+USt.-befreite Finanzdienstleistung
+> Kapitalertragsteuer 8,46 S
+> aus 34,59 Habenzins
+> Solidaritätszuschlag 0,46 S
+> Kirchensteuer 0,76 S
+ Summe Abschlussposten in EUR 534,59 H
+0636
+000
+K00021339 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B. per E-Mail oder Brief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank
+
+```

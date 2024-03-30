@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Kreissparkasse Heidenheim · Postfach 1540 · 89505 Heidenheim  Seite 1
+Depotnummer
+ 123456754323
+ Kundennummer 12345676543
+ xxxx xxxxAbrechnungsnr. 123456543
+Herrn Datum 15.12.2023
+xxxx xxxx Ihr Berater Herr xxxx xxxx
+xxxxxxxxx Telefon 07321 344-0000 
+12345 xxxxx Telefax 07321 344-000000 
+ 
+   
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 47 MICROSOFT CORP. US5949181045 (870747)
+REGISTERED SHARES DL-,00000625
+Zahlbarkeitstag 14.12.2023 Dividende pro Stück 0,75 USD
+Bestandsstichtag 14.11.2023 Herkunftsland USA
+Ex-Tag 15.11.2023 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.07.2022 - 30.06.2023
+Devisenkurs EUR / USD 1,1019
+Devisenkursdatum 15.12.2023
+Dividendengutschrift 35,25 USD 31,99+ EUR
+Umrechnung in EUR 31,99 EUR
+Einbehaltene Quellensteuer 15 % auf 35,25 USD 4,80- EUR
+Anrechenbare Quellensteuer 15 % auf 31,99 EUR 4,80 EUR
+Kapitalertragsteuerpflichtige Dividende 31,99 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 4,80 EUR 19,20 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 12,79 EUR
+Kapitalertragsteuer 24,51 % auf 12,79 EUR 3,13- EUR
+Solidaritätszuschlag 5,5 % auf 3,13 EUR 0,17- EUR
+Kirchensteuer 8 % auf 3,13 EUR 0,25- EUR
+Ausmachender Betrag 23,64+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 18.12.2023 zu Gunsten des Kontos xxxx (IBAN DE11 1111 1111 1111 1111
+11), BLZ 632 500 30 (BIC SOLADES1HDH). 
+Bitte ggf. Rückseite beachten.
+2332.12160100.0000272ER01
+
+Seite 2
+Depotnummer xxxxxxx
+Kundennummer xxxxxx
+Abrechnungsnr. 84953682750
+Datum 15.12.2023
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 789,96
+Ertrag 4,80
+0,00 0,00 0,00 4,80- 12,79
+Nachher 0,00 0,00 0,00 0,00 802,75
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2332.12160100.0000273ER01

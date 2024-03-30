@@ -51,7 +51,7 @@ public final class EODHistoricalDataQuoteFeed implements QuoteFeed
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now().minusDays(5));
 
         if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+            PortfolioLog.abbreviated(data.getErrors());
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())

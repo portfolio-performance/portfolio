@@ -1,0 +1,112 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/3
+Berlin
+jeMVIIzt aNwIf 24.01.2024
+ARNIKdlQYjj 38
+zcnjpkah ZQeWF
+89600 VxYlpiW PF 02
+Stamm-Nr.: 5767509    Portfolio: 8
+Depot-Nr.: 8332124336
+Vorgangs-Nr.: 48619947
+Referenz-Nr.: 033294508
+Buchungsanzeige
+Fusion / Zusammenlegung
+Ausbuchung aus Depot 1686005753 per 18.01.2024
+Nominale ISIN: LU1861134382 WKN: A2JSDA
+STK 277,691 AIS-AM.WORLD SRI PAB
+Act.Nom. UCITS ETF DR (C)o.N.
+Einbuchung in Depot 1837966841 per 18.01.2024
+Nominale ISIN: IE000Y77LGG9 WKN: ETF143
+STK 277,691 Am.ETF-MSCI W.SRI CL.N.Z.AM.P.
+Bear.Shs EUR Acc. oN
+Verhältnis: 1 : 1 
+Kapitalertragsteuer EUR 338,76 -
+Solidaritätszuschlag EUR 18,63 -
+Zu Lasten Konto 6960880181 Valuta: 18.01.2024 EUR 357,39
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fusion / Zusammenlegung
+Fortsetzung: Seite 2/3
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Kapitalertragsteuer EUR 238,62 EUR 338,76 EUR 577,38
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräußerungsergebnis vor Teilfreistellung Aktienfonds EUR 1.935,78 EUR 1.355,05
+Veräußerungsergebnis Teilfreistellung 30% EUR 580,73 - EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 1.355,05 EUR 1.355,05
+Bemessungsgrundlage zur Kapitalertragsteuer
+Kapitalertragsteuer 25,00 %
+EUR 338,76 - EUR 338,76 -
+Solidaritätszuschlag 5,50 %
+EUR 18,63 - EUR 18,63 -
+Ausbuchung
+Stück 277,691 AIS-AM.WORLD SRI PAB
+ISIN: LU1861134382
+Kurs: EUR 86,8289
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP-Einlief. mit AK 241612678 30.06.2021 STK 15 1.126,50 1.302,43 175,93
+WP-Einlief. mit AK 241612678 01.07.2021 STK 10,911 825,00 947,39 122,39
+WP-Einlief. mit AK 241612678 08.07.2021 STK 25 1.887,50 2.170,72 283,22
+WP-Einlief. mit AK 241612678 02.08.2021 STK 10,663 825,00 925,86 100,86
+WP-Einlief. mit AK 241612678 01.09.2021 STK 10,31 825,00 895,21 70,21
+WP-Einlief. mit AK 241612678 01.10.2021 STK 10,749 825,00 933,32 108,32
+WP-Einlief. mit AK 241612678 01.11.2021 STK 9,731 825,00 844,93 19,93
+WP-Einlief. mit AK 241612678 01.12.2021 STK 9,647 825,00 837,64 12,64
+WP-Einlief. mit AK 241612678 03.01.2022 STK 9,318 825,00 809,07 15,93 -
+WP-Einlief. mit AK 241612678 01.02.2022 STK 9,999 825,00 868,20 43,20
+WP-Einlief. mit AK 241612678 01.03.2022 STK 10,282 825,00 892,77 67,77
+WP-Einlief. mit AK 241612678 01.04.2022 STK 9,855 825,00 855,70 30,70
+WP-Einlief. mit AK 241612678 02.05.2022 STK 10,296 825,00 893,99 68,99
+WP-Einlief. mit AK 241612678 01.06.2022 STK 10,603 825,00 920,65 95,65
+WP-Einlief. mit AK 241612678 01.07.2022 STK 11,418 825,00 991,41 166,41
+WP-Einlief. mit AK 241612678 01.09.2022 STK 10,603 825,00 920,65 95,65
+WP-Einlief. mit AK 241612678 01.11.2022 STK 10,691 825,00 928,29 103,29
+WP-Einlief. mit AK 241612678 01.12.2022 STK 10,447 825,00 907,10 82,10
+WP-Einlief. mit AK 241612678 02.01.2023 STK 11,168 825,00 969,70 144,70
+WP-Einlief. mit AK 241612678 19.07.2023 STK 61 5.136,81 5.296,56 159,75
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fusion / Zusammenlegung
+Fortsetzung: Seite 3/3
+Einbuchung
+Stück 277,691 Am.ETF-MSCI W.SRI CL.N.Z.AM.P.
+ISIN: IE000Y77LGG9
+Kurs: EUR 86,8289
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Einbuchung CA 24330822 18.01.2024 STK 277,691 24.111,60
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

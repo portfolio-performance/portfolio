@@ -1,0 +1,190 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+Telefon   :   04106-708 25 00                                                  
+                                                                        
+                             
+                                       
+                             
+    10214 010
+Depotnr.:        1468461 00 
+            BLZ:             200 411 33
+Max Mustermann                
+                             
+                             
+Musterstr. 13                                        
+12345 Musterdorf                                          
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 22.02.2024                                                   
+                                                                                                                                    
+*
+Wertpapierverkauf                                                                                                                   
+Geschäftsnummer   : 92 031195                                                                                                       
+Ordernummer       : 000380590129-001  Rechnungsnummer   : 635722021545D2E5                                                          
+Geschäftstag      : 22.02.2024        Ausführungsplatz  : STUTTGART                                                                 
+Handelszeit       : 21:26 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Vontobel Financial Products                                              VP7G5K                                                     
+OEND.FAKTORZ 20(20/unl)3Long                                       DE000VP7G5K3                                                     
+Fälligkeit        : LAUFZEIT UNBEFRISTET/AUSLOSUNG/KUENDIGUNG         ODER                                                          
+                    RUECKKAUF MOEGLICH                                                                                              
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  17                   EUR  94,42                                                                                                
+                          Kurswert                    : EUR            1.605,14                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                9,90-                                                    
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50-                                                    
+                          Summe Entgelte              : EUR               12,40-                                                    
+--------------------------------------------------------------------------------                                                    
+Fremde Kosten                                                                                                                       
+                          Maklercourtage              : EUR                1,81-                                                    
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta        Zu Ihren Gunsten vor Steuern                                                    
+DE12 1234 1234 1234 1234 00   EUR     26.02.2024        EUR            1.590,93                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+Ihre Wertpapier-Order wurde über das Online Banking erteilt.                                                                        
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+Bei Fragen geben Sie bitte die Ordernummer an.                                                                                      
+                                                                                                                                    
+Ihre comdirect                                                                                                                      
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 114 103 514                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+123456  Max Mustermann                                     
+                                                  
+            
+200 411 33 Musterstr.  13                                123456 Musterdorf                                  
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+ c o  m   d  i r e  c  t                                    
+               
+2   5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  1  0214
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+                              
+ H  e  r r n                            D  a  t u  m   :                        2  2  . 0  2  .2024
+ M  a x   M u s t e r                   
+ D  e  p  o  t  n  u  m   m  er:         6  4  6  8  4  6 1 00  
+M   u s t e r  S  t r  .  1  3             
+123456 Musterdorf              R   e  f e  r e  n  z  - N   u mmer:    0  J I K   R  Q   5  T  7 XO0000C                               
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierverkauf Nr. 92031195 vom 22.02.2024                                                             
+Stk.              17 VONTOBEL OEND.FAKTORZ , WKN / ISIN: VP7G5K  / DE000VP7G5K3                                                   
+ Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R           1.590,9 3   
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e v o r V e r lu s tv e r re c h n u n g  ( 1 )                 E    U     R                                         1   6  7 , 4 7                          
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+i n A n s p ru c h  g e n o m m e n e r F r ei s te ll un g s a u ft ra g                                         E    U   R                             1   6  7 , 4 7                          
+                                                                                                                                
+ S te u e rb e m  e ss u n g s g r u n d la g e n a c h V e r lu s t ve r r ec h n u n g               E   U  R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+ K irc h e n s te u e r                                                                              _E  U_   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  _0 _, 0_ _0                          
+a b g e f ü h rt e S t e u er n                                                                                                                    E_ U_ R_ _ _ _ _ _ _ _ _  __ _ _  _ _0__,0_ 0_   
+                                                                                                                                
+ Zu  Ih r e n G u n s t e n n a c h S t e u er n :                                                                                                   E U R           1.590,9 3   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Gutschrift erfolgt mit Valuta 26.02.2024 auf Konto EUR mit der IBAN DE 12 1234 1234  1234  00                                                   
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Folgeseite                                                                  
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2024 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+2024 Gewinne / Verluste sonstige anrechenbare verfügbarerin aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+           0,0               0,0                0,0               0,0
+nach Ermittlung
+           0,0               0,0
+               0,0               0,0
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:                                                                                                             
+                                                                                                                                                                                    
+z u  Ih r e n G u n s te n  v o r  S te u e rn                                                                                                                                                          E  U R            1.590,93                           
+ An s  ch  af  f un  g v o  m  1 2.  0 2 .2  0 24               1 7  ,0 0  S  t üc k                       _E U_ R_ _ _ _ _ _ _ _ _ _ _ -_ 1_ ._ 4_ 2__3_,_4_6                                                   
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach                                                                                                      
+a b g e l tu n g s te u e rr e le v a n te m  S t ic h ta g                                                                                                                                                  E_  _U R__  __  __  _ _ __  __ -__1_.4_2__3_,4__6                           
+S  te u e r b e m e s s u n g s g r u n d la g e  v o r  V  er l u s tv e r re c h n u n g                                                                                                                   E  U R              167,47                           
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+Ihre comdirect                                                                                                                                        
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

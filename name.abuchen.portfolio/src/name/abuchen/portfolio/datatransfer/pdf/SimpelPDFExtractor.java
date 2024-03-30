@@ -16,13 +16,19 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Simpel S.A. is a Euro-based financial services company.
+ *           The currency of Simpel S.A. is always EUR.
+ *
+ * @implSpec There is no information about the shares in the dividend transactions in the document.
+ *           These are calculated for the respective transaction.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class SimpelPDFExtractor extends AbstractPDFExtractor
 {
-    /***
-     * Information:
-     * The currency of Simpel S.A. is always EUR.
-     */
 
     public SimpelPDFExtractor(Client client)
     {
@@ -46,63 +52,73 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
-        Block firstRelevantLine = new Block("^([\\s]+)?(Kauf|Verkauf) .*$");
+        Block firstRelevantLine = new Block("^.*(Kauf|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // Is type --> "Verkauf" change from BUY to SELL
-                .section("type").optional()
-                .match("^([\\s]+)?(?<type>(Kauf|Verkauf)) .*$")
-                .assign((t, v) -> {
-                    if ("Verkauf".equals(v.get("type")))
-                    {
-                        t.setType(PortfolioTransaction.Type.SELL);
-                    }
-                })
+        pdfTransaction //
 
-                // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
-                // AT0000A1QA38 10.01.2022 5.123
-                .section("name", "isin")
-                .match("^([\\s]+)?(Kauf|Verkauf) (?<name>.*) ['\\.\\d]+ \\p{Sc} ([\\s]+)?['\\.\\d]+ \\p{Sc} ([\\s]+)?[\\.\\d\\s]+$")
-                .match("^(?<isin>[\\w]{12}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ['\\.\\d]+$")
-                .assign((t, v) -> {
-                    v.put("currency", CurrencyUnit.EUR);
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
 
-                // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
-                // Verkauf Standortfonds Deutschland 880.29 € 133.58 € 6.590
-                .section("shares")
-                .match("^([\\s]+)?(Kauf|Verkauf) .* ['\\.\\d]+ \\p{Sc} ([\\s]+)?['\\.\\d]+ \\p{Sc} ([\\s]+)?(?<shares>[\\.\\d\\s]+)$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^.*(?<type>(Kauf|Verkauf)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
-                // AT0000A1QA38 10.01.2022 5.123
-                .section("date")
-                .match("^[\\w]{12} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ['\\.\\d]+$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        // @formatter:off
+                        // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
+                        // AT0000A1QA38 10.01.2022 5.123
+                        // @formatter:on
+                        .section("name", "isin") //
+                        .match("^.*(Kauf|Verkauf) (?<name>.*) [\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.EUR);
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
-                // Abrechnungsbetrag: 10.00 €
-                // Auszahlungsbetrag: 848.68 €
-                .section("amount")
-                .match("^(Abrechnungsbetrag|Auszahlungsbetrag): ([\\s]+)?(?<amount>['\\.\\d]+) \\p{Sc}$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
-                })
+                        // @formatter:off
+                        // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
+                        // Verkauf Standortfonds Deutschland 880.29 € 133.58 € 6.590
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^.*(Kauf|Verkauf) .* [\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+ \\p{Sc}[\\s]{1,}(?<shares>[\\.'\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // Auftrags-Nummer: 20220106123456789000000612345
-                .section("note").optional()
-                .match("^(?<note>Auftrags-Nummer: [\\d]+)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        // @formatter:off
+                        // AT0000A1QA38 10.01.2022 5.123
+                        // @formatter:on
+                        .section("date") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.'\\d]+$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                .wrap(BuySellEntryItem::new);
+                        // @formatter:off
+                        // Abrechnungsbetrag: 10.00 €
+                        // Auszahlungsbetrag: 848.68 €
+                        // @formatter:on
+                        .section("amount") //
+                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag):[\\s]{1,}(?<amount>[\\.'\\d]+) \\p{Sc}$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                        })
+
+                        // @formatter:off
+                        // Auftrags-Nummer: 20220106123456789000000612345
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Auftrags-Nummer: [\\d]+)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
@@ -112,84 +128,98 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Aussch.ttungsanzeige");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^.* Aussch.ttungsanzeige$");
-        type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>()
-            .subject(() -> {
-                AccountTransaction entry = new AccountTransaction();
-                entry.setType(AccountTransaction.Type.DIVIDENDS);
-                return entry;
-            });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        pdfTransaction
-                // Fondsname: Standortfonds Deutschland Datum des Ertrags: 21.12.2021
-                // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
-                .section("name", "isin")
-                .match("^Fondsname: (?<name>.*) Datum .*$")
-                .match("^WKN \\/ ISIN: (?<isin>[\\w]{12}) .*$")
-                .assign((t, v) -> {
-                    v.put("currency", CurrencyUnit.EUR);
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+        Block firstRelevantLine = new Block("^.* Aussch.ttungsanzeige$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-                // There is no information about the proportions in the
-                // documents. In this section we calculate the shares
-                // for the respective transaction.
+        pdfTransaction //
 
-                // Ausschüttung je Anteil: 2.71
-                // Ausschüttung gesamt: 17.58
-                .section("amountPerShare", "gross")
-                .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$")
-                .match("^Aussch.ttung gesamt: (?<gross>['\\.\\d]+)$")
-                .assign((t, v) -> {
-                    BigDecimal amountPerShare = asExchangeRate(v.get("amountPerShare"));
-                    BigDecimal amountTotal = asExchangeRate(v.get("gross"));
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
 
-                    int sharesPrecision = Values.Share.precision() * 2;
-                    BigDecimal shares = amountTotal.divide(amountPerShare, sharesPrecision,
-                                    RoundingMode.HALF_UP);
+                        // @formatter:off
+                        // Fondsname: Standortfonds Deutschland Datum des
+                        // Ertrags: 21.12.2021
+                        // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
+                        // @formatter:on
+                        .section("name", "isin") //
+                        .match("^Fondsname: (?<name>.*) Datum .*$") //
+                        .match("^WKN \\/ ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.EUR);
 
-                    t.setShares(asShares(shares.toPlainString()));
-                })
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
-                // Fondsname: Standortfonds Deutschland Datum des Ertrags: 21.12.2021
-                .section("date")
-                .match("^Fondsname: .* Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        // @formatter:off
+                        // Ausschüttung je Anteil: 2.71
+                        // Ausschüttung gesamt: 17.58
+                        // @formatter:on
+                        .section("amountPerShare", "gross") //
+                        .match("^Aussch.ttung je Anteil: (?<amountPerShare>[\\.'\\d]+)$") //
+                        .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            BigDecimal amountPerShare = asExchangeRate(v.get("amountPerShare"));
+                            BigDecimal amountTotal = asExchangeRate(v.get("gross"));
 
-                // Zur Wiederveranlagung zur Verfügung stehend: 13.30
-                // Zur Wiederanlage/Auszahlung zur Verfügung stehend: 173.37
-                .section("amount")
-                .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>['\\.\\d]+)$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
-                })
+                            int sharesPrecision = Values.Share.precision() * 2;
+                            BigDecimal shares = amountTotal.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
 
-                // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
-                .section("note").optional()
-                .match("^.* (?<note>Turnus: .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                            t.setShares(asShares(shares.toPlainString()));
+                        })
 
-                .wrap(TransactionItem::new);
+                        // @formatter:off
+                        // Fondsname: Standortfonds Deutschland Datum des
+                        // Ertrags: 21.12.2021
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Fondsname: .* Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Zur Wiederveranlagung zur Verfügung stehend: 13.30
+                        // Zur Wiederanlage/Auszahlung zur Verfügung stehend: 173.37
+                        // @formatter:on
+                        .section("amount") //
+                        .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                        })
+
+                        // @formatter:off
+                        // WKN / ISIN: AT0000A1Z882 Turnus: jährlich
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.* (?<note>Turnus: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // abgeführte Kapitalertragssteuer: 31.61 €
-                .section("tax").optional()
-                .match("^abgef.hrte Kapitalertragssteuer: (?<tax>['\\.\\d]+) \\p{Sc}$")
-                .assign((t, v) -> processTaxEntries(t, v, type))
+        transaction //
 
-                // Kapitalertragssteuer (KESt) gesamt: 4.28
-                .section("tax").optional()
-                .match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>['\\.\\d]+)$")
-                .assign((t, v) -> processTaxEntries(t, v, type));
+                        // @formatter:off
+                        // abgeführte Kapitalertragssteuer: 31.61 €
+                        // @formatter:on
+                        .section("tax").optional()
+                        .match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\.'\\d]+) \\p{Sc}$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kapitalertragssteuer (KESt) gesamt: 4.28
+                        // @formatter:on
+                        .section("tax").optional().match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$")
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     @Override
@@ -202,11 +232,5 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
-    }
-
-    @Override
-    protected BigDecimal asExchangeRate(String value)
-    {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

@@ -237,7 +237,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        records = new TableViewer(container, SWT.FULL_SELECTION);
+        records = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         recordColumns = new ShowHideColumnHelper(SecuritiesPerformanceView.class.getName(), getClient(),
                         getPreferenceStore(), records, layout);
 

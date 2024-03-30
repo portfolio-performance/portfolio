@@ -652,71 +652,75 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Spitzenregulierung .*[\\.,\\d+] [\\w]{3}");
+        DocumentType type = new DocumentType("Spitzenregulierung in [A-Z]{2}[A-Z0-9]{9}[0-9]", //
+                        "Kontoauszug");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        });
 
-        Block firstRelevantLine = new Block("^Kundenservice:$");
+        Block firstRelevantLine = new Block("^Kundenservice(:)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // @formatter:off
-                // WKN     ISIN          Wertpapierbezeichnung           Anzahl
-                // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
-                // Spitzenregulierung                                                    5,86 EUR
-                // @formatter:on
-                .section("wkn", "isin", "name", "currency")
-                .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*")
-                .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+.*$")
-                .match("^Spitzenregulierung .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+        pdfTransaction //
 
-                // @formatter:off
-                // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
-                // @formatter:on
-                .section("shares")
-                .match("^[A-Z0-9]{6} ([\\s]+)?[A-Z]{2}[A-Z0-9]{9}[0-9] ([\\s]+)?.* ([\\s]+)?(?<shares>[\\.,\\d]+).*$")
-                .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
+                            return portfolioTransaction;
+                        })
 
-                // @formatter:off
-                //     Frankfurt am Main,  22.06.2020
-                // @formatter:on
-                .section("date")
-                .match("^.*, ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
-                .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                        // Spitzenregulierung                                                    5,86 EUR
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+.*$") //
+                        .match("^Spitzenregulierung .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                // @formatter:off
-                // Verrechnung über Ihr Konto: 1009999999 Gutschrift                     5,86 EUR
-                // @formatter:on
-                .section("currency", "amount")
-                .match("^.* Gutschrift([\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$")
-                .assign((t, v) -> {
-                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                    t.setAmount(asAmount(v.get("amount")));
-                })
+                        // @formatter:off
+                        // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .*[\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                // @formatter:off
-                // Spitzenregulierung in CA05156X1087
-                // @formatter:on
-                .section("note")
-                .match("^(?<note>Spitzenregulierung in .*)$")
-                .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        // @formatter:off
+                        //     Frankfurt am Main,  22.06.2020
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.*,[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
-                .wrap((t, ctx) -> {
-                    BuySellEntryItem item = new BuySellEntryItem(t);
+                        // @formatter:off
+                        // Verrechnung über Ihr Konto: 1009999999 Gutschrift                     5,86 EUR
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^.* Gutschrift[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
-                    if (ctx.getString(FAILURE) != null)
-                        item.setFailureMessage(ctx.getString(FAILURE));
+                        // @formatter:off
+                        // Spitzenregulierung in CA05156X1087
+                        // @formatter:on
+                        .section("note") //
+                        .match("^(?<note>Spitzenregulierung in .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                    return item;
-                });
+                        // @formatter:off
+                        // Transaktions-Nr.                                                3291805526
+                        // Transaktionsnummer: 921414163
+                        // @formatter:on
+                        .section("note").optional()//
+                        .match("^.*(?<note>Transaktions\\-Nr\\.([:\\s]+)? [\\d]+).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note")), " | ")))
+
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1534,16 +1538,34 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
                                                                         + "(?<note>Depotservicegeb.hr .*" //
                                                                         + "|flatex trader [\\d]\\.[\\d] Basis" //
-                                                                        + "|Geb.hr .*)" //
+                                                                        + "|Geb.hr Tax Voucher.*)" //
                                                                         + "[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
-                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 26.10.     25.10.  Gebühr Kapitaltransaktion Ausland                     5,90-
+                                        //               US17275R1023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "isin") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Geb.hr Kapitaltransaktion Ausland)" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^.*(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(concatenate(v.get("note"), v.get("isin"), " "));
                                                         }))
-
                         .wrap(t -> {
                             TransactionItem item = new TransactionItem(t);
 
@@ -1993,7 +2015,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Buchungsdatum .*$");
+        Block firstRelevantLine = new Block("^Kundenservice(:)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2021,9 +2043,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Buchungsdatum        11.01.2020
+                        // 99999 Stadt Buchungsdatum        29.01.2024
                         // @formatter:on
                         .section("date") //
-                        .match("Buchungsdatum ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^.*Buchungsdatum ([\\s]+)?(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -2110,7 +2133,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note1", "note2")
                 .match("^.* (?<note1>Depotservicegebühr) .* ISIN (?<note2>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
+                .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " ")))
 
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);

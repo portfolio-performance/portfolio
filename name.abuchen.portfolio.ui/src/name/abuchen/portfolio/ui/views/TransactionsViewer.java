@@ -429,18 +429,30 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column("10", Messages.ColumnNote, SWT.None, 200); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(Transaction::getNote) // NOSONAR
         {
+            private String getRawText(Object e)
+            {
+                return ((TransactionPair<?>) e).getTransaction().getNote();
+            }
+
+            @Override
+            public String getText(Object e)
+            {
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.toSingleLine(note);
+            }
+
             @Override
             public Image getImage(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note != null && !note.isEmpty() ? Images.NOTE.image() : null;
             }
 
             @Override
             public String getToolTipText(Object e)
             {
-                String note = getText(e);
-                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(getText(e));
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$

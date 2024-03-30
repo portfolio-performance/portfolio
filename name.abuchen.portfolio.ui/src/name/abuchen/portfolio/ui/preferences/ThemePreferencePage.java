@@ -8,9 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -33,15 +33,31 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.theme.ThemePreferences;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 @SuppressWarnings("restriction")
 public final class ThemePreferencePage extends PreferencePage
 {
+    private static final ITheme AUTOMATIC_THEME = new ITheme()
+    {
+        @Override
+        public String getId()
+        {
+            return "automatic"; //$NON-NLS-1$
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return Messages.LabelAutomaticDarkLightTheme;
+        }
+    };
+
     private IThemeEngine engine;
     private ComboViewer themeIdCombo;
-    private ITheme currentTheme;
-    private String defaultTheme = "name.abuchen.portfolio.light"; //$NON-NLS-1$
+    private String currentlyConfiguredThemeId;
 
     private int currentFontSize = -1;
     private ComboViewer fontSizeCombo;
@@ -53,6 +69,7 @@ public final class ThemePreferencePage extends PreferencePage
         setTitle(Messages.LabelTheme);
 
         this.currentFontSize = readFontSizeFromCSS();
+        this.currentlyConfiguredThemeId = ThemePreferences.getConfiguredThemeId().orElse(AUTOMATIC_THEME.getId());
     }
 
     @Override
@@ -75,19 +92,20 @@ public final class ThemePreferencePage extends PreferencePage
 
         });
         themeIdCombo.setContentProvider(ArrayContentProvider.getInstance());
-        themeIdCombo.setInput(getCSSThemes());
-        this.currentTheme = engine.getActiveTheme();
-        if (this.currentTheme != null)
-        {
-            themeIdCombo.setSelection(new StructuredSelection(currentTheme));
-        }
+        var availableThemes = getCSSThemes();
+        themeIdCombo.setInput(availableThemes);
+        availableThemes.stream().filter(t -> t.getId().equals(currentlyConfiguredThemeId)).findAny()
+                        .ifPresent(t -> themeIdCombo.setSelection(new StructuredSelection(t)));
+
         ControlDecoration themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.RIGHT);
         themeComboDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);
         themeComboDecorator.setImage(Images.WARNING.image());
         themeComboDecorator.hide();
         themeIdCombo.addSelectionChangedListener(event -> {
             ITheme selection = getSelectedTheme();
-            if (!selection.equals(currentTheme))
+
+            var selectedId = selection != null ? selection.getId() : null;
+            if (!Objects.equals(selectedId, currentlyConfiguredThemeId))
                 themeComboDecorator.show();
             else
                 themeComboDecorator.hide();
@@ -117,8 +135,7 @@ public final class ThemePreferencePage extends PreferencePage
 
         });
         fontSizeCombo.setContentProvider(ArrayContentProvider.getInstance());
-        fontSizeCombo.setInput(
-                        Stream.concat(Stream.of(-1), IntStream.range(8, 21).boxed()).collect(Collectors.toList()));
+        fontSizeCombo.setInput(Stream.concat(Stream.of(-1), IntStream.range(8, 21).boxed()).toList());
         fontSizeCombo.setSelection(new StructuredSelection(currentFontSize));
 
         ControlDecoration fontSizeDecorator = new ControlDecoration(fontSizeCombo.getCombo(), SWT.RIGHT);
@@ -146,6 +163,7 @@ public final class ThemePreferencePage extends PreferencePage
                 themes.add(theme);
         }
         themes.sort((ITheme t1, ITheme t2) -> t1.getLabel().compareTo(t2.getLabel()));
+        themes.add(0, AUTOMATIC_THEME);
         return themes;
     }
 
@@ -162,7 +180,16 @@ public final class ThemePreferencePage extends PreferencePage
     {
         ITheme theme = getSelectedTheme();
         if (theme != null)
-            engine.setTheme(theme, true);
+        {
+            if (theme == AUTOMATIC_THEME)
+            {
+                setThemeToAutomatic();
+            }
+            else
+            {
+                engine.setTheme(theme, true);
+            }
+        }
 
         if (fontSizeCombo != null)
         {
@@ -175,22 +202,11 @@ public final class ThemePreferencePage extends PreferencePage
     }
 
     @Override
-    public boolean performCancel()
-    {
-        if (currentTheme != null)
-            engine.setTheme(currentTheme, false);
-
-        return super.performCancel();
-    }
-
-    @Override
     protected void performDefaults()
     {
-        engine.setTheme(defaultTheme, true);
-        if (engine.getActiveTheme() != null)
-        {
-            themeIdCombo.setSelection(new StructuredSelection(engine.getActiveTheme()));
-        }
+        setThemeToAutomatic();
+
+        themeIdCombo.setSelection(new StructuredSelection(AUTOMATIC_THEME));
 
         fontSizeCombo.setSelection(new StructuredSelection(-1));
 
@@ -224,6 +240,16 @@ public final class ThemePreferencePage extends PreferencePage
         }
     }
 
+    private void setThemeToAutomatic()
+    {
+        // clear the stored preference
+        ThemePreferences.clearConfiguredThemeId();
+
+        // set the current theme just like the CustomThemeEngine would set it
+        boolean isDark = Display.isSystemDarkTheme();
+        engine.setTheme(isDark ? UIConstants.Theme.DARK : UIConstants.Theme.LIGHT, false);
+    }
+
     private void writeFrontSizeToCSS(int fontSize)
     {
         try
@@ -252,5 +278,4 @@ public final class ThemePreferencePage extends PreferencePage
             PortfolioPlugin.log(e);
         }
     }
-
 }

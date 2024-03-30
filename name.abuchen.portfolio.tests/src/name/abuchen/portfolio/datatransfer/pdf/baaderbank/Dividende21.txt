@@ -1,0 +1,71 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+Name 19.12.2023
+Anschrift
+NAME
+PLZ Stamm-Nr.: XXX    Portfolio: 1
+Depot-Nr.: xxxxx
+Vorgangs-Nr.: XXX
+Referenz-Nr.: XXX
+Fondsausschüttung
+Ex-Tag: 30.11.2023
+Nominale ISIN: US7561091049 WKN: 899744 Ausschüttung
+STK 14 Realty Income Corp. USD 0,256 p.STK
+Zahlungszeitraum: 01.10.2023 - 30.09.2024 
+Zahltag: 15.12.2023
+Umrechnungskurs: EUR/USD 1,0922000
+Bruttobetrag USD 3,58
+Kapitalertragsteuer USD 0,36 -
+Solidaritätszuschlag USD 0,02 -
+US-Quellensteuer USD 0,54 -
+Zu Gunsten Konto 123456789 Valuta: 15.12.2023 USD 2,66
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fondsausschüttung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Quellensteuer-Anrechnung
+angerechnete QueSt. allg. Erträge EUR 5,29 EUR 0,49 EUR 5,78
+Kapitalertragsteuer EUR 18,46 EUR 0,82 EUR 19,28
+Kapitalertragsteuer EUR 19,28 EUR 0,49 - EUR 18,79
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung sonstiger Fonds vor Teilfreistellung EUR 3,28 EUR 3,28
+Ausschüttung sonstiger Fonds nach Teilfreistellung EUR 3,28 EUR 3,28
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 3,28 EUR 3,28
+anrechenbare Quellensteuer EUR 0,49 - EUR 0,49 -
+Quellensteuer-Anrechnung EUR 1,96 - EUR 1,96 -
+Bemessungsgrundlage zur Kapitalertragsteuer
+Kapitalertragsteuer 25,00 % EUR 0,82 - EUR 0,82 -
+Solidaritätszuschlag 5,50 % EUR 0,04 - EUR 0,04 -
+Kapitalertragsteuer 25,00 % EUR 0,49 EUR 0,49
+Solidaritätszuschlag 5,50 % EUR 0,02 EUR 0,02
+US-Quellensteuer 15,00 % EUR 0,49 - EUR 0,49 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

@@ -1,5 +1,26 @@
 package name.abuchen.portfolio.datatransfer.pdf.ubsag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -164,7 +185,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 90586827"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2213.15))));
@@ -208,7 +229,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 90586823"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(3881.75))));
@@ -254,7 +275,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 90586823"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(3881.75))));
@@ -404,7 +425,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 155032892"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(3720.18))));
@@ -448,7 +469,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(39)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 149557039"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1883.08))));
@@ -495,7 +516,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(39)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 149557039"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1883.08))));
@@ -549,7 +570,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 6820800"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(36.90))));
@@ -593,7 +614,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(73)));
         assertThat(entry.getSource(), is("Verkauf05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 8583497"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(8030.00))));
@@ -637,7 +658,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Verkauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 6615705"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2.63))));
@@ -684,7 +705,7 @@ public class UBSAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Verkauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Auftrags-Nr. 6615705"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2.63))));
@@ -733,7 +754,7 @@ public class UBSAGPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Auftrags-Nr. 3256654"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(3.85))));
@@ -778,7 +799,7 @@ public class UBSAGPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Auftrags-Nr. 3256654"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(3.85))));
@@ -797,7 +818,79 @@ public class UBSAGPDFExtractorTest
     }
 
     @Test
-    public void testaddDepotAccountFee01()
+    public void testDividende02()
+    {
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00BP6MXD84"), hasWkn("115606002"), hasTicker("SHEL"), //
+                        hasName("N-AKT SHELL PLC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Auftrags-Nr. 4083256 | FX-Marge: 2.62 CHF"), //
+                        hasAmount("CHF", 155.64), hasGrossValue("CHF", 155.64), //
+                        hasForexGrossValue("EUR", 167.62), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInCHF()
+    {
+        Security security = new Security("N-AKT SHELL PLC", "CHF");
+        security.setIsin("GB00BP6MXD84");
+        security.setWkn("115606002");
+        security.setTickerSymbol("SHEL");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-20T00:00"), hasShares(546), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Auftrags-Nr. 4083256 | FX-Marge: 2.62 CHF"), //
+                        hasAmount("CHF", 155.64), hasGrossValue("CHF", 155.64), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDepotAccountFee01()
     {
         UBSAGBankingAGPDFExtractor extractor = new UBSAGBankingAGPDFExtractor(new Client());
 
