@@ -114,6 +114,8 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
+
     }
 
     private void addAccountStatementTransaction()
@@ -157,6 +159,25 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional()
                         .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction
+
+                        // Steuerberechnung
+                        // Kapitalertragsteuer 25,00% auf 12.960,18 EUR
+                        // 3.240,05- EUR
+                        .section("tax", "currency").optional()
+                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // Solidaritätszuschlag 5,50% auf 3.240,05 EUR 178,20-
+                        // EUR
+                        // Ausmachender Betrag 116.003,09 EUR
+                        .section("tax", "currency").optional()
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private Transaction<AccountTransaction> depositRemovalTransaction(DocumentType type, String regex)
