@@ -172,6 +172,50 @@ public class MerkurPrivatBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf02()
+    {
+        MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security identification:
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00BZ02LR44"));
+        assertThat(security.getWkn(), is("A2AQST"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("XTR.(IE)-MSCI WORLD ESG REGISTERED SHARES 1C O.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-03-22T20:15:51")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3260.0)));
+        assertThat(entry.getSource(), is("Verkauf02.txt"));
+        assertThat(entry.getNote(), is("Auftragsnummer 749922/41.00"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116003.09))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.00 + 0.06))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(119446.40))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3240.05 + 178.20))));
+
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());
