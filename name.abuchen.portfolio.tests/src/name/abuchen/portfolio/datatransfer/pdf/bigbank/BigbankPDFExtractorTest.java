@@ -57,4 +57,37 @@ public class BigbankPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2024-03-25"), hasAmount("EUR", 10.12), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        BigbankPDFExtractor extractor = new BigbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-20"), hasAmount("EUR", 10.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-21"), hasAmount("EUR", 10500.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-25"), hasAmount("EUR", 10.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-28"), hasAmount("EUR", 3500.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+    }
 }
