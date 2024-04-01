@@ -41,7 +41,7 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // @formatter:off
-        // 21.03.2024 AT123456789101112131 Einzahlung oDkoRVZEb  TxDUxE +1 500,00
+        // 21.03.2024 AT123456789101112131 Einzahlung oDkoRVZEb  TxDUxE +1 500,34
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Einzahlung.* \\+[\\.,\\d\\s]+$");
         type.addBlock(depositBlock);
@@ -65,9 +65,11 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 25.03.2024 AT123456789101112131 Auszahlung sUBHAKqzf  vNNKxT -10,00
+        // 25.03.2024 AT123456789101112131 Auszahlung sUBHAKqzf  vNNKxT -10,12
+        // 28.03.2024 EE123456789101112132 Interne Belastung wMGSJi WajHthpvl -3 500,00
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Auszahlung.* \\-[\\.,\\d\\s]+$");
+        Block removalBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Auszahlung|Interne Belastung).* \\-[\\.,\\d\\s]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -79,7 +81,7 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*Auszahlung.* \\-(?<amount>[\\.,\\d\\s]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Auszahlung|Interne Belastung).* \\-(?<amount>[\\.,\\d\\s]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
