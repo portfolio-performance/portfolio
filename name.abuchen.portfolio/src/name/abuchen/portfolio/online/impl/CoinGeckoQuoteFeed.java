@@ -227,7 +227,9 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
                 coinGeckoId = getCoinGeckoIdForTicker(security.getTickerSymbol().toLowerCase());
 
             String endpoint = "/api/v3/coins/" + coinGeckoId + "/market_chart"; //$NON-NLS-1$ //$NON-NLS-2$
-            long days = ChronoUnit.DAYS.between(start, LocalDate.now()) + 1;
+
+            // the free API only allows for 1 year of historical data (daily).
+            long days = Math.min(365, ChronoUnit.DAYS.between(start, LocalDate.now()) + 1);
 
             WebAccess webaccess = new WebAccess("api.coingecko.com", endpoint) //$NON-NLS-1$
                             .addParameter("vs_currency", security.getCurrencyCode()) //$NON-NLS-1$
