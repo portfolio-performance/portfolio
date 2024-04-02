@@ -11,7 +11,7 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(.*gutschr\\.?|.berweisungsauftrag|Spar/Fest/Termingeld))[\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[S|H])$";
+    private static final String DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(.*gutschr\\.?|.berweisungsauftrag|Spar/Fest/Termingeld|Umbuchung))[\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[S|H])$";
     private static final String INTEREST = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss lt\\. Anlage [\\d][\\s]{1,}(?<amount>[\\.,\\d]+) [H]$";
     private static final String INTEREST_CANCELLATION = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Storno .*[\\s]{1,}(?<amount>[\\.,\\d]+) [S]$";
 

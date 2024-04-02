@@ -233,4 +233,53 @@ public class JTDirektbankPDFExtractorTest
         assertThat(results, hasItem(interest(hasDate("2024-01-31"), hasAmount("EUR", 139.23), //
                         hasSource("Kontoauszug05.txt"), hasNote(null))));
     }
+
+    @Test
+    public void testKontoauszug06()
+    {
+        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-07"), hasAmount("EUR", 1650.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-08"), hasAmount("EUR", 1100.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Umbuchung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-20"), hasAmount("EUR", 2650.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-03-28"), hasAmount("EUR", 1750.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-15"), hasAmount("EUR", 3650.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsgutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-21"), hasAmount("EUR", 2700.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsgutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-26"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisungsgutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-03-28"), hasAmount("EUR", 12.67), //
+                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+    }
 }
