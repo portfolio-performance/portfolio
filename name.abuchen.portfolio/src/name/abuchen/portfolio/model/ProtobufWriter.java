@@ -881,6 +881,8 @@ import name.abuchen.portfolio.money.Money;
 
             Map<String, PMap.Builder> data = new HashMap<>();
             security.getProperties().forEach(p -> {
+                if (p == null)
+                    return;
                 PMap.Builder map = data.computeIfAbsent(p.getType().name(), k -> PMap.newBuilder());
                 map.addEntries(PKeyValue.newBuilder().setKey(p.getName())
                                 .setValue(PAnyValue.newBuilder().setString(p.getValue())).build());

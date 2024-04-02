@@ -834,6 +834,8 @@ public class ClientFactory
                 removeWronglyAddedSecurities(client);
             case 58:
                 fixDataSeriesLabelForAccumulatedTaxes(client);
+            case 59:
+                fixNullSecurityProperties(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1549,6 +1551,24 @@ public class ClientFactory
                         .filter(config -> config.getData() != null) //
                         .forEach(config -> config.setData(config.getData() //
                                         .replace("Client-taxes;", "Client-taxes_accumulated;"))); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static void fixNullSecurityProperties(Client client)
+    {
+        // see https://github.com/portfolio-performance/portfolio/issues/3895
+
+        for (Security security : client.getSecurities())
+        {
+            var properties = security.getProperties().toList();
+
+            for (SecurityProperty p : properties)
+            {
+                if (p == null)
+                {
+                    security.removeProperty(null);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("nls")
