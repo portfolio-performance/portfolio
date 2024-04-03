@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Kontakt Topbank
+Telefon 0844 850 820
+E-Mail topberater@topbank.ch
+Adresse Bahnhofstrasse 9
+8001 Zürich
+Briefadresse Postfach, 8010 Zürich
+Clearing-Nr. 700
+BIC (SWIFT) ZKBKCHZZ80A
+UID CHE-116.320.184 MWST
+Postkonto 80-151-4
+Konto-Nr. 11bb-7112.9c1
+IBAN CH14 0070 011b b71 129c 1
+Produkt ZKB Beratungskonto
+Lautend auf Muster Peter
+Depot-Nr. aaa-123456
+Produkt ZKB Wertschriftendepot
+Lautend auf Muster Peter
+Zürich, 4. Januar 2023
+Ertragsabrechnung (Eingang vorbehalten)
+Abwicklungs-Nr. 680426625 / Buchungstag 04.01.2023
+Stück 200 Shs J.P. Morgan Exchange-Traded Fund Trust JPMorgan Equity Premium
+Income Fund
+Valor 52708803 / ISIN US46641Q3323
+Dividendensatz USD 0.57292
+Ex-Tag 29.12.2022
+Zahlbar 04.01.2023
+USD
+Bruttobetrag 114.58
+15% Zusätzlicher Steuerrückbehalt 17.19
+15% Quellensteuer 17.19
+Total 80.20
+zum Kurs  von USD/CHF 0.922785 CHF
+Total zu Ihren Gunsten Valuta 04.01.2023 74.01
+Steuerrelevante Informationen Rückforderbarer zusätzlicher CHF 15.86
+Steuerückbehalt USA
+zum Kurs vom USD / CHF 0.922785
+Die Abrechnung dient der Geltendmachung von Verrechnungs- und Rückforderungsansprüchen.
+Freundliche Grüsse
+Zürcher Kantonalbank
+Ohne manuelle Ergänzung
+gültig ohne Unterschrift
+ANAMHKENFKCNFPAJGKAICPELEJFJGNGNEKEK
+AJCJFIGDAKKPNANMFKAIPEMMAIFOMMHOGBLK
+AMJPMBPEIKMHLPJGJKAOIDJBLNJCMNOCKEOK OY4005
+ADIAONCGGDEIPFPABKAAOAADFGOHLBNPPIHK
+ADBKJDAKICIKBLICBKALIDBCILIKJCADILAK 202301040001290533095918865002 - Zürcher Kantonalbank
+ACAJOCMECBBCMMNDPKAGIJIIEPBBEAKDKBHK
+ACLMMMFEOFEICIJOAKAIJILKDFPOGOFHHBIK
+AGPHJFLKLPCHAMBHOKAEOCDNNMLPIKFNDPFK 12142020222 1/1
+AIKAACIGGAEECAAAKKAEOEIAKOAACOCGAIGK

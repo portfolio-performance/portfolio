@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Kontakt Topbank
+Telefon 0844 850 820
+E-Mail topberater@topbank.ch
+Adresse Bahnhofstrasse 9
+8001 Zürich
+Briefadresse Postfach, 8010 Zürich
+Clearing-Nr. 700
+BIC (SWIFT) ZKBKCHZZ80A
+Postkonto 80-151-4
+Geschäfts-Nr. aaa-123456
+Produkt ZKB Wertschriftendepot
+Lautend auf Muster Peter
+Konto-Nr. 11bb-7112.9c1
+IBAN CH14 0070 011b b71 129c 1
+Produkt ZKB Beratungskonto
+Lautend auf Muster Peter
+Zürich, 17. Februar 2023
+Effektenabrechnung
+Ihr Verkauf
+Abschluss per: 17.02.2023 / Buchungstag: 17.02.2023 / Börsenplatz: Euronext Par
+Abwicklungs-Nr. 690706592 / Auftrags-Nr. ONBA-0005146670482023
+Act Kering SA
+Valor 21591 / ISIN FR0000121485
+Stück EUR EUR
+10 zu 590.00 5'900.00
+Fremde Kommission 4.50
+Eidg. Abgaben 8.85
+Total 5'886.65
+zum Kurs von EUR CHF 0.9907 CHF
+Total zu Ihren Gunsten Valuta 21.02.2023 5'831.90
+Abschlüsse mit Zeitangaben in Klammer
+10 zu 590.00 (10:43; XPAR; 230217A996527183)
+Freundliche Grüsse
+Zürcher Kantonalbank
+Ohne manuelle Ergänzung
+gültig ohne Unterschrift
+ANAMHKENFKCJFLAJGKAJCNALELHJGNGNEKEK
+AJCJFIGDAKKPNBNNBKAMPEMMAIFOMMHLGDLK
+AMJPMBPEIKMHIIIGJKAOIDJBLNJDOHOLGGKK OY2015
+ACJAMFKGGDGIFFPABKAAOAADFGMGPDJLOJHK
+ADJKJDAKICIKBLICBKALIDBCIDALBKBLBCJK 202302170001291047265918435002 - Zürcher Kantonalbank
+ACAJOCMECBBCMMNDPKAGLJJHMJIJEBJMMBPK
+ACLMMMFEOFEICIIPEKAJLIJICJMDFMCNCNJK
+AGPHJFLKLPAEHOIDFKANMLMFHFMDJGGDHHFK 12144257965 1/1
+AIKAACIGGCAMKOIMCKAEIEIMKGCAGOKKMMGK
