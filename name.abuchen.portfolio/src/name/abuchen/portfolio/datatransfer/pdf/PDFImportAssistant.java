@@ -69,7 +69,6 @@ public class PDFImportAssistant
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaPDFExtractor(client));
         extractors.add(new JTDirektbankPDFExtractor(client));
-        extractors.add(new SutorBankGmbHPDFExtractor(client));
         extractors.add(new KBCGroupNVPDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
@@ -98,6 +97,7 @@ public class PDFImportAssistant
         extractors.add(new StakeshopPtyLtdPDFExtractor(client));
         extractors.add(new SunrisePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
+        extractors.add(new SutorBankGmbHPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
@@ -109,6 +109,7 @@ public class PDFImportAssistant
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
+        extractors.add(new ZuercherKantonalbankPDFExtractor(client));
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)
