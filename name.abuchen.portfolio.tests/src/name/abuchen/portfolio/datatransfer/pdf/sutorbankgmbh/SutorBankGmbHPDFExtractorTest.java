@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.justtrade;
+package name.abuchen.portfolio.datatransfer.pdf.sutorbankgmbh;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -15,10 +15,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -41,8 +43,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.JustTradePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.SutorBankGmbHPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -55,9 +57,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
-public class JustTradePDFExtractorTest
+public class SutorBankGmbHPDFExtractorTest
 {
-    JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client())
+    SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client())
     {
         @Override
         protected CoinGeckoQuoteFeed lookupFeed()
@@ -80,7 +82,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -124,7 +126,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -168,7 +170,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -212,7 +214,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -242,7 +244,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -286,7 +288,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -330,7 +332,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -360,7 +362,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testWertpapierVerkauf04()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -390,7 +392,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testSammelabrechnung01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -581,7 +583,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDividende01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -624,7 +626,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDividende02()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -667,7 +669,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDividende03()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -710,7 +712,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDividende04()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -753,7 +755,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDividende05()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -796,7 +798,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testVorabpauschale01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -825,9 +827,75 @@ public class JustTradePDFExtractorTest
     }
 
     @Test
+    public void testKapitalveraenderung01()
+    {
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kapitalveraenderung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US69181V1070"), hasWkn(null), hasTicker(null), //
+                        hasName("OXFORD SQUARE CAP. DL-,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2023-05-25T00:00"), hasShares(500.00), //
+                                        hasSource("Kapitalveraenderung01.txt"), //
+                                        hasNote("Verhältnis Neu/ Alt 1 : 3,00"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testUebernahme01()
+    {
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Uebernahme01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US03990B1017"), hasWkn(null), hasTicker(null), //
+                        hasName("Ares Management Corp."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2023-12-14T00:00"), hasShares(50.00), //
+                                        hasSource("Uebernahme01.txt"), //
+                                        hasNote("Verhältnis Neu/ Alt 1,00 : 1,00"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testDepotauszug01()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1071,7 +1139,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDepotauszug02()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1283,7 +1351,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDepotauszug03()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2696,7 +2764,7 @@ public class JustTradePDFExtractorTest
     @Test
     public void testDepotauszug04()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3063,71 +3131,41 @@ public class JustTradePDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        // check 1st delivery outbound (Auslieferung) transaction
-        PortfolioTransaction entry1 = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2021-06-01T00:00"), hasShares(241), //
+                                        hasSource("Depotauszug04.txt"), //
+                                        hasNote("Übertrag"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry1.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2021-06-01T00:00"), hasShares(37), //
+                                        hasSource("Depotauszug04.txt"), //
+                                        hasNote("Übertrag"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        assertThat(entry1.getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
-        assertThat(entry1.getShares(), is(Values.Share.factorize(241)));
-        assertThat(entry1.getSource(), is("Depotauszug04.txt"));
-        assertThat(entry1.getNote(), is("Übertrag"));
-
-        assertThat(entry1.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        // check 2nd delivery outbound (Auslieferung) transaction
-        entry1 = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry1.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(entry1.getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
-        assertThat(entry1.getShares(), is(Values.Share.factorize(37)));
-        assertThat(entry1.getSource(), is("Depotauszug04.txt"));
-        assertThat(entry1.getNote(), is("Übertrag"));
-
-        assertThat(entry1.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        // check 3rd delivery outbound (Auslieferung) transaction
-        entry1 = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry1.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(entry1.getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
-        assertThat(entry1.getShares(), is(Values.Share.factorize(295)));
-        assertThat(entry1.getSource(), is("Depotauszug04.txt"));
-        assertThat(entry1.getNote(), is("Übertrag"));
-
-        assertThat(entry1.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry1.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2021-06-01T00:00"), hasShares(295), //
+                                        hasSource("Depotauszug04.txt"), //
+                                        hasNote("Übertrag"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testDepotauszug05()
     {
-        JustTradePDFExtractor extractor = new JustTradePDFExtractor(new Client());
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 

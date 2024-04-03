@@ -69,7 +69,7 @@ public class PDFImportAssistant
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new INGDiBaPDFExtractor(client));
         extractors.add(new JTDirektbankPDFExtractor(client));
-        extractors.add(new JustTradePDFExtractor(client));
+        extractors.add(new SutorBankGmbHPDFExtractor(client));
         extractors.add(new KBCGroupNVPDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
