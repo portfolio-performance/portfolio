@@ -53,29 +53,12 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Sale" change from BUY to SELL
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Purchase 24'728.000 PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC at USD 11.97
-                                        // Sale -74.620 AGIF-CHINA A-SHARES PT GBP-ACC. at GBP 1'565.99
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>(Purchase|Sale)) (\\-)?[\\.'\\d]+ .* [\\w]{3} [\\.'\\d]+$") //
-                                                        .assign((t, v) -> {
-                                                            if ("Sale".equals(v.get("type")))
-                                                                t.setType(PortfolioTransaction.Type.SELL);
-                                                        }),
-                                        // @formatter:off
-                                        // Purchase 24'728.000 PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC at USD 11.97
-                                        // Sale -74.620 AGIF-CHINA A-SHARES PT GBP-ACC. at GBP 1'565.99
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>(Purchase|Sale)) (\\-)?[\\.'\\d]+ .* [\\w]{3} [\\.'\\d]+$")
-                                                        .assign((t, v) -> {
-                                                            if ("Sale".equals(v.get("type")))
-                                                                t.setType(PortfolioTransaction.Type.SELL);
-                                                        }))
+                        .section("type") //
+                        .match("^(?<type>(Purchase|Sale)) .* [\\.'\\d]+.*$") //
+                        .assign((t, v) -> {
+                            if ("Sale".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
                         .oneOf( //
                                         // @formatter:off
