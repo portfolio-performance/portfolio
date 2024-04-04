@@ -24,7 +24,7 @@ public class ListEditingSupport extends PropertyEditingSupport
 
         for (Object option : options)
             if (option == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("option must not be null"); //$NON-NLS-1$
 
         this.comboBoxItems = new ArrayList<>(options);
     }

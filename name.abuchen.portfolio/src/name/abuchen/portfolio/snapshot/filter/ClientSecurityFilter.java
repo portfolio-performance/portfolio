@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -78,7 +79,8 @@ public class ClientSecurityFilter implements ClientFilter
     private void addPortfolioTransaction(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
                     TransactionPair<PortfolioTransaction> pair)
     {
-        switch (pair.getTransaction().getType())
+        Type type = pair.getTransaction().getType();
+        switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
@@ -96,7 +98,7 @@ public class ClientSecurityFilter implements ClientFilter
                 // handled via TRANSFER_IN
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
         }
     }
 
@@ -105,7 +107,8 @@ public class ClientSecurityFilter implements ClientFilter
     {
         AccountTransaction t = pair.getTransaction();
 
-        switch (pair.getTransaction().getType())
+        name.abuchen.portfolio.model.AccountTransaction.Type type = pair.getTransaction().getType();
+        switch (type)
         {
             case DIVIDENDS:
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
@@ -146,7 +149,7 @@ public class ClientSecurityFilter implements ClientFilter
             case INTEREST:
             case INTEREST_CHARGE:
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
         }
     }
 

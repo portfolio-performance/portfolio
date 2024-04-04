@@ -239,7 +239,7 @@ public class CurrencyTestCase
             if (account.equals(as.getAccount()))
                 return as;
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("account " + account + " not found");
     }
 
     private AssetCategory getAssetCategoryByName(GroupByTaxonomy grouping, String label)

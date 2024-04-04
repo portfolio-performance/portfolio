@@ -103,7 +103,7 @@ public final class TransactionsViewer implements ModificationListener
             else if (tx instanceof AccountTransaction t)
                 return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
 
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction type " + tx); //$NON-NLS-1$
         }
 
         @Override

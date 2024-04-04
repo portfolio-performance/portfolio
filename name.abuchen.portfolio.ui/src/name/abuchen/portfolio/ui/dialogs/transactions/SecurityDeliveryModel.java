@@ -21,7 +21,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         super(client, type);
 
         if (!accepts(type))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
 
         this.transactionCurrency = CurrencyUnit.getInstance(client.getBaseCurrency());
     }

@@ -60,7 +60,7 @@ public class PortfolioClientFilter implements ClientFilter
         else if (element instanceof Account account)
             accounts.add(account);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("element is null or of wrong type: " + element); //$NON-NLS-1$
     }
     
     public boolean hasElement(Object element)
@@ -70,7 +70,7 @@ public class PortfolioClientFilter implements ClientFilter
         else if (element instanceof Account account)
             return accounts.contains(account);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("element is null or of wrong type: " + element); //$NON-NLS-1$
     }
 
     public Object[] getAllElements()

@@ -145,7 +145,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         }
         else
         {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("transaction can't be used for update: " + t); //$NON-NLS-1$
         }
     }
 
@@ -157,7 +157,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return account;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get owner for transcation " + t); //$NON-NLS-1$
 
     }
 
@@ -169,7 +169,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction) && owner instanceof Account a)
             account = a;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unable to set owner for transcation " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -180,7 +180,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return portfolioTransaction;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross transaction for transcation " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -191,7 +191,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return portfolio;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross owner for transcation " + t); //$NON-NLS-1$
     }
 
     public PortfolioTransaction getPortfolioTransaction()

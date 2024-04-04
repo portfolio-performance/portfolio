@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -110,7 +111,8 @@ public final class TaxonomyTemplate
         taxonomy.setRootNode(root);
         String labels = getString(bundle, "labels"); //$NON-NLS-1$
         if (labels == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                            "missing labels in resource bundle with id " + id + " with locale " + Locale.getDefault()); //$NON-NLS-1$ //$NON-NLS-2$
 
         // Arrays.asList is not serialized niceyl with XStream
         taxonomy.setDimensions(new ArrayList<>(Arrays.asList(labels.split(",")))); //$NON-NLS-1$

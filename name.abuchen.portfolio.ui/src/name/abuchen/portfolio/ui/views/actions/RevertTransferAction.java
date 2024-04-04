@@ -6,9 +6,11 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 
 public class RevertTransferAction extends Action
@@ -21,30 +23,33 @@ public class RevertTransferAction extends Action
         this.client = client;
         this.transaction = transaction;
 
-        if (transaction.getTransaction() instanceof PortfolioTransaction)
+        Transaction tx = transaction.getTransaction();
+        if (tx instanceof PortfolioTransaction)
         {
             PortfolioTransaction.Type type = ((PortfolioTransaction) transaction.getTransaction()).getType();
 
             if (type != PortfolioTransaction.Type.TRANSFER_IN && type != PortfolioTransaction.Type.TRANSFER_OUT)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        else if (transaction.getTransaction() instanceof AccountTransaction)
+        else if (tx instanceof AccountTransaction)
         {
             AccountTransaction.Type type = ((AccountTransaction) transaction.getTransaction()).getType();
 
             if (type != AccountTransaction.Type.TRANSFER_IN && type != AccountTransaction.Type.TRANSFER_OUT)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction " + tx); //$NON-NLS-1$
         }
     }
 
     @Override
     public void run()
     {
-        if (transaction.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        Transaction tx = transaction.getTransaction();
+        CrossEntry e = tx.getCrossEntry();
+        if (e instanceof PortfolioTransferEntry)
         {
             PortfolioTransferEntry entry = (PortfolioTransferEntry) transaction.getTransaction().getCrossEntry();
 
@@ -58,7 +63,7 @@ public class RevertTransferAction extends Action
             entry.setSourceTransaction(entry.getTargetTransaction());
             entry.setTargetTransaction(oldSourceTransaction);
         }
-        else if (transaction.getTransaction().getCrossEntry() instanceof AccountTransferEntry)
+        else if (e instanceof AccountTransferEntry)
         {
             AccountTransferEntry entry = (AccountTransferEntry) transaction.getTransaction().getCrossEntry();
 
@@ -74,7 +79,7 @@ public class RevertTransferAction extends Action
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported entry type " + e + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         client.markDirty();

@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
-import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 import static name.abuchen.portfolio.ui.util.SWTHelper.getAverageCharWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -341,29 +342,33 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
     public void setBuySellEntry(BuySellEntry entry)
     {
-        if (!model().accepts(entry.getPortfolioTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = entry.getPortfolioTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().setSource(entry);
     }
 
     public void presetBuySellEntry(BuySellEntry entry)
     {
-        if (!model().accepts(entry.getPortfolioTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = entry.getPortfolioTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().presetFromSource(entry);
     }
 
     public void setDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
     {
-        if (!model().accepts(pair.getTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = pair.getTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().setSource(pair);
     }
 
     public void presetDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
     {
-        if (!model().accepts(pair.getTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = pair.getTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().presetFromSource(pair);
     }
 }

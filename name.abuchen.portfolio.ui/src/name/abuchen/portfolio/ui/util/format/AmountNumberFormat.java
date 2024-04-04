@@ -14,7 +14,7 @@ public class AmountNumberFormat extends Format
     public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
     {
         if (!(obj instanceof Number))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("object must be a subclass of Number"); //$NON-NLS-1$
 
         return toAppendTo.append(Values.Amount.format(Values.Amount.factorize(((Number) obj).doubleValue())));
     }

@@ -25,7 +25,7 @@ public class Today implements Macro
         Matcher matcher = MACRO.matcher(input);
 
         if (!matcher.matches())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(input.toString());
 
         String p = matcher.group(2);
 

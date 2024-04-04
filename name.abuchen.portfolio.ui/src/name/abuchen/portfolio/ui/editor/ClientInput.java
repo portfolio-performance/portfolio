@@ -281,7 +281,7 @@ public class ClientInput
     public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
     {
         if (flags.contains(SaveFlag.ENCRYPTED))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("encrypted not supported"); //$NON-NLS-1$
 
         String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
         if (!fileNameProposal.endsWith('.' + extension))
@@ -634,7 +634,7 @@ public class ClientInput
     /* package */ void setClient(Client client)
     {
         if (this.client != null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("client is already set"); //$NON-NLS-1$
 
         this.client = client;
 

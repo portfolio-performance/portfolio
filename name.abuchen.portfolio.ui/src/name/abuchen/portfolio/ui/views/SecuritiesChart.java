@@ -238,7 +238,7 @@ public class SecuritiesChart
                                         prices.get(prices.size() - 1).getDate()));
 
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported chart type " + this); //$NON-NLS-1$
             }
         }
     }

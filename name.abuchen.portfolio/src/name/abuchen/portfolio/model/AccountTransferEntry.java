@@ -157,14 +157,14 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
         if (!(owner instanceof Account))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("owner isn't an account for transaction " + t); //$NON-NLS-1$
 
         if (t.equals(transactionFrom) && !accountTo.equals(owner))
             accountFrom = (Account) owner;
         else if (t.equals(transactionTo) && !accountFrom.equals(owner))
             accountTo = (Account) owner;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unable to set owner for transaction " + t); //$NON-NLS-1$
     }
 
     @Override

@@ -93,7 +93,8 @@ public abstract class AbstractPDFExtractor implements Extractor
         List<Item> results = new ArrayList<>();
 
         if (!(inputFile instanceof PDFInputFile))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("input file doesn't seem to be a PDF-file but is of type " //$NON-NLS-1$
+                            + inputFile.getClass().getName());
 
         String text = ((PDFInputFile) inputFile).getText();
         results.addAll(extract(inputFile.getFile().getName(), text, errors));

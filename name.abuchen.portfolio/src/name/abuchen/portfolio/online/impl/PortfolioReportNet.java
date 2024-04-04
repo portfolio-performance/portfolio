@@ -294,10 +294,10 @@ public class PortfolioReportNet
 
     public static boolean updateWith(Security security, ResultItem item)
     {
-        if (!(item instanceof OnlineItem))
-            throw new IllegalArgumentException();
+        if (!(item instanceof OnlineItem oItem))
+            throw new IllegalArgumentException("result item is null or of wrong type: " + item); //$NON-NLS-1$
 
-        return ((OnlineItem) item).update(security);
+        return oItem.update(security);
     }
 
     public static Security createFrom(ResultItem item, Client client)
@@ -308,7 +308,7 @@ public class PortfolioReportNet
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("result item is null or of wrong type: " + item); //$NON-NLS-1$
         }
     }
 }

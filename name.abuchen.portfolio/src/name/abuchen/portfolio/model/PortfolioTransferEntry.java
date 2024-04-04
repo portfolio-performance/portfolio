@@ -145,7 +145,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         else if (t.equals(transactionTo))
             copyAttributesOver(transactionTo, transactionFrom);
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to update from transaction " + t); //$NON-NLS-1$
     }
 
     private void copyAttributesOver(PortfolioTransaction source, PortfolioTransaction target)
@@ -164,21 +164,22 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         else if (t.equals(transactionTo))
             return portfolioTo;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get owner of transaction " + t); //$NON-NLS-1$
     }
 
     @Override
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
         if (!(owner instanceof Portfolio))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                            "invalid owner type for owner " + owner + " when trying to set it to transaction " + t); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (t.equals(transactionFrom) && !portfolioTo.equals(owner))
             portfolioFrom = (Portfolio) owner;
         else if (t.equals(transactionTo) && !portfolioFrom.equals(owner))
             portfolioTo = (Portfolio) owner;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unable to set owner " + owner + " to transaction " + t); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -189,7 +190,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         else if (t.equals(transactionTo))
             return transactionFrom;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross transction for transaction " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -200,6 +201,6 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         else if (t.equals(transactionTo))
             return portfolioFrom;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross owner for transaction " + t); //$NON-NLS-1$
     }
 }

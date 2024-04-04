@@ -102,7 +102,7 @@ public class NewDashboardDialog extends Dialog
                 buildEarningsDashboard(newDashboard);
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported template " + selectedTemplate); //$NON-NLS-1$
         }
 
         return newDashboard;
