@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class AccountTest
@@ -48,10 +49,15 @@ public class AccountTest
     {
         transaction.setCurrencyCode(CurrencyUnit.USD);
 
+        String expectedDateText = Values.Date.format(LocalDate.of(2024, 03, 12));
+        String expectedAmount = Values.Amount.format(Long.valueOf(10000));
+        
         IllegalArgumentException iae = assertThrows(IllegalArgumentException.class,
                         () -> account.addTransaction(transaction));
         assertEquals("exception message mismatch",
-                        "Unable to add transaction '12.03.2024 DEPOSIT           USD    100,00 <no Security> <no XEntry>' to account 'Testaccount' (uuid "
+                        "Unable to add transaction '" + expectedDateText
+                                        + " DEPOSIT           USD    " + expectedAmount
+                                        + " <no Security> <no XEntry>' to account 'Testaccount' (uuid "
                                         + transaction.getUUID() + "): EUR <> USD",
                         iae.getMessage());
         assertNull("no cause expected", iae.getCause());
@@ -63,7 +69,9 @@ public class AccountTest
 
         iae = assertThrows(IllegalArgumentException.class, () -> account.addTransaction(transaction));
         assertEquals("exception message mismatch",
-                        "Unable to add transaction '12.03.2024 DEPOSIT           USD    100,00 Security Name Inc <no XEntry>' to account 'Testaccount' (uuid "
+                        "Unable to add transaction '" + expectedDateText
+                                        + " DEPOSIT           USD    " + expectedAmount
+                                        + " Security Name Inc <no XEntry>' to account 'Testaccount' (uuid "
                                         + transaction.getUUID() + "): EUR <> USD",
                         iae.getMessage());
         assertNull("no cause expected", iae.getCause());
