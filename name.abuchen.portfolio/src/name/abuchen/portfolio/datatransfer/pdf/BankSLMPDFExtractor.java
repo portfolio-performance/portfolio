@@ -95,7 +95,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .find("Wir haben.*")
-                        .match("^(?<shares>[\\.',\\d]+) .*$") //
+                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
