@@ -28,7 +28,7 @@ public final class Dashboard
         public void setWeight(int weight)
         {
             if (weight <= 0)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("invalid weight " + weight);
 
             this.weight = weight;
         }

@@ -19,10 +19,12 @@ public final class Risk
         public Drawdown(double[] values, LocalDate[] dates, int startAt)
         {
             if (values.length != dates.length)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                                "values and dates mismatch: " + values.length + " != " + dates.length); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (startAt >= values.length)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unable to start at " + startAt + ": values only conatins " //$NON-NLS-1$ //$NON-NLS-2$
+                                + values.length + " elements"); //$NON-NLS-1$
 
             double peak = values[startAt] + 1;
             double bottom = values[startAt] + 1;

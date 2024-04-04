@@ -237,7 +237,8 @@ public class IBFlexStatementExtractor implements Extractor
                             asAmount(element.getAttribute("amount")));
 
             // Set transaction type based on the attribute "type"
-            switch (element.getAttribute("type"))
+            String type = element.getAttribute("type");
+            switch (type)
             {
                 case "Deposits":
                 case "Deposits & Withdrawals":
@@ -282,7 +283,7 @@ public class IBFlexStatementExtractor implements Extractor
                         accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported type '" + type + "'");
             }
 
             // @formatter:off
@@ -375,13 +376,15 @@ public class IBFlexStatementExtractor implements Extractor
                 return null;
 
             // Check if the level of detail is supported
-            if (element.getAttribute("levelOfDetail").contains("ASSET_SUMMARY")
-                            || element.getAttribute("levelOfDetail").contains("SYMBOL_SUMMARY")
-                            || element.getAttribute("levelOfDetail").contains("ORDER"))
+            String lod = element.getAttribute("levelOfDetail");
+            if (lod.contains("ASSET_SUMMARY")
+                            || lod.contains("SYMBOL_SUMMARY")
+                            || lod.contains("ORDER"))
                 return null;
 
             // Set transaction type
-            switch (element.getAttribute("buySell"))
+            String tType = element.getAttribute("buySell");
+            switch (tType)
             {
                 case "BUY":
                     portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
@@ -398,7 +401,7 @@ public class IBFlexStatementExtractor implements Extractor
                     portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported transaction type '" + tType + "'");
             }
 
             // @formatter:off

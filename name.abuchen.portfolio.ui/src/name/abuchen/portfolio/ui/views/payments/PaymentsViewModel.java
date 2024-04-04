@@ -275,7 +275,7 @@ public class PaymentsViewModel
         // determine the number of full months within period
         LocalDate now = LocalDate.now();
         if (startYear > now.getYear())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("start year " + startYear + " is after " + now.getYear()); //$NON-NLS-1$ //$NON-NLS-2$
         this.noOfmonths = (now.getYear() - startYear) * 12 + now.getMonthValue();
 
         Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);

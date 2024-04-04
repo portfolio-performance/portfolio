@@ -151,7 +151,7 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
         else if (t instanceof PortfolioTransaction pt)
             return pt.getType();
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction type " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -238,6 +238,6 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
                 return (Class<?>[]) TRANSITIONS[ii + 2];
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("transition from " + fromValue + " to " + toValue + " not found"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 }

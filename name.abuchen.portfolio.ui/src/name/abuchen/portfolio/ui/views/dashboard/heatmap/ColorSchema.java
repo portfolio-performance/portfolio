@@ -62,7 +62,7 @@ enum ColorSchema
                                     Colors.interpolate(Colors.theme().defaultBackground().getRGB(), color, (float) p));
                 };
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported color " + this); //$NON-NLS-1$
         }
     }
 

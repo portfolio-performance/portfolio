@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -350,7 +351,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)
         {
-            switch (t.getType())
+            Type type = t.getType();
+            switch (type)
             {
                 case DEPOSIT:
                 case INTEREST:
@@ -370,7 +372,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
                     balance.subtract(t.getMonetaryAmount());
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             transaction2balance.put(t, balance.toMoney());

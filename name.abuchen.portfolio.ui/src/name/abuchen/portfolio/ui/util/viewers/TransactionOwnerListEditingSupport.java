@@ -122,7 +122,7 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
                     skipTransfer = crossEntry.getOwner(transaction);
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported edit mode " + editMode); //$NON-NLS-1$
             }
         }
         else
@@ -145,7 +145,7 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported type " + ownerToEdit); //$NON-NLS-1$
         }
 
         String[] names = new String[comboBoxItems.size()];
@@ -162,10 +162,10 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
     {
         Transaction transaction = getTransaction(element);
         if (transaction == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no transaction found for " + element); //$NON-NLS-1$
         CrossEntry crossEntry = transaction.getCrossEntry();
         if (crossEntry == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no cross entry found for transaction " + transaction); //$NON-NLS-1$
 
         TransactionOwner<?> owner = editMode.getOwner(crossEntry, transaction);
         return comboBoxItems.indexOf(owner);
@@ -180,10 +180,10 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
 
         Transaction transaction = getTransaction(element);
         if (transaction == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no transaction found for " + element); //$NON-NLS-1$
         CrossEntry crossEntry = transaction.getCrossEntry();
         if (crossEntry == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no cross entry found for transaction " + transaction); //$NON-NLS-1$
 
         TransactionOwner<?> newValue = comboBoxItems.get(index);
         TransactionOwner<?> oldValue = editMode.getOwner(crossEntry, transaction);

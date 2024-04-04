@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -35,12 +36,13 @@ public class ConvertDeliveryToBuySellAction extends Action
 
         for (TransactionPair<PortfolioTransaction> tx : transactionList)
         {
-            if (tx.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_INBOUND
-                            && tx.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                throw new IllegalArgumentException();
+            Type type = tx.getTransaction().getType();
+            if (type != PortfolioTransaction.Type.DELIVERY_INBOUND
+                            && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
 
-            allInbound &= tx.getTransaction().getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
-            allOutbound &= tx.getTransaction().getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+            allInbound &= type == PortfolioTransaction.Type.DELIVERY_INBOUND;
+            allOutbound &= type == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
         }
 
         if (allInbound)

@@ -435,7 +435,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
                                         / Values.Amount.divider());
                         break;
                     default:
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException("unsupported chart type " + chartType); //$NON-NLS-1$
                 }
             }
         }

@@ -674,7 +674,7 @@ public interface Extractor
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("can't evaluate client for class " + this.getClass().getName());
         }
 
         SecurityCache securityCache = new SecurityCache(client);

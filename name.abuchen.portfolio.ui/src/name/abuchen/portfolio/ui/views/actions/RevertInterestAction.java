@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.actions;
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.TransactionPair;
 
@@ -16,22 +17,26 @@ public class RevertInterestAction extends Action
         this.client = client;
         this.transaction = transaction;
 
-        if (transaction.getTransaction().getType() != AccountTransaction.Type.INTEREST
-                        && transaction.getTransaction().getType() != AccountTransaction.Type.INTEREST_CHARGE)
-            throw new IllegalArgumentException();
+        AccountTransaction tx = transaction.getTransaction();
+        Type type = tx.getType();
+        if (type != AccountTransaction.Type.INTEREST
+                        && type != AccountTransaction.Type.INTEREST_CHARGE)
+            throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
     public void run()
     {
-        AccountTransaction accountTransaction = transaction.getTransaction();
+        AccountTransaction tx = transaction.getTransaction();
 
-        if (AccountTransaction.Type.INTEREST.equals(accountTransaction.getType()))
-            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
-        else if (AccountTransaction.Type.INTEREST_CHARGE.equals(accountTransaction.getType()))
-            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+        Type type = tx.getType();
+        if (AccountTransaction.Type.INTEREST.equals(type))
+            tx.setType(AccountTransaction.Type.INTEREST_CHARGE);
+        else if (AccountTransaction.Type.INTEREST_CHARGE.equals(type))
+            tx.setType(AccountTransaction.Type.INTEREST);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                            "unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
 
         client.markDirty();
     }

@@ -15,7 +15,7 @@ public class ThousandsNumberFormat extends Format
     public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
     {
         if (!(obj instanceof Number))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("object must be a subclass of Number"); //$NON-NLS-1$
 
         if (DiscreetMode.isActive())
             toAppendTo.append(DiscreetMode.HIDDEN_AMOUNT);

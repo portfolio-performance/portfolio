@@ -314,7 +314,7 @@ public class ChartWidget extends WidgetDelegate<Object>
                 case RETURN_VOLATILITY:
                     throw new UnsupportedOperationException();
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported use case " + useCase); //$NON-NLS-1$
             }
 
             chart.adjustRange();

@@ -270,7 +270,7 @@ public class ClientFactory
                 byte[] signature = new byte[SIGNATURE.length];
                 int read = input.read(signature);
                 if (read != SIGNATURE.length)
-                    throw new IOException();
+                    throw new IOException("tried to read " + SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!Arrays.equals(signature, SIGNATURE))
                     throw new IOException(Messages.MsgNotAPortflioFile);
 
@@ -289,7 +289,7 @@ public class ClientFactory
                 byte[] iv = new byte[IV_LENGTH];
                 read = input.read(iv);
                 if (read != IV_LENGTH)
-                    throw new IOException();
+                    throw new IOException("tried to read " + IV_LENGTH + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                 Client client;
                 // build cipher and stream
@@ -301,12 +301,12 @@ public class ClientFactory
                     byte[] bytes = new byte[4];
                     read = decrypted.read(bytes); // content type
                     if (read != bytes.length)
-                        throw new IOException();
+                        throw new IOException("tried to read " + bytes.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                     int contentType = ByteBuffer.wrap(bytes).getInt();
                     read = decrypted.read(bytes); // version number
                     if (read != bytes.length)
-                        throw new IOException();
+                        throw new IOException("tried to read " + bytes.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                     int version = ByteBuffer.wrap(bytes).getInt();
 
@@ -465,7 +465,8 @@ public class ClientFactory
                 byte[] signature = new byte[Decryptor.SIGNATURE.length];
                 int read = input.read(signature);
                 if (read != Decryptor.SIGNATURE.length)
-                    throw new IOException();
+                    throw new IOException(
+                                    "tried to read " + Decryptor.SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                 if (Arrays.equals(Decryptor.SIGNATURE, signature))
                 {
