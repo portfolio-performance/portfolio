@@ -22,7 +22,7 @@ import name.abuchen.portfolio.money.Values;
  * @formatter:off
  * @implNote Zürcher Kantonalbank
  *
- * @implSpec The Valorennumber number is the WKN number with 5 to 9 letters.
+ * @implSpec The VALOR number is the WKN number with 5 to 9 letters.
  *           If we have an exchange rate, then the taxes and fees are shown in the documents in foreign currency.
  * @formatter:on
  */

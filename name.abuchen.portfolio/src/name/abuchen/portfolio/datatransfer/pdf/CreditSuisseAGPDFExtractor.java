@@ -14,6 +14,14 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Credit Suisse AG
+ *
+ * @implSpec The VALOR number is the WKN number with 5 to 9 letters.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
 {

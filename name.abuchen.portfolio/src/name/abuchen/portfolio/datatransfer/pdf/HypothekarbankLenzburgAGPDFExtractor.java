@@ -17,7 +17,7 @@ import name.abuchen.portfolio.money.Values;
  * @formatter:off
  * @implNote Hypothekarbank Lenzburg AG
  *
- * @implSpec The Valorennumber number is the WKN number with 5 to 9 letters.
+ * @implSpec The VALOR number is the WKN number with 5 to 9 letters.
  * @formatter:on
  */
 
