@@ -287,6 +287,68 @@ public class ZuercherKantonalbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05()
+    {
+        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0512157782"), hasWkn("51215778"), hasTicker(null), //
+                        hasName("Swisscanto (CH) IPF III (IPF III)"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-12-28T00:00"), hasShares(0.645), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Abwicklungs-Nr. 123 | Auftrags-Nr. 123"), //
+                        hasAmount("CHF", 99.96), hasGrossValue("CHF", 99.96), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf06()
+    {
+        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("51215778"), hasTicker(null), //
+                        hasName("SWC (CH) IPF III VF 95 Passiv NT"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-28T00:00"), hasShares(0.633), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 99.98), hasGrossValue("CHF", 99.98), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());

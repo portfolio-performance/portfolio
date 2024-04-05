@@ -49,12 +49,12 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Ihr (Kauf|Verkauf)");
+        final DocumentType type = new DocumentType("(Ihr (Kauf|Verkauf)|Abrechnung von Wertschriften)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Gesch.fts\\-Nr\\..*$");
+        Block firstRelevantLine = new Block("^(Gesch.fts\\-Nr\\..*|Ausgabe|Zeichnungen)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -74,34 +74,74 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
-                        // Registered Shs Glencore PLC
-                        // Valor 12964057 / ISIN JE00B4T3BW64
-                        // Stück GBP GBP
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "currency")
-                        .find("Abwicklungs\\-Nr\\..*")
-                        .match("^(?<name>.*)$")
-                        .match("Valor (?<wkn>[A-Z0-9]{5,9}) \\/ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                        .match("^St.ck (?<currency>[\\w]{3}) [\\w]{3}$")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zeichnungen
+                                        // Valor Bezeichnung Anzahl Kurs CHF Datum Total CHF
+                                        // 51215778 SWC (CH) IPF III VF 95 Passiv NT 0.633 157.95 28.05.2021 99.98
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "wkn", "name") //
+                                                        .match("^Valor Bezeichnung Anzahl Kurs (?<currency>[\\w]{3}) Datum Total [\\w]{3}$")
+                                                        .match("^(?<wkn>[A-Z0-9]{5,9}) (?<name>.*) [\\.'\\d]+ [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.'\\d]+$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Anteile - Units -NT CHF- Swisscanto (CH) IPF III (IPF III) - Swc (CH) IPF III Vorsorge Fonds 95 Passiv
+                                        // Valor 51215778 / ISIN CH0512157782
+                                        // Stück GBP GBP
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "wkn", "isin") //
+                                                        .match("^Anteile .* (?<currency>[\\w]{3})\\- (?<name>.*) \\-.*$")
+                                                        .match("Valor (?<wkn>[A-Z0-9]{5,9}) \\/ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
+                                        // Registered Shs Glencore PLC
+                                        // Valor 12964057 / ISIN JE00B4T3BW64
+                                        // Stück GBP GBP
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Abwicklungs\\-Nr\\..*")
+                                                        .match("^(?<name>.*)$")
+                                                        .match("Valor (?<wkn>[A-Z0-9]{5,9}) \\/ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^St.ck (?<currency>[\\w]{3}) [\\w]{3}$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Stück GBP GBP
-                        // 1'000 zu 3.545 3'545.00
-                        // @formatter:on
-                        .section("shares") //
-                        .find("St.ck [\\w]{3} [\\w]{3}") //
-                        .match("^(?<shares>[\\.'\\d]+) zu [\\.'\\d]+ [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 51215778 SWC (CH) IPF III VF 95 Passiv NT 0.633 157.95 28.05.2021 99.98
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[A-Z0-9]{5,9} .* (?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Stück GBP GBP
+                                        // 1'000 zu 3.545 3'545.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("St.ck [\\w]{3} [\\w]{3}") //
+                                                        .match("^(?<shares>[\\.'\\d]+) zu [\\.'\\d]+ [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Abschluss per: 04.10.2021 / Buchungstag: 04.10.2021 / Börsenplatz: LSE UK 1 CUR
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Abschluss per: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Abschluss per: 04.10.2021 / Buchungstag: 04.10.2021 / Börsenplatz: LSE UK 1 CUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Abschluss per: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // 51215778 SWC (CH) IPF III VF 95 Passiv NT 0.633 157.95 28.05.2021 99.98
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^[A-Z0-9]{5,9} .* [\\.'\\d]+ [\\.'\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -116,6 +156,18 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
+                                        // @formatter:off
+                                        // Valor Bezeichnung Anzahl Kurs CHF Datum Total CHF
+                                        // Total Belastung Zeichnungen 99.98
+                                        // @formatter:on
+                                        section -> section //
+                                            .attributes("currency", "amount") //
+                                            .match("^Valor Bezeichnung Anzahl Kurs [\\w]{3} Datum Total (?<currency>[\\w]{3})$")
+                                            .match("^Total Belastung Zeichnungen (?<amount>[\\.'\\d]+)$") //
+                                            .assign((t, v) -> {
+                                                t.setAmount(asAmount(v.get("amount")));
+                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            }),
                                         // @formatter:off
                                         // Stück CHF CHF
                                         // Total zu Ihren Lasten Valuta 10.06.2022 7'294.30
@@ -157,19 +209,37 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                             type.getCurrentContext().put("fxCurrency", rate.getBaseCurrency());
                         })
 
-                        // @formatter:off
-                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^(?<note>Abwicklungs\\-Nr\\..*) \\/.*$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Abwicklungs\\-Nr\\..*) \\/.*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Abwicklungs-Nr. 123
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Abwicklungs\\-Nr\\..*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
-                        // @formatter:off
-                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^.* \\/ (?<note>Auftrags\\-Nr\\..*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abwicklungs-Nr. 592473551 / Auftrags-Nr. ONBA-0005128022772021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.* \\/ (?<note>Auftrags\\-Nr\\..*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                        // @formatter:off
+                                        // Abwicklungs-Nr. 123
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>Auftrags\\-Nr\\..*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
