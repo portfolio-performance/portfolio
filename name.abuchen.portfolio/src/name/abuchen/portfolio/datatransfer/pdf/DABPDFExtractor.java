@@ -679,6 +679,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^(?<type>Freie Lieferung) .*$") //
                                                         .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }),
