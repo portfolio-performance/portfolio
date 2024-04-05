@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.liechtensteinischelandesbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -542,5 +543,26 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 456.60), //
                         hasSource("Kontoauszug01.txt"), hasNote("30.09.2023 - 31.12.2023"))));
+    }
+
+    @Test
+    public void testDepotauszug01()
+    {
+        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-02-01"), hasAmount("CHF", 465.86), //
+                        hasSource("Depotauszug01.txt"), hasNote("Auftragsnummer: XXXXXXXXX"))));
     }
 }
