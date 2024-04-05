@@ -1,0 +1,122 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+wiLLBe powered by
+Liechtensteinische Landesbank
+Aktiengesellschaft
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+service@willbe-invest.com
+Vorname Nachname www.willbe-invest.com
+XXXXX Straße XX
+XXXXX XXXXX Vaduz, 29. Februar 2024
+DEUTSCHLAND Seite 1/3
+Kontonummer XXXX.XXXX.XXXX wiLLBe Investmentkonto CHF
+IBAN LIXX XXXX XXXX XXXX XXXX X / BIC LILALI2X
+Kontoauszug in CHF 01.02.2024 - 29.02.2024
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in CHF
+31.01. Saldovortrag 10'056.72
+01.02. Gutschrift 01.02. 465.86 10'522.58
+XXXXX XXXXX
+Auftragsnummer: XXXXXXXXX
+01.02. Kauf 05.02. 84.49 10'438.09
+0.759479 Shs Acciona SA Bearer (978954)
+Preis EUR 118.80
+Auftragsnummer: XXXXXXXXX
+01.02. Kauf 05.02. 245.12 10'192.97
+3.764574 Act-nom Alcon SA nom (43249246)
+Preis CHF 65.06
+Auftragsnummer: XXXXXXXXX
+01.02. Kauf 05.02. 54.67 10'138.30
+0.823824 Vz Akt Henkel AG&Co.KGaA Stimmrechtslos Vorz- (335910)
+Preis EUR 71.092906
+Auftragsnummer: XXXXXXXXX
+02.02. Kauf (Emission) 06.02. 64.26 10'074.04
+0.117617 Ant Robeco Capital Growth Fds SICAV RobecoSAM Sust
+Water Equities Cap -I USD-
+Preis USD 636.73
+Auftragsnummer: XXXXXXXXX
+07.02. Kauf 09.02. 60.27 10'013.77
+0.283366 Reg Shs Biogen Inc (1720684)
+Preis USD 242.9885
+Auftragsnummer: XXXXXXXXX
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20240229 54099-235023206-XXXXXXXXXX EBANKING
+Vaduz, 29. Februar 2024
+Seite 2/3
+Kontonummer XXXX.XXXX.XXXX wiLLBe Investmentkonto CHF
+IBAN LIXX XXXX XXXX XXXX XXXX X / BIC LILALI2X
+Kontoauszug in CHF 01.02.2024 - 29.02.2024
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in CHF
+07.02. Kauf 09.02. 112.90 900.87
+4.328072 Reg Shs Hydro One Ltd (29777300)
+Preis CAD 40.14
+Auftragsnummer: XXXXXXXXX
+08.02. Verkauf 12.02. 191.66 10'092.53
+-18.68327 Reg Shs Pearson PLC (400018)
+Preis GBP 9.326
+Auftragsnummer: XXXXXXXXX
+08.02. Kauf 12.02. 287.16 8005.37
+4.26369 Vz Akt Henkel AG&Co.KGaA Stimmrechtslos Vorz- (335910)
+Preis EUR 71.34
+Auftragsnummer: XXXXXXXXX
+08.02. Kauf 12.02. 68.93 7306.44
+0.137197 N Akt Swisscom AG (874251)
+Preis CHF 502.00
+Auftragsnummer: XXXXXXXXX
+12.02. Kauf (Emission) 15.02. 107.03 629.41
+1.023156 Ant Plenum CAT Bond Fund Klasse -P CHF- (29034949)
+Preis CHF 104.61
+Auftragsnummer: XXXXXXXXX
+22.02. Kauf 26.02. 272.07 3057.34
+0.530129 N Akt Geberit AG (3017040)
+Preis CHF 512.80
+Auftragsnummer: XXXXXXXXX
+22.02. Kauf 26.02. 108.11 2409.23
+1.402835 N Akt Galenica AG (36067446)
+Preis CHF 77.00
+Auftragsnummer: XXXXXXXXX
+22.02. Kauf 26.02. 110.04 1309.19
+0.8881 N Akt Helvetia Holding AG (46664220)
+Preis CHF 123.80
+Auftragsnummer: XXXXXXXXX
+22.02. Verkauf 26.02. 249.55 3808.74
+-6.179007 N Akt ABB AG (1222171)
+Preis CHF 40.42
+Auftragsnummer: XXXXXXXXX
+22.02. Verkauf 26.02. 239.25 6207.99
+-1.55698 N Akt Allreal Holding AG (883756)
+Preis CHF 153.79116
+Auftragsnummer: XXXXXXXXX
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20240229 54099-235023206-XXXXXXXXX EBANKING
+Vaduz, 29. Februar 2024
+Seite 3/3
+Kontonummer XXXX.XXXX.XXXX wiLLBe Investmentkonto CHF
+IBAN LIXX XXXX XXXX XXXX XXXX X / BIC LILALI2X
+Kontoauszug in CHF 01.02.2024 - 29.02.2024
+Datum Buchungstext / Details Valuta Zu Ihren Lasten Zu Ihren Gunsten Saldo in CHF
+26.02. Kapitaltransaktion 26.02. 3.75 631.74
+Bardividende US42250P1030 Reg Shs Healthpeak Pptys Inc
+(50880191)
+Auftragsnummer: XXXXXXXXX
+Saldo per 29.02.2024 12631.74
+Umsatz 10'575.05 10'150.07
+Konditionen
+Sollzinsen
+01.01.2024 - 29.02.2024 0.00 %
+Habenzinsen
+01.01.2024 - 29.02.2024 0.00 %
+Die Zinsmethodik bei Überschreitungen wurde per 01.01.2024 angepasst. Die neue Regelung lautet wie folgt:
+Bei Überschreitungen des laufenden Kontos beträgt der aktuelle Sollzinssatz 0.00% pro Jahr ab dem Zeitpunkt der
+Überschreitung. Als Referenzzinssatz gilt: SARON 3M Compound, zuzüglich einer Marge von 8.50%. Der Sollzinssatz wird
+jeweils am ersten eines neuen Kalenderquartals aktualisiert und passt sich bei einer Änderung des Referenzzinssatzes
+automatisch entsprechend an und ist ab diesem Tag wirksam. Vorbehalten bleiben anderslautende Vereinbarungen.
+Einlagen auf diesem Konto sind nach Massgabe des Einlagensicherungs- und Anlegerentschädigungsgesetzes (EAG)
+grundsätzlich erstattungsfähig. Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den
+Sie auch unter www.llb.li/eag einsehen können.
+Elektronisch zugestellt
+ACC_STMT_MTH_DT_LLB  20240229 54099-235023206-XXXXXXXXX EBANKING
