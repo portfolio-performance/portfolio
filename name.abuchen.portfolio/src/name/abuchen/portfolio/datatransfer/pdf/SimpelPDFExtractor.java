@@ -13,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -77,13 +76,10 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
                         // AT0000A1QA38 10.01.2022 5.123
                         // @formatter:on
-                        .section("name", "isin") //
-                        .match("^.*(Kauf|Verkauf) (?<name>.*) [\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+$") //
+                        .section("name", "currency", "isin") //
+                        .match("^.*(Kauf|Verkauf) (?<name>.*) [\\.'\\d]+ \\p{Sc}[\\s]{1,}[\\.'\\d]+ (?<currency>\\p{Sc})[\\s]{1,}[\\.'\\d]+$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.'\\d]+$") //
-                        .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Kauf Standortfonds Österreich 10.00 € 140.59 € 0.071
@@ -104,18 +100,18 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         // Abrechnungsbetrag: 10.00 €
                         // Auszahlungsbetrag: 848.68 €
                         // @formatter:on
-                        .section("amount") //
-                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag):[\\s]{1,}(?<amount>[\\.'\\d]+) \\p{Sc}$") //
+                        .section("amount", "currency") //
+                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag):[\\s]{1,}(?<amount>[\\.'\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         // @formatter:off
                         // Auftrags-Nummer: 20220106123456789000000612345
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrags-Nummer: [\\d]+)$") //
+                        .match("^(?<note>Auftrags\\-Nummer: [\\d]+)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -151,7 +147,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Fondsname: (?<name>.*) Datum .*$") //
                         .match("^WKN \\/ ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.EUR);
+                            v.put("currency", "EUR");
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -189,7 +185,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         .match("^Zur (Wiederveranlagung|Wiederanlage/Auszahlung) zur Verf.gung stehend: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                            t.setCurrencyCode("EUR");
                         })
 
                         // @formatter:off
@@ -211,15 +207,19 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // abgeführte Kapitalertragssteuer: 31.61 €
                         // @formatter:on
-                        .section("tax").optional()
-                        .match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\.'\\d]+) \\p{Sc}$")
+                        .section("tax", "curreny").optional() //
+                        .match("^abgef.hrte Kapitalertragssteuer: (?<tax>[\\.'\\d]+) (?<curreny>\\p{Sc})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kapitalertragssteuer (KESt) gesamt: 4.28
                         // @formatter:on
-                        .section("tax").optional().match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$")
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .section("tax").optional() //
+                        .match("^Kapitalertragssteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", "EUR");
+                            processTaxEntries(t, v, type);
+                        });
     }
 
     @Override
