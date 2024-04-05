@@ -37,10 +37,6 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 /**
  * Load prices from CoinGecko.
- * 
- * @implNote Even though the CoinGecko documentation states that the free
- *           version allows 30 requests per minute, we see error messages when
- *           reaching about 9.5 calls per minute.
  */
 public class CoinGeckoQuoteFeed implements QuoteFeed
 {
@@ -80,7 +76,19 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
     public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
-    private static RateLimiter rateLimiter = RateLimiter.create(9.5 / 60);
+    // Even though the CoinGecko documentation states that the free version
+    // allows 30 requests per minute, we see error messages when reaching about
+    // 9.5 calls per minute.
+    private static final double RATE_LIMIT_FREE = 9.5 / 60;
+
+    // According to the web page, the rate limit for paid subscriptions starts
+    // with 500 calls per minute. From the experience with the rate limit of the
+    // free version, we define a conservative limit
+    private static final double RATE_LIMIT_PLAN = 250.0 / 60;
+
+    private String apiKey;
+
+    private RateLimiter rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
 
     private List<Coin> coins;
 
@@ -94,6 +102,18 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     public String getName()
     {
         return "CoinGecko"; //$NON-NLS-1$
+    }
+
+    public void setApiKey(String apiKey)
+    {
+        this.apiKey = apiKey;
+
+        rateLimiter = RateLimiter.create(hasPlan() ? RATE_LIMIT_PLAN : RATE_LIMIT_FREE);
+    }
+
+    private boolean hasPlan()
+    {
+        return apiKey != null && !apiKey.isBlank();
     }
 
     @Override
@@ -228,13 +248,20 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
 
             String endpoint = "/api/v3/coins/" + coinGeckoId + "/market_chart"; //$NON-NLS-1$ //$NON-NLS-2$
 
-            // the free API only allows for 1 year of historical data (daily).
-            long days = Math.min(365, ChronoUnit.DAYS.between(start, LocalDate.now()) + 1);
+            long days = ChronoUnit.DAYS.between(start, LocalDate.now()) + 1;
 
-            WebAccess webaccess = new WebAccess("api.coingecko.com", endpoint) //$NON-NLS-1$
+            // the free API only allows for 1 year of historical data (daily).
+            if (!hasPlan() && days > 365)
+                days = 365;
+
+            WebAccess webaccess = new WebAccess(hasPlan() ? "pro-api.coingecko.com" : "api.coingecko.com", endpoint) //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("vs_currency", security.getCurrencyCode()) //$NON-NLS-1$
                             .addParameter("days", Long.toString(days)) //$NON-NLS-1$
                             .addParameter("interval", "daily"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            if (hasPlan())
+                webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
+
             String json = webaccess.get();
 
             if (collectRawResponse)
@@ -294,7 +321,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         {
             List<Coin> coinList = new ArrayList<>();
 
-            WebAccess webaccess = new WebAccess("api.coingecko.com", "/api/v3/coins/list"); //$NON-NLS-1$ //$NON-NLS-2$
+            WebAccess webaccess = new WebAccess(hasPlan() ? "pro-api.coingecko.com" : "api.coingecko.com", //$NON-NLS-1$ //$NON-NLS-2$
+                            "/api/v3/coins/list"); //$NON-NLS-1$
+
+            if (hasPlan())
+                webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
+
             String html = webaccess.get();
 
             JSONArray coinArray = (JSONArray) JSONValue.parse(html);
