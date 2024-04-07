@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -218,6 +219,19 @@ public class TradeDetailsView extends AbstractFinanceView
     {
         boolean hasPreselectedTrades = input != null;
 
+        // retrieve existing filter
+        int savedFilters = 0;
+        IPreferenceStore preferenceStore = getPreferenceStore();
+        savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
+        if ((savedFilters & (1 << 1)) != 0)
+            onlyOpen.setValue(true);
+        if ((savedFilters & (1 << 2)) != 0)
+            onlyClosed.setValue(true);
+        if ((savedFilters & (1 << 3)) != 0)
+            onlyProfitable.setValue(true);
+        if ((savedFilters & (1 << 4)) != 0)
+            onlyLossMaking.setValue(true);
+
         DropDown filterDropDowMenu = new DropDown(Messages.MenuFilterTrades, Images.FILTER_OFF, SWT.NONE);
         updateFilterButtonImage(filterDropDowMenu);
 
@@ -249,6 +263,19 @@ public class TradeDetailsView extends AbstractFinanceView
             mgr.add(new Separator());
             mgr.add(onlyProfitableAction);
             mgr.add(onlyLossMakingAction);
+        });
+
+        filterDropDowMenu.addDisposeListener(e -> {
+            int savedFilter = 0;
+            if (onlyOpen.isTrue())
+                savedFilter += (1 << 1);
+            if (onlyClosed.isTrue())
+                savedFilter += (1 << 2);
+            if (onlyProfitable.isTrue())
+                savedFilter += (1 << 3);
+            if (onlyLossMaking.isTrue())
+                savedFilter += (1 << 4);
+            preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettingsTrade", savedFilter); //$NON-NLS-1$
         });
 
         manager.add(filterDropDowMenu);
