@@ -147,14 +147,13 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amountPerShare", "gross") //
                         .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
-                        .match("^Aussch.ttung gesamt: (?<gross>['\\.\\d]+)$") //
+                        .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal amountPerShare = asExchangeRate(v.get("amountPerShare"));
-                            BigDecimal amountTotal = asExchangeRate(v.get("gross"));
+                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                            BigDecimal gross = BigDecimal.valueOf(asAmount(v.get("gross")));
 
-                            int sharesPrecision = Values.Share.precision() * 2;
-                            BigDecimal shares = amountTotal.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
-                            t.setShares(asShares(shares.toPlainString()));
+                            BigDecimal shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                            t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                         })
 
                         // @formatter:off
@@ -246,14 +245,13 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amountPerShare", "gross") //
                         .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
-                        .match("^Aussch.ttung gesamt: (?<gross>['\\.\\d]+)$") //
+                        .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal amountPerShare = asExchangeRate(v.get("amountPerShare"));
-                            BigDecimal amountTotal = asExchangeRate(v.get("gross"));
+                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                            BigDecimal gross = BigDecimal.valueOf(asAmount(v.get("gross")));
 
-                            int sharesPrecision = Values.Share.precision() * 2;
-                            BigDecimal shares = amountTotal.divide(amountPerShare, sharesPrecision, RoundingMode.HALF_UP);
-                            t.setShares(asShares(shares.toPlainString()));
+                            BigDecimal shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                            t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                         })
 
                         // @formatter:off
