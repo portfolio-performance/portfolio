@@ -66,7 +66,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "wkn", "isin", "currency") //
                         .find("Wir haben am .* f.r Sie gekauft") //)
-                        .match("^.*[\\,'\\d]+ (?<name>.*) Depotstelle .*$") //
+                        .match("^.*[\\,'\\d]+ .* [A-Z]{3} (?<name>.*) Depotstelle .*$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
