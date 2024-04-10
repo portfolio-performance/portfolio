@@ -13,8 +13,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Security;
@@ -28,7 +29,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DividendItem
 
 public class DividendListWidgetTest
 {
-    private Locale defaultLocale;
+    private static Locale defaultLocale;
 
     private Security sec1;
     private Security sec2;
@@ -41,15 +42,15 @@ public class DividendListWidgetTest
     private SecurityEvent de2_3;
     private DividendEvent de2_4;
 
-    @Before
-    public void setupLocale()
+    @BeforeClass
+    public static void setupLocale()
     {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMANY);
     }
 
-    @After
-    public void resetLocale()
+    @AfterClass
+    public static void resetLocale()
     {
         Locale.setDefault(defaultLocale);
     }
