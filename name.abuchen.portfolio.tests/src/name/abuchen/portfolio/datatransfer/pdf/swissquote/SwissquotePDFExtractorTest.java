@@ -5,7 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -966,15 +966,15 @@ public class SwissquotePDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("CHF", 127.85), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("CHF", 127.85), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 18.56), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("EUR", 18.56), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
     }
 }
