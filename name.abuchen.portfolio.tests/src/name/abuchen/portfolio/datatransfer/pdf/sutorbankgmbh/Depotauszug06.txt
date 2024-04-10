@@ -1,0 +1,201 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service:
+Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Herrn Vornamen Nachnache Hamburg, 26.03.2024
+Straße
+PLZ Ort
+Ausführungsbestätigung, 3308266301 SUTOR BANK GMBH
+ HERMANNSTRASSE 46
+Sehr geehrter Herr Nachname, 20095 HAMBURG
+ 
+hiermit bestätigen wir Ihnen die Ausführung eines Auftrags. Details dazu entnehmen Sie bitte der INFO@SUTORBANK.DE
+anliegenden Umsatzliste. WWW.SUTORBANK.DE
+ 
+Wir sind zur Übersendung dieser Informationen verpflichtet, als Brief oder papierlos in digitaler Form über unser
+Kundenportal. Falls Sie noch nicht angemeldet sind, sprechen Sie gerne unseren GESCHÄFTSFÜHRUNG
+Kunden-Service an oder informieren sich auf: www.sutorbank.de/service/kundenportal ROBERT FREITAG
+THOMAS MEIER
+ 
+Die Aufstellung erfolgt automatisch vorbehaltlich Irrtum und wird von der Bank nicht unterschrieben.
+ MITGLIED IM EINLAGEN-
+Mit freundlichen Grüßen SICHERUNGSFONDS DES
+Ihre SUTOR BANK BUNDESVERBANDES
+ DEUTSCHER BANKEN
+ 
+ 
+Anlagen UNABHÄNGIG.
+PRODUKTNEUTRAL.
+INHABERGEFÜHRT.
+FINANZAMT HAMBURG
+STNR. 2227/210/00896
+AMTSGERICHT HAMBURG
+HRB 178357
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 5
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Übersicht mit Bewertung zum 25.03.2024
+Vornamen Nachnache
+"grow100" Nr. 3308266301 / IBAN: IBAN
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+X-trackers MSCI USA Index LU0274210672 Irland Wertpapierrechnung 40,00 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+X-trackers MSCI EMU INDEX dis LU0846194776 Irland Wertpapierrechnung 6,08 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+X-trackers MSCI CANADA LU0476289540 Irland Wertpapierrechnung 2,51 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+iShares Core MSCI Pacific ex-Japan IE00B52MJY50 Irland Wertpapierrechnung 2,80 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+iShares MSCI World Small Cap - USD IE00BF4RFH31 Irland Wertpapierrechnung 9,45 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+AIS-Amundi I.S.Stoxx Eur.600 ESG LU1681040223 Deutschland Girosammelverwahrung 13,23 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+Mul-Amundi MSCI Emerging Markets LU2573966905 Frankreich Girosammelverwahrung 21,42 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+Amundi Prime Japan - UCITS ETF LU2089238385 Frankreich Girosammelverwahrung 4,51 % 0,0000  Anteile 0,0000 JPY* 0,00 EUR
+* Währungskurs: 1,0835 US$ / 163,7800 JPY
+Kurswert Gesamt 0,00 EUR
+Geldsaldo 0,00 EUR
+Erstellt im März 2024 Seite 1 von 5
+Umsätze vom 01.01.2024 bis 25.03.2024 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+02.01.2024 02.01.2024 Einzahlung automatischer Lastschrifteinzug - 50,00
+-
+03.01.2024 02.01.2024 Kauf Kauf X-trackers MSCI USA Index 0,1953 1,0956 -24,74
+11:47 Tradegate LU0274210672 138,7610 US$
+03.01.2024 02.01.2024 Kauf Kauf Amundi Prime Japan - UCITS ETF 0,0457 155,6800 -1,10
+12:00 Tradegate LU2089238385 3.743,3256 JPY
+03.01.2024 02.01.2024 Kauf Kauf Mul-Amundi MSCI Emerging Markets 0,0997 1,0956 -4,04
+12:02 Tradegate LU2573966905 44,3828 US$
+03.01.2024 02.01.2024 Kauf Kauf X-trackers MSCI EMU INDEX dis 0,1104 -5,30
+12:36 Tradegate LU0846194776 48,0150 EUR
+03.01.2024 02.01.2024 Kauf Kauf X-trackers MSCI CANADA 0,0128 1,0956 -0,87
+13:18 Tradegate LU0476289540 74,4351 US$
+03.01.2024 02.01.2024 Kauf Kauf iShares MSCI World Small Cap - USD 0,4957 1,0956 -3,14
+13:44 Tradegate IE00BF4RFH31 6,9395 US$
+03.01.2024 02.01.2024 Kauf Kauf AIS-Amundi I.S.Stoxx Eur.600 ESG 0,0919 -10,48
+13:51 Tradegate LU1681040223 113,9800 EUR
+03.01.2024 02.01.2024 Kauf Kauf iShares Core MSCI Pacific ex-Japan 0,0021 1,0956 -0,33
+14:12 Tradegate IE00B52MJY50 171,6148 US$
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale AIS-Amundi I.S.Stoxx - -0,26
+-
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale Amundi Prime Japan - - -0,06
+-
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale X-trackers MSCI CANAD - -0,05
+-
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale X-trackers MSCI USA I - -0,68
+-
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale iShares Core MSCI Pac - -0,07
+-
+20.01.2024 20.01.2024 Steuerbuchung KapSt2023Vorabpauschale iShares MSCI World Sm - -0,20
+-
+20.01.2024 20.01.2024 Steuerbuchung SolZ2023Vorabpauschale AIS-Amundi I.S.Stoxx E - -0,01
+-
+20.01.2024 20.01.2024 Steuerbuchung SolZ2023Vorabpauschale X-trackers MSCI USA In - -0,04
+-
+20.01.2024 20.01.2024 Steuerbuchung SolZ2023Vorabpauschale iShares MSCI World Sma - -0,01
+-
+01.02.2024 01.02.2024 Einzahlung automatischer Lastschrifteinzug - 50,00
+-
+01.02.2024 01.02.2024 Gebühr Servicegebühr 01.10.2023 - 31.12.2023 - -1,54
+-
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 5
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.01.2024 bis 25.03.2024 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+01.02.2024 01.02.2024 Gebühr Vermögensverwaltungsgebühr 01.10.2023 - 31.12 - -1,45
+-
+05.02.2024 02.02.2024 Kauf Kauf X-trackers MSCI EMU INDEX dis 0,0333 -1,64
+11:07 Tradegate LU0846194776 49,2700 EUR
+05.02.2024 02.02.2024 Kauf Kauf X-trackers MSCI CANADA 0,0125 1,0883 -0,87
+11:12 Tradegate LU0476289540 75,5716 US$
+05.02.2024 02.02.2024 Kauf Kauf iShares Core MSCI Pacific ex-Japan 0,0244 1,0883 -3,77
+12:35 Tradegate IE00B52MJY50 168,1641 US$
+05.02.2024 02.02.2024 Kauf Kauf iShares MSCI World Small Cap - USD 1,3640 1,0883 -8,60
+12:39 Tradegate IE00BF4RFH31 6,8617 US$
+05.02.2024 02.02.2024 Kauf Kauf AIS-Amundi I.S.Stoxx Eur.600 ESG 0,0413 -4,84
+13:20 Tradegate LU1681040223 117,1000 EUR
+05.02.2024 02.02.2024 Kauf Kauf Mul-Amundi MSCI Emerging Markets 0,6456 1,0883 -25,91
+14:28 Tradegate LU2573966905 43,6748 US$
+01.03.2024 01.03.2024 Einzahlung automatischer Lastschrifteinzug - 50,00
+-
+04.03.2024 01.03.2024 Kauf Kauf X-trackers MSCI USA Index 0,0399 1,0813 -5,49
+11:31 Tradegate LU0274210672 148,8074 US$
+04.03.2024 01.03.2024 Kauf Kauf X-trackers MSCI EMU INDEX dis 0,0729 -3,69
+11:52 Tradegate LU0846194776 50,6000 EUR
+04.03.2024 01.03.2024 Kauf Kauf X-trackers MSCI CANADA 0,0568 1,0813 -3,94
+12:01 Tradegate LU0476289540 75,0098 US$
+04.03.2024 01.03.2024 Kauf Kauf Mul-Amundi MSCI Emerging Markets 0,2818 1,0813 -11,73
+13:44 Tradegate LU2573966905 45,0134 US$
+04.03.2024 01.03.2024 Kauf Kauf iShares Core MSCI Pacific ex-Japan 0,0254 1,0813 -3,96
+14:34 Tradegate IE00B52MJY50 168,5530 US$
+04.03.2024 01.03.2024 Kauf Kauf iShares MSCI World Small Cap - USD 1,5247 1,0813 -9,92
+14:42 Tradegate IE00BF4RFH31 7,0349 US$
+04.03.2024 01.03.2024 Kauf Kauf AIS-Amundi I.S.Stoxx Eur.600 ESG 0,0943 -11,27
+15:02 Tradegate LU1681040223 119,5200 EUR
+13.03.2024 07.03.2024 Ausschüttung Betrag der Ausschüttung X-trackers MSCI EMU INDEX dis - 0,64 0,79 -0,14
+LU0846194776 EUR -0,01
+15.03.2024 14.03.2024 Kauf Kauf X-trackers MSCI USA Index 0,0044 1,0925 -0,61
+10:39 Tradegate LU0274210672 151,4527 US$
+15.03.2024 14.03.2024 Kauf Kauf iShares MSCI World Small Cap - USD 0,0046 1,0925 -0,03
+11:25 Tradegate IE00BF4RFH31 7,1460 US$
+25.03.2024 22.03.2024 Verkauf Verkauf X-trackers MSCI USA Index -8,2731 1,0823 1.139,97 1.173,40 -31,69
+10:41 Tradegate LU0274210672 153,5065 US$ -1,74
+25.03.2024 22.03.2024 Verkauf Verkauf X-trackers MSCI EMU INDEX dis -3,3986 172,65 177,47 -4,57
+10:47 Tradegate LU0846194776 52,2200 EUR -0,25
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 3 von 5
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.01.2024 bis 25.03.2024 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+25.03.2024 22.03.2024 Verkauf Verkauf X-trackers MSCI CANADA -1,0288 1,0823 72,27 73,70 -1,36
+11:03 Tradegate LU0476289540 77,5360 US$ -0,07
+25.03.2024 22.03.2024 Verkauf Verkauf iShares Core MSCI Pacific ex-Japan -0,5101 1,0823 79,56 80,26 -0,66
+11:47 Tradegate IE00B52MJY50 170,2891 US$ -0,04
+25.03.2024 22.03.2024 Verkauf Verkauf iShares MSCI World Small Cap - USD -41,4252 1,0823 270,98 276,97 -5,68
+11:49 Tradegate IE00BF4RFH31 7,2363 US$ -0,31
+25.03.2024 22.03.2024 Verkauf Verkauf Amundi Prime Japan - UCITS ETF -4,8891 163,7400 130,70 134,57 -3,67
+11:52 Tradegate LU2089238385 4.506,9435 JPY -0,20
+25.03.2024 22.03.2024 Verkauf Verkauf Mul-Amundi MSCI Emerging Markets -14,6442 1,0823 615,34 619,23 -3,69
+11:54 Tradegate LU2573966905 45,7651 US$ -0,20
+25.03.2024 22.03.2024 Verkauf Verkauf AIS-Amundi I.S.Stoxx Eur.600 ESG -3,1475 377,48 386,01 -8,09
+11:57 Tradegate LU1681040223 122,6400 EUR -0,44
+25.03.2024 25.03.2024 Auszahlung Überweisung bei Kündigung - -2.858,95
+-
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 4 von 5
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+DIE PRIVATBANK FÜR ALLE.
+Kostenaufstellung vom 01.01.2024 bis 25.03.2024
+Vornamen Nachnache
+"grow100" Nr. 3308266301 / IBAN: IBAN
+Kosten der Wertpapierdienstleistung (im Berichtszeitraum von der Bank erhoben) 2,99 EUR (2) 0,109 % (1)
+Abschluss- und Vertriebskosten 0,00 EUR 0,000 %
+Konto- und Depotführung 0,00 EUR 0,000 %
+Verwaltungsgebühr 1,45 EUR 0,053 %
+davon Zuwendungen:
+ Verwaltungsgebührbeteiligung an Kooperationspartner 0,00 EUR
+Depotbetreuungskosten 1,54 EUR 0,056 %
+Vorzeitige Vertragsauflösungsgebühr 0,00 EUR 0,000 %
+Transaktionskosten
+Ausgabeauf- / Rücknahmeabschläge 0,00 EUR 0,000 %
+davon Zuwendungen:
+Ausgabeaufschlagsbeteiligung an Kooperationspartner 0,00 EUR
+Rückvergütung Ausgabeaufschläge 0,00 EUR 0,000 %
+Transaktions- / Ordergebühr 0,00 EUR 0,000 %
+Fremdwährungsmarge 0,00 EUR 0,000 %
+Fondskosten (im Berichtszeitraum von der/den Fondsgesellschaft/en erhoben) 1,44 EUR (2) 0,052 % (1)
+Fondsverwaltungsgebühr (lfd. Fondskosten) 1,17 EUR 0,042 %
+davon Zuwendungen:
+Vertriebsfolgeprovision 0,00 EUR
+Rückvergütung Vertriebsfolgeprovision 0,00 EUR 0,000 %
+Performance Fee 0,00 EUR 0,000 %
+Transaktionskosten 0,27 EUR 0,010 %
+Gesamtsumme 4,43 EUR (2) 0,161 % (1)
+Die Gesamtkosten Ihrer Anlage haben den Wert Ihrer Anlage im angegebenen Berichtszeitraum um 0,16 % gemindert. Dabei entfallen 0,05 % auf die Fondskosten und 0,11 % auf die Kosten der Wertpapierdienstleistung. Die Renditeminderung wurde
+dabei auf Basis des durchschnittlichen Depotvolumens im Berichtszeitraum in Höhe von 2.754,39 EUR ermittelt.
+(1) Anteil der Kosten bezogen auf das durchschnittliche Depotvolumen im Berichtszeitraum in Höhe von 2.754,39 EUR
+(2) Für die Umrechnung von Positionen in US$ wurde der arithmetisch gemittelte Umrechnungskurs in Höhe von 1,0835 US$ verwendet.
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 5 von 5
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
