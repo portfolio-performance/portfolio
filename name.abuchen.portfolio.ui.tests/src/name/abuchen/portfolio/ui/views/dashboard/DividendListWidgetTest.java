@@ -186,7 +186,7 @@ public class DividendListWidgetTest
         LocalDate now = LocalDate.of(2024, 4, 9);
         list = widget.getUpdateTask(now).get();
         assertEquals("2024-04-09 Security 1 EUR 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "Security 2 USD 0,55 Zahltag", getListAsString(list));
+                        + "Security 2 USD 0,55 " + Messages.ColumnPaymentDate, getListAsString(list));
 
         now = LocalDate.of(2024, 4, 8);
         list = widget.getUpdateTask(now).get();
