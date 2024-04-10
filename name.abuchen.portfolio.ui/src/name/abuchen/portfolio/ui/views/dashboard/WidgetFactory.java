@@ -25,9 +25,9 @@ import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChar
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
-import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
@@ -214,6 +214,8 @@ public enum WidgetFactory
     EARNINGS(Messages.LabelEarningsTransactionList, Messages.LabelEarnings, EarningsListWidget::new),
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
+
+    EARNINGS_DIVIDEND_LIST(Messages.LabelEarningsDividendList, Messages.LabelEarnings, DividendListWidget::new),
 
     EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, EarningsChartWidget::perYear),
 

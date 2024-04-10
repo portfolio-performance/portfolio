@@ -1320,6 +1320,17 @@ public class Messages extends NLS
     public static String OptionDateIsInTheFuture;
     public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
+
+    public static String LabelEarningsDividendList;
+    public static String LabelEarningsDividendPeriodFrom;
+    public static String LabelEarningsDividendPeriodUntil;
+    public static String LabelEarningsDividendDateType;
+    public static String ColumnDividendsNextExDate;
+    public static String ColumnDividendsNextExDate_MenuLabel;
+    public static String ColumnDividendsNextPaymentDate;
+    public static String ColumnDividendsNextPaymentDate_MenuLabel;
+    public static String ColumnDividendsNextPaymentAmount;
+    public static String ColumnDividendsNextPaymentAmount_MenuLabel;
     static
     {
         // initialize resource bundle

@@ -98,6 +98,7 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
+import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
@@ -219,6 +220,7 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         addAttributeColumns();
+        addDividendColumns();
         addQuoteFeedColumns();
         addDataQualityColumns();
 
@@ -238,6 +240,14 @@ public final class SecuritiesTable implements ModificationListener
         securities.refresh();
 
         hookContextMenu();
+    }
+
+    private void addDividendColumns()
+    {
+        DividendPaymentColumn.createFor() //
+                        .forEach(column -> {
+                            support.addColumn(column);
+                        });
     }
 
     private void addMasterDataColumns()
