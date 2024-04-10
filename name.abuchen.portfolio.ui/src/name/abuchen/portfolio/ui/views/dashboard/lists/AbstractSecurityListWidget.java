@@ -13,6 +13,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -71,6 +72,17 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         view.showPane();
     });
 
+    protected void addListener(MouseListener listener, Control... controls)
+    {
+        for (Control ctr : controls)
+        {
+            if (ctr != null)
+            {
+                ctr.addMouseListener(listener);
+            }
+        }
+    }
+
     public AbstractSecurityListWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
@@ -84,6 +96,31 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         container.setBackground(parent.getBackground());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
+        createTitleArea(container);
+
+        list = new Composite(container, SWT.NONE);
+        RowLayout layout = new RowLayout(SWT.VERTICAL);
+        layout.marginLeft = 0;
+        layout.marginRight = 0;
+        layout.marginTop = 0;
+        layout.marginBottom = 0;
+        layout.spacing = 10;
+        layout.wrap = false;
+        layout.fill = true;
+        list.setLayout(layout);
+
+        var factory = GridDataFactory.fillDefaults();
+        optionallyGet(ChartHeightConfig.class).ifPresent(config -> {
+            var yHint = get(ChartHeightConfig.class).getPixel();
+            factory.hint(SWT.DEFAULT, yHint);
+        });
+        factory.grab(true, false).applyTo(list);
+
+        return container;
+    }
+
+    protected void createTitleArea(Composite container)
+    {
         title = new StyledLabel(container, SWT.NONE);
         title.setBackground(container.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
@@ -100,37 +137,24 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         });
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        list = new Composite(container, SWT.NONE);
-        RowLayout layout = new RowLayout(SWT.VERTICAL);
-        layout.marginLeft = 0;
-        layout.marginRight = 0;
-        layout.marginTop = 0;
-        layout.marginBottom = 0;
-        layout.spacing = 10;
-        layout.wrap = false;
-        layout.fill = true;
-        list.setLayout(layout);
-        int yHint = get(ChartHeightConfig.class).getPixel();
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(list);
-
-        return container;
     }
 
     @Override
     public void update(List<T> items)
     {
-        GridData data = (GridData) list.getLayoutData();
+        optionallyGet(ChartHeightConfig.class).ifPresent(config -> {
+            GridData data = (GridData) list.getLayoutData();
 
-        int oldHeight = data.heightHint;
-        int newHeight = get(ChartHeightConfig.class).getPixel();
+            int oldHeight = data.heightHint;
+            int newHeight = config.getPixel();
 
-        if (oldHeight != newHeight)
-        {
-            data.heightHint = newHeight;
-            title.getParent().layout(true);
-            title.getParent().getParent().layout(true);
-        }
+            if (oldHeight != newHeight)
+            {
+                data.heightHint = newHeight;
+                title.getParent().layout(true);
+                title.getParent().getParent().layout(true);
+            }
+        });
 
         if (items.isEmpty())
             this.title.setText(getWidget().getLabel() + " (0)"); //$NON-NLS-1$
@@ -148,18 +172,38 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         }
         else
         {
-            // limit the number of securities listed on the dashboard to 25
-            for (int ii = 0; ii < items.size() && ii < 25; ii++)
+            var max = getMaxNumberOfSecurities();
+
+            // limit the number of securities listed on the dashboard
+            for (int ii = 0; ii < items.size() && ii < max; ii++)
             {
                 T item = items.get(ii);
                 T previous = ii > 0 ? items.get(ii - 1) : null;
                 Composite child = createItemControl(list, item, previous);
                 child.setData(item);
             }
+            if (max < items.size())
+            {
+                createMaxSecuritiesExceededControl(list);
+            }
         }
 
         list.setData(items);
         list.layout(true);
+        list.getParent().layout(true);
+        list.getParent().getParent().layout();
+    }
+
+    protected void createMaxSecuritiesExceededControl(Composite parent)
+    {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new FormLayout());
+        createLabel(composite, "..."); //$NON-NLS-1$
+    }
+
+    protected int getMaxNumberOfSecurities()
+    {
+        return 25;
     }
 
     protected abstract void createEmptyControl(Composite parent);
@@ -174,16 +218,20 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
 
     protected Label createLabel(Composite composite, String text)
     {
-        Label ret = new Label(composite, SWT.NONE);
-        ret.setText(TextUtil.tooltip(Objects.toString(text, ""))); //$NON-NLS-1$
-        return ret;
+        return createLabel(composite, text, SWT.NONE);
+    }
+
+    protected Label createLabel(Composite composite, String text, int style)
+    {
+        var label = new Label(composite, style);
+        label.setText(TextUtil.tooltip(Objects.toString(text, ""))); //$NON-NLS-1$
+        return label;
     }
 
     protected Label createLabel(Composite composite, Image image)
     {
-        Label ret = new Label(composite, SWT.NONE);
-        ret.setImage(image);
-        return ret;
+        var label = new Label(composite, SWT.NONE);
+        label.setImage(image);
+        return label;
     }
-
 }

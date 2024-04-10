@@ -350,6 +350,8 @@ public enum WidgetFactory
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
 
+    DIVIDEND_EVENT_LIST(Messages.LabelEarningsDividendList, Messages.LabelEarnings, DividendListWidget::new),
+
     EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, Images.VIEW_BARCHART,
                     EarningsChartWidget::perYear),
 
