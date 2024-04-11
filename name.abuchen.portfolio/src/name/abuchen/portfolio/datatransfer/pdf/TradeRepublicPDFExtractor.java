@@ -1323,18 +1323,45 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Kapitalertragsteuer Optimierung 3,75 EUR
-                        // @formatter:on
-                        .section("amount", "currency", "date") //
-                        .match("^Kapitalertrags(s)?teuer Optimierung [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                        .find("VERRECHNUNGSKONTO VALUTA BETRAG") //
-                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setDateTime(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Kapitalertragsteuer Optimierung 3,75 EUR
+                                        // BUCHUNG
+                                        // DE00000000000000000000 23.11.2020 4,26
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "date", "amount") //
+                                                        .match("^Kapitalertrags(s)?teuer Optimierung [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .find("BUCHUNG") //
+                                                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // HSBC Trinkaus & Burkhardt GmbH 400 Stk. 2,21 EUR
+                                        // TurboC O.End salesfor
+                                        // ISIN: DE000HS33QJ0
+                                        // BUCHUNG
+                                        // VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+                                        // DE30501108019081234567 11.04.2024 2,21 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "shares", "nameContinued", "isin", "date", "amount", "currency") //
+                                                        .match("^(?<name>.*) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .find("BUCHUNG") //
+                                                        .match("^.* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .wrap(TransactionItem::new);
     }
