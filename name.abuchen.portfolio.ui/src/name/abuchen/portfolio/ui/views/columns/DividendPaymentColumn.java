@@ -24,7 +24,7 @@ public class DividendPaymentColumn
 
     static Column createNextDividendExDateColumn()
     {
-        Column column = new Column("nexdd", Messages.ColumnDividendsNextExDate, SWT.LEFT, 80); //$NON-NLS-1$
+        Column column = new Column("nextdivexdate", Messages.ColumnDividendsNextExDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextExDate_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
@@ -51,11 +51,12 @@ public class DividendPaymentColumn
             public Color getBackground(Object element)
             {
                 LocalDate date = dataProvider.apply(element);
-if (date == null || !date.equals(LocalDate.now())) {
-    return null;
-}
+                if (date == null || !date.equals(LocalDate.now()))
+                {
+                    return null; //
+                }
 
-return Colors.theme().greenBackground();
+                return Colors.theme().greenBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
@@ -64,7 +65,7 @@ return Colors.theme().greenBackground();
 
     static Column createNextDividendPaymentDateColumn()
     {
-        Column column = new Column("nexpdd", Messages.ColumnDividendsNextPaymentDate, SWT.LEFT, 80); //$NON-NLS-1$
+        Column column = new Column("nextdivpmtdate", Messages.ColumnDividendsNextPaymentDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextPaymentDate_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
@@ -90,11 +91,13 @@ return Colors.theme().greenBackground();
             @Override
             public Color getBackground(Object element)
             {
-if (date == null || !date.equals(LocalDate.now())) {
-    return null;
-}
+                LocalDate date = dataProvider.apply(element);
+                if (date == null || !date.equals(LocalDate.now()))
+                {
+                    return null; //
+                }
 
-return Colors.theme().redBackground();
+                return Colors.theme().redBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
@@ -103,7 +106,7 @@ return Colors.theme().redBackground();
 
     static Column createNextDividendPaymentAmount()
     {
-        Column column = new Column("nexdpa", Messages.ColumnDividendsNextPaymentAmount, SWT.RIGHT, 60); //$NON-NLS-1$
+        Column column = new Column("nextdivpmtamt", Messages.ColumnDividendsNextPaymentAmount, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextPaymentAmount_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
