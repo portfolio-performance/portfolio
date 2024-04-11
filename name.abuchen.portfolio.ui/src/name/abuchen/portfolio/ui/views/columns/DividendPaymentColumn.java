@@ -90,16 +90,11 @@ return Colors.theme().greenBackground();
             @Override
             public Color getBackground(Object element)
             {
-                LocalDate date = dataProvider.apply(element);
-                if (date == null)
-                {
-                    return null; //
-                }
-                if (!date.equals(LocalDate.now()))
-                {
-                    return null; //
-                }
-                return Colors.theme().redBackground();
+if (date == null || !date.equals(LocalDate.now())) {
+    return null;
+}
+
+return Colors.theme().redBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
