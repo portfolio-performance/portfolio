@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ UniCredit Bank AG
+Wertpapiermitteilung
+Depotnummer Bankleitzahl Datum
+1234 12345678  123 456 00 17.05.2021
+Depotinhaber
+Max Mustermann
+Kontohinweis
+Herrn
+Max Mustermann Depot
+Muster Str. 1
+01234 Musterhausen
+                              Filiale
+                              Filiale Musterhausen
+                              Ansprechpartner Telefon
+                              HR. Muster 1234 56789-10  
+Wertpapiermitteilung - Ertragszahlung für Depotnummer 1234 0123456789
+ACATIS GANÉ VALUE EVENT FONDS Wertpapierkennnummer  A1T73W / DE000A1T73W9
+INHABER-ANTEILE C
+Geschäftsjahr 2020/2021
+-------------------------------------------------------------------------------------
+Stück 0,066
+zahlbar mit EUR  15,00 Bruttobetrag   EUR 0,99
+-------------------------------------------
+Valuta 18.05.2021 Gutschrift     EUR 0,99
+auf Konto 1234 0123456789   Die Kaufabrechnung zur Wiederanlage erhalten Sie separat.
+-------------------------------------------------------------------------------------
+Erläuterung zur Abrechnung
+Referenz 20210517KUP0123456789
+Bitte beachten Sie den Rechenschaftsbericht der Investmentgesellschaft.
+Diese Abrechnung erfolgt ohne Berücksichtigung der Kapitalertragsteuer sowie
+Solidaritätszuschlag und gegebenenfalls Kirchensteuer. Eine eventuell anfallende
+Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift wird separat auf Ihrem
+Kontoauszug ausgewiesen.
+Bitte Rückseite beachten 
+BV1234/VK1234/11.2011
+Eingestellt am: 20210518 03:29:390 -F1 03 302 G2L3I4UP 123456789    00000012345678 000000001234
