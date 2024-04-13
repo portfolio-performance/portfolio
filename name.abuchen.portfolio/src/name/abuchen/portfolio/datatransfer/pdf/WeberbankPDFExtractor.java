@@ -203,7 +203,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-        
+
                         // @formatter:off
                         // Kapitalertragsteuer 25 % auf 29,61 EUR 7,40- EUR
                         // @formatter:on
