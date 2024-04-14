@@ -60,6 +60,18 @@ public class DataSeriesConfig implements WidgetConfig
         return dataSeries;
     }
 
+    public void setDataSeries(DataSeries dataSeries)
+    {
+        this.dataSeries = dataSeries;
+
+        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
+
+        delegate.onWidgetConfigEdited(this.getClass());
+
+        delegate.update();
+        delegate.getClient().touch();
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {

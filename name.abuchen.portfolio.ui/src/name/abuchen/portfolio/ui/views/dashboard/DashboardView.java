@@ -588,6 +588,7 @@ public class DashboardView extends AbstractHistoricView
         MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
         manager.add(applyToAll);
         new ReportingPeriodApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
+        new DataSeriesApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
