@@ -41,7 +41,7 @@ public class DividendPaymentColumn
                             .filter(DividendEvent.class::isInstance) //
                             .map(e -> ((DividendEvent) e).getDate()) //
                             .sorted(Comparable::compareTo) //
-                            .filter(d -> d.isAfter(now)) //
+                            .filter(d -> !now.isAfter(d)) //
                             .findFirst().orElse(null);
         };
 
@@ -56,7 +56,7 @@ public class DividendPaymentColumn
                     return null; //
                 }
 
-                return Colors.theme().greenBackground();
+                return Colors.theme().redBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
@@ -82,7 +82,7 @@ public class DividendPaymentColumn
                             .filter(DividendEvent.class::isInstance) //
                             .map(e -> ((DividendEvent) e).getPaymentDate()) //
                             .sorted(Comparable::compareTo) //
-                            .filter(d -> d.isAfter(now)) //
+                            .filter(d -> !now.isAfter(d)) //
                             .findFirst().orElse(null);
         };
 
@@ -97,7 +97,7 @@ public class DividendPaymentColumn
                     return null; //
                 }
 
-                return Colors.theme().redBackground();
+                return Colors.theme().greenBackground();
             }
         });
         column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
@@ -150,7 +150,7 @@ public class DividendPaymentColumn
                         .filter(e -> e instanceof DividendEvent) //
                         .map(e -> (DividendEvent) e) //
                         .sorted((e1, e2) -> e1.getPaymentDate().compareTo(e2.getPaymentDate())) //
-                        .filter(d -> d.getPaymentDate().isAfter(now)) //
+                        .filter(d -> !now.isAfter(d.getPaymentDate())) //
                         .map(DividendEvent::getAmount).findFirst().orElse(null);
     }
 

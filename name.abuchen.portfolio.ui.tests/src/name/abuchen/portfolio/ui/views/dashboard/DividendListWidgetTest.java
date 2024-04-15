@@ -38,6 +38,7 @@ public class DividendListWidgetTest
     private DividendEvent de1_2;
     private SecurityEvent de1_3;
     private DividendEvent de1_4;
+    private DividendEvent de1_5;
     private DividendEvent de2_1;
     private DividendEvent de2_2;
     private SecurityEvent de2_3;
@@ -64,6 +65,7 @@ public class DividendListWidgetTest
         de1_2 = new DividendEvent(LocalDate.of(2024, 7, 14), LocalDate.of(2024, 8, 11), Money.of("EUR", 22), "source");
         de1_3 = new SecurityEvent(LocalDate.of(2024, 2, 3), SecurityEvent.Type.NOTE, "some note");
         de1_4 = new DividendEvent(LocalDate.of(2024, 2, 4), LocalDate.of(2024, 3, 5), Money.of("EUR", 33), "source");
+        de1_5 = new DividendEvent(LocalDate.of(2024, 8, 1), LocalDate.of(2024, 8, 1), Money.of("EUR", 33), "source");
         sec1.addEvent(de1_1);
         sec1.addEvent(de1_2);
         sec1.addEvent(de1_3);
@@ -88,7 +90,7 @@ public class DividendListWidgetTest
         
         di = new DividendItem(DateType.EX_DIVIDEND_DATE, sec1, de1_1);
         assertThat(di.getSecurity(), is(sec1));
-        assertThat(di.type, is(DateType.EX_DIVIDEND_DATE));
+        assertThat(di.getFirstType(), is(DateType.EX_DIVIDEND_DATE));
         assertThat(di.div, is(de1_1));
     }
 
@@ -185,8 +187,8 @@ public class DividendListWidgetTest
 
         LocalDate now = LocalDate.of(2024, 4, 9);
         list = widget.getUpdateTask(now).get();
-        assertEquals("2024-04-09 Security 1 EUR 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "Security 2 USD 0,55 " + Messages.ColumnPaymentDate, getListAsString(list));
+        assertEquals("2024-04-09 Security 1 EUR 0,55 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "Security 2 USD 0,55 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
 
         now = LocalDate.of(2024, 4, 8);
         list = widget.getUpdateTask(now).get();
@@ -194,44 +196,57 @@ public class DividendListWidgetTest
 
         dateStart.set(DateStartRange.FROM_YTD);
         list = widget.getUpdateTask(now).get();
-        assertEquals("2024-02-04 Security 1 EUR 0,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-02-05 Security 2 USD 13,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-03-05 Security 1 EUR 0,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "Security 2 USD 13,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-04-05 Security 2 USD 0,55 " + Messages.ColumnExDate, getListAsString(list));
+        assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "Security 2 USD 13,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-04-05 Security 2 USD 0,55 [" + Messages.ColumnExDate + "]", getListAsString(list));
 
         dateEnd.set(DateEndRange.UNTIL_EOY);
         list = widget.getUpdateTask(now).get();
-        assertEquals("2024-02-04 Security 1 EUR 0,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-02-05 Security 2 USD 13,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-03-05 Security 1 EUR 0,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "Security 2 USD 13,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-04-05 Security 2 USD 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-04-09 Security 1 EUR 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "Security 2 USD 0,55 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-04-12 Security 1 EUR 0,55 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-07-14 Security 1 EUR 0,22 " + Messages.ColumnExDate + "\r\n" //
-                        + "Security 2 USD 1,22 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-07-15 Security 2 USD 1,22 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-08-11 Security 1 EUR 0,22 " + Messages.ColumnPaymentDate, getListAsString(list));
+        assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "Security 2 USD 13,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-04-05 Security 2 USD 0,55 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-04-09 Security 1 EUR 0,55 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "Security 2 USD 0,55 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-04-12 Security 1 EUR 0,55 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-07-14 Security 1 EUR 0,22 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "Security 2 USD 1,22 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-07-15 Security 2 USD 1,22 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-08-11 Security 1 EUR 0,22 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
         
         dateType.set(DateType.EX_DIVIDEND_DATE);
         list = widget.getUpdateTask(now).get();
-        assertEquals("2024-02-04 Security 1 EUR 0,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-02-05 Security 2 USD 13,33 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-04-05 Security 2 USD 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-04-09 Security 1 EUR 0,55 " + Messages.ColumnExDate + "\r\n" //
-                        + "2024-07-14 Security 1 EUR 0,22 " + Messages.ColumnExDate + "\r\n" //
-                        + "Security 2 USD 1,22 " + Messages.ColumnExDate, getListAsString(list));
+        assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-04-05 Security 2 USD 0,55 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-04-09 Security 1 EUR 0,55 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "2024-07-14 Security 1 EUR 0,22 [" + Messages.ColumnExDate + "]\r\n" //
+                        + "Security 2 USD 1,22 [" + Messages.ColumnExDate + "]", getListAsString(list));
 
         dateType.set(DateType.PAYMENT_DATE);
         list = widget.getUpdateTask(now).get();
-        assertEquals("2024-03-05 Security 1 EUR 0,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "Security 2 USD 13,33 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-04-09 Security 2 USD 0,55 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-04-12 Security 1 EUR 0,55 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-07-15 Security 2 USD 1,22 " + Messages.ColumnPaymentDate + "\r\n" //
-                        + "2024-08-11 Security 1 EUR 0,22 " + Messages.ColumnPaymentDate, getListAsString(list));
+        assertEquals("2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "Security 2 USD 13,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-04-09 Security 2 USD 0,55 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-04-12 Security 1 EUR 0,55 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-07-15 Security 2 USD 1,22 [" + Messages.ColumnPaymentDate + "]\r\n" //
+                        + "2024-08-11 Security 1 EUR 0,22 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
+
+        sec1.getEvents().clear();
+        sec2.getEvents().clear();
+        sec1.addEvent(de1_5);
+        list = widget.getUpdateTask(now).get();
+        assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
+        dateType.set(DateType.EX_DIVIDEND_DATE);
+        list = widget.getUpdateTask(now).get();
+        assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]", getListAsString(list));
+        dateType.set(DateType.ALL_DATES);
+        list = widget.getUpdateTask(now).get();
+        assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnExDate + ", " + Messages.ColumnPaymentDate
+                        + "]", getListAsString(list));
     }
 
     private String getListAsString(List<DividendItem> list)
@@ -241,11 +256,11 @@ public class DividendListWidgetTest
                             StringBuilder sb = new StringBuilder();
                             if (entry.hasNewDate)
                             {
-                                sb.append(entry.type.getDate(entry.div).toString() + " ");
+                                sb.append(entry.getFirstType().getDate(entry.div).toString() + " ");
                             }
                             sb.append(entry.getSecurity().getName() + " ");
                             sb.append(entry.div.getAmount() + " ");
-                            sb.append(entry.type);
+                            sb.append(entry.types);
                             return sb.toString();
                         }) //
                         .collect(Collectors.joining("\r\n"));

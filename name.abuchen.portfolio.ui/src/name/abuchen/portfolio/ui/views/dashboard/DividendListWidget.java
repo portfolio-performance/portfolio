@@ -4,10 +4,14 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -31,14 +35,19 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     public static class DividendItem extends AbstractSecurityListWidget.Item
     {
         boolean hasNewDate;
-        DateType type;
+        Deque<DateType> types = new LinkedList<>();
         DividendEvent div;
 
         public DividendItem(DateType type, Security security, DividendEvent div)
         {
             super(security);
             this.div = div;
-            this.type = type;
+            this.types.add(type);
+        }
+
+        DateType getFirstType()
+        {
+            return types.peekFirst();
         }
     }
 
@@ -198,16 +207,19 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
                     {
                         continue;
                     }
-                    checkAndAdd(items, security, de, dateType, DateType.EX_DIVIDEND_DATE, fromDate, untilDate);
-                    checkAndAdd(items, security, de, dateType, DateType.PAYMENT_DATE, fromDate, untilDate);
+                    DividendItem added = checkAndAdd(items, security, de, dateType, DateType.EX_DIVIDEND_DATE, fromDate,
+                                    untilDate, null);
+                    checkAndAdd(items, security, de, dateType, DateType.PAYMENT_DATE, fromDate, untilDate, added);
                 }
             }
 
-            Collections.sort(items, (di1, di2) -> di1.type.getDate(di1.div).compareTo(di2.type.getDate(di2.div)));
+            Collections.sort(items, new DividendItemComparator());
             LocalDate prevDate = null;
+            DividendItem prevItem = null;
             for (DividendItem item : items)
             {
-                LocalDate currDate = item.type.getDate(item.div);
+                prevItem = item;
+                LocalDate currDate = item.getFirstType().getDate(item.div);
                 if (prevDate == null || !currDate.isEqual(prevDate))
                 {
                     item.hasNewDate = true;
@@ -218,6 +230,28 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
 
             return items;
         };
+    }
+
+    static class DividendItemComparator implements Comparator<DividendItem>
+    {
+
+        @Override
+        public int compare(DividendItem di1, DividendItem di2)
+        {
+            DateType type1 = di1.getFirstType();
+            DateType type2 = di2.getFirstType();
+            int ret = type1.getDate(di1.div).compareTo(type2.getDate(di2.div));
+            if (ret != 0)
+            {
+                return ret; //
+            }
+            ret = String.CASE_INSENSITIVE_ORDER.compare(di1.getSecurity().getName(), di2.getSecurity().getName());
+            if (ret != 0)
+            {
+                return ret; //
+            }
+            return type1.compareTo(type2);
+        }
     }
 
     DateStartRange getStartRangeValue()
@@ -241,7 +275,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     }
 
     DividendItem checkAndAdd(List<DividendItem> items, Security sec, DividendEvent de, DateType configuredType,
-                    DateType typeToAdd, LocalDate startRange, LocalDate endRange)
+                    DateType typeToAdd, LocalDate startRange, LocalDate endRange, DividendItem prevAdded)
     {
         if (configuredType != typeToAdd && configuredType != DateType.ALL_DATES)
         {
@@ -260,7 +294,14 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         }
 
         DividendItem ret = new DividendItem(typeToAdd, sec, de);
-        items.add(ret);
+        if (prevAdded != null && checkDate.equals(prevAdded.types.peekLast().getDate(de)))
+        {
+            prevAdded.types.add(typeToAdd);
+        }
+        else
+        {
+            items.add(ret);
+        }
         return ret;
     }
 
@@ -274,15 +315,18 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         Image image = LogoManager.instance().getDefaultColumnImage(sec, getClient().getSettings());
         Label logo = createLabel(composite, image);
         Label name = createLabel(composite, sec.getName());
+        String typeStr = item.types.stream() //
+                        .map(dt -> dt.label) //
+                        .collect(Collectors.joining(", "));
         Label amtAndType = createLabel(composite,
-                        "   " + Values.Money.format(item.div.getAmount()) + " " + item.type.label); //$NON-NLS-1$ //$NON-NLS-2$
+                        "   " + Values.Money.format(item.div.getAmount()) + " " + typeStr); //$NON-NLS-1$ //$NON-NLS-2$
 
 
         Label date = null;
 
         if (item.hasNewDate)
         {
-            date = createLabel(composite, Values.Date.format(item.type.getDate(item.div)));
+            date = createLabel(composite, Values.Date.format(item.getFirstType().getDate(item.div)));
         }
 
         addListener(mouseUpAdapter, composite, name, date, amtAndType);
