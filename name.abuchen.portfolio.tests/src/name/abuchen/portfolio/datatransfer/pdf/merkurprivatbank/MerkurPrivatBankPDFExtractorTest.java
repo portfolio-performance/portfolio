@@ -1,17 +1,28 @@
 package name.abuchen.portfolio.datatransfer.pdf.merkurprivatbank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
@@ -213,6 +224,37 @@ public class MerkurPrivatBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3240.05 + 178.20))));
 
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005557508"), hasWkn("555750"), hasTicker(null), //
+                        hasName("DEUTSCHE TELEKOM AG NAMENS-AKTIEN O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-04-15T00:00"), hasShares(55), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 60338188850"), //
+                        hasAmount("EUR", 42.35), hasGrossValue("EUR", 42.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
