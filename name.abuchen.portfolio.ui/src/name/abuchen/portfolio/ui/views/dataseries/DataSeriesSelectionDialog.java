@@ -29,8 +29,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
@@ -117,10 +119,13 @@ public class DataSeriesSelectionDialog extends Dialog
     private TreeViewer treeViewer;
     private ElementFilter elementFilter;
     private Text searchText;
+    private final Client client;
 
-    public DataSeriesSelectionDialog(Shell parentShell)
+    public DataSeriesSelectionDialog(Shell parentShell, Client client)
     {
         super(parentShell);
+
+        this.client = client;
     }
 
     public void setMultiSelection(boolean isMultiSelection)
@@ -253,7 +258,16 @@ public class DataSeriesSelectionDialog extends Dialog
             public Image getImage(Object element)
             {
                 Node node = (Node) element;
-                return node.dataSeries != null ? node.dataSeries.getImage() : Images.UNASSIGNED_CATEGORY.image();
+
+                if (node.dataSeries == null)
+                    return Images.UNASSIGNED_CATEGORY.image();
+
+                if (node.dataSeries.getType() == DataSeries.Type.SECURITY
+                                || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
+                    return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
+                                    client.getSettings());
+                else
+                    return node.dataSeries.getImage();
             }
 
             @Override
