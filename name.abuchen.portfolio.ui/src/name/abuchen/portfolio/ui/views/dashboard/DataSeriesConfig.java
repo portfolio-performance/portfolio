@@ -98,7 +98,8 @@ public class DataSeriesConfig implements WidgetConfig
 
         List<DataSeries> list = stream.toList();
 
-        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(),
+                        delegate.getClient());
         dialog.setElements(list);
         dialog.setMultiSelection(false);
 
