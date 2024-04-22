@@ -94,11 +94,10 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
 
-        Label logo = new Label(composite, SWT.NONE);
-        logo.setImage(LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
+        Label logo = createLabel(composite,
+                        LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
 
-        Label name = new Label(composite, SWT.NONE);
-        name.setText(item.getSecurity().getName());
+        Label name = createLabel(composite, item.getSecurity().getName());
 
         ColoredLabel price = new ColoredLabel(composite, SWT.RIGHT);
 
@@ -111,8 +110,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         price.setForeground(Colors.getTextColor(bgColor));
         price.setText(Values.Quote.format(item.getSecurity().getCurrencyCode(), item.price.getValue()));
 
-        Label limit = new Label(composite, SWT.NONE);
-        limit.setText(settings.getFullLabel(item.limit, item.price));
+        Label limit = createLabel(composite, settings.getFullLabel(item.limit, item.price));
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);

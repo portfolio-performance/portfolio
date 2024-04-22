@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -11,10 +12,12 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
@@ -165,6 +168,20 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
     public Control getTitleControl()
     {
         return title;
+    }
+
+    protected Label createLabel(Composite composite, String text)
+    {
+        Label ret = new Label(composite, SWT.NONE);
+        ret.setText(TextUtil.tooltip(Objects.toString(text, ""))); //$NON-NLS-1$
+        return ret;
+    }
+
+    protected Label createLabel(Composite composite, Image image)
+    {
+        Label ret = new Label(composite, SWT.NONE);
+        ret.setImage(image);
+        return ret;
     }
 
 }

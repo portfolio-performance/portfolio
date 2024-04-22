@@ -158,14 +158,12 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
 
-        Label logo = new Label(composite, SWT.NONE);
-        logo.setImage(LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
+        Label logo = createLabel(composite,
+                        LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
 
-        Label name = new Label(composite, SWT.NONE);
-        name.setText(item.getSecurity().getName());
+        Label name = createLabel(composite, item.getSecurity().getName());
 
-        Label date = new Label(composite, SWT.NONE);
-        date.setText(item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
+        Label date = createLabel(composite, item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);
