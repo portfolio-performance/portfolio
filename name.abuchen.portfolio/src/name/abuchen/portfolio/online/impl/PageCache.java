@@ -57,6 +57,11 @@ import java.util.Map;
 
     public synchronized void put(String url, T prices)
     {
-        map.put(url, new PageEntry<T>(prices));
+        map.put(url, new PageEntry<>(prices));
+    }
+    
+    public synchronized void computeIfAbsent(String url, T prices)
+    {
+        map.computeIfAbsent(url, key -> new PageEntry<>(prices));
     }
 }

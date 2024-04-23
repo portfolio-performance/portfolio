@@ -23,17 +23,25 @@ public class DivvyDiaryDividendFeed implements DividendFeed
 {
     private String apiKey;
 
-    private PageCache<String> cache = new PageCache<>();
+    PageCache<String> cache = new PageCache<>();
 
     public void setApiKey(String apiKey)
     {
         this.apiKey = apiKey;
     }
 
+    String getApiKey()
+    {
+        return this.apiKey;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<DividendEvent> getDividendPayments(Security security) throws IOException
     {
+        if (security.isRetired())
+            return Collections.emptyList();
+
         if (apiKey == null)
             return Collections.emptyList();
 
@@ -43,17 +51,24 @@ public class DivvyDiaryDividendFeed implements DividendFeed
         String json = cache.lookup(security.getIsin());
         if (json == null)
         {
-            json = new WebAccess("api.divvydiary.com", "/symbols/" + security.getIsin()) //$NON-NLS-1$ //$NON-NLS-2$
+            json = createWebAccess("api.divvydiary.com", "/symbols/" + security.getIsin()) //$NON-NLS-1$ //$NON-NLS-2$
                             .addHeader("X-API-Key", apiKey) //$NON-NLS-1$
                             .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
                                             + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                             .get();
-            cache.put(security.getIsin(), json);
         }
 
         JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
+        if (jsonObject == null)
+        {
+            throw new IOException("server returned data that doesn't seem to be JSON"); //$NON-NLS-1$
+        }
 
         JSONArray dividends = (JSONArray) jsonObject.get("dividends"); //$NON-NLS-1$
+        if (dividends == null)
+        {
+            throw new IOException("server returned an unexpected JSON-format"); //$NON-NLS-1$
+        }
 
         List<DividendEvent> answer = new ArrayList<>();
 
@@ -71,8 +86,15 @@ public class DivvyDiaryDividendFeed implements DividendFeed
 
             answer.add(payment);
         });
+        // add it to the cache only if it was successfully parsed, otherwise we
+        // might cache invalid data
+        cache.computeIfAbsent(security.getIsin(), json);
 
         return answer;
     }
 
+    WebAccess createWebAccess(String host, String path)
+    {
+        return new WebAccess(host, path);
+    }
 }
