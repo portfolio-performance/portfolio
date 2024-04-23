@@ -56,6 +56,7 @@ public abstract class ReportingPeriod
             this.code = code;
             this.implementation = implementation;
         }
+
     }
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
@@ -119,6 +120,15 @@ public abstract class ReportingPeriod
         buf.append(CLASS2TYPE.get(this.getClass()).code);
         writeTo(buf);
         return buf.toString();
+    }
+
+    public static class LastXYears extends LastX
+    {
+
+        public LastXYears(int years)
+        {
+            super(years, 0);
+        }
     }
 
     public static class LastX extends ReportingPeriod
