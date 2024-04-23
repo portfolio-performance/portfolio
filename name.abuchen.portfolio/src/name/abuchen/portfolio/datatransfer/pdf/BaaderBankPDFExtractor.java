@@ -1193,7 +1193,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("Fusion \\/ Zusammenlegung");
+        final DocumentType type = new DocumentType("(Fusion \\/ Zusammenlegung" //
+                        + "|Depoteinlieferung)"); //
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -1210,27 +1211,52 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        // @formatter:off
-                        // Ausbuchung aus Depot 1686005753 per 18.01.2024
-                        // Nominale ISIN: IE000Y77LGG9 WKN: ETF143
-                        // STK 277,691 Am.ETF-MSCI W.SRI CL.N.Z.AM.P.
-                        // Bear.Shs EUR Acc. oN
-                        // @formatter:on
-                        .section("date", "isin", "wkn", "shares", "name", "nameContinued") //
-                        .find(".*Ausbuchung aus Depot .* per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
-                        .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
-                        .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$") //
-                        .match("^(?<nameContinued>.*)$") //
-                        .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Ausbuchung aus Depot 1686005753 per 18.01.2024
+                                        // Nominale ISIN: IE000Y77LGG9 WKN: ETF143
+                                        // STK 277,691 Am.ETF-MSCI W.SRI CL.N.Z.AM.P.
+                                        // Bear.Shs EUR Acc. oN
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "isin", "wkn", "shares", "name", "nameContinued") //
+                                                        .find(".*Ausbuchung aus Depot .* per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
-                            t.setAmount(0L);
-                        })
+                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setAmount(0L);
+                                                        }),
+                                        // @formatter:off
+                                        // Nominale ISIN: IE00BL25JL35 WKN: A1103D
+                                        // STK 1 Xtr.(IE) - MSCI World Quality
+                                        // Registered Shares 1C USD o.N.
+                                        // Verwahrart: Wertpapierrechnung Handelstag: 20.01.2023
+                                        // Lagerstelle: 1419 Valuta: 25.01.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "isin", "wkn", "shares", "name", "nameContinued") //
+                                                        .match("^Nominale ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN: (?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^STK (?<shares>[\\.,\\d]+) (?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .find(".*Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setAmount(0L);
+                                                        }))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
