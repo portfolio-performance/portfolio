@@ -945,6 +945,61 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testFondsparplan01()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fondsparplan01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DK0ECU8"), hasWkn("DK0ECU"), hasTicker(null), //
+                        hasName("DEKA-GLOBALCHAMPIONS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-07-02T00:00"), hasShares(0.5269), //
+                        hasSource("Fondsparplan01.txt"), //
+                        hasNote("Auftragsnummer 172520/34.00"), //
+                        hasAmount("EUR", 148.76), hasGrossValue("EUR", 145.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.76))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-08-03T00:00"), hasShares(0.5277), //
+                        hasSource("Fondsparplan01.txt"), //
+                        hasNote("Auftragsnummer 209798/72.00"), //
+                        hasAmount("EUR", 148.76), hasGrossValue("EUR", 145.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.76))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-09-02T00:00"), hasShares(0.5108), //
+                        hasSource("Fondsparplan01.txt"), //
+                        hasNote("Auftragsnummer 242199/94.00"), //
+                        hasAmount("EUR", 148.76), hasGrossValue("EUR", 145.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.76))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-10-04T00:00"), hasShares(0.5241), //
+                        hasSource("Fondsparplan01.txt"), //
+                        hasNote("Auftragsnummer 285851/23.00"), //
+                        hasAmount("EUR", 148.76), hasGrossValue("EUR", 145.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.76))));
+    }
+
+    @Test
     public void testDividende01()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
