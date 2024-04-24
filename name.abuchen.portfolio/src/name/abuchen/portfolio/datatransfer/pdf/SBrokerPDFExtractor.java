@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -37,6 +38,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addAdvanceTaxTransaction();
+        addBuyTransactionFundsSavingsPlan();
         addAccountStatementTransaction();
         addCreditcardStatementTransaction();
     }
@@ -660,6 +662,67 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
+    }
+
+    private void addBuyTransactionFundsSavingsPlan()
+    {
+        final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // DEKA-GLOBALCHAMPIONS DE000DK0ECU8 (DK0ECU)
+                                        // @formatter:on
+                                        .section("name", "isin", "wkn") //
+                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\).*$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("name", trim(v.get("name")));
+                                            ctx.put("isin", v.get("isin"));
+                                            ctx.put("wkn", v.get("wkn"));
+                                        })
+
+                                        // @formatter:off
+                                        // Im Abrechnungszeitraum angelegter Betrag EUR 595,04
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Im Abrechnungszeitraum angelegter Betrag (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Kauf 145,00 172520/34.00 282,3348 1,0000 0,5269 02.07.2021 06.07.2021 0,00 0,00
+                        // + Anlagerabatt 3,76 Summe 148,76
+                        // @formatter:on
+                        .section("note", "amount", "shares", "date") //
+                        .documentContext("name", "isin", "wkn", "currency") //
+                        .match("^Kauf [\\.,\\d]+ (?<note>[\\d]+\\/[\\.\\d]+).* (?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$") //
+                        .match("^\\+ Anlagerabatt [\\.,\\d]+ Summe (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDate(asDate(v.get("date")));
+                            t.setNote("Auftragsnummer " + trim(v.get("note")));
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction()
@@ -1901,6 +1964,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // + Provision 0,49 Summe 200,49
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^\\+ Anlagerabatt (?<fee>[\\.,\\d]+) Summe [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("currency", context.get("currency"));
+
+                            processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Kurswert 509,71- EUR
