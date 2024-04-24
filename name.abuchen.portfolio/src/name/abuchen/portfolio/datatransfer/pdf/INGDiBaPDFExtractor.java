@@ -51,6 +51,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addAdvanceTaxTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapierabrechnung " //
+        final DocumentType type = new DocumentType("(Wertpapierabrechnung " //
                         + "(Kauf" //
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
@@ -260,13 +261,17 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Zinsgutschrift)", jointAccount);
+        final DocumentType type = new DocumentType("(Dividendengutschrift" //
+                        + "|Ertragsgutschrift" //
+                        + "|Zinsgutschrift)", // 
+                        jointAccount);
         this.addDocumentTyp(type);
-
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Dividendengutschrift|Ertragsgutschrift|Zinsgutschrift).*$");
+        Block firstRelevantLine = new Block("^(Dividendengutschrift" //
+                        + "|Ertragsgutschrift" //
+                        + "|Zinsgutschrift).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -599,8 +604,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "date", "note2", "amount") //
                         .documentContext("currency") //
                         .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
-                                        + "(?<note2>[\\,\\d]+%) .* " //
-                                        + "(?<amount>[\\.,\\d]+)$") //
+                                        + "(?<note2>[\\.,\\d]+%) " //
+                                        + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -669,6 +674,104 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
+                        + "|Umtausch Eingang" //
+                        + "|Umtausch Ausgang)");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
+                        + "|Umtausch Eingang" //
+                        + "|Umtausch Ausgang)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Is type --> "Ausgang" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Umtausch (?<type>(Eingang|Ausgang))$") //
+                        .assign((t, v) -> {
+                            if ("Ausgang".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // ISIN (WKN) LU1291109293 (A2ACQY)
+                                        // Wertpapierbezeichnung BNP P.Easy-ECPI Gl ESG Infra.
+                                        // Nam.-Ant.UCITS ETF CAP EUR o.N
+                                        // Nominale Stück 4,00
+                                        // Kurs EUR 64,7182
+                                        // Ausführungstag 03.11.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "nameContinued", "shares", "currency", "date") //
+                                                        .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Nominale St.ck (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Ausf.hrungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setAmount(0L);
+                                                        }),
+                                        // @formatter:off
+                                        // 16,0648 Stück Kenvue Inc. 25.08.2023 0021740090
+                                        // Registered Shares DL -,001
+                                        // ISIN (WKN): US49177J1025 (A3EEHU)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "name", "date", "nameContinued", "isin", "wkn") //
+                                                        .match("^(?<shares>[\\.,\\d]+) St.ck (?<name>.*) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^ISIN \\(WKN\\): (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setAmount(0L);
+                                                        }))
+
+                        // @formatter:off
+                        // im Verhältnis 1:8,0324 in die WKN A3EEHU umgetauscht.
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^.*im (?<type>Verh.ltnis) .* WKN [A-Z0-9]{6} .*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -679,7 +782,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25,00% EUR 5,91
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
