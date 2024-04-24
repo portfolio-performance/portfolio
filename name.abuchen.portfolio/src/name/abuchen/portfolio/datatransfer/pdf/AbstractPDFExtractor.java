@@ -169,7 +169,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     private void checkBankIdentifier(String filename, String text)
     {
         if (bankIdentifier.isEmpty())
-            bankIdentifier.add(getLabel());
+            return;
 
         for (String identifier : bankIdentifier)
             if (text.contains(identifier))
