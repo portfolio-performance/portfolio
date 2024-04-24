@@ -32,7 +32,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("^(Zusammenfassung|Summary)$");
+        final DocumentType type = new DocumentType("(?m)^(Zusammenfassung|Summary)$");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
