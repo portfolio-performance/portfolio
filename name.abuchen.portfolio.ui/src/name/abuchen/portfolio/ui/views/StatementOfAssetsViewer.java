@@ -530,27 +530,13 @@ public class StatementOfAssetsViewer
         column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
+        addPurchaseCostColumns();
+
         ReportingPeriodLabelProvider labelProvider;
 
-        column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePrice_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
-        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
-                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
-        column.setLabelProvider(labelProvider);
-        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
-        column.setVisible(false);
-        support.addColumn(column);
-
+        // cost value - FIFO
         column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, withSum()), false);
@@ -559,7 +545,9 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        // cost value - moving average
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getMovingAverageCost, withSum()),
@@ -621,6 +609,64 @@ public class StatementOfAssetsViewer
         boldFont = resources.create(FontDescriptor.createFrom(assets.getTable().getFont()).setStyle(SWT.BOLD));
 
         return container;
+    }
+
+    private void addPurchaseCostColumns()
+    {
+        ReportingPeriodLabelProvider labelProvider;
+
+        // cost value per share - FIFO
+        Column column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setLabelOnly(Messages.LabelFeesAndTaxesNotIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePrice_Description);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share - moving average
+        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share including fees and taxes - FIFO
+        column = new Column("grossPurchasePriceFIFO", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setLabelOnly(Messages.LabelFeesAndTaxesIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getGrossFifoCostPerSharesHeld, null),
+                        false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // cost value per share including fees and taxes - moving average
+        column = new Column("grossPurchasePriceMA", Messages.ColumnGrossPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getGrossMovingAverageCostPerSharesHeld,
+                                        null),
+                        false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addPerformanceColumns(List<ReportingPeriod> options)

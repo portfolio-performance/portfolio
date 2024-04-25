@@ -74,6 +74,11 @@ public class Column
     private String menuLabel;
     private String description;
 
+    /**
+     * used to write a LabelOnly text in a submenu, just above the column name.
+     */
+    private String labelOnly;
+
     private ColumnEditingSupport editingSupport;
 
     public Column(String label, int style, int defaultWidth)
@@ -205,6 +210,11 @@ public class Column
         this.editingSupport = editingSupport;
     }
 
+    public void setLabelOnly(String labelOnly)
+    {
+        this.labelOnly = labelOnly;
+    }
+
     /* package */String getLabel()
     {
         return label;
@@ -285,6 +295,15 @@ public class Column
         return groupLabel;
     }
 
+    /* package */boolean hasLabelOnly()
+    {
+        return labelOnly != null;
+    }
+
+    /* package */String getLabelOnly()
+    {
+        return labelOnly;
+    }
     public ColumnEditingSupport getEditingSupport()
     {
         return editingSupport;
