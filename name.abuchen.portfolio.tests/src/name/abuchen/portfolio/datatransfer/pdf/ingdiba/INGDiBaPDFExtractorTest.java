@@ -3667,4 +3667,110 @@ public class INGDiBaPDFExtractorTest
         assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
                         hasSource("ExtraKontoauszug01.txt"), hasNote("16.12.2023 bis 31.12.2023 (3,750%)"))));
     }
+
+    @Test
+    public void testVLKontoauszug01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VLKontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2020-10-13"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug01.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2020-11-12"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug01.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2020-12-11"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug01.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2020-12-31"), hasAmount("EUR", 0.02), //
+                        hasSource("VLKontoauszug01.txt"), hasNote("Zinsgutschrift"))));
+    }
+
+    @Test
+    public void testVLKontoauszug02()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VLKontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(14L));
+        assertThat(results.size(), is(14));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-03-13"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-04-12"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-05-12"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-06-14"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-07-13"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-08-14"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-09-14"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-10-13"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-11-14"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-12-14"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 2.55), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Zinsgutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.62), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Kapitalertragsteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.03), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.05), //
+                        hasSource("VLKontoauszug02.txt"), hasNote("Kirchensteuer"))));
+    }
 }

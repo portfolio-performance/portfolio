@@ -1,0 +1,56 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4.qualifier
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 30.12.2020
+Herrn Seite 1 von 1
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Jahres-Kontoauszug 2020
+Valuta Vorgang Euro
+VL-Sparen (Laufzeit bis 01.01.2027)
+IBAN DE93 5001 0517 4113 7464 12 / Kontonummer 4113746412
+alter Saldo 0,00
+13.10.2020 Gutschrift-VWL 40,00
+12.11.2020 Gutschrift-VWL 40,00
+11.12.2020 Gutschrift-VWL 40,00
+31.12.2020 Zinsgutschrift 0,02
+31.12.2020 neuer Saldo 120,02
+Eventuell belastete Kapitalertragsteuer auch in den Vorjahren mindert das Sparergebnis. Bei der
+Rückzahlung des Guthabens in Teilbeträgen kann die belastete Kapitalertragsteuer auch zur Kürzung
+der Vertragsdauer führen.
+Wichtige Informationen für Sie:
+› Dieser Kontoauszug gilt zugleich als Sparurkunde.
+› Die Übermittlung von Zahlungsaufträgen per Telefax ist nicht möglich.
+Bitte beachten Sie auch die Hinweise auf der Folgeseite. Weitere Erklärungen zum Thema
+Einlagensicherung finden Sie unter www.ing.de/einlagensicherung. Oder wir senden Ihnen den
+Informationsbogen zu, wenn Sie das möchten.
+Haben Sie schonmal darüber nachgedacht, Ihr Geld in Wertpapiere anzulegen? Dafür müssen Sie bei uns
+keine großen Sprünge machen: Schon ab 1 Euro können Sie regelmäßig in einen Wertpapier-Sparplan
+investieren. Entdecken Sie all Ihre Möglichkeiten unter www.ing.de/anlagemoeglichkeiten.
+Wir bedanken uns für Ihr Vertrauen und wünschen Ihnen ein gesundes und erfolgreiches Jahr 2021.
+Ihre ING
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Željko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34SPAR4113746412_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen auf
+Vollständigkeit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform
+unverzüglich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine
+Einwendungen vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren
+Allgemeinen Geschäftsbedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine
+Berichtigung des Rechnungsabschlusses verlangen, müssen dann aber beweisen, dass Ihr Konto zu Unrecht
+belastet oder eine Ihnen zustehende Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung)
+entnommen werden.
+ING-DiBa AG
+
+```
