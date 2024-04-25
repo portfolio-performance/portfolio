@@ -91,7 +91,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                                 Values.Amount.divider());
                 break;
             case FEES:
-                values = toDouble(add(clientIndex.getFees(), clientIndex.getInterest()), Values.Amount.divider());
+                values = toDouble(clientIndex.getFees(), Values.Amount.divider());
                 break;
             case FEES_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getFees(), Values.Amount.divider());
