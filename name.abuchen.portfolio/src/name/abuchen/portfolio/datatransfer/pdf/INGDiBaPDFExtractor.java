@@ -501,10 +501,27 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Buchung Buchung / Verwendungszweck Betrag (EUR)
+                                        // Valuta Vorgang Euro
                                         // @formatter:on
-                                        .section("currency") //
-                                        .match("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .oneOf(
+                                                        section -> section.attributes("currency") //
+                                                        .match("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$") //
+                                                        .assign((ctx, v) -> {
+                                                            ctx.put("currency", asCurrencyCode("EUR"));
+                                                        })
+                                                        
+                                                        , 
+                                                        
+                                                        section -> section.attributes("currency") //
+                                                        .match("^Valuta Vorgang (?<currency>[\\w]+)$") //
+                                                        .assign((ctx, v) -> {
+                                                            if (v.get("currency") != null && "Euro".equalsIgnoreCase(v.get("currency")))
+                                                            {
+                                                                ctx.put("currency", asCurrencyCode("EUR"));
+                                                                }
+                                                        })
+                                              )
+                                        );
 
         this.addDocumentTyp(type);
 
@@ -557,9 +574,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                        + "(Gutschrift" //
+                        + "(Gutschrift-VWL" //
                         + "|Gutschrift\\/Dauerauftrag"
-                        + "|Gehalt\\/Rente) " //
+                        + "|Gehalt\\/Rente" 
+                        + "|Gutschrift)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -573,9 +591,10 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Gutschrift" //
+                                        + "(?<note>Gutschrift-VWL" //
                                         + "|Gutschrift\\/Dauerauftrag"
-                                        + "|Gehalt\\/Rente) " //
+                                        + "|Gehalt\\/Rente" 
+                                        + "|Gutschrift)" //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -590,8 +609,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
         // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
         // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
+        // 31.12.2020 Zinsgutschrift 0,02
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\.,\\d]+$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (bis|Zinsgutschrift)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?.* [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -600,21 +620,38 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
-
-                        .section("note1", "date", "note2", "amount") //
-                        .documentContext("currency") //
-                        .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
-                                        + "(?<note2>[\\.,\\d]+%) " //
-                                        + ".* (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
-                        })
+                        
+                        .oneOf(
+                                        
+                            section -> section.attributes("note1", "date", "note2", "amount") //
+                            .documentContext("currency") //
+                            .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
+                                            + "(?<note2>[\\.,\\d]+%) " //
+                                            + ".* (?<amount>[\\.,\\d]+)$") //
+                            .assign((t, v) -> {
+                                t.setDateTime(asDate(v.get("date")));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(v.get("currency"));
+                                t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
+                            })
+                            
+                            ,
+                            
+                            section -> section.attributes("note1", "date", "amount") //
+                            .documentContext("currency") //
+                            .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                            + "(?<note1>[\\w]+) " //
+                                            + "(?<amount>[\\.,\\d]+)$") //
+                            .assign((t, v) -> {
+                                t.setDateTime(asDate(v.get("date")));
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(v.get("currency"));
+                                t.setNote(v.get("note1"));
+                            })
+                        )
 
                         .wrap(TransactionItem::new));
-
+        
         // @formatter:off
         // 30.12.2016 Kapitalertragsteuer -1,38
         // 30.12.2016 Solidaritätszuschlag -0,07
