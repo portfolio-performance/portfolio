@@ -207,6 +207,10 @@ public class Messages extends NLS
     public static String ColumnForeignCurrencies;
     public static String ColumnGrossDividend;
     public static String ColumnGrossProfitLoss;
+    public static String ColumnGrossPurchasePriceFIFO;
+    public static String ColumnGrossPurchasePriceFIFO_Description;
+    public static String ColumnGrossPurchasePriceMovingAverage;
+    public static String ColumnGrossPurchasePriceMovingAverage_Description;
     public static String ColumnGrossValue;
     public static String ColumnHeight;
     public static String ColumnHoldingPeriod;
@@ -267,12 +271,14 @@ public class Messages extends NLS
     public static String ColumnProfitLossBaseCurrency;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
+    public static String ColumnPurchasePrice_MenuLabel;
     public static String ColumnPurchasePriceBaseCurrency;
     public static String ColumnPurchasePriceMovingAverage;
     public static String ColumnPurchasePriceMovingAverage_Description;
     public static String ColumnPurchasePriceMovingAverage_MenuLabel;
     public static String ColumnPurchaseValue;
     public static String ColumnPurchaseValue_Description;
+    public static String ColumnPurchaseValue_MenuLabel;
     public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnPurchaseValueMovingAverage;
     public static String ColumnPurchaseValueMovingAverage_Description;
@@ -787,6 +793,7 @@ public class Messages extends NLS
     public static String LabelPortfolioTimeMachine;
     public static String LabelPreTax;
     public static String LabelPreviousTradingDay;
+    public static String LabelPurchasePrice;
     public static String LabelPurchaseTransactionsOnly;
     public static String LabelQuandlCode;
     public static String LabelQuandlColumnNameQuote;
@@ -852,6 +859,8 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsHoldings;
     public static String LabelSuffix_HICP;
     public static String LabelSuffix_PreTax;
+    public static String LabelTaxesAndFeesIncluded;
+    public static String LabelTaxesAndFeesNotIncluded;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelTemplate;

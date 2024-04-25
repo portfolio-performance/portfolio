@@ -74,6 +74,11 @@ public class Column
     private String menuLabel;
     private String description;
 
+    /**
+     * The heading (which will appear as text just above the menu entry)
+     */
+    private String heading;
+
     private ColumnEditingSupport editingSupport;
 
     public Column(String label, int style, int defaultWidth)
@@ -205,6 +210,11 @@ public class Column
         this.editingSupport = editingSupport;
     }
 
+    public void setHeading(String heading)
+    {
+        this.heading = heading;
+    }
+
     /* package */String getLabel()
     {
         return label;
@@ -283,6 +293,16 @@ public class Column
     /* package */String getGroupLabel()
     {
         return groupLabel;
+    }
+
+    /* package */boolean hasHeading()
+    {
+        return heading != null;
+    }
+
+    /* package */String getHeading()
+    {
+        return heading;
     }
 
     public ColumnEditingSupport getEditingSupport()
