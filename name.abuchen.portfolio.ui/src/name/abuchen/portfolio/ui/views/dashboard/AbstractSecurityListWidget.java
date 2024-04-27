@@ -184,7 +184,7 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
     protected Label createLabel(Composite composite, String text)
     {
         Label ret = new Label(composite, SWT.NONE);
-        ret.setText(Objects.toString(text).replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+        ret.setText(TextUtil.tooltip(Objects.toString(text, ""))); //$NON-NLS-1$
         return ret;
     }
 

@@ -114,7 +114,7 @@ public class PortfolioPart implements ClientInputListener
         }
 
         if (clientInput == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("missing client info"); //$NON-NLS-1$
 
         if (clientInput.getFile() != null)
             part.getPersistedState().put(UIConstants.PersistedState.FILENAME, clientInput.getFile().getAbsolutePath());

@@ -138,7 +138,11 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void addTransaction(AccountTransaction transaction)
     {
         if (!currencyCode.equals(transaction.getCurrencyCode()))
-            throw new IllegalArgumentException();
+        {
+            throw new IllegalArgumentException("Unable to add transaction '" + transaction.toString() + "' to account '" //$NON-NLS-1$ //$NON-NLS-2$
+                            + getName() + "' (uuid " + transaction.getUUID() + "): " + currencyCode + " <> " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            + transaction.getCurrencyCode());
+        }
 
         this.transactions.add(transaction);
     }
@@ -173,7 +177,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                                 case TRANSFER_OUT:
                                     return -t.getAmount();
                                 default:
-                                    throw new UnsupportedOperationException();
+                                    throw new UnsupportedOperationException("unsupported transaction type '" //$NON-NLS-1$
+                                                    + t.getType() + "' for transaction " + t); //$NON-NLS-1$
                             }
                         }).sum();
     }

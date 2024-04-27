@@ -3,9 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -36,6 +38,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addAdvanceTaxTransaction();
+        addBuyTransactionFundsSavingsPlan();
         addAccountStatementTransaction();
         addCreditcardStatementTransaction();
     }
@@ -661,106 +664,65 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addTaxReturnBlock(DocumentType type)
+    private void addBuyTransactionFundsSavingsPlan()
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // DEKA-GLOBALCHAMPIONS DE000DK0ECU8 (DK0ECU)
+                                        // @formatter:on
+                                        .section("name", "isin", "wkn") //
+                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\).*$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("name", trim(v.get("name")));
+                                            ctx.put("isin", v.get("isin"));
+                                            ctx.put("wkn", v.get("wkn"));
+                                        })
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
+                                        // @formatter:off
+                                        // Im Abrechnungszeitraum angelegter Betrag EUR 595,04
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Im Abrechnungszeitraum angelegter Betrag (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
                         })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Gattungsbezeichnung ISIN
-                                        // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
-                                        // STK 16,000 EUR 120,4000
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "currency") //
-                                                        .find("Gattungsbezeichnung ISIN") //
-                                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^STK [\\.,\\d]+ (?<currency>[\\w]{3} [\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        // @formatter:off
-                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
-                                        // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
-                                        // Ausführungskurs 71,253 EUR Auftragserteilung/ -ort Persönlich im Institut
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
-                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^(?<name1>.*)$") //
-                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
-
                         // @formatter:off
-                        // STK 16,000 EUR 120,4000
-                        // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+                        // Kauf 145,00 172520/34.00 282,3348 1,0000 0,5269 02.07.2021 06.07.2021 0,00 0,00
+                        // + Anlagerabatt 3,76 Summe 148,76
                         // @formatter:on
-                        .section("shares") //
-                        .match("^(STK|St.ck) (?<shares>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
-                        // 03.06.2015 10/3874/009 87966195 EUR 11,48
-                        // @formatter:on
-                        .section("date", "amount", "currency").optional() //
-                        .find("Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\/\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .section("note", "amount", "shares", "date") //
+                        .documentContext("name", "isin", "wkn", "currency") //
+                        .match("^Kauf [\\.,\\d]+ (?<note>[\\d]+\\/[\\.\\d]+).* (?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$") //
+                        .match("^\\+ Anlagerabatt [\\.,\\d]+ Summe (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDate(asDate(v.get("date")));
+                            t.setNote("Auftragsnummer " + trim(v.get("note")));
+
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
-                                        // Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note", "note1") //
-                                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$") //
-                                                        .match("^.*[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$") //
-                                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1")))),
-                                        // @formatter:off
-                                        // Depot-Nr. Abrechnungs-Nr.
-                                        // 111/2222/002 65091167
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note", "note1") //
-                                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.)$") //
-                                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*)$") //
-                                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1")))),
-                                        // @formatter:off
-                                        // Abrechnungsnr. 12345678
-                                        //  XXXX XXXAuftragsnummer XXXXXX/XX.XX
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*(?<note>(Abrechnungsnr\\.|Auftragsnummer) .*)$") //
-                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))))
+                        .wrap(BuySellEntryItem::new);
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        });
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction()
@@ -786,6 +748,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
+        // @formatter:off
+        //              -600,00
+        // 02.11.2021 Dauerauftrag / Wert: 01.11.2021
+        //
+        //              -34,50
+        // 02.11.2021 Lastschrift
+        // @formatter:on
         Block depositRemovalBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
         depositRemovalBlock_Format01.setMaxSize(2);
         type.addBlock(depositRemovalBlock_Format01);
@@ -797,13 +766,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        //              -600,00
-                        // 02.11.2021 Dauerauftrag / Wert: 01.11.2021
-                        //
-                        //              -34,50
-                        // 02.11.2021 Lastschrift
-                        // @formatter:on
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
                         .match("^.* (?<type>[\\-|\\+|\\s])(?<amount>[\\.,\\d]+)$") //
@@ -884,7 +846,21 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        Block depositRemovalBlock_Format02 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        // @formatter:off
+        // 02.03.2020 02.03.2020 Lastschrift              2,00-
+        // 02.03.2020 02.03.2020 Überweisung online              1,00-
+        // 01.03.2016 01.03.2016 Basis-Lastschrift              119,00-
+        // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
+        // 06.04.2017 06.04.2017 Überweisung            3.000,00-
+        // 02.05.2018 02.05.2018 Basislastschrift              260,00-
+        // 01.04.2019 30.03.2019 Bargeldeinzahlung SB              500,00+
+        // 13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
+        // 22.03.2019 21.03.2019 BargAuszDebitFremdGA              500,00-
+        //
+        // . 16.08.2019 16.08.2019 Lastschrift               12,37-
+        //  1 3.11.2017 13.11.2017 Zahlungseingang              289,00+
+        // @formatter:on
+        Block depositRemovalBlock_Format02 = new Block("^([\\.\\s]+)?[\\d\\s]{1,3}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -921,20 +897,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 02.03.2020 02.03.2020 Lastschrift              2,00-
-                        // 02.03.2020 02.03.2020 Überweisung online              1,00-
-                        // 01.03.2016 01.03.2016 Basis-Lastschrift              119,00-
-                        // 01.03.2016 01.03.2016 Zahlungseingang               130,00+
-                        // 06.04.2017 06.04.2017 Überweisung            3.000,00-
-                        // 02.05.2018 02.05.2018 Basislastschrift              260,00-
-                        // 01.04.2019 30.03.2019 Bargeldeinzahlung SB              500,00+
-                        // 13.06.2019 13.06.2019 Überweisung Vordruck              800,00-
-                        // 22.03.2019 21.03.2019 BargAuszDebitFremdGA              500,00-
-                        // @formatter:on
                         .section("date", "note", "type", "amount") //
                         .documentContext("currency") //
-                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^([\\.\\s]+)?(?<date>[\\d\\s]{1,3}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(?<note>(Lastschrift" //
                                         + "|.berweisung online" //
@@ -975,7 +940,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1018,18 +983,206 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 25.09.2020 25.09.2020
-                        // Lastschrift
-                        //                9,75-
-                        // @formatter:on
-                        .section("date", "note", "amount", "type").optional() //
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 25.09.2020 25.09.2020
+                                        // Lastschrift
+                                        //                9,75-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^(?<note>(Lastschrift" //
+                                                                        + "|.berweisung online" //
+                                                                        + "|.berweisung" //
+                                                                        + "|.berweisung Vordruck" //
+                                                                        + "|Kartenzahlung" //
+                                                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                                                        + "|Rechnung" //
+                                                                        + "|Gutschrift.berweisung" //
+                                                                        + "|SEPA GUTSCHRIFT" //
+                                                                        + "|Dauerauftrag" //
+                                                                        + "|Scheckeinzug" //
+                                                                        + "|Lohn, Gehalt, Rente" //
+                                                                        + "|Basis\\-Lastschrift" //
+                                                                        + "|Basislastschrift" //
+                                                                        + "|Zahlungseingang" //
+                                                                        + "|Bargeldeinzahlung" //
+                                                                        + "|Bargeldeinzahlung SB" //
+                                                                        + "|Geldautomat" //
+                                                                        + "|Bargeldauszahlung" //
+                                                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                                                        + "|BargAuszDebitFremdGA" //
+                                                                        + "|Barumsatz" //
+                                                                        + "|sonstige Buchung" //
+                                                                        + "|sonstige Entgelte" //
+                                                                        + "|entgeltfreie Buchung))$") //
+                                                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            // @formatter:off
+                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
+                                                            // @formatter:off
+                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+
+                                                            // Formatting some notes
+                                                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                                                v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                                                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
+
+                                                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                                                v.put("note", "Gutschrift (Überweisung)");
+
+                                                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                                                v.put("note", "Eigene Kreditkartenabrechnung");
+
+                                                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                                                v.put("note", "SEPA Gutschrift");
+
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 08.06.2020 08.06.2020
+                                        // Überweisung online               25,00-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^(?<note>(Lastschrift" //
+                                                                        + "|.berweisung online" //
+                                                                        + "|.berweisung" //
+                                                                        + "|.berweisung Vordruck" //
+                                                                        + "|Kartenzahlung" //
+                                                                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                                                                        + "|Rechnung" //
+                                                                        + "|Gutschrift.berweisung" //
+                                                                        + "|SEPA GUTSCHRIFT" //
+                                                                        + "|Dauerauftrag" //
+                                                                        + "|Scheckeinzug" //
+                                                                        + "|Lohn, Gehalt, Rente" //
+                                                                        + "|Basis\\-Lastschrift" //
+                                                                        + "|Basislastschrift" //
+                                                                        + "|Zahlungseingang" //
+                                                                        + "|Bargeldeinzahlung" //
+                                                                        + "|Bargeldeinzahlung SB" //
+                                                                        + "|Geldautomat" //
+                                                                        + "|Bargeldauszahlung" //
+                                                                        + "|Bargeldausz\\.Debitk\\.GA" //
+                                                                        + "|BargAuszDebitFremdGA" //
+                                                                        + "|Barumsatz" //
+                                                                        + "|sonstige Buchung" //
+                                                                        + "|sonstige Entgelte" //
+                                                                        + "|entgeltfreie Buchung))" //
+                                                                        + "[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            // @formatter:off
+                                                            // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
+                                                            // @formatter:off
+                                                            if ("sonstige Entgelte".equals(trim(v.get("note"))))
+                                                                t.setType(AccountTransaction.Type.FEES);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+
+                                                            // Formatting some notes
+                                                            if ("Bargeldausz.Debitk.GA".equals(v.get("note")))
+                                                                v.put("note", "Bargeldauszahlung (Debitkarte)");
+
+                                                            if ("BargAuszDebitFremdGA".equals(v.get("note")))
+                                                                v.put("note", "Bargeldauszahlung (Debitkarte & Fremd-Geldautomat)");
+
+                                                            if ("GutschriftÜberweisung".equals(v.get("note")))
+                                                                v.put("note", "Gutschrift (Überweisung)");
+
+                                                            if ("EIGENE KREDITKARTENABRECHN.".equals(v.get("note")))
+                                                                v.put("note", "Eigene Kreditkartenabrechnung");
+
+                                                            if ("SEPA GUTSCHRIFT".equals(v.get("note")))
+                                                                v.put("note", "SEPA Gutschrift");
+
+                                                            t.setNote(v.get("note"));
+                                                        }))
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return item;
+
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 30.06 30.06.14 Überweisung -400,00
+        // 07.07 07.07.14 Geldautomat -500,00
+        // 01.07 01.07.14 Lastschrift -28,50
+        // 18.09 18.09.14 Basis-Lastschrift -40,00
+        // 26.09 26.09.14 Lohn, Gehalt, Rente 1.835,19
+        // 29.09 29.09.14 Zahlungseingang 435,54
+        // 22.06 22.06.15 Kartenzahlung -60,82
+        // 23.06 23.06.15 Barumsatz 500,00
+        // @formatter:on
+        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+                        + "(Lastschrift" //
+                        + "|.berweisung online" //
+                        + "|.berweisung" //
+                        + "|Kartenzahlung" //
+                        + "|EIGENE KREDITKARTENABRECHN\\." //
+                        + "|Rechnung" //
+                        + "|Gutschrift.berweisung" //
+                        + "|SEPA GUTSCHRIFT" //
+                        + "|Dauerauftrag" //
+                        + "|Scheckeinzug" //
+                        + "|Lohn, Gehalt, Rente" //
+                        + "|Basis\\-Lastschrift" //
+                        + "|Basislastschrift" //
+                        + "|Zahlungseingang" //
+                        + "|Bargeldeinzahlung" //
+                        + "|Geldautomat" //
+                        + "|Bargeldauszahlung" //
+                        + "|Bargeldausz\\.Debitk\\.GA" //
+                        + "|BargAuszDebitFremdGA" //
+                        + "|Barumsatz" //
+                        + "|sonstige Buchung" //
+                        + "|sonstige Entgelte" //
+                        + "|entgeltfreie Buchung) " //
+                        + "(\\-)?[\\.,\\d]+$"); //
+        depositRemovalBlock_Format04.setMaxSize(1);
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "type") //
                         .documentContext("currency") //
-                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                        .match("^(?<note>(Lastschrift" //
+                        .match("^.*[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                                        + "(?<note>(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
-                                        + "|.berweisung Vordruck" //
                                         + "|Kartenzahlung" //
                                         + "|EIGENE KREDITKARTENABRECHN\\." //
                                         + "|Rechnung" //
@@ -1042,7 +1195,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Basislastschrift" //
                                         + "|Zahlungseingang" //
                                         + "|Bargeldeinzahlung" //
-                                        + "|Bargeldeinzahlung SB" //
                                         + "|Geldautomat" //
                                         + "|Bargeldauszahlung" //
                                         + "|Bargeldausz\\.Debitk\\.GA" //
@@ -1050,16 +1202,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Barumsatz" //
                                         + "|sonstige Buchung" //
                                         + "|sonstige Entgelte" //
-                                        + "|entgeltfreie Buchung))$") //
-                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*") //
+                                        + "|entgeltfreie Buchung))" //
+                                        + "(?<type>[\\s|\\-]+)(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // Is type is "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(v.get("type")))
+                            if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             // @formatter:off
                             // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                            // @formatter:off
+                            // @formatter:on
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
@@ -1098,7 +1250,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+        // @formatter:off
+        // 27.12.2019 27.12.2019 Lastschrift
+        // .                6,60-Lotto24 AG
+        // @formatter:on
+        Block depositRemovalBlock_Format05 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Lastschrift" //
                         + "|.berweisung online" //
                         + "|.berweisung" //
@@ -1121,11 +1277,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         + "|Barumsatz" //
                         + "|sonstige Buchung" //
                         + "|sonstige Entgelte" //
-                        + "|entgeltfreie Buchung) " //
-                        + "(\\-)?[\\.,\\d]+$"); //
-        depositRemovalBlock_Format04.setMaxSize(1);
-        type.addBlock(depositRemovalBlock_Format04);
-        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+                        + "|entgeltfreie Buchung)$"); //
+        depositRemovalBlock_Format05.setMaxSize(2);
+        type.addBlock(depositRemovalBlock_Format05);
+        depositRemovalBlock_Format05.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
@@ -1133,19 +1288,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 30.06 30.06.14 Überweisung -400,00
-                        // 07.07 07.07.14 Geldautomat -500,00
-                        // 01.07 01.07.14 Lastschrift -28,50
-                        // 18.09 18.09.14 Basis-Lastschrift -40,00
-                        // 26.09 26.09.14 Lohn, Gehalt, Rente 1.835,19
-                        // 29.09 29.09.14 Zahlungseingang 435,54
-                        // 22.06 22.06.15 Kartenzahlung -60,82
-                        // 23.06 23.06.15 Barumsatz 500,00
-                        // @formatter:on
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency") //
-                        .match("^.*[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
+                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(?<note>(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -1168,16 +1313,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|Barumsatz" //
                                         + "|sonstige Buchung" //
                                         + "|sonstige Entgelte" //
-                                        + "|entgeltfreie Buchung))" //
-                                        + "(?<type>[\\s|\\-]+)(?<amount>[\\.,\\d]+)$") //
+                                        + "|entgeltfreie Buchung))$") //
+                        .match("^[\\.\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
                         .assign((t, v) -> {
                             // Is type is "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(trim(v.get("type"))))
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             // @formatter:off
                             // Is note equal "sonstige Entgelte" change from DEPOSIT to FEE
-                            // @formatter:on
+                            // @formatter:off
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
@@ -1499,6 +1644,108 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
+    private void addTaxReturnBlock(DocumentType type)
+    {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gattungsbezeichnung ISIN
+                                        // iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+                                        // STK 16,000 EUR 120,4000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Gattungsbezeichnung ISIN") //
+                                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^STK [\\.,\\d]+ (?<currency>[\\w]{3} [\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+                                        // Ausführungskurs 71,253 EUR Auftragserteilung/ -ort Persönlich im Institut
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
+                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        // @formatter:off
+                        // STK 16,000 EUR 120,4000
+                        // Stück 7,1535 BGF - WORLD TECHNOLOGY FUND LU0171310443 (A0BMAN)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^(STK|St.ck) (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                        // 03.06.2015 10/3874/009 87966195 EUR 11,48
+                        // @formatter:on
+                        .section("date", "amount", "currency").optional() //
+                        .find("Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\/\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=PLZ Stadt
+                                        // Vorname Name 100/0000/000 10000000 ADRESSZEILE5=
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "note1") //
+                                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.) .*$") //
+                                                        .match("^.*[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*) .*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1")))),
+                                        // @formatter:off
+                                        // Depot-Nr. Abrechnungs-Nr.
+                                        // 111/2222/002 65091167
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "note1") //
+                                                        .match("^.* (?<note>Abrechnungs\\-Nr\\.)$") //
+                                                        .match("^[\\d]+\\/[\\d]+\\/[\\d]+ (?<note1>.*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1")))),
+                                        // @formatter:off
+                                        // Abrechnungsnr. 12345678
+                                        //  XXXX XXXAuftragsnummer XXXXXX/XX.XX
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Abrechnungsnr\\.|Auftragsnummer) .*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         // If we have a tax refunds, we set a flag and don't book tax below.
@@ -1717,6 +1964,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // + Provision 0,49 Summe 200,49
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^\\+ Anlagerabatt (?<fee>[\\.,\\d]+) Summe [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("currency", context.get("currency"));
+
+                            processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Kurswert 509,71- EUR

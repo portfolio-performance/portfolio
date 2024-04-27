@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Jürgen XXXXX SEITE 1 von 1
+egalstrasse 18 DATUM 11.04.2024
+12345 egalort DEPOT 0435487001
+STEUERABRECHNUNG
+ÜBERSICHT
+Erstattung zu viel einbehaltener US-Quellensteuer für DE000HS33QJ0.
+POSITION ANZAHL BETRAG
+HSBC Trinkaus & Burkhardt GmbH 400 Stk. 2,21 EUR
+TurboC O.End salesfor
+ISIN: DE000HS33QJ0
+GESAMT 2,21 EUR
+ABRECHNUNG
+POSITION BETRAG
+Erstattung US-Quellensteuer 2,21 EUR
+GESAMT 2,21 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE30501108019081234567 11.04.2024 2,21 EUR
+HSBC Trinkaus & Burkhardt GmbH TurboC O.End salesfor in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 11.04.2024 / 71144260 / 8e38-4b61

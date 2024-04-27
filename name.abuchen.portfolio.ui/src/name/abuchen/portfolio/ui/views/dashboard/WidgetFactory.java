@@ -244,6 +244,7 @@ public enum WidgetFactory
                                         long sell = LongStream.of(index.getSells()).sum();
                                         return Long.min(buy, sell) / average.getAsDouble();
                                     }) //
+                                    .withBenchmarkDataSeries(false) //
                                     .withTooltip((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
                                         String currency = data.getCurrencyConverter().getTermCurrency();

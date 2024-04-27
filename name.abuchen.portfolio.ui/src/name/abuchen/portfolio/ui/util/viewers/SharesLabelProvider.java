@@ -88,7 +88,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         else if (widget instanceof TreeItem treeItem)
             return treeItem.getBounds(index);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported item type " + widget); //$NON-NLS-1$
     }
 
     @Override

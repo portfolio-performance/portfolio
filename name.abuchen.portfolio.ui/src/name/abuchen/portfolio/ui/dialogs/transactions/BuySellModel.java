@@ -22,7 +22,7 @@ import name.abuchen.portfolio.ui.Messages;
         super(client, type);
 
         if (!accepts(type))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override

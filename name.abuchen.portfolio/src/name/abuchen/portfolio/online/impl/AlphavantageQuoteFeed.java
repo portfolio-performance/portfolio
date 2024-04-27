@@ -74,7 +74,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     public void setCallFrequencyLimit(int limit)
     {
         if (limit <= 0)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("illegal limit value " + limit); //$NON-NLS-1$
 
         rateLimiter.setRate((limit - .5) / 60d);
     }

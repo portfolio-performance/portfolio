@@ -1,0 +1,67 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+30.03.2023
+Max Mustermann
+Muster Straße 9 Max Mustermann
+98762 Entenhausen Stamm-Nr.: 7897678    Portfolio: 1
+Depot-Nr.: 7897678001
+Vorgangs-Nr.: 12312312
+Referenz-Nr.: 213123123
+Buchungsanzeige
+Fusion / Zusammenlegung
+Ausbuchung aus Depot 7897678001 per 24.03.2023
+Nominale ISIN: LU0635178014 WKN: ETF127
+STK 2 Lyxor MSCI Emerg.Mkts U.ETF
+Inh.-An. I o.N.
+Einbuchung in Depot 7897678001 per 24.03.2023
+Nominale ISIN: LU2573966905 WKN: ETF019
+STK 2 MUL-Amu.MSCI EMER.MAR.II ETF
+Act.Nom. USD Dis. oN
+Verhältnis: 1 : 1 
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de UMTA-053.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Fusion / Zusammenlegung
+Fortsetzung: Seite 2/2
+Ausbuchung
+Stück 2 Lyxor MSCI Emerg.Mkts U.ETF
+ISIN: LU0635178014/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP-Einlief. mit AK 78667321 05.10.2021 STK 1,024 49,48 0,00 0,00
+WP-Einlief. mit AK 78667321 05.01.2022 STK 0,976 46,65 0,00 0,00
+Einbuchung
+Stück 2 MUL-Amu.MSCI EMER.MAR.II ETF
+ISIN: LU2573966905/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP-Einlief. mit AK 12312312 05.10.2021 STK 1,024 49,48
+WP-Einlief. mit AK 12312312 05.01.2022 STK 0,976 46,65
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de UMTA-053.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 

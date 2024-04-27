@@ -1089,6 +1089,7 @@ public class Messages extends NLS
     public static String PrefBackupDirectory;
     public static String PrefBackupLocation;
     public static String PrefDescriptionAlphaVantage;
+    public static String PrefDescriptionCoingecko;
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
     public static String PrefDescriptionMyDividends24;
@@ -1129,6 +1130,7 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
+    public static String PrefTitleAPIKey;
     public static String PrefTitleAPIKeys;
     public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;

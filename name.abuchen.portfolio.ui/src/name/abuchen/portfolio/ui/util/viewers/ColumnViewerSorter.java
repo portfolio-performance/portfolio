@@ -160,7 +160,7 @@ public final class ColumnViewerSorter
                 catch (NoSuchMethodException e1)
                 {
                     PortfolioPlugin.log(Arrays.asList(e, e1));
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("no read method found for " + camelCaseAttribute); //$NON-NLS-1$
                 }
             }
         }
@@ -314,7 +314,7 @@ public final class ColumnViewerSorter
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported viewerColumn type " + viewerColumn); //$NON-NLS-1$
             }
 
             if (columnIsCurrentlySorted)

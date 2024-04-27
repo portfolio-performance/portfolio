@@ -11,16 +11,16 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
+/**
+ * @implNote Bondora Capital does not have a specific bank identifier.
+ */
 @SuppressWarnings("nls")
 public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 {
     public BondoraCapitalPDFExtractor(Client client)
     {
         super(client);
-
-        addBankIdentifier("Zusammenfassung");
-        addBankIdentifier("Summary");
-
+        
         addAccountStatementTransaction();
     }
 
@@ -32,7 +32,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Zusammenfassung|Summary)");
+        final DocumentType type = new DocumentType("(?m)^(Zusammenfassung|Summary)$");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();

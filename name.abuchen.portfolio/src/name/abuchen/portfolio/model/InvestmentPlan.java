@@ -58,12 +58,18 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public Type getPlanType()
     {
-        if (portfolio != null && security != null)
+        if (portfolio != null)
+        {
+            if (security == null)
+                throw new IllegalArgumentException("security is null with a set portfolio for" + name); //$NON-NLS-1$
             return Type.BUY_OR_DELIVERY;
-        else if (portfolio == null && account != null && security == null)
+        }
+        if (account == null)
+            throw new IllegalArgumentException("portfolio and account are not set for " + name); //$NON-NLS-1$
+        if (security == null)
             return (amount >= 0) ? Type.DEPOSIT : Type.REMOVAL;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("security is set with a set account for " + name); //$NON-NLS-1$
     }
 
     @Override
@@ -392,7 +398,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         else if (planType == Type.DEPOSIT || planType == Type.REMOVAL)
             return createAccountTx(converter, tDate);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported plan type " + planType.name()); //$NON-NLS-1$
     }
 
     private TransactionPair<?> createSecurityTx(CurrencyConverter converter, LocalDate tDate) throws IOException

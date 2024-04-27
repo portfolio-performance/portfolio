@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -31,12 +32,13 @@ public class ConvertBuySellToDeliveryAction extends Action
 
         for (TransactionPair<PortfolioTransaction> tx : transactionList)
         {
-            if (tx.getTransaction().getType() != PortfolioTransaction.Type.BUY
-                            && tx.getTransaction().getType() != PortfolioTransaction.Type.SELL)
-                throw new IllegalArgumentException();
+            Type type = tx.getTransaction().getType();
+            if (type != PortfolioTransaction.Type.BUY
+                            && type != PortfolioTransaction.Type.SELL)
+                throw new IllegalArgumentException("unsupported transaction type " + type); //$NON-NLS-1$
 
-            allBuy &= tx.getTransaction().getType() == PortfolioTransaction.Type.BUY;
-            allSell &= tx.getTransaction().getType() == PortfolioTransaction.Type.SELL;
+            allBuy &= type == PortfolioTransaction.Type.BUY;
+            allSell &= type == PortfolioTransaction.Type.SELL;
 
         }
 

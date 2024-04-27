@@ -2,10 +2,23 @@ package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -15,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,10 +56,30 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
 public class SwissquotePDFExtractorTest
 {
+    SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client())
+    {
+        @Override
+        protected CoinGeckoQuoteFeed lookupFeed()
+        {
+            // mock the list of coins to avoid remote call
+            return new CoinGeckoQuoteFeed()
+            {
+                @Override
+                public synchronized List<Coin> getCoins() throws IOException
+                {
+                    return List.of( //
+                                    new Coin("bitcoin", "BTC", "Bitcoin"), //
+                                    new Coin("ethereum", "ETH", "Ethereum"));
+                }
+            };
+        }
+    };
+
     @Test
     public void testWertpapierKauf01()
     {
@@ -466,6 +500,37 @@ public class SwissquotePDFExtractorTest
         account.setCurrencyCode("CHF");
         Status s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testCryptoKauf01()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("USD"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-19T00:00"), hasShares(0.02), //
+                        hasSource("CryptoKauf01.txt"), //
+                        hasNote("Referenz: 535993271"), //
+                        hasAmount("USD", 1285.61), hasGrossValue("USD", 1272.88), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 12.73))));
     }
 
     @Test
@@ -966,15 +1031,15 @@ public class SwissquotePDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Depotgebühren"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("CHF", 127.85), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("CHF", 127.85), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 18.56), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("EUR", 18.56), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
+        assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
     }
 }

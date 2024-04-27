@@ -18,7 +18,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -3310,6 +3312,105 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testSteuerrelevanterUmtausch01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerrelevanterUmtausch01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1291109293"), hasWkn("A2ACQY"), hasTicker(null), //
+                        hasName("BNP P.Easy-ECPI Gl ESG Infra. Nam.-Ant.UCITS ETF CAP EUR o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2023-11-03T00:00"), hasShares(4.00), //
+                                        hasSource("SteuerrelevanterUmtausch01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testUmtauschEingang01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "UmtauschEingang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US49177J1025"), hasWkn("A3EEHU"), hasTicker(null), //
+                        hasName("Kenvue Inc. Registered Shares DL -,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2023-08-25T00:00"), hasShares(16.0648), //
+                                        hasSource("UmtauschEingang01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testUmtauschAusgang01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "UmtauschAusgang01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4781601046"), hasWkn("853260"), hasTicker(null), //
+                        hasName("Johnson & Johnson Registered Shares DL 1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2023-08-25T00:00"), hasShares(2.00), //
+                                        hasSource("UmtauschAusgang01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testGiroKontoauszug01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
@@ -3528,8 +3629,7 @@ public class INGDiBaPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3550,8 +3650,7 @@ public class INGDiBaPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ExtraKontoauszug01.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ExtraKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3563,6 +3662,8 @@ public class INGDiBaPDFExtractorTest
         // assert transactions
         assertThat(results, hasItem(deposit(hasDate("2023-12-28"), hasAmount("EUR", 40.00), //
                         hasSource("ExtraKontoauszug01.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
                         hasSource("ExtraKontoauszug01.txt"), hasNote("16.12.2023 bis 31.12.2023 (3,750%)"))));
     }

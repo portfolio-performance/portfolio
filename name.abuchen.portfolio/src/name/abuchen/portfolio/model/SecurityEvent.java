@@ -56,7 +56,7 @@ public class SecurityEvent
         public void setType(Type type)
         {
             if (type != Type.DIVIDEND_PAYMENT)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("type must be DIVIDEND_PAYMENT but was " + type.name()); //$NON-NLS-1$
         }
 
         public LocalDate getPaymentDate()

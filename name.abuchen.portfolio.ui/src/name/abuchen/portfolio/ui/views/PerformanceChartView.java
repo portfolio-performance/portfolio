@@ -228,6 +228,7 @@ public class PerformanceChartView extends AbstractHistoricView
                 public void run()
                 {
                     setLabel(Messages.LabelAggregationDaily);
+                    setToolTip(Messages.LabelAggregationDaily);
                     aggregationPeriod = null;
                     getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, ""); //$NON-NLS-1$
                     updateChart();
@@ -244,6 +245,7 @@ public class PerformanceChartView extends AbstractHistoricView
                     public void run()
                     {
                         setLabel(period.toString());
+                        setToolTip(period.toString());
                         aggregationPeriod = period;
                         getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, period.name());
                         updateChart();

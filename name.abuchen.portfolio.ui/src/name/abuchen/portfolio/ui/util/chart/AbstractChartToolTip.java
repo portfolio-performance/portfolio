@@ -207,6 +207,6 @@ public abstract class AbstractChartToolTip implements Listener
         else if (chartV13 != null)
             return (Composite) chartV13.getPlotArea();
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no plot area found"); //$NON-NLS-1$
     }
 }

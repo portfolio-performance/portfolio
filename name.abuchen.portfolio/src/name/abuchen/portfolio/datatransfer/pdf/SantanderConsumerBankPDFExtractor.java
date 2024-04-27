@@ -42,17 +42,19 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^Depotnummer.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
+        pdfTransaction //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
                         // @formatter:off
                         // Stück 2 3M CO. US88579Y1010 (851745)
                         // REGISTERED SHARES DL -,01
@@ -113,15 +115,20 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^Depotnummer.*$");
-        type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.DIVIDENDS);
-            return entry;
-        });
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        pdfTransaction
+        Block firstRelevantLine = new Block("^Depotnummer.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
                         // @formatter:off
                         // Nominale Wertpapierbezeichnung ISIN (WKN)
                         // Stück 2 3M CO. US88579Y1010 (851745)
@@ -194,8 +201,6 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-
-        block.set(pdfTransaction);
     }
 
     private void addAccountStatementTransaction()
@@ -313,25 +318,27 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // @formatter:off
-                // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
-                // @formatter:on
-                .section("withHoldingTax", "currency").optional() //
-                .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+        transaction //
 
-                // @formatter:off
-                // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
-                // @formatter:on
-                .section("creditableWithHoldingTax", "currency").optional() //
-                .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
-                .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
+                        // @formatter:off
+                        // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
+        
                  // @formatter:off
                  // Provision 7,90- EUR
                  // @formatter:on

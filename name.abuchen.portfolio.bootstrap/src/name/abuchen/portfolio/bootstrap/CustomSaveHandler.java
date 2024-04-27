@@ -38,7 +38,7 @@ public class CustomSaveHandler extends PartServiceSaveHandler
     {
         Object clientInput = dirtyPart.getTransientData().get(ModelConstants.EDITOR_INPUT);
         if (clientInput == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no client input found"); //$NON-NLS-1$
 
         EModelService modelService = dirtyPart.getContext().get(EModelService.class);
         MApplication app = dirtyPart.getContext().get(MApplication.class);

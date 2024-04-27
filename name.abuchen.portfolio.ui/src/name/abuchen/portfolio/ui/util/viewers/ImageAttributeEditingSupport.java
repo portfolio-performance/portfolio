@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.ImageUtil;
@@ -23,8 +24,9 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
     {
         super(attribute);
 
-        if (!(attribute.getConverter() instanceof ImageConverter))
-            throw new IllegalArgumentException();
+        Converter conv = attribute.getConverter();
+        if (!(conv instanceof ImageConverter))
+            throw new IllegalArgumentException("unsupported converter " + conv); //$NON-NLS-1$
     }
 
     @Override

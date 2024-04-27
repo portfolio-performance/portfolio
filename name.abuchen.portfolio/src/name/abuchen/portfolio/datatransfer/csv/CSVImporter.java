@@ -178,7 +178,7 @@ public final class CSVImporter
         public Field(String code, String... names)
         {
             if (names.length < 1)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("no names provided"); //$NON-NLS-1$
 
             this.code = code;
             this.names = names;
@@ -669,7 +669,7 @@ public final class CSVImporter
         {
             String s = enumMap.get(obj);
             if (s == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("no enum found for object " + obj); //$NON-NLS-1$
 
             return toAppendTo.append(s);
         }
@@ -759,7 +759,7 @@ public final class CSVImporter
         {
             String s = (String) obj;
             if (s == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("obj is null"); //$NON-NLS-1$
 
             return toAppendTo.append(s);
         }
