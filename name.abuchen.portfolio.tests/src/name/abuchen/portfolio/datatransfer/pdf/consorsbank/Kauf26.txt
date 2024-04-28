@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Postfach 12 02  90002 Nürnberg
+Depotnummer: 0358 913 301
+1126006224/00
+Vermerk der Bank: 5102
+2
+Christoph Waitz
+Silvia Waitz
+Pelagiusweg 5 Datum: 07.07.2023
+88138 Weißensberg Seite: 1 von 2
+Ordernummer 269730691.001
+Orderdatum 07.07.2023
+ORDERABRECHNUNG
+KAUF AM 07.07.2023 UM 13:38:16 TRADEGATE EXCHANGE NR. 269730691.001
+Bezeichnung WKN ISIN
+0,375 % VOLKSWAGEN LEASING 21/26 20.JULI A2YN0C XS2343822842
+Einheit Umsatz Fälligkeit
+EUR 7.000,00000 Letzte Fälligkeit 20.07.2026
+Preis pro Anteil 88,789000 %
+Kurswert 6.215,23 EUR
+Stückzins Zinsvaluta 10.07.2023 356 Tage 25,60 EUR
+Handelsplatzkosten 0,95 EUR
+zulasten Konto-Nr. 0350884309 6.241,78 EUR
+Valuta 11.07.2023
+Bestand zugunsten Wertpapierrechnung Luxemburg
+CBF 2126
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+BNP Paribas Wealth Management ist ein Geschäftsbereich der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Frankfurt: Senckenberganlage 19, 60325 Frankfurt am Main, HRB Frankfurt am Main 40950, Fon +49 (0) 69 / 56 00 41-200
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, Fon +49 (0) 911 / 369-20 00, Fax +49 (0) 911 / 369-10 00
+wealthmanagement-de@bnpparibas.com, www.wealthmanagement.bnpparibas.de, USt-IdNr. DE191528929
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 0358 884 301
+1126006224/00
+Vermerk der Bank: 5102
+2
+Datum: 07.07.2023
+Seite: 2 von 2
+Ordernummer 269730691.001
+Orderdatum 07.07.2023
+Informationen bei Käufen bzw. Verlust Wertpapiere ungleich Aktien
+Gezahlte Stückzinsen 25,60 EUR
+in Verrechnungstopf Allgemein eingestellt 25,60 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 0,00 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 336,57 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 369,21 EUR
+Verrechnungstopf QUST nach dem Geschäft 1,52 EUR
+Der Verkaufserlös unterliegt nicht dem Kapitalertragssteuerabzug.
+BNP Paribas Wealth Management ist ein Geschäftsbereich der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Frankfurt: Senckenberganlage 19, 60325 Frankfurt am Main, HRB Frankfurt am Main 40950, Fon +49 (0) 69 / 56 00 41-200
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, Fon +49 (0) 911 / 369-20 00, Fax +49 (0) 911 / 369-10 00
+wealthmanagement-de@bnpparibas.com, www.wealthmanagement.bnpparibas.de, USt-IdNr. DE191528929
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
