@@ -41,15 +41,12 @@ import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty.Type;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet.MarketInfo;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -141,15 +138,6 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                         monitor.worked(1);
                         continue;
                     }
-
-                    // search by ticker symbol
-                    if (item.security.getTickerSymbol() != null && !item.security.getTickerSymbol().isEmpty()
-                                    && searchByTickerSymbol(item))
-                    {
-                        monitor.worked(1);
-                        continue;
-                    }
-
                 }
                 catch (IOException e)
                 {
@@ -185,68 +173,19 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
             addSecurityInfoAction(item, onlineItem);
 
-            for (MarketInfo market : onlineItem.getMarkets())
-            {
-                var action = addAction(item, onlineItem, market);
+            var useAction = addAction(item, onlineItem);
 
-                if (item.selectedAction == null && item.security.getCurrencyCode().equals(market.getCurrencyCode()))
-                {
-                    item.selectedAction = action;
-                }
-            }
+            if (onlineItem.hasPrices())
+                item.selectedAction = useAction;
 
-            Action action = new SimpleAction(Messages.LabelOnlyLinkToPortfolioReport, a -> {
+            Action linkOnlyAction = new SimpleAction(Messages.LabelOnlyLinkToPortfolioReport, a -> {
                 item.security.setOnlineId(onlineItem.getOnlineId());
                 PortfolioReportNet.updateWith(item.security, onlineItem);
             });
 
             if (item.selectedAction == null)
-                item.selectedAction = action;
-            item.actions.add(action);
-
-            listener.accept(item);
-            return true;
-        }
-
-        private boolean searchByTickerSymbol(SecurityItem item) throws IOException
-        {
-            // search without the market identifier
-
-            final String symbol = item.security.getTickerSymbolWithoutStockMarket();
-            var results = new PortfolioReportNet().search(symbol, SecuritySearchProvider.Type.ALL);
-
-            for (ResultItem resultItem : results)
-            {
-                OnlineItem onlineItem = (OnlineItem) resultItem;
-
-                addSecurityInfoAction(item, onlineItem);
-
-                // check if the symbol matches one of the market symbols
-
-                for (MarketInfo market : onlineItem.getMarkets())
-                {
-                    var action = addAction(item, onlineItem, market);
-
-                    // let's be conservative for now: if the symbol matches
-                    // exactly, only then we propose to use it
-
-                    if (item.selectedAction == null //
-                                    && item.security.getTickerSymbol().equals(market.getSymbol())
-                                    && item.security.getCurrencyCode().equals(market.getCurrencyCode()))
-                    {
-                        item.selectedAction = action;
-                    }
-                }
-
-                // otherwise
-
-                Action action = new SimpleAction(Messages.LabelOnlyLinkToPortfolioReport, a -> {
-                    item.security.setOnlineId(onlineItem.getOnlineId());
-                    PortfolioReportNet.updateWith(item.security, onlineItem);
-                });
-
-                item.actions.add(action);
-            }
+                item.selectedAction = linkOnlyAction;
+            item.actions.add(linkOnlyAction);
 
             listener.accept(item);
             return true;
@@ -263,22 +202,16 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             item.actions.add(new LabelOnly(label));
         }
 
-        private Action addAction(SecurityItem item, OnlineItem onlineItem, MarketInfo market)
+        private Action addAction(SecurityItem item, OnlineItem onlineItem)
         {
-            var label = MessageFormat.format("{0}, {1}, {2}, {3} - {4}", //$NON-NLS-1$
+            var label = MessageFormat.format("{0}, {1}, {2}", //$NON-NLS-1$
                             new PortfolioReportQuoteFeed().getName(), //
-                            market.getMarketCode(), //
-                            market.getCurrencyCode(),
-                            market.getFirstPriceDate() != null ? Values.Date.format(market.getFirstPriceDate())
-                                            : Messages.LabelNotAvailable,
-                            market.getLastPriceDate() != null ? Values.Date.format(market.getLastPriceDate())
-                                            : Messages.LabelNotAvailable);
+                            onlineItem.getName(), //
+                            item.security.getCurrencyCode());
 
-            Action action = new SimpleAction(label, a -> {
+            Action action = new SimpleAction(label, onlineItem.hasPrices() ? Images.VIEW_LINECHART : null, a -> {
                 item.security.setOnlineId(onlineItem.getOnlineId());
                 item.security.setFeed(PortfolioReportQuoteFeed.ID);
-                item.security.setPropertyValue(Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                market.getMarketCode());
 
                 // if and only if the label includes the characters of a newly
                 // imported security (e.g. "Imported security: {0}"), then we

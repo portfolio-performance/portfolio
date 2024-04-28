@@ -16,10 +16,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -294,32 +292,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
         List<Exchange> answer = new ArrayList<>();
-
-        // This is not the best place to include the market information from
-        // portfolio-report.net, but for now the list of exchanges is only
-        // available for Yahoo search provider.
-
-        var markets = PortfolioReportQuoteFeed.getMarkets(subject);
-
-        markets.stream().map(market -> {
-            Exchange exchange = new Exchange(market.getSymbol(),
-                            MarketIdentifierCodes.getLabel(market.getMarketCode()));
-
-            // symbol might be null because it was added only later to
-            // MarketInfo, when deserializing from JSON, it might not be set
-            if (market.getSymbol() != null)
-            {
-                if ("XFRA".equals(market.getMarketCode())) //$NON-NLS-1$
-                    exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
-                if ("XETR".equals(market.getMarketCode())) //$NON-NLS-1$
-                    exchange.setId(exchange.getId() + ".DE"); //$NON-NLS-1$
-            }
-
-            return exchange;
-        }).filter(e -> e.getId() != null).forEach(answer::add);
-
-        Set<String> candidates = new HashSet<>();
-        answer.forEach(e -> candidates.add(e.getId()));
 
         // At the moment, we do not have a reasonable way to search for
         // exchanges of a given symbol. For the time being, we add all
