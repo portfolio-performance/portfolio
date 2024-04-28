@@ -39,6 +39,34 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.68.4" date="2024-04-28">
+      <description>
+        <ul>
+          <li>New: Change data series for all widgets in a column at once</li>
+          <li>New: Added a search field in the list of trades</li>
+          <li>New: Introduced a new PDF importer for Bigbank, Arkea Direct Bank, and Radicant Bank AG (BLKB)</li>
+          <li>Improvements to the PDF importers for Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, and OLB Bank</li>
+          <li>Improvement: Security logos in the data series selection dialog</li>
+          <li>Improvement: Cache the DivvyDiary server response only when PP has received a valid JSON response</li>
+          <li>Improvement: An optional (paid) CoinGecko API key can be set</li>
+          <li>Fix: Resolves an issue with calculating the 'Fees' data series in the asset chart</li>
+          <li>Fix: Resolves an issue where the tooltip displayed the incorrect label for the aggregation</li>
+          <li>Fix: Resolves an issue with displaying the ampersand (&amp;) on the 'Date Reached' and 'Limit Exceeded' widgets</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Datenreihen für alle Widgets in einer Spalte gleichzeitig ändern</li>
+          <li>Neu: Suchfeld in der Liste der Trades</li>
+          <li>Neu: Neuer PDF-Importer für Bigbank, Arkea Direct Bank, und Radicant Bank AG (BLKB) eingeführt</li>
+          <li>Verbesserungen an den PDF-Importern für Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, und OLB Bank</li>
+          <li>Verbesserung: Logos der Wertpapiere im Dialog zur Auswahl von Datenreihen</li>
+          <li>Verbesserung: Cache der DivvyDiary-Server-Antwort nur, wenn PP eine gültige JSON-Antwort erhalten hat</li>
+          <li>Verbesserung: Ein optionaler (kostenpflichtiger) CoinGecko-API-Schlüssel kann hinterlegt werden</li>
+          <li>Fix: Behebt ein Problem bei der Berechnung der 'Gebühren'-Datenreihe im Vermögensdiagramm</li>
+          <li>Fix: Behebt ein Problem, bei dem im Tooltip die falsche Bezeichnung der Aggregation angezeigt wurde</li>
+          <li>Fix: Behebt ein Problem mit der Darstellung des kaufmännischen Unds (&amp;) auf den Widgets 'Termin erreicht' und 'Limit überschritten'</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.68.3" date="2024-03-24">
       <description>
         <ul>
