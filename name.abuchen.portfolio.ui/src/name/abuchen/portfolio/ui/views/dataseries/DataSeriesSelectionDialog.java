@@ -311,7 +311,7 @@ public class DataSeriesSelectionDialog extends Dialog
         });
 
         searchText.addModifyListener(e -> {
-            String pattern = searchText.getText().trim();
+            String pattern = Pattern.quote(searchText.getText().trim());
             if (pattern.length() == 0)
                 elementFilter.setSearchPattern(null);
             else
