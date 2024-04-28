@@ -96,6 +96,7 @@ public class ExtractorUtils
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
                     createFormatter("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd-MM-yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
