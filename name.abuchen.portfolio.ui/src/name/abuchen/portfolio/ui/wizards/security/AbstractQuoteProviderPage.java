@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -118,9 +117,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                             {
                                 comboExchange.setInput(exchanges);
 
-                                String code = feed.getId().equals(PortfolioReportQuoteFeed.ID)
-                                                ? model.getFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME)
-                                                : model.getTickerSymbol();
+                                String code = model.getTickerSymbol();
 
                                 // if ticker symbol matches any of the
                                 // exchanges, select this exchange in the
@@ -278,9 +275,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 showSampleQuotes(feed, null);
         }
 
-        if (CoinGeckoQuoteFeed.ID.equals(getFeed()) && !Objects.equals(currencyCode, model.getCurrencyCode()))
+        if ((CoinGeckoQuoteFeed.ID.equals(getFeed()) || PortfolioReportQuoteFeed.ID.equals(getFeed()))
+                        && !Objects.equals(currencyCode, model.getCurrencyCode()))
         {
-            // coin gecko additionally uses the currency to retrieve quotes
+            // coin gecko and portfolio report additionally uses the currency to
+            // retrieve quotes
             this.currencyCode = model.getCurrencyCode();
             showSampleQuotes(feed, null);
         }
@@ -370,12 +369,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 tickerSymbol = exchange.getId();
                 setFeedURL(null);
             }
-        }
-        else if (comboExchange != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
-        {
-            Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
-            model.setFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                            exchange != null ? exchange.getId() : null);
         }
         else if (textFeedURL != null)
         {
@@ -500,7 +493,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         (feed.getId().startsWith(YAHOO) //
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
-                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                                         || feed.getId().equals(TwelveDataQuoteFeed.ID));
 
@@ -789,18 +781,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             input.add(exchange);
             comboExchange.setInput(input);
             comboExchange.setSelection(new StructuredSelection(exchange));
-        }
-
-        if (feed != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
-        {
-            String code = model.getFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME);
-
-            if (code != null)
-            {
-                Exchange exchange = new Exchange(code, code);
-                comboExchange.setInput(Arrays.asList(exchange));
-                comboExchange.setSelection(new StructuredSelection(exchange));
-            }
         }
 
         if (textFeedURL != null && getFeedURL() != null)

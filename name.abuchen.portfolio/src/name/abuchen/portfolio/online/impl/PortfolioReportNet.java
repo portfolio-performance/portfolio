@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,106 +12,38 @@ import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class PortfolioReportNet
 {
-    public static class MarketInfo
-    {
-        private String marketCode;
-        private String currencyCode;
-        private String symbol;
-        private LocalDate firstPriceDate;
-        private LocalDate lastPriceDate;
-
-        static List<MarketInfo> from(JSONArray json)
-        {
-            if (json == null)
-                return Collections.emptyList();
-
-            List<MarketInfo> answer = new ArrayList<>();
-
-            for (Object obj : json)
-            {
-                JSONObject market = (JSONObject) obj;
-
-                MarketInfo info = new MarketInfo();
-                info.marketCode = (String) market.get("marketCode"); //$NON-NLS-1$
-                info.currencyCode = (String) market.get("currencyCode"); //$NON-NLS-1$
-                info.symbol = (String) market.get("symbol"); //$NON-NLS-1$
-                info.firstPriceDate = YahooHelper.fromISODate((String) market.get("firstPriceDate")); //$NON-NLS-1$
-                info.lastPriceDate = YahooHelper.fromISODate((String) market.get("lastPriceDate")); //$NON-NLS-1$
-                answer.add(info);
-            }
-
-            return answer;
-        }
-
-        private MarketInfo()
-        {
-        }
-
-        public String getMarketCode()
-        {
-            return marketCode;
-        }
-
-        public String getCurrencyCode()
-        {
-            return currencyCode;
-        }
-
-        public String getSymbol()
-        {
-            return symbol;
-        }
-
-        public LocalDate getFirstPriceDate()
-        {
-            return firstPriceDate;
-        }
-
-        public LocalDate getLastPriceDate()
-        {
-            return lastPriceDate;
-        }
-    }
-
     public static class OnlineItem implements ResultItem
     {
         private String id;
         private String name;
-        private String type;
+        private String securityType;
+        private boolean pricesAvailable;
 
         private String isin;
         private String wkn;
-        private List<MarketInfo> markets;
+        private String code;
 
         /* package */ static OnlineItem from(JSONObject jsonObject)
         {
             OnlineItem vehicle = new OnlineItem();
             vehicle.id = (String) jsonObject.get("uuid"); //$NON-NLS-1$
             vehicle.name = (String) jsonObject.get("name"); //$NON-NLS-1$
-
-            String t = (String) jsonObject.get("securityType"); //$NON-NLS-1$
-            if (TYPE_SHARE.equals(t))
-                vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
-            else if (TYPE_BOND.equals(t))
-                vehicle.type = SecuritySearchProvider.Type.BOND.toString();
-            else if (TYPE_FUND.equals(t))
-                vehicle.type = Messages.LabelSearchFund;
-            else
-                vehicle.type = t;
+            vehicle.securityType = (String) jsonObject.get(PROPERTY_SECURITY_TYPE);
 
             vehicle.isin = (String) jsonObject.get("isin"); //$NON-NLS-1$
             vehicle.wkn = (String) jsonObject.get("wkn"); //$NON-NLS-1$
-            vehicle.markets = MarketInfo.from((JSONArray) jsonObject.get("markets")); //$NON-NLS-1$
+            vehicle.code = (String) jsonObject.get("code"); //$NON-NLS-1$
+
+            vehicle.pricesAvailable = (boolean) jsonObject.get("pricesAvailable"); //$NON-NLS-1$
             return vehicle;
         }
 
@@ -148,13 +78,22 @@ public class PortfolioReportNet
         @Override
         public String getSymbol()
         {
-            return markets.stream().map(MarketInfo::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$
+            return code;
         }
 
         @Override
         public String getType()
         {
-            return type;
+            if (TYPE_SHARE.equals(securityType))
+                return SecuritySearchProvider.Type.SHARE.toString();
+            else if (TYPE_BOND.equals(securityType))
+                return SecuritySearchProvider.Type.BOND.toString();
+            else if (TYPE_FUND.equals(securityType))
+                return Messages.LabelSearchFund;
+            else if (TYPE_CRYPTO.equals(securityType))
+                return Messages.LabelCryptocurrency;
+            else
+                return securityType;
         }
 
         @Override
@@ -166,12 +105,7 @@ public class PortfolioReportNet
         @Override
         public boolean hasPrices()
         {
-            return !markets.isEmpty();
-        }
-        
-        public List<MarketInfo> getMarkets()
-        {
-            return markets;
+            return pricesAvailable;
         }
 
         @Override
@@ -180,22 +114,18 @@ public class PortfolioReportNet
             Security security = new Security(name, client.getBaseCurrency());
 
             security.setOnlineId(id);
-
             security.setIsin(isin);
             security.setWkn(wkn);
-            security.setTickerSymbol(markets.stream().map(MarketInfo::getSymbol).findAny().orElse(null));
+            security.setTickerSymbol(code);
 
-            security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : JClient.GSON.toJson(markets));
-
-            if (!markets.isEmpty())
-            {
-                var market = markets.get(0);
-
-                security.setCurrencyCode(market.getCurrencyCode());
+            if (pricesAvailable)
                 security.setFeed(PortfolioReportQuoteFeed.ID);
-                security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                market.getMarketCode());
+
+            if (!TYPE_CRYPTO.equals(securityType))
+            {
+                // for the time being, we set the currency to EUR for all other
+                // instruments. We know that the primary currency is EUR.
+                security.setCurrencyCode(CurrencyUnit.EUR);
             }
 
             return security;
@@ -217,10 +147,6 @@ public class PortfolioReportNet
                 isDirty = true;
             }
 
-            if (security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : JClient.GSON.toJson(markets)))
-                isDirty = true;
-
             return isDirty;
         }
 
@@ -231,25 +157,31 @@ public class PortfolioReportNet
         }
     }
 
+    private static final String PROPERTY_SECURITY_TYPE = "securityType"; //$NON-NLS-1$
+
     private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
     private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
     private static final String TYPE_FUND = "fund"; //$NON-NLS-1$
+    private static final String TYPE_CRYPTO = "crypto"; //$NON-NLS-1$
 
     private static final String HOST = "api.portfolio-report.net"; //$NON-NLS-1$
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        WebAccess webAccess = new WebAccess(HOST, "/securities/search/" + query) //$NON-NLS-1$
-                        .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
+        var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
+
+        WebAccess webAccess = new WebAccess(HOST, "/v1/securities/search") //$NON-NLS-1$
+                        .addUserAgent("PortfolioPerformance/" + version); //$NON-NLS-1$
+
+        webAccess.addParameter("q", query); //$NON-NLS-1$
 
         switch (type)
         {
             case SHARE:
-                webAccess.addParameter("securityType", TYPE_SHARE); //$NON-NLS-1$
+                webAccess.addParameter(PROPERTY_SECURITY_TYPE, TYPE_SHARE);
                 break;
             case BOND:
-                webAccess.addParameter("securityType", TYPE_BOND); //$NON-NLS-1$
+                webAccess.addParameter(PROPERTY_SECURITY_TYPE, TYPE_BOND);
                 break;
             case ALL:
             default:
@@ -261,15 +193,15 @@ public class PortfolioReportNet
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
+        var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
+
         @SuppressWarnings("nls")
         String html = new WebAccess(HOST, "/securities/uuid/" + onlineId)
-                        .addUserAgent("PortfolioPerformance/"
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
-                        .addHeader("X-Source",
-                                        "Portfolio Peformance " + FrameworkUtil.getBundle(PortfolioReportNet.class)
-                                                        .getVersion().toString())
+                        .addUserAgent("PortfolioPerformance/" + version)
+                        .addHeader("X-Source", "Portfolio Peformance " + version)
                         .addHeader("X-Reason", "periodic update")
-                        .addHeader("Content-Type", "application/json;chartset=UTF-8").get();
+                        .addHeader("Content-Type", "application/json;chartset=UTF-8") //
+                        .get();
 
         Optional<ResultItem> onlineItem = Optional.empty();
         JSONObject response = (JSONObject) JSONValue.parse(html);

@@ -1,11 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,18 +12,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
-import com.google.gson.reflect.TypeToken;
-
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.json.JClient;
-import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet.MarketInfo;
 import name.abuchen.portfolio.util.WebAccess;
 
 public final class PortfolioReportQuoteFeed implements QuoteFeed
@@ -37,8 +29,6 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     public static final String ID = "PORTFOLIO-REPORT"; //$NON-NLS-1$
-    public static final String MARKETS_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKETS"; //$NON-NLS-1$
-    public static final String MARKET_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKET"; //$NON-NLS-1$
 
     private final PageCache<ResponseData> cache = new PageCache<>();
 
@@ -87,7 +77,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @SuppressWarnings("unchecked")
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
+    private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
         if (security.getOnlineId() == null)
         {
@@ -95,27 +85,19 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                             MessageFormat.format(Messages.MsgErrorMissingOnlineId, security.getName())));
         }
 
-        Optional<String> market = security.getPropertyValue(SecurityProperty.Type.FEED, MARKET_PROPERTY_NAME);
-
-        if (!market.isPresent())
-        {
-            return QuoteFeedData.withError(new IOException(
-                            MessageFormat.format(Messages.MsgErrorMissingPortfolioReportMarket, security.getName())));
-        }
-
         QuoteFeedData data = new QuoteFeedData();
 
         try
         {
             @SuppressWarnings("nls")
-            WebAccess webaccess = new WebAccess("api.portfolio-report.net",
-                            "/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()) //
+            WebAccess webaccess = new WebAccess("api.portfolio-report.net", //
+                            "/securities/uuid/" + security.getOnlineId() + "/prices/" + security.getCurrencyCode())
                                             .addUserAgent("PortfolioPerformance/"
                                                             + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                                             .getVersion().toString())
                                             .addParameter("from", start.toString());
 
-            ResponseData response = cache.lookup(security.getOnlineId());
+            ResponseData response = cache.lookup(security.getOnlineId() + security.getCurrencyCode());
 
             if (response == null || response.start.isAfter(start))
             {
@@ -124,15 +106,14 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                 response.json = webaccess.get();
 
                 if (response.json != null)
-                    cache.put(security.getOnlineId(), response);
+                    cache.put(security.getOnlineId() + security.getCurrencyCode(), response);
             }
 
             if (collectRawResponse)
                 data.addResponse(webaccess.getURL(), response.json);
 
-            JSONObject json = (JSONObject) JSONValue.parse(response.json);
+            JSONArray pricesJson = (JSONArray) JSONValue.parse(response.json);
 
-            JSONArray pricesJson = (JSONArray) json.get("prices"); //$NON-NLS-1$
             if (pricesJson == null)
             {
                 data.addError(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "prices"))); //$NON-NLS-1$
@@ -169,30 +150,4 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
 
         return data;
     }
-
-    @Override
-    public List<Exchange> getExchanges(Security security, List<Exception> errors)
-    {
-        return getMarkets(security).stream()
-                        .map(m -> new Exchange(m.getMarketCode(), MessageFormat.format(Messages.LabelXwithCurrencyY,
-                                        MarketIdentifierCodes.getLabel(m.getMarketCode()), m.getCurrencyCode())))
-                        .toList();
-    }
-
-    /* package */ static List<MarketInfo> getMarkets(Security security)
-    {
-        if (security.getOnlineId() == null)
-            return Collections.emptyList();
-
-        Optional<String> markets = security.getPropertyValue(SecurityProperty.Type.FEED, MARKETS_PROPERTY_NAME);
-        if (!markets.isPresent())
-            return Collections.emptyList();
-
-        Type collectionType = new TypeToken<List<MarketInfo>>()
-        {
-        }.getType();
-
-        return JClient.GSON.fromJson(markets.get(), collectionType);
-    }
-
 }

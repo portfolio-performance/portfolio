@@ -402,10 +402,11 @@
     </security>
     <security>
       <uuid>4fcafd74-6fe9-4699-8fe7-8ec44136392e</uuid>
+      <onlineId>ed2b7e46-9f36-4e27-854e-8bd1728dd1b5</onlineId>
       <name>Bitcoin</name>
       <currencyCode>EUR</currencyCode>
       <tickerSymbol>BTC</tickerSymbol>
-      <feed>COINGECKO</feed>
+      <feed>PORTFOLIO-REPORT</feed>
       <prices>
         <price t="2013-04-27" v="10318620000"/>
       </prices>
@@ -414,7 +415,6 @@
         <map/>
       </attributes>
       <events/>
-      <property type="FEED" name="COINGECKOCOINID">bitcoin</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:19:57.696737Z</updatedAt>
     </security>

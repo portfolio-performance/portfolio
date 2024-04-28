@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -212,6 +211,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         if (exchange != null)
             return getFeed() + exchange.getId();
+        else if (PortfolioReportQuoteFeed.ID.equals(getFeed()))
+            return PortfolioReportQuoteFeed.ID + getModel().getCurrencyCode();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
             return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
@@ -315,8 +316,6 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                 if (exchange != null)
                 {
                     s.setTickerSymbol(exchange.getId());
-                    s.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                    exchange.getId());
                 }
                 s.setFeed(feed.getId());
 
