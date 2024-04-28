@@ -75,7 +75,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExt
                         // @formatter:on
                         .section("name", "nameContinued", "wkn", "isin", "currency") //
                         .find("Wir haben für Sie am .*") //
-                        .match("^[\\.'\\d]+ .*$")
+                        .match("^[\\.'\\d]+ .*$") //
                         .match("^(?<name>.*)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
@@ -90,8 +90,8 @@ public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExt
                         // Menge/Nominal Eff. Börsenplatz Preis
                         // 8 11.311
                         // @formatter:on
-                        .section("shares")
-                        .find("Menge\\/Nominal.*")
+                        .section("shares") //
+                        .find("Menge\\/Nominal.*") //
                         .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
