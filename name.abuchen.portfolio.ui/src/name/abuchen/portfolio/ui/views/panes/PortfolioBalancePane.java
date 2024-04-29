@@ -6,6 +6,7 @@ import jakarta.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -75,4 +76,9 @@ public class PortfolioBalancePane implements InformationPanePage
             setInput(portfolio);
     }
 
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        chart.addButtons(toolBar);
+    }
 }
