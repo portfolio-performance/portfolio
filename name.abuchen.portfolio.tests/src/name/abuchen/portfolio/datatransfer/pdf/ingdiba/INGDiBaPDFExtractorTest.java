@@ -22,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDeliv
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
@@ -3772,5 +3773,42 @@ public class INGDiBaPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.05), //
                         hasSource("VLKontoauszug02.txt"), hasNote("Kirchensteuer"))));
+    }
+
+    @Test
+    public void testVLKontoauszug03()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VLKontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-01-12"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug03.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2023-02-13"), hasAmount("EUR", 40.00), //
+                        hasSource("VLKontoauszug03.txt"), hasNote("Gutschrift-VWL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-03-06"), hasAmount("EUR", 0.21), //
+                        hasSource("VLKontoauszug03.txt"), hasNote("Zinsgutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(taxes(hasDate("2023-03-06"), hasAmount("EUR", 0.05), //
+                        hasSource("VLKontoauszug03.txt"), hasNote("Kapitalertragsteuer"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2023-03-06"), hasAmount("EUR", 1161.10), //
+                        hasSource("VLKontoauszug03.txt"), hasNote("Kontolöschung"))));
     }
 }

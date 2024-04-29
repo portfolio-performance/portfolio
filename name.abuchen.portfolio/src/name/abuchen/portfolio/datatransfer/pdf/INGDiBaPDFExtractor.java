@@ -526,11 +526,13 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
         // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
+        // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
-                        + "|Lastschrift) " //
+                        + "|Lastschrift" 
+                        + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
@@ -546,7 +548,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
-                                        + "|Lastschrift) " //
+                                        + "|Lastschrift" 
+                                        + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));

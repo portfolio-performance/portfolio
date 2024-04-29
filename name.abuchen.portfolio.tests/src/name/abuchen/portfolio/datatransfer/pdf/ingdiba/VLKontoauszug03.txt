@@ -1,0 +1,54 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 06.03.2023
+Herrn Seite 1 von 2
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Kontoauszug 2023
+Valuta Vorgang Euro
+VL-Sparen (Laufzeit bis 01.01.2027)
+IBAN DE93 5001 0517 4113 7464 12 / Kontonummer 4113746412
+30.12.2022 alter Saldo 1.080,94
+12.01.2023 Gutschrift-VWL 40,00
+13.02.2023 Gutschrift-VWL 40,00
+06.03.2023 Zinsgutschrift 0,21
+06.03.2023 Kapitalertragsteuer -0,05
+06.03.2023 Kontolöschung -1.161,10
+06.03.2023 neuer Saldo 0,00
+Eventuell belastete Kapitalertragsteuer auch in den Vorjahren mindert das Sparergebnis. Bei der
+Rückzahlung des Guthabens in Teilbeträgen kann die belastete Kapitalertragsteuer auch zur Kürzung
+der Vertragsdauer führen.
+Wichtige Informationen für Sie:
+› Dieser Kontoauszug gilt zugleich als Sparurkunde.
+› Die Übermittlung von Zahlungsaufträgen per Telefax ist nicht möglich.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34SPAR4113746412_K
+Bitte beachten Sie die nachstehenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen auf Vollständig-
+keit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform unverzüg-
+lich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine Einwendungen
+vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren Allgemeinen Geschäfts-
+bedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine Berichtigung des Rechnungs-
+abschlusses verlangen, müssen dann aber beweisen, dass zu Unrecht Ihr Konto belastet oder eine Ihnen zustehende
+Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung) entnommen werden.
+Neben der gesetzlichen Einlagensicherung nach dem Einlagensicherungsgesetz wirkt die ING außerdem am Einlagen-
+sicherungsfonds deutscher Banken (Einlagensicherungsfonds) mit. Dieser sichert nach Maßgabe seines Statuts Einlagen
+bis zu den Sicherungsgrenzen, wie in Ziffer 20 ("Schutz der Einlagen") unserer Allgemeinen Geschäftsbedingungen
+dargelegt. Bitte beachten Sie, dass sich diese Ziffer für die Zeit nach dem 31.12.2022 geändert hat. Sie finden die aktuelle
+Fassung der Ziffer 20 unserer Allgemeinen Geschäftsbedingungen und weitere Informationen zum Schutz Ihrer Einlagen
+unter: www.ing.de/einlagensicherung.
+ING-DiBa AG
+
+```
