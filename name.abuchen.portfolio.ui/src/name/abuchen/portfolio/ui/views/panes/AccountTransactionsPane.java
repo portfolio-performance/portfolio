@@ -218,7 +218,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             @Override
             public String getText(Object e)
             {
-                return Values.Money.format(getFees.apply((AccountTransaction) e), client.getBaseCurrency());
+                return Values.Money.formatNonZero(getFees.apply((AccountTransaction) e), client.getBaseCurrency());
             }
 
             @Override
@@ -246,7 +246,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             @Override
             public String getText(Object e)
             {
-                return Values.Money.format(getTaxes.apply((AccountTransaction) e), client.getBaseCurrency());
+                return Values.Money.formatNonZero(getTaxes.apply((AccountTransaction) e), client.getBaseCurrency());
             }
 
             @Override
