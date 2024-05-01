@@ -244,7 +244,7 @@ public final class SecuritiesTable implements ModificationListener
 
     private void addDividendColumns()
     {
-        DividendPaymentColumn.createFor() //
+        DividendPaymentColumn.createFor(getClient()) //
                         .forEach(column -> {
                             support.addColumn(column);
                         });

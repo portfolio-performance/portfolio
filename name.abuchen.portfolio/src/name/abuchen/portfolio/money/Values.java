@@ -28,7 +28,12 @@ public abstract class Values<E>
         @Override
         public String format(Money amount)
         {
-            if (DiscreetMode.isActive())
+            return format(amount, true);
+        }
+
+        public String format(Money amount, boolean checkDiscreetMode)
+        {
+            if (checkDiscreetMode && DiscreetMode.isActive())
                 return amount.getCurrencyCode() + " " + DiscreetMode.HIDDEN_AMOUNT; //$NON-NLS-1$
             else
                 return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
@@ -36,11 +41,17 @@ public abstract class Values<E>
 
         public String format(Money amount, String skipCurrencyCode)
         {
-            if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
-                return DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+            return format(amount, skipCurrencyCode, true);
+        }
+
+        public String format(Money amount, String skipCurrencyCode, boolean checkDiscreetMode)
+        {
+            if (!FormatHelper.alwaysDisplayCurrencyCode()
+                            && skipCurrencyCode.equals(amount.getCurrencyCode()))
+                return (checkDiscreetMode && DiscreetMode.isActive()) ? DiscreetMode.HIDDEN_AMOUNT
                                 : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
             else
-                return format(amount);
+                return format(amount, checkDiscreetMode);
         }
 
         @Override

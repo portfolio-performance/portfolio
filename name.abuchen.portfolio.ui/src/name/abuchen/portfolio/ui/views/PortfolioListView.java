@@ -282,7 +282,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
     private void addDividendPaymentColumns(ShowHideColumnHelper support)
     {
-        DividendPaymentColumn.createFor() //
+        DividendPaymentColumn.createFor(getClient()) //
                         .forEach(column -> {
                             support.addColumn(column);
                         });

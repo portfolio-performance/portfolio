@@ -142,7 +142,7 @@ public class SecurityEventsPane implements InformationPanePage
             public String getText(Object element)
             {
                 return element instanceof DividendEvent dividendEvent
-                                ? Values.Money.format(dividendEvent.getAmount(), client.getBaseCurrency())
+                                ? Values.Money.format(dividendEvent.getAmount(), client.getBaseCurrency(), false)
                                 : null;
             }
         });

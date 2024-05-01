@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
 import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Money;
@@ -22,7 +23,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 public class DividendPaymentColumn
 {
 
-    static Column createNextDividendExDateColumn()
+    static Column createNextDividendExDateColumn(Client client)
     {
         Column column = new Column("nextdivexdate", Messages.ColumnDividendsNextExDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextExDate_MenuLabel);
@@ -63,7 +64,7 @@ public class DividendPaymentColumn
         return column;
     }
 
-    static Column createNextDividendPaymentDateColumn()
+    static Column createNextDividendPaymentDateColumn(Client client)
     {
         Column column = new Column("nextdivpmtdate", Messages.ColumnDividendsNextPaymentDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextPaymentDate_MenuLabel);
@@ -104,7 +105,7 @@ public class DividendPaymentColumn
         return column;
     }
 
-    static Column createNextDividendPaymentAmount()
+    static Column createNextDividendPaymentAmount(Client client)
     {
         Column column = new Column("nextdivpmtamt", Messages.ColumnDividendsNextPaymentAmount, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextPaymentAmount_MenuLabel);
@@ -127,7 +128,7 @@ public class DividendPaymentColumn
                 {
                     return null; //
                 }
-                return Values.Money.format(amount);
+                return Values.Money.format(amount, client.getBaseCurrency(), false);
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -154,11 +155,11 @@ public class DividendPaymentColumn
                         .map(DividendEvent::getAmount).findFirst().orElse(null);
     }
 
-    public static Stream<Column> createFor()
+    public static Stream<Column> createFor(Client client)
     {
-        return Stream.of(createNextDividendExDateColumn(), //
-                        createNextDividendPaymentDateColumn(), //
-                        createNextDividendPaymentAmount());
+        return Stream.of(createNextDividendExDateColumn(client), //
+                        createNextDividendPaymentDateColumn(client), //
+                        createNextDividendPaymentAmount(client));
     }
 
 }

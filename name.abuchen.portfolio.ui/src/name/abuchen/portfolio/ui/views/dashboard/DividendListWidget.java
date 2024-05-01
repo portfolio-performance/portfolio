@@ -385,7 +385,8 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         Image image = LogoManager.instance().getDefaultColumnImage(sec, getClient().getSettings());
         Label logo = createLabel(composite, image);
         Label name = createLabel(composite, sec.getName());
-        Label amt = createLabel(composite, Values.Money.format(item.div.getAmount()), SWT.RIGHT);
+        Label amt = createLabel(composite,
+                        Values.Money.format(item.div.getAmount(), getClient().getBaseCurrency(), false), SWT.RIGHT);
         setForegroundColor(item, amt);
 
         addListener(mouseUpAdapter, composite, name, amt);

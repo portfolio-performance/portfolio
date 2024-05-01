@@ -756,7 +756,7 @@ public class StatementOfAssetsViewer
 
     private void addDividendPaymentColumns()
     {
-        DividendPaymentColumn.createFor() //
+        DividendPaymentColumn.createFor(client) //
                         .forEach(column -> {
                             if (column.getSorter() != null)
                                 column.getSorter().wrap(ElementComparator::new);
